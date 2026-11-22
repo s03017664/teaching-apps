@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HKDSE 中四化學 - 陽陰離子與化合物學習平台</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font (Inter & Noto Sans HK) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+HK:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans HK', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .flip-card {
+            perspective: 1000px;
+        }
+        .flip-card-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            backface-visibility: hidden;
+        }
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+        sub, sup {
+            line-height: 0;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-indigo-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid font-bold fa-flask-vial text-yellow-400 text-2xl"></i>
+                <span class="font-bold text-lg sm:text-xl tracking-wide">HKDSE 化學離子大師</span>
+                <span class="bg-indigo-700 text-xs text-indigo-200 px-2 py-0.5 rounded-full hidden sm:inline-block">S4 Chemistry</span>
+            </div>
+            <nav class="flex space-x-1 sm:space-x-2">
+                <button onclick="switchTab('study')" id="tab-study" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium transition bg-indigo-800 text-white flex items-center gap-1.5">
+                    <i class="fa-solid fa-book-open"></i> <span class="hidden md:inline">離子溫習庫</span>
+                </button>
+                <button onclick="switchTab('flashcards')" id="tab-flashcards" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium transition hover:bg-indigo-800/60 text-indigo-200 flex items-center gap-1.5">
+                    <i class="fa-solid fa-clone"></i> <span class="hidden md:inline">記憶閃卡</span>
+                </button>
+                <button onclick="switchTab('builder')" id="tab-builder" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium transition hover:bg-indigo-800/60 text-indigo-200 flex items-center gap-1.5">
+                    <i class="fa-solid fa-atom"></i> <span class="hidden md:inline">配對實驗室</span>
+                </button>
+                <button onclick="switchTab('quiz')" id="tab-quiz" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium transition hover:bg-indigo-800/60 text-indigo-200 flex items-center gap-1.5">
+                    <i class="fa-solid fa-graduation-cap text-yellow-400"></i> <span>測驗擂台</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- TAB 1: STUDY DATABASE -->
+        <section id="view-study" class="tab-content">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 mb-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h1 class="text-2xl font-bold text-slate-900">常考陽陰離子與顏色總覽</h1>
+                        <p class="text-slate-500 text-sm mt-1">涵蓋 DSE 教材重點陽離子、陰離子及水溶液特有顏色</p>
+                    </div>
+                    <!-- Search & Filter Controls -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <div class="relative flex-1 min-w-[200px]">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" id="study-search" oninput="renderStudyTables()" placeholder="搜尋離子/化學式..." class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <select id="study-filter" onchange="renderStudyTables()" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="all">全部離子</option>
+                            <option value="cation">僅陽離子 (Cations)</option>
+                            <option value="anion">僅陰離子 (Anions)</option>
+                            <option value="colored">具特有顏色的離子</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Ion Cards Grid / Tables -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    
+                    <!-- Cations Table -->
+                    <div id="container-cations" class="space-y-4">
+                        <div class="flex items-center justify-between border-b border-blue-200 pb-2">
+                            <h2 class="text-lg font-bold text-blue-700 flex items-center gap-2">
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2.5 py-1 rounded-full font-bold">+</span>
+                                陽離子 (Cations)
+                            </h2>
+                            <span class="text-xs text-slate-500">失去電子，帶正電荷</span>
+                        </div>
+                        <div class="overflow-x-auto rounded-xl border border-slate-200">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-blue-50/50 text-slate-700 font-semibold border-b border-slate-200">
+                                    <tr>
+                                        <th class="p-3">電荷</th>
+                                        <th class="p-3">中文名稱</th>
+                                        <th class="p-3">化學式</th>
+                                        <th class="p-3">水溶液顏色</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cation-table-body" class="divide-y divide-slate-100">
+                                    <!-- Dynamic Insertion -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Anions Table -->
+                    <div id="container-anions" class="space-y-4">
+                        <div class="flex items-center justify-between border-b border-pink-200 pb-2">
+                            <h2 class="text-lg font-bold text-pink-700 flex items-center gap-2">
+                                <span class="bg-pink-100 text-pink-800 text-xs px-2.5 py-1 rounded-full font-bold">-</span>
+                                陰離子 (Anions)
+                            </h2>
+                            <span class="text-xs text-slate-500">得到電子，帶負電荷</span>
+                        </div>
+                        <div class="overflow-x-auto rounded-xl border border-slate-200">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-pink-50/50 text-slate-700 font-semibold border-b border-slate-200">
+                                    <tr>
+                                        <th class="p-3">電荷</th>
+                                        <th class="p-3">中文名稱</th>
+                                        <th class="p-3">化學式</th>
+                                        <th class="p-3">水溶液顏色</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="anion-table-body" class="divide-y divide-slate-100">
+                                    <!-- Dynamic Insertion -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: FLASHCARDS -->
+        <section id="view-flashcards" class="tab-content hidden">
+            <div class="max-w-2xl mx-auto space-y-6">
+                <div class="text-center">
+                    <h1 class="text-2xl font-bold text-slate-900">離子快速記憶閃卡</h1>
+                    <p class="text-slate-500 text-sm mt-1">點擊卡片翻面，自我測試記憶程度</p>
+                </div>
+
+                <!-- Flashcard Filter Buttons + Random Toggle -->
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="flex justify-center gap-1.5 flex-wrap">
+                        <button onclick="setFlashcardFilter('all')" id="fc-filter-all" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white shadow-sm">全部離子</button>
+                        <button onclick="setFlashcardFilter('cation')" id="fc-filter-cation" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200">陽離子</button>
+                        <button onclick="setFlashcardFilter('anion')" id="fc-filter-anion" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200">陰離子</button>
+                        <button onclick="setFlashcardFilter('compound')" id="fc-filter-compound" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200">離子化合物</button>
+                        <button onclick="setFlashcardFilter('color')" id="fc-filter-color" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200">特有顏色離子</button>
+                    </div>
+                    
+                    <!-- Random Mode Switch Option -->
+                    <label class="flex items-center gap-2 cursor-pointer bg-indigo-50 px-3 py-1.5 rounded-xl border border-indigo-200 text-xs font-bold text-indigo-800">
+                        <i class="fa-solid fa-shuffle text-indigo-600"></i>
+                        <span>隨機電荷出題</span>
+                        <input type="checkbox" id="fc-random-toggle" onchange="toggleFlashcardRandom()" class="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500">
+                    </label>
+                </div>
+
+                <!-- The Interactive Flashcard -->
+                <div class="flip-card w-full h-72 cursor-pointer" onclick="toggleCardFlip()">
+                    <div id="flashcard-inner" class="flip-card-inner w-full h-full relative rounded-2xl shadow-xl transition-all duration-500">
+                        <!-- Front Face -->
+                        <div class="flip-card-front absolute inset-0 bg-white border-2 border-indigo-200 rounded-2xl p-6 flex flex-col justify-between items-center text-center">
+                            <span class="text-xs font-bold text-indigo-600 tracking-wider uppercase" id="fc-type-tag">陽離子</span>
+                            <div class="my-auto">
+                                <div class="text-5xl font-extrabold text-slate-800 tracking-wide" id="fc-front-main">Na⁺</div>
+                                <div class="text-xs text-slate-400 mt-2">（點擊卡片查看名稱及細節）</div>
+                            </div>
+                            <div class="text-xs text-slate-400 flex items-center gap-1">
+                                <i class="fa-solid fa-rotate"></i> 翻轉卡片
+                            </div>
+                        </div>
+                        <!-- Back Face -->
+                        <div class="flip-card-back absolute inset-0 bg-indigo-900 text-white rounded-2xl p-6 flex flex-col justify-between items-center text-center">
+                            <span class="text-xs font-medium text-indigo-300" id="fc-back-type">詳細資料</span>
+                            <div class="my-auto space-y-2">
+                                <div class="text-3xl font-bold text-yellow-300" id="fc-back-name">鈉離子</div>
+                                <div class="text-lg text-indigo-100" id="fc-back-formula">Na⁺</div>
+                                <div class="text-sm bg-indigo-800/80 px-3 py-1 rounded-full text-indigo-200 inline-block" id="fc-back-charge">電荷: 1+</div>
+                                <div class="text-sm font-semibold text-emerald-300 mt-2" id="fc-back-color">水溶液顏色: 無色</div>
+                            </div>
+                            <div class="text-xs text-indigo-300">再次點擊可返回前面</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div class="flex items-center justify-between px-4">
+                    <button onclick="prevFlashcard()" class="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-left"></i> 上一張
+                    </button>
+                    <span class="text-sm font-semibold text-slate-500" id="fc-progress">1 / 20</span>
+                    <button onclick="nextFlashcard()" class="px-4 py-2 bg-indigo-600 rounded-lg text-sm font-semibold text-white hover:bg-indigo-700 shadow-sm flex items-center gap-2">
+                        下一張 <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: COMPOUND FORMULA BUILDER WITH CROSSOVER STEPS -->
+        <section id="view-builder" class="tab-content hidden">
+            <div class="space-y-6">
+                <div class="bg-gradient-to-r from-indigo-900 to-slate-900 text-white rounded-2xl p-6 shadow-md">
+                    <h1 class="text-2xl font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-cubes text-yellow-400"></i>
+                        離子化合物配對實驗室 (含十字交叉法教學)
+                    </h1>
+                    <p class="text-indigo-200 text-sm mt-1">選擇陽離子與陰離子，即時展示「電荷數字交叉配對步驟」、括號提醒與顏色預測！</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Step 1: Select Cation -->
+                    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+                        <h2 class="font-bold text-slate-800 mb-3 flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs flex items-center justify-center font-bold">1</span>
+                            選擇陽離子 (Positive Ion)
+                        </h2>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-64 overflow-y-auto p-1" id="builder-cation-list">
+                            <!-- Dynamic Cations buttons -->
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Select Anion -->
+                    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+                        <h2 class="font-bold text-slate-800 mb-3 flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-full bg-pink-100 text-pink-700 text-xs flex items-center justify-center font-bold">2</span>
+                            選擇陰離子 (Negative Ion)
+                        </h2>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-64 overflow-y-auto p-1" id="builder-anion-list">
+                            <!-- Dynamic Anions buttons -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step-by-Step Cross-over Method Interactive Display Panel -->
+                <div class="bg-white border-2 border-indigo-500 rounded-2xl p-6 shadow-lg space-y-6 relative">
+                    <div class="border-b border-slate-200 pb-3 flex items-center justify-between flex-wrap gap-2">
+                        <span class="text-sm font-bold text-indigo-700 flex items-center gap-2">
+                            <i class="fa-solid fa-calculator"></i>
+                            配對推導過程：十字交叉法 (Cross-over Method)
+                        </span>
+                        <span class="text-xs bg-indigo-100 text-indigo-800 font-bold px-2.5 py-1 rounded-full">DSE 必學寫化學式技巧</span>
+                    </div>
+
+                    <!-- Crossover Visualizer Area -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                        
+                        <!-- Crossover Step 1: Diagram with SVG Arrows -->
+                        <div class="bg-white p-4 rounded-xl border border-slate-200 text-center shadow-sm relative md:col-span-2 overflow-hidden">
+                            <div class="text-xs text-slate-500 font-bold mb-3 flex items-center justify-center gap-1">
+                                <span class="bg-indigo-600 text-white w-4 h-4 rounded-full text-[10px] inline-flex items-center justify-center">3</span>
+                                把陽離子和陰離子的電荷數目交叉互調：
+                            </div>
+                            
+                            <!-- Interactive Crossover Diagram Area -->
+                            <div class="relative max-w-sm mx-auto py-4 px-2 my-1 bg-slate-50/80 rounded-xl border border-slate-100">
+                                <!-- SVG Arrows Overlay -->
+                                <svg class="absolute inset-0 w-full h-full pointer-events-none z-10" id="crossover-svg-arrows">
+                                    <defs>
+                                        <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#ec4899" />
+                                        </marker>
+                                        <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b82f6" />
+                                        </marker>
+                                    </defs>
+                                    <!-- Crossover Lines -->
+                                    <line id="cross-line-1" x1="42%" y1="28%" x2="58%" y2="72%" stroke="#3b82f6" stroke-width="2.5" stroke-dasharray="4,2" marker-end="url(#arrow-blue)" />
+                                    <line id="cross-line-2" x1="58%" y1="28%" x2="42%" y2="72%" stroke="#ec4899" stroke-width="2.5" stroke-dasharray="4,2" marker-end="url(#arrow-red)" />
+                                </svg>
+
+                                <!-- Top Ion Symbols & Charge Badges -->
+                                <div class="flex justify-around items-center mb-10 relative z-0">
+                                    <div class="text-center">
+                                        <span class="text-xs font-bold text-blue-600 block mb-0.5">陽離子</span>
+                                        <span id="co-cat-symbol" class="text-2xl font-extrabold text-slate-800">Mg</span>
+                                        <sup class="text-xs font-black text-white bg-blue-500 rounded-full px-1.5 py-0.5 shadow-sm inline-block" id="co-cat-charge-num">2+</sup>
+                                    </div>
+                                    <div class="text-center">
+                                        <span class="text-xs font-bold text-pink-600 block mb-0.5">陰離子</span>
+                                        <span id="co-ani-symbol" class="text-2xl font-extrabold text-slate-800">F</span>
+                                        <sup class="text-xs font-black text-white bg-pink-500 rounded-full px-1.5 py-0.5 shadow-sm inline-block" id="co-ani-charge-num">1-</sup>
+                                    </div>
+                                </div>
+
+                                <!-- Bottom Resulting Ratios -->
+                                <div class="flex justify-around items-center pt-2 relative z-0 border-t border-slate-200/60">
+                                    <div class="text-center">
+                                        <span class="text-xs font-semibold text-slate-400 block">對調腳標</span>
+                                        <span id="co-cat-res-sym" class="text-xl font-bold text-slate-700">Mg</span>
+                                        <sub id="co-cat-res-sub" class="text-sm font-extrabold text-pink-600 bg-pink-100 px-1.5 py-0.5 rounded-md">1</sub>
+                                    </div>
+                                    <div class="text-center">
+                                        <span class="text-xs font-semibold text-slate-400 block">對調腳標</span>
+                                        <span id="co-ani-res-sym" class="text-xl font-bold text-slate-700">F</span>
+                                        <sub id="co-ani-res-sub" class="text-sm font-extrabold text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded-md">2</sub>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Crossover Step 3: Simplify & Output -->
+                        <div class="bg-indigo-900 text-white p-5 rounded-xl text-center shadow-md flex flex-col justify-center h-full">
+                            <div class="text-xs text-indigo-300 font-bold mb-1">最簡比例化學式</div>
+                            <div id="builder-result-formula" class="text-3xl font-extrabold text-yellow-300 my-2 tracking-wide">
+                                MgF<sub>2</sub>
+                            </div>
+                            <div id="builder-result-name" class="text-sm font-bold text-indigo-100">氟化鎂</div>
+                        </div>
+
+                    </div>
+
+                    <!-- Compound Electron Diagram Container (DSE Dot-and-Cross Format) -->
+                    <div id="electron-diagram-card" class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
+                        <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+                            <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                <i class="fa-solid fa-atom text-indigo-600"></i>
+                                HKDSE 離子化合物電子結構圖 (Dot-and-Cross Diagram)
+                            </span>
+                            <span class="text-[11px] text-slate-500 font-medium bg-slate-200/70 px-2 py-0.5 rounded">最外層電子 (Valence Shell Only)</span>
+                        </div>
+                        
+                        <div id="electron-diagram-display" class="bg-white p-4 rounded-xl border border-slate-200 flex items-center justify-center min-h-[190px] overflow-x-auto shadow-inner">
+                            <!-- Dynamic SVG Dot-and-Cross Diagram -->
+                        </div>
+                        <div id="electron-diagram-note" class="text-[11px] text-slate-500 text-center">
+                            提示：金屬陽離子失去最外層電子；非金屬陰離子展示最外層 8 電子。
+                        </div>
+                    </div>
+
+                    <!-- Brackets Reminder Notice -->
+                    <div id="bracket-warning-box" class="hidden bg-amber-50 border-2 border-amber-400 rounded-xl p-4 text-xs text-amber-900 space-y-1">
+                        <div class="font-bold text-amber-800 flex items-center gap-1.5 text-sm">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-600 text-base"></i>
+                            特別提醒：為什麼這裡要加「括號 ( )」？
+                        </div>
+                        <p id="bracket-warning-reason" class="text-slate-700 leading-relaxed">
+                            因為這個陰/陽離子屬於<b>多原子離子 (Polyatomic ion)</b>。當最簡莫耳比例大於 1 時，必須加括號將整個離子括起來再寫下右下角的數量腳標！
+                        </p>
+                    </div>
+
+                    <!-- Compound Details Footer -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                            <div class="text-xs text-slate-500 font-semibold">電中性平衡公式</div>
+                            <div id="builder-explanation" class="text-xs font-medium text-slate-800 mt-1">
+                                Mg²⁺ (2+) × 1  +  F⁻ (1-) × 2  =  總電荷為 0
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                            <div class="text-xs text-slate-500 font-semibold">水溶液預測顏色</div>
+                            <div id="builder-result-color" class="text-sm font-bold text-amber-600 mt-1">
+                                無色溶液
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: QUIZ ARENA -->
+        <section id="view-quiz" class="tab-content hidden">
+            <div class="max-w-3xl mx-auto space-y-6">
+                
+                <!-- Quiz Setup Panel -->
+                <div id="quiz-setup-card" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-6">
+                    <div class="border-b border-slate-100 pb-4">
+                        <h1 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-circle-question text-indigo-600"></i>
+                            DSE 離子知識測驗擂台
+                        </h1>
+                        <p class="text-slate-500 text-sm mt-1">選擇測試範疇與題型，挑戰你的記憶與計算能力！</p>
+                    </div>
+
+                    <!-- Mode Select -->
+                    <div class="space-y-3">
+                        <label class="block text-sm font-bold text-slate-700">1. 選擇測試範疇</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+                            <button onclick="setQuizCategory('cation')" id="cat-btn-cation" class="quiz-cat-btn p-3 border-2 border-indigo-600 bg-indigo-50 text-indigo-700 rounded-xl font-bold text-xs sm:text-sm text-center">
+                                陽離子專區
+                            </button>
+                            <button onclick="setQuizCategory('anion')" id="cat-btn-anion" class="quiz-cat-btn p-3 border border-slate-200 hover:border-slate-300 rounded-xl font-bold text-xs sm:text-sm text-slate-700 text-center">
+                                陰離子專區
+                            </button>
+                            <button onclick="setQuizCategory('compound-formula')" id="cat-btn-compound-formula" class="quiz-cat-btn p-3 border border-slate-200 hover:border-slate-300 rounded-xl font-bold text-xs sm:text-sm text-slate-700 text-center">
+                                化合物化學式
+                            </button>
+                            <button onclick="setQuizCategory('compound-name')" id="cat-btn-compound-name" class="quiz-cat-btn p-3 border border-slate-200 hover:border-slate-300 rounded-xl font-bold text-xs sm:text-sm text-slate-700 text-center">
+                                化合物名稱
+                            </button>
+                            <button onclick="setQuizCategory('color')" id="cat-btn-color" class="quiz-cat-btn p-3 border border-slate-200 hover:border-slate-300 rounded-xl font-bold text-xs sm:text-sm text-slate-700 text-center col-span-2 sm:col-span-1">
+                                離子顏色特訓
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Question Count Select -->
+                    <div class="space-y-3">
+                        <label class="block text-sm font-bold text-slate-700">2. 題目數量</label>
+                        <div class="flex gap-4">
+                            <label class="flex items-center gap-2 cursor-pointer text-sm font-medium">
+                                <input type="radio" name="quiz-count" value="5" checked class="text-indigo-600 focus:ring-indigo-500"> 5 題 (快速測試)
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer text-sm font-medium">
+                                <input type="radio" name="quiz-count" value="10" class="text-indigo-600 focus:ring-indigo-500"> 10 題 (標準測試)
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer text-sm font-medium">
+                                <input type="radio" name="quiz-count" value="20" class="text-indigo-600 focus:ring-indigo-500"> 20 題 (深度挑戰)
+                            </label>
+                        </div>
+                    </div>
+
+                    <button onclick="startQuiz()" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition text-center text-base">
+                        開始測試 <i class="fa-solid fa-play ml-2"></i>
+                    </button>
+                </div>
+
+                <!-- Quiz Active Panel -->
+                <div id="quiz-active-card" class="bg-white rounded-2xl p-6 shadow-md border border-slate-200 hidden space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <div class="flex items-center gap-2">
+                            <button onclick="exitQuizToSetup()" class="text-xs font-bold text-slate-500 hover:text-indigo-600 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-arrow-left"></i> 返回上一頁
+                            </button>
+                            <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full" id="quiz-badge">陽離子測試</span>
+                        </div>
+                        <span class="text-sm font-semibold text-slate-500" id="quiz-progress-text">題目 1 / 5</span>
+                    </div>
+
+                    <!-- Question Box -->
+                    <div class="space-y-2">
+                        <h2 id="quiz-question-title" class="text-lg font-bold text-slate-900">題目名稱</h2>
+                        <div id="quiz-question-main" class="text-3xl font-extrabold text-indigo-900 my-4 p-4 bg-slate-50 rounded-xl text-center border border-slate-200">
+                            <!-- Question rendered safely with innerHTML -->
+                        </div>
+                    </div>
+
+                    <!-- Options Grid -->
+                    <div id="quiz-options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <!-- Options buttons will be inserted here dynamically -->
+                    </div>
+
+                    <!-- Feedback Alert -->
+                    <div id="quiz-feedback" class="hidden p-4 rounded-xl text-sm font-semibold flex items-center justify-between">
+                        <span id="quiz-feedback-text">正確！答得好！</span>
+                        <button onclick="nextQuizQuestion()" id="next-q-btn" class="px-4 py-2 bg-slate-900 text-white rounded-lg text-xs font-bold hover:bg-slate-800">下一題</button>
+                    </div>
+                </div>
+
+                <!-- Quiz Summary / Result Panel -->
+                <div id="quiz-result-card" class="bg-white rounded-2xl p-6 shadow-lg border border-slate-200 text-center hidden space-y-6">
+                    <div class="w-20 h-20 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto text-3xl">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-900">測試完成！</h2>
+                        <p class="text-slate-500 text-sm mt-1">這是你的表現成績統計</p>
+                    </div>
+
+                    <div class="bg-slate-50 rounded-2xl p-4 max-w-sm mx-auto border border-slate-200">
+                        <div class="text-4xl font-extrabold text-indigo-600" id="quiz-score-num">80%</div>
+                        <div class="text-xs text-slate-500 mt-1" id="quiz-score-detail">答對 4 題 / 共 5 題</div>
+                    </div>
+
+                    <div class="flex justify-center gap-3">
+                        <button onclick="resetQuiz()" class="px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 shadow-sm text-sm">
+                            再次測試
+                        </button>
+                        <button onclick="switchTab('study')" class="px-5 py-2.5 bg-slate-100 text-slate-700 font-bold rounded-xl hover:bg-slate-200 text-sm">
+                            回到溫習庫
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500 mt-auto">
+        HKDSE 化學核心專題 · 陽離子與陰離子學習平台
+    </footer>
+
+    <!-- JavaScript Data and Logic -->
+    <script>
+        const CATIONS = [
+            { id: "Na", name: "鈉離子", formula: "Na⁺", simpleFormula: "Na", charge: 1, color: "無色" },
+            { id: "K", name: "鉀離子", formula: "K⁺", simpleFormula: "K", charge: 1, color: "無色" },
+            { id: "Cu1", name: "銅(I) 離子", formula: "Cu⁺", simpleFormula: "Cu", charge: 1, color: "無色" },
+            { id: "Ag", name: "銀離子", formula: "Ag⁺", simpleFormula: "Ag", charge: 1, color: "無色" },
+            { id: "Hg1", name: "汞(I) 離子", formula: "Hg⁺", simpleFormula: "Hg", charge: 1, color: "無色" },
+            { id: "H", name: "氫離子", formula: "H⁺", simpleFormula: "H", charge: 1, color: "無色" },
+            { id: "NH4", name: "銨離子", formula: "NH₄⁺", simpleFormula: "NH4", charge: 1, color: "無色", poly: true },
+            
+            { id: "Mg", name: "鎂離子", formula: "Mg²⁺", simpleFormula: "Mg", charge: 2, color: "無色" },
+            { id: "Ca", name: "鈣離子", formula: "Ca²⁺", simpleFormula: "Ca", charge: 2, color: "無色" },
+            { id: "Ba", name: "鋇離子", formula: "Ba²⁺", simpleFormula: "Ba", charge: 2, color: "無色" },
+            { id: "Pb2", name: "鉛(II) 離子", formula: "Pb²⁺", simpleFormula: "Pb", charge: 2, color: "無色" },
+            { id: "Fe2", name: "鐵(II) 離子", formula: "Fe²⁺", simpleFormula: "Fe", charge: 2, color: "淺綠色" },
+            { id: "Co2", name: "鈷(II) 離子", formula: "Co²⁺", simpleFormula: "Co", charge: 2, color: "粉紅色" },
+            { id: "Ni2", name: "鎳(II) 離子", formula: "Ni²⁺", simpleFormula: "Ni", charge: 2, color: "綠色" },
+            { id: "Mn2", name: "錳(II) 離子", formula: "Mn²⁺", simpleFormula: "Mn", charge: 2, color: "非常淺的粉紅色" },
+            { id: "Cu2", name: "銅(II) 離子", formula: "Cu²⁺", simpleFormula: "Cu", charge: 2, color: "藍色或綠色" },
+            { id: "Zn", name: "鋅離子", formula: "Zn²⁺", simpleFormula: "Zn", charge: 2, color: "無色" },
+            { id: "Hg2", name: "汞(II) 離子", formula: "Hg²⁺", simpleFormula: "Hg", charge: 2, color: "無色" },
+
+            { id: "Al", name: "鋁離子", formula: "Al³⁺", simpleFormula: "Al", charge: 3, color: "無色" },
+            { id: "Fe3", name: "鐵(III) 離子", formula: "Fe³⁺", simpleFormula: "Fe", charge: 3, color: "黃色或棕色" },
+            { id: "Cr3", name: "鉻(III) 離子", formula: "Cr³⁺", simpleFormula: "Cr", charge: 3, color: "綠色" }
+        ];
+
+        const ANIONS = [
+            { id: "H-", name: "氫陰離子", formula: "H⁻", simpleFormula: "H", charge: 1, color: "無色" },
+            { id: "Cl", name: "氯離子", formula: "Cl⁻", simpleFormula: "Cl", charge: 1, color: "無色" },
+            { id: "Br", name: "溴離子", formula: "Br⁻", simpleFormula: "Br", charge: 1, color: "無色" },
+            { id: "I", name: "碘離子", formula: "I⁻", simpleFormula: "I", charge: 1, color: "無色" },
+            { id: "OH", name: "氫氧根離子", formula: "OH⁻", simpleFormula: "OH", charge: 1, color: "無色", poly: true },
+            { id: "NO3", name: "硝酸根離子", formula: "NO₃⁻", simpleFormula: "NO3", charge: 1, color: "無色", poly: true },
+            { id: "NO2", name: "亞硝酸根離子", formula: "NO₂⁻", simpleFormula: "NO2", charge: 1, color: "無色", poly: true },
+            { id: "HCO3", name: "碳酸氫根離子", formula: "HCO₃⁻", simpleFormula: "HCO3", charge: 1, color: "無色", poly: true },
+            { id: "HSO4", name: "硫酸氫根離子", formula: "HSO₄⁻", simpleFormula: "HSO4", charge: 1, color: "無色", poly: true },
+            { id: "CN", name: "氰離子", formula: "CN⁻", simpleFormula: "CN", charge: 1, color: "無色", poly: true },
+            { id: "MnO4", name: "高錳酸根離子", formula: "MnO₄⁻", simpleFormula: "MnO4", charge: 1, color: "紫色", poly: true },
+            { id: "O", name: "氧離子", formula: "O²⁻", simpleFormula: "O", charge: 2, color: "無色" },
+            { id: "S", name: "硫離子", formula: "S²⁻", simpleFormula: "S", charge: 2, color: "無色" },
+            { id: "SO4", name: "硫酸根離子", formula: "SO₄²⁻", simpleFormula: "SO4", charge: 2, color: "無色", poly: true },
+            { id: "SO3", name: "亞硫酸根離子", formula: "SO₃²⁻", simpleFormula: "SO3", charge: 2, color: "無色", poly: true },
+            { id: "CO3", name: "碳酸根離子", formula: "CO₃²⁻", simpleFormula: "CO3", charge: 2, color: "無色", poly: true },
+            { id: "CrO4", name: "鉻酸根離子", formula: "CrO₄²⁻", simpleFormula: "CrO4", charge: 2, color: "黃色", poly: true },
+            { id: "Cr2O7", name: "重鉻酸根離子", formula: "Cr₂O₇²⁻", simpleFormula: "Cr2O7", charge: 2, color: "橙色", poly: true },
+            { id: "N", name: "氮離子", formula: "N³⁻", simpleFormula: "N", charge: 3, color: "無色" },
+            { id: "P", name: "磷離子", formula: "P³⁻", simpleFormula: "P", charge: 3, color: "無色" },
+            { id: "PO4", name: "磷酸根離子", formula: "PO₄³⁻", simpleFormula: "PO4", charge: 3, color: "無色", poly: true }
+        ];
+
+        const ALL_IONS = [
+            ...CATIONS.map(c => ({ ...c, type: 'cation' })),
+            ...ANIONS.map(a => ({ ...a, type: 'anion' }))
+        ];
+
+        // Generate preset list of common Ionic Compounds for Flashcards (Dynamic 200+ Generator)
+        function generateCompoundFlashcardsList() {
+            const compounds = [];
+            const generatedPairs = new Set();
+
+            // 1. High priority HKDSE key compounds pool
+            const keyPairs = [
+                { cat: 'Na', ani: 'Cl' }, { cat: 'Na', ani: 'OH' }, { cat: 'Na', ani: 'CO3' },
+                { cat: 'K', ani: 'MnO4' }, { cat: 'Mg', ani: 'SO4' }, { cat: 'Ca', ani: 'CO3' },
+                { cat: 'Ca', ani: 'OH' }, { cat: 'Cu2', ani: 'SO4' }, { cat: 'Fe2', ani: 'SO4' },
+                { cat: 'Fe3', ani: 'Cl' }, { cat: 'NH4', ani: 'NO3' }, { cat: 'Ag', ani: 'NO3' },
+                { cat: 'Ba', ani: 'SO4' }, { cat: 'Pb2', ani: 'I' }, { cat: 'Al', ani: 'O' }
+            ];
+
+            // Helper to generate a compound card object
+            function buildCardObj(cation, anion) {
+                const cCharge = cation.charge;
+                const aCharge = anion.charge;
+                const common = gcd(cCharge, aCharge);
+                const cRatio = aCharge / common;
+                const aRatio = cCharge / common;
+
+                let catP = cation.simpleFormula;
+                if (cRatio > 1) catP = cation.poly ? `(${cation.simpleFormula})${cRatio}` : `${cation.simpleFormula}${cRatio}`;
+
+                let aniP = anion.simpleFormula;
+                if (aRatio > 1) aniP = anion.poly ? `(${anion.simpleFormula})${aRatio}` : `${anion.simpleFormula}${aRatio}`;
+
+                const rawFormula = catP + aniP;
+                
+                let catCleanName = cation.name.replace('離子', '').trim();
+                let aniCleanName = anion.name.replace('離子', '').trim();
+                if (aniCleanName.endsWith('根')) aniCleanName = aniCleanName.substring(0, aniCleanName.length - 1);
+                if (!aniCleanName.endsWith('化') && !aniCleanName.endsWith('酸') && !aniCleanName.endsWith('氰')) aniCleanName += '化';
+                const compName = `${aniCleanName}${catCleanName}`;
+
+                let colorDesc = "無色溶液";
+                if (cation.color !== "無色" && anion.color !== "無色") colorDesc = `${cation.color} / ${anion.color}`;
+                else if (cation.color !== "無色") colorDesc = cation.color;
+                else if (anion.color !== "無色") colorDesc = anion.color;
+
+                return {
+                    id: `comp-${cation.id}-${anion.id}`,
+                    name: compName,
+                    formula: formatChemicalSubscript(rawFormula),
+                    rawFormula: rawFormula,
+                    charge: `${cation.name} (${cRatio}) + ${anion.name} (${aRatio})`,
+                    color: colorDesc,
+                    type: 'compound'
+                };
+            }
+
+            // Push key pairs first
+            keyPairs.forEach(p => {
+                const cation = CATIONS.find(c => c.id === p.cat);
+                const anion = ANIONS.find(a => a.id === p.ani);
+                if (cation && anion) {
+                    const pairKey = `${cation.id}_${anion.id}`;
+                    generatedPairs.add(pairKey);
+                    compounds.push(buildCardObj(cation, anion));
+                }
+            });
+
+            // Dynamically combine cations & anions to reach 200+ compounds
+            const allPossiblePairs = [];
+            CATIONS.forEach(cation => {
+                ANIONS.forEach(anion => {
+                    const pairKey = `${cation.id}_${anion.id}`;
+                    if (!generatedPairs.has(pairKey)) {
+                        allPossiblePairs.push({ cation, anion, pairKey });
+                    }
+                });
+            });
+
+            // Shuffle dynamically combined pairs and add until 200 total cards are generated
+            const shuffledPairs = shuffleArray(allPossiblePairs);
+            for (let i = 0; i < shuffledPairs.length && compounds.length < 200; i++) {
+                const { cation, anion, pairKey } = shuffledPairs[i];
+                generatedPairs.add(pairKey);
+                compounds.push(buildCardObj(cation, anion));
+            }
+
+            return compounds;
+        }
+
+        const COMPOUND_CARDS = generateCompoundFlashcardsList();
+
+        let currentTab = 'study';
+        let quizCategory = 'cation';
+        let quizQuestions = [];
+        let currentQuizIndex = 0;
+        let quizScore = 0;
+
+        function switchTab(tabId) {
+            currentTab = tabId;
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.className = "nav-btn px-3 py-2 rounded-lg text-sm font-medium transition hover:bg-indigo-800/60 text-indigo-200 flex items-center gap-1.5";
+            });
+
+            const activeView = document.getElementById(`view-${tabId}`);
+            if (activeView) activeView.classList.remove('hidden');
+
+            const activeTabBtn = document.getElementById(`tab-${tabId}`);
+            if (activeTabBtn) {
+                activeTabBtn.className = "nav-btn px-3 py-2 rounded-lg text-sm font-medium transition bg-indigo-800 text-white flex items-center gap-1.5";
+            }
+
+            if (tabId === 'study') renderStudyTables();
+            else if (tabId === 'flashcards') prepareAndRenderFlashcards();
+            else if (tabId === 'builder') renderBuilder();
+        }
+
+        function gcd(a, b) {
+            return b === 0 ? a : gcd(b, a % b);
+        }
+
+        function formatChemicalSubscript(text) {
+            return text.replace(/(\d+)/g, '<sub>$1</sub>');
+        }
+
+        function renderStudyTables() {
+            const searchQuery = (document.getElementById('study-search')?.value || '').trim().toLowerCase();
+            const filterType = document.getElementById('study-filter')?.value || 'all';
+
+            const cationContainer = document.getElementById('container-cations');
+            const anionContainer = document.getElementById('container-anions');
+
+            if (filterType === 'cation') {
+                cationContainer?.classList.remove('hidden');
+                anionContainer?.classList.add('hidden');
+            } else if (filterType === 'anion') {
+                cationContainer?.classList.add('hidden');
+                anionContainer?.classList.remove('hidden');
+            } else {
+                cationContainer?.classList.remove('hidden');
+                anionContainer?.classList.remove('hidden');
+            }
+
+            const cationBody = document.getElementById('cation-table-body');
+            if (cationBody) {
+                const filteredCations = CATIONS.filter(item => {
+                    const matchesSearch = item.name.toLowerCase().includes(searchQuery) || item.formula.toLowerCase().includes(searchQuery) || item.id.toLowerCase().includes(searchQuery);
+                    const matchesFilter = filterType === 'colored' ? item.color !== '無色' : true;
+                    return matchesSearch && matchesFilter;
+                });
+
+                cationBody.innerHTML = filteredCations.map(c => `
+                    <tr class="hover:bg-blue-50/30 transition">
+                        <td class="p-3"><span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-0.5 rounded-md">${c.charge}+</span></td>
+                        <td class="p-3 font-semibold text-slate-800">${c.name}</td>
+                        <td class="p-3 font-bold text-blue-700">${c.formula}</td>
+                        <td class="p-3 text-xs font-medium ${c.color !== '無色' ? 'text-amber-600 font-bold' : 'text-slate-500'}">${c.color}</td>
+                    </tr>
+                `).join('') || `<tr><td colspan="4" class="p-4 text-center text-xs text-slate-400">未找到符合條件的陽離子</td></tr>`;
+            }
+
+            const anionBody = document.getElementById('anion-table-body');
+            if (anionBody) {
+                const filteredAnions = ANIONS.filter(item => {
+                    const matchesSearch = item.name.toLowerCase().includes(searchQuery) || item.formula.toLowerCase().includes(searchQuery) || item.id.toLowerCase().includes(searchQuery);
+                    const matchesFilter = filterType === 'colored' ? item.color !== '無色' : true;
+                    return matchesSearch && matchesFilter;
+                });
+
+                anionBody.innerHTML = filteredAnions.map(a => `
+                    <tr class="hover:bg-pink-50/30 transition">
+                        <td class="p-3"><span class="bg-pink-100 text-pink-800 text-xs font-bold px-2 py-0.5 rounded-md">${a.charge}-</span></td>
+                        <td class="p-3 font-semibold text-slate-800">${a.name}</td>
+                        <td class="p-3 font-bold text-pink-700">${a.formula}</td>
+                        <td class="p-3 text-xs font-medium ${a.color !== '無色' ? 'text-amber-600 font-bold' : 'text-slate-500'}">${a.color}</td>
+                    </tr>
+                `).join('') || `<tr><td colspan="4" class="p-4 text-center text-xs text-slate-400">未找到符合條件的陰離子</td></tr>`;
+            }
+        }
+
+        let flashcardIndex = 0;
+        let flashcardCategoryFilter = 'all';
+        let isFlashcardRandom = false;
+        let flashcardList = [...ALL_IONS];
+
+        let selectedCation = CATIONS.find(c => c.id === 'NH4') || CATIONS[0]; 
+        let selectedAnion = ANIONS.find(a => a.id === 'SO4') || ANIONS[0];   
+
+        function setFlashcardFilter(filterMode) {
+            flashcardCategoryFilter = filterMode;
+            ['all', 'cation', 'anion', 'compound', 'color'].forEach(m => {
+                const btn = document.getElementById(`fc-filter-${m}`);
+                if (btn) {
+                    if (m === filterMode) {
+                        btn.className = "px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white shadow-sm";
+                    } else {
+                        btn.className = "px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200";
+                    }
+                }
+            });
+
+            prepareAndRenderFlashcards();
+        }
+
+        function toggleFlashcardRandom() {
+            const toggle = document.getElementById('fc-random-toggle');
+            isFlashcardRandom = toggle ? toggle.checked : false;
+            prepareAndRenderFlashcards();
+        }
+
+        function prepareAndRenderFlashcards() {
+            let baseList = [];
+            if (flashcardCategoryFilter === 'all') baseList = [...ALL_IONS, ...COMPOUND_CARDS];
+            else if (flashcardCategoryFilter === 'cation') baseList = CATIONS.map(i => ({...i, type: 'cation'}));
+            else if (flashcardCategoryFilter === 'anion') baseList = ANIONS.map(i => ({...i, type: 'anion'}));
+            else if (flashcardCategoryFilter === 'compound') baseList = [...COMPOUND_CARDS];
+            else if (flashcardCategoryFilter === 'color') baseList = ALL_IONS.filter(i => i.color !== '無色');
+
+            if (isFlashcardRandom) {
+                flashcardList = [...baseList].sort(() => Math.random() - 0.5);
+            } else {
+                flashcardList = [...baseList];
+            }
+
+            flashcardIndex = 0;
+            renderFlashcard();
+        }
+
+        function renderFlashcard() {
+            if (flashcardList.length === 0) return;
+            const card = flashcardList[flashcardIndex];
+            
+            document.getElementById('flashcard-inner').parentElement.classList.remove('flipped');
+
+            setTimeout(() => {
+                const typeTag = document.getElementById('fc-type-tag');
+                if (card.type === 'cation') {
+                    typeTag.innerText = '陽離子 (Cation)';
+                    typeTag.className = 'text-xs font-bold text-blue-600 uppercase';
+                } else if (card.type === 'anion') {
+                    typeTag.innerText = '陰離子 (Anion)';
+                    typeTag.className = 'text-xs font-bold text-pink-600 uppercase';
+                } else {
+                    typeTag.innerText = '離子化合物 (Ionic Compound)';
+                    typeTag.className = 'text-xs font-bold text-emerald-600 uppercase';
+                }
+                
+                document.getElementById('fc-front-main').innerHTML = card.formula;
+                
+                document.getElementById('fc-back-type').innerText = card.type === 'compound' ? '化合物詳情' : (card.type === 'cation' ? '陽離子詳情' : '陰離子詳情');
+                document.getElementById('fc-back-name').innerText = card.name;
+                document.getElementById('fc-back-formula').innerHTML = card.formula;
+                document.getElementById('fc-back-charge').innerText = card.type === 'compound' ? `組成比例: ${card.charge}` : `帶電荷數: ${card.charge}${card.type === 'cation' ? '+' : '-'}`;
+                document.getElementById('fc-back-color').innerText = `水溶液顏色: ${card.color}`;
+
+                document.getElementById('fc-progress').innerText = `${flashcardIndex + 1} / ${flashcardList.length}`;
+            }, 150);
+        }
+
+        function toggleCardFlip() {
+            document.getElementById('flashcard-inner').parentElement.classList.toggle('flipped');
+        }
+
+        function nextFlashcard() {
+            flashcardIndex = (flashcardIndex + 1) % flashcardList.length;
+            renderFlashcard();
+        }
+
+        function prevFlashcard() {
+            flashcardIndex = (flashcardIndex - 1 + flashcardList.length) % flashcardList.length;
+            renderFlashcard();
+        }
+
+        function renderBuilder() {
+            const cationListEl = document.getElementById('builder-cation-list');
+            if (cationListEl) {
+                cationListEl.innerHTML = CATIONS.map(c => `
+                    <button onclick="selectCation('${c.id}')" class="p-2 border ${selectedCation.id === c.id ? 'border-blue-600 bg-blue-50 text-blue-700 font-bold' : 'border-slate-200 text-slate-700 hover:border-slate-300'} rounded-lg text-xs transition flex flex-col items-center justify-center">
+                        <span class="text-sm font-black">${c.formula}</span>
+                        <span class="text-[11px] opacity-80">${c.name}</span>
+                    </button>
+                `).join('');
+            }
+
+            const anionListEl = document.getElementById('builder-anion-list');
+            if (anionListEl) {
+                anionListEl.innerHTML = ANIONS.map(a => `
+                    <button onclick="selectAnion('${a.id}')" class="p-2 border ${selectedAnion.id === a.id ? 'border-pink-600 bg-pink-50 text-pink-700 font-bold' : 'border-slate-200 text-slate-700 hover:border-slate-300'} rounded-lg text-xs transition flex flex-col items-center justify-center">
+                        <span class="text-sm font-black">${a.formula}</span>
+                        <span class="text-[11px] opacity-80">${a.name}</span>
+                    </button>
+                `).join('');
+            }
+
+            calculateCrossoverCompound(selectedCation, selectedAnion);
+        }
+
+        function selectCation(id) {
+            const cat = CATIONS.find(c => c.id === id);
+            if (cat) {
+                selectedCation = cat;
+                renderBuilder();
+            }
+        }
+
+        function selectAnion(id) {
+            const ani = ANIONS.find(a => a.id === id);
+            if (ani) {
+                selectedAnion = ani;
+                renderBuilder();
+            }
+        }
+
+        function calculateCrossoverCompound(cation, anion) {
+            const cCharge = cation.charge;
+            const aCharge = anion.charge;
+
+            function formatIonDisplayFormula(ion) {
+                if (ion.poly) {
+                    return formatChemicalSubscript(ion.simpleFormula);
+                }
+                return ion.simpleFormula;
+            }
+
+            const catFormattedSymbol = formatIonDisplayFormula(cation);
+            const aniFormattedSymbol = formatIonDisplayFormula(anion);
+
+            document.getElementById('co-cat-symbol').innerHTML = catFormattedSymbol;
+            document.getElementById('co-cat-charge-num').innerText = `${cCharge}+`;
+            document.getElementById('co-cat-res-sym').innerHTML = catFormattedSymbol;
+
+            document.getElementById('co-ani-symbol').innerHTML = aniFormattedSymbol;
+            document.getElementById('co-ani-charge-num').innerText = `${aCharge}-`;
+            document.getElementById('co-ani-res-sym').innerHTML = aniFormattedSymbol;
+
+            const common = gcd(cCharge, aCharge);
+            const cationRatio = aCharge / common; 
+            const anionRatio = cCharge / common;  
+
+            document.getElementById('co-cat-res-sub').innerText = cationRatio;
+            document.getElementById('co-ani-res-sub').innerText = anionRatio;
+
+            let needCationBracket = cation.poly && cationRatio > 1;
+            let needAnionBracket = anion.poly && anionRatio > 1;
+
+            let catPart = cation.simpleFormula;
+            if (cationRatio > 1) {
+                catPart = needCationBracket ? `(${cation.simpleFormula})${cationRatio}` : `${cation.simpleFormula}${cationRatio}`;
+            }
+
+            let aniPart = anion.simpleFormula;
+            if (anionRatio > 1) {
+                aniPart = needAnionBracket ? `(${anion.simpleFormula})${anionRatio}` : `${anion.simpleFormula}${anionRatio}`;
+            }
+
+            const rawFormula = catPart + aniPart;
+            const formattedHTMLFormula = formatChemicalSubscript(rawFormula);
+
+            document.getElementById('builder-result-formula').innerHTML = formattedHTMLFormula;
+
+            let catCleanName = cation.name.replace('離子', '').trim();
+            let aniCleanName = anion.name.replace('離子', '').trim();
+            
+            if(aniCleanName.endsWith('根')) {
+                aniCleanName = aniCleanName.substring(0, aniCleanName.length - 1);
+            }
+            if(!aniCleanName.endsWith('化') && !aniCleanName.endsWith('酸') && !aniCleanName.endsWith('氰')) {
+                aniCleanName = aniCleanName + '化';
+            }
+
+            const finalName = `${aniCleanName}${catCleanName}`;
+            document.getElementById('builder-result-name').innerText = finalName;
+
+            renderElectronDiagram(cation, anion, cationRatio, anionRatio);
+
+            const bracketBox = document.getElementById('bracket-warning-box');
+            const bracketReason = document.getElementById('bracket-warning-reason');
+
+            if (needCationBracket || needAnionBracket) {
+                bracketBox.classList.remove('hidden');
+                let reasonText = '';
+                if (needCationBracket && needAnionBracket) {
+                    reasonText = `<b>${cation.name} (${cation.simpleFormula})</b> 與 <b>${anion.name} (${anion.simpleFormula})</b> 均為多原子團離子。由於兩者配對莫耳數均大於 1，故兩者皆必須加括號！例如化學式寫為 <b>${formattedHTMLFormula}</b>。`;
+                } else if (needCationBracket) {
+                    reasonText = `<b>${cation.name} (${cation.simpleFormula})</b> 屬於多原子離子。當需要 ${cationRatio} 個離子時，必須寫成 <b>(${cation.simpleFormula})<sub>${cationRatio}</sub></b>，若不加括號會造成化學元素數量誤解。`;
+                } else {
+                    reasonText = `<b>${anion.name} (${anion.simpleFormula})</b> 屬於多原子離子。當需要 ${anionRatio} 個離子時，必須寫成 <b>(${anion.simpleFormula})<sub>${anionRatio}</sub></b>，若寫成 ${anion.simpleFormula}${anionRatio} 就會混淆氧/元素原子的數量！`;
+                }
+                bracketReason.innerHTML = reasonText;
+            } else {
+                bracketBox.classList.add('hidden');
+            }
+
+            document.getElementById('builder-explanation').innerText = 
+                `${cation.name} (${cCharge}+) × ${cationRatio}  +  ${anion.name} (${aCharge}-) × ${anionRatio}  ➔ 電荷完全中和 (0)`;
+
+            let predictedColor = "無色溶液";
+            if (cation.color !== "無色" && anion.color !== "無色") {
+                predictedColor = `${cation.color} 與 ${anion.color} 的混合/主要顯色`;
+            } else if (cation.color !== "無色") {
+                predictedColor = `${cation.color} (來自 ${cation.name})`;
+            } else if (anion.color !== "無色") {
+                predictedColor = `${anion.color} (來自 ${anion.name})`;
+            }
+            
+            const colorEl = document.getElementById('builder-result-color');
+            colorEl.innerText = predictedColor;
+            colorEl.className = predictedColor !== "無色溶液" ? "text-sm font-bold text-amber-600 mt-1" : "text-sm font-bold text-emerald-600 mt-1";
+        }
+
+        function renderElectronDiagram(cation, anion, catRatio, aniRatio) {
+            const container = document.getElementById('electron-diagram-display');
+            const noteEl = document.getElementById('electron-diagram-note');
+
+            if (cation.poly || anion.poly) {
+                container.innerHTML = `
+                    <div class="py-6 text-center space-y-2">
+                        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-100 text-amber-600 mb-1">
+                            <i class="fa-solid fa-ban text-xl"></i>
+                        </div>
+                        <div class="text-sm font-bold text-slate-800">此化合物含有多原子離子 (${cation.poly ? cation.name : anion.name})</div>
+                        <p class="text-xs text-slate-500 max-w-md mx-auto">
+                            根據 HKDSE 化學科課程指引，多原子離子（如 NH₄⁺, SO₄²⁻, NO₃⁻, OH⁻ 等）的電子結構圖較複雜且涉及共價/配位鍵，<br>
+                            <span class="font-bold text-amber-600">不屬於 DSE 必修繪圖考核範圍</span>。請著重掌握其化學式與電荷配對推導！
+                        </p>
+                    </div>
+                `;
+                noteEl.innerHTML = `<b>提示：</b>DSE 考核繪畫電子結構圖 (Dot-and-Cross diagram) 只限於單原子離子形成的簡單離子化合物（如 K₂O, MgCl₂, Al₂O₃）。`;
+                return;
+            }
+
+            let svgContent = `<svg viewBox="0 0 520 180" class="max-w-full h-44 font-sans">`;
+            svgContent += renderMonoatomicCationSVG(cation.simpleFormula, cation.charge, catRatio, 30, 10);
+            svgContent += renderMonoatomicAnionSVG(anion.simpleFormula, anion.charge, aniRatio, cation.charge, 270, 10);
+            svgContent += `</svg>`;
+
+            container.innerHTML = svgContent;
+            noteEl.innerHTML = `<b>HKDSE 格式規範：</b>金屬陽離子以方括號 [ ] 標示電荷，外層不繪畫電子；非金屬陰離子繪畫最外層 8 電子，以點 (•) 代表原價電子，叉 (x) 代表接收自陽離子的電子。`;
+        }
+
+        function renderMonoatomicCationSVG(symbol, charge, ratio, startX, startY) {
+            const chargeStr = charge > 1 ? `${charge}+` : '+';
+            const coefStr = ratio > 1 ? `<text x="15" y="98" font-size="26" font-weight="extrabold" fill="#1e293b" text-anchor="middle">${ratio}</text>` : '';
+            const bracketShift = ratio > 1 ? 25 : 0;
+
+            return `
+                <g transform="translate(${startX + bracketShift}, ${startY})">
+                    ${coefStr}
+                    <path d="M 50 25 L 35 25 L 35 145 L 50 145" stroke="#1e293b" stroke-width="2.5" fill="none" stroke-linecap="square"/>
+                    <text x="90" y="94" font-size="26" font-weight="extrabold" text-anchor="middle" fill="#0f172a">${symbol}</text>
+                    <path d="M 130 25 L 145 25 L 145 145 L 130 145" stroke="#1e293b" stroke-width="2.5" fill="none" stroke-linecap="square"/>
+                    <text x="152" y="42" font-size="20" font-weight="extrabold" fill="#0f172a">${chargeStr}</text>
+                </g>
+            `;
+        }
+
+        function renderMonoatomicAnionSVG(symbol, charge, ratio, cationCharge, startX, startY) {
+            const chargeStr = charge > 1 ? `${charge}-` : '-';
+            const coefStr = ratio > 1 ? `<text x="15" y="98" font-size="26" font-weight="extrabold" fill="#1e293b" text-anchor="middle">${ratio}</text>` : '';
+            const bracketShift = ratio > 1 ? 25 : 0;
+
+            let dotsHtml = '';
+            
+            if (charge === 1) {
+                dotsHtml += drawPairDots(90, 48, 'horizontal');
+                dotsHtml += drawPairDots(90, 122, 'horizontal');
+                dotsHtml += drawPairDots(53, 85, 'vertical');
+                dotsHtml += drawDot(127, 80, '#0f172a') + drawCross(127, 90, '#0f172a');
+            } else if (charge === 2) {
+                dotsHtml += drawPairDots(53, 85, 'vertical');
+                dotsHtml += drawPairCrosses(90, 48, 'horizontal');
+                dotsHtml += drawPairCrosses(90, 122, 'horizontal');
+                dotsHtml += drawPairCrosses(127, 85, 'vertical');
+            } else if (charge === 3) {
+                dotsHtml += drawPairDots(53, 85, 'vertical');
+                dotsHtml += drawPairCrosses(90, 48, 'horizontal');
+                dotsHtml += drawPairDots(127, 85, 'vertical');
+                dotsHtml += drawDot(85, 122, '#0f172a') + drawCross(95, 122, '#0f172a');
+            }
+
+            return `
+                <g transform="translate(${startX + bracketShift}, ${startY})">
+                    ${coefStr}
+                    <path d="M 35 25 L 20 25 L 20 145 L 35 145" stroke="#1e293b" stroke-width="2.5" fill="none" stroke-linecap="square"/>
+                    <circle cx="90" cy="85" r="37" stroke="#38bdf8" stroke-width="2.5" fill="none"/>
+                    <text x="90" y="93" font-size="24" font-weight="extrabold" text-anchor="middle" fill="#0f172a">${symbol}</text>
+                    ${dotsHtml}
+                    <path d="M 145 25 L 160 25 L 160 145 L 145 145" stroke="#1e293b" stroke-width="2.5" fill="none" stroke-linecap="square"/>
+                    <text x="167" y="42" font-size="20" font-weight="extrabold" fill="#0f172a">${chargeStr}</text>
+                </g>
+            `;
+        }
+
+        function drawDot(cx, cy, fill = '#0f172a') {
+            return `<circle cx="${cx}" cy="${cy}" r="3" fill="${fill}"/>`;
+        }
+
+        function drawCross(cx, cy, stroke = '#0f172a') {
+            return `<path d="M ${cx-3.5} ${cy-3.5} L ${cx+3.5} ${cy+3.5} M ${cx+3.5} ${cy-3.5} L ${cx-3.5} ${cy+3.5}" stroke="${stroke}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`;
+        }
+
+        function drawPairDots(cx, cy, orientation) {
+            if (orientation === 'horizontal') {
+                return drawDot(cx - 5, cy) + drawDot(cx + 5, cy);
+            } else {
+                return drawDot(cx, cy - 5) + drawDot(cx, cy + 5);
+            }
+        }
+
+        function drawPairCrosses(cx, cy, orientation) {
+            if (orientation === 'horizontal') {
+                return drawCross(cx - 5, cy) + drawCross(cx + 5, cy);
+            } else {
+                return drawCross(cx, cy - 5) + drawCross(cx, cy + 5);
+            }
+        }
+
+        function exitQuizToSetup() {
+            document.getElementById('quiz-active-card').classList.add('hidden');
+            document.getElementById('quiz-setup-card').classList.remove('hidden');
+        }
+
+        function setQuizCategory(cat) {
+            quizCategory = cat;
+            document.querySelectorAll('.quiz-cat-btn').forEach(btn => {
+                btn.className = "quiz-cat-btn p-3 border border-slate-200 hover:border-slate-300 rounded-xl font-bold text-xs sm:text-sm text-slate-700 text-center col-span-1";
+            });
+            const activeBtn = document.getElementById(`cat-btn-${cat}`);
+            if (activeBtn) {
+                activeBtn.className = "quiz-cat-btn p-3 border-2 border-indigo-600 bg-indigo-50 text-indigo-700 rounded-xl font-bold text-xs sm:text-sm text-center col-span-1";
+            }
+        }
+
+        function getCompoundPairData() {
+            const randCat = CATIONS[Math.floor(Math.random() * CATIONS.length)];
+            const randAni = ANIONS[Math.floor(Math.random() * ANIONS.length)];
+            
+            const cCharge = randCat.charge;
+            const aCharge = randAni.charge;
+            const common = gcd(cCharge, aCharge);
+            const cRatio = aCharge / common;
+            const aRatio = cCharge / common;
+
+            let catP = randCat.simpleFormula;
+            if (cRatio > 1) catP = randCat.poly ? `(${randCat.simpleFormula})${cRatio}` : `${randCat.simpleFormula}${cRatio}`;
+
+            let aniP = randAni.simpleFormula;
+            if (aRatio > 1) aniP = randAni.poly ? `(${randAni.simpleFormula})${aRatio}` : `${randAni.simpleFormula}${aRatio}`;
+
+            const correctFormula = formatChemicalSubscript(catP + aniP);
+
+            let catCleanName = randCat.name.replace('離子', '').trim();
+            let aniCleanName = randAni.name.replace('離子', '').trim();
+            if (aniCleanName.endsWith('根')) aniCleanName = aniCleanName.substring(0, aniCleanName.length - 1);
+            if (!aniCleanName.endsWith('化') && !aniCleanName.endsWith('酸') && !aniCleanName.endsWith('氰')) aniCleanName += '化';
+            const correctName = `${aniCleanName}${catCleanName}`;
+
+            return { randCat, randAni, cRatio, aRatio, cCharge, aCharge, correctFormula, correctName };
+        }
+
+        function startQuiz() {
+            const countInput = document.querySelector('input[name="quiz-count"]:checked');
+            const questionCount = countInput ? parseInt(countInput.value) : 5;
+
+            quizQuestions = [];
+            currentQuizIndex = 0;
+            quizScore = 0;
+
+            const badgeEl = document.getElementById('quiz-badge');
+
+            if (quizCategory === 'cation') {
+                if (badgeEl) badgeEl.innerText = "陽離子測試";
+                const pool = shuffleArray([...CATIONS]);
+                for (let i = 0; i < Math.min(questionCount, pool.length); i++) {
+                    const item = pool[i];
+                    const options = generateOptions(item.name, CATIONS.map(c => c.name));
+                    quizQuestions.push({
+                        title: "請選出以下化學式對應的陽離子名稱：",
+                        main: item.formula,
+                        correctAnswer: item.name,
+                        options: options
+                    });
+                }
+            } else if (quizCategory === 'anion') {
+                if (badgeEl) badgeEl.innerText = "陰離子測試";
+                const pool = shuffleArray([...ANIONS]);
+                for (let i = 0; i < Math.min(questionCount, pool.length); i++) {
+                    const item = pool[i];
+                    const options = generateOptions(item.formula, ANIONS.map(a => a.formula));
+                    quizQuestions.push({
+                        title: "請選出以下離子名稱對應的化學式：",
+                        main: item.name,
+                        correctAnswer: item.formula,
+                        options: options
+                    });
+                }
+            } else if (quizCategory === 'color') {
+                if (badgeEl) badgeEl.innerText = "離子顏色測試";
+                const colorPool = ALL_IONS.filter(i => i.color !== '無色');
+                const pool = shuffleArray([...colorPool]);
+                for (let i = 0; i < Math.min(questionCount, pool.length); i++) {
+                    const item = pool[i];
+                    const options = generateOptions(item.color, [...new Set(ALL_IONS.map(i => i.color))]);
+                    quizQuestions.push({
+                        title: "請選出此離子在水溶液中的特有顏色：",
+                        main: `${item.name} (${item.formula})`,
+                        correctAnswer: item.color,
+                        options: options
+                    });
+                }
+            } else if (quizCategory === 'compound-formula') {
+                if (badgeEl) badgeEl.innerText = "化合物化學式測試";
+                for (let i = 0; i < questionCount; i++) {
+                    const { randCat, randAni, cRatio, aRatio, cCharge, aCharge, correctFormula, correctName } = getCompoundPairData();
+
+                    const dummyFormulas = [
+                        formatChemicalSubscript(randCat.simpleFormula + randAni.simpleFormula),
+                        formatChemicalSubscript(randCat.simpleFormula + (cRatio > 1 ? cRatio : '') + randAni.simpleFormula + (aRatio > 1 ? aRatio : '')),
+                        formatChemicalSubscript((randCat.poly ? `(${randCat.simpleFormula})` : randCat.simpleFormula) + aCharge + (randAni.poly ? `(${randAni.simpleFormula})` : randAni.simpleFormula) + cCharge)
+                    ];
+
+                    quizQuestions.push({
+                        title: `請選出 「${correctName}」 的正確化學式：`,
+                        main: `${randCat.name} + ${randAni.name}`,
+                        correctAnswer: correctFormula,
+                        options: shuffleArray([correctFormula, ...dummyFormulas.slice(0, 3)])
+                    });
+                }
+            } else if (quizCategory === 'compound-name') {
+                if (badgeEl) badgeEl.innerText = "化合物名稱測試";
+                for (let i = 0; i < questionCount; i++) {
+                    const { randCat, randAni, correctFormula, correctName } = getCompoundPairData();
+
+                    const otherCats = CATIONS.filter(c => c.id !== randCat.id);
+                    const otherAnis = ANIONS.filter(a => a.id !== randAni.id);
+                    
+                    function buildName(c, a) {
+                        let cName = c.name.replace('離子', '').trim();
+                        let aName = a.name.replace('離子', '').trim();
+                        if (aName.endsWith('根')) aName = aName.substring(0, aName.length - 1);
+                        if (!aName.endsWith('化') && !aName.endsWith('酸') && !aName.endsWith('氰')) aName += '化';
+                        return `${aName}${cName}`;
+                    }
+
+                    const dummyNames = [
+                        buildName(otherCats[Math.floor(Math.random() * otherCats.length)], randAni),
+                        buildName(randCat, otherAnis[Math.floor(Math.random() * otherAnis.length)]),
+                        buildName(otherCats[Math.floor(Math.random() * otherCats.length)], otherAnis[Math.floor(Math.random() * otherAnis.length)])
+                    ];
+
+                    quizQuestions.push({
+                        title: "請選出以下化學式對應的化合物中文名稱：",
+                        main: correctFormula,
+                        correctAnswer: correctName,
+                        options: shuffleArray([correctName, ...dummyNames])
+                    });
+                }
+            }
+
+            document.getElementById('quiz-setup-card').classList.add('hidden');
+            document.getElementById('quiz-active-card').classList.remove('hidden');
+
+            renderQuizQuestion();
+        }
+
+        function generateOptions(correct, allOptions) {
+            const set = new Set([correct]);
+            while(set.size < 4 && set.size < allOptions.length) {
+                const randomOpt = allOptions[Math.floor(Math.random() * allOptions.length)];
+                set.add(randomOpt);
+            }
+            return shuffleArray(Array.from(set));
+        }
+
+        function shuffleArray(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        function renderQuizQuestion() {
+            const q = quizQuestions[currentQuizIndex];
+            document.getElementById('quiz-progress-text').innerText = `題目 ${currentQuizIndex + 1} / ${quizQuestions.length}`;
+            document.getElementById('quiz-question-title').innerText = q.title;
+            document.getElementById('quiz-question-main').innerHTML = q.main;
+
+            const feedbackEl = document.getElementById('quiz-feedback');
+            feedbackEl.classList.add('hidden');
+
+            const optionsContainer = document.getElementById('quiz-options-container');
+            
+            optionsContainer.innerHTML = q.options.map((opt) => `
+                <button onclick="checkAnswer(this, \`${escapeJsString(opt)}\`)" class="quiz-opt-btn p-4 border-2 border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/50 rounded-xl font-bold text-slate-800 transition text-center text-base flex items-center justify-center min-h-[60px]">
+                    ${opt}
+                </button>
+            `).join('');
+        }
+
+        function escapeJsString(str) {
+            return str.replace(/`/g, '\\`').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+
+        function checkAnswer(btn, selected) {
+            const q = quizQuestions[currentQuizIndex];
+            const feedbackEl = document.getElementById('quiz-feedback');
+            const feedbackText = document.getElementById('quiz-feedback-text');
+
+            document.querySelectorAll('.quiz-opt-btn').forEach(b => b.disabled = true);
+
+            if(selected === q.correctAnswer) {
+                quizScore++;
+                btn.className = "quiz-opt-btn p-4 border-2 border-emerald-500 bg-emerald-50 text-emerald-800 rounded-xl font-bold text-center text-base min-h-[60px]";
+                feedbackEl.className = "p-4 rounded-xl text-sm font-semibold flex items-center justify-between bg-emerald-100 text-emerald-800";
+                feedbackText.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 text-lg mr-2"></i> 答對了！太棒了！`;
+            } else {
+                btn.className = "quiz-opt-btn p-4 border-2 border-rose-500 bg-rose-50 text-rose-800 rounded-xl font-bold text-center text-base min-h-[60px]";
+                feedbackEl.className = "p-4 rounded-xl text-sm font-semibold flex items-center justify-between bg-rose-100 text-rose-800";
+                feedbackText.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-600 text-lg mr-2"></i> 答錯了！正確答案是：<strong class="ml-1">${q.correctAnswer}</strong>`;
+            }
+
+            feedbackEl.classList.remove('hidden');
+        }
+
+        function nextQuizQuestion() {
+            currentQuizIndex++;
+            if(currentQuizIndex < quizQuestions.length) {
+                renderQuizQuestion();
+            } else {
+                showQuizSummary();
+            }
+        }
+
+        function showQuizSummary() {
+            document.getElementById('quiz-active-card').classList.add('hidden');
+            document.getElementById('quiz-result-card').classList.remove('hidden');
+
+            const percentage = Math.round((quizScore / quizQuestions.length) * 100);
+            document.getElementById('quiz-score-num').innerText = `${percentage}%`;
+            document.getElementById('quiz-score-detail').innerText = `答對 ${quizScore} 題 / 共 ${quizQuestions.length} 題`;
+        }
+
+        function resetQuiz() {
+            document.getElementById('quiz-result-card').classList.add('hidden');
+            document.getElementById('quiz-setup-card').classList.remove('hidden');
+        }
+
+        window.onload = function() {
+            renderStudyTables();
+        };
+    </script>
+</body>
+</html>
