@@ -390,6 +390,46 @@
   .file-meta { font-size: 0.86rem; }
   .file-meta strong { display: block; color: #065f46; word-break: break-all; }
   .file-meta span { color: #047857; font-size: 0.78rem; }
+  .batch-list {
+    display: none;
+    margin-top: 12px;
+    border: 1px solid #a7f3d0;
+    background: #f0fdf4;
+    border-radius: 12px;
+    padding: 10px 12px;
+    text-align: left;
+    max-height: 220px;
+    overflow-y: auto;
+  }
+  .batch-list.show { display: block; }
+  .batch-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 4px;
+    border-bottom: 1px dashed #bbf7d0;
+    font-size: 0.83rem;
+  }
+  .batch-row:last-child { border-bottom: none; }
+  .batch-results {
+    display: none;
+    margin-top: 10px;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .batch-results.show { display: flex; }
+  .batch-res-item {
+    background: #fff;
+    border: 1px solid #a7f3d0;
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
 
   /* URL Preview */
   .url-preview {
@@ -729,14 +769,14 @@
     </div>
     <div class="sync-strip">
       <div class="sync-meta">
-        <span id="syncStatusText">🟢 雲端實時同步中（上次同步 16:02:10）</span>
+        <span id="syncStatusText">🟢 雲端實時同步中（上次同步 16:55:50）</span>
         <label class="switch-label">
           <input type="checkbox" id="chkAutoSync" checked="">
           <span>每 15 秒自動同步</span>
         </label>
       </div>
       <div class="sync-meta">
-        <span id="libraryStatsText">共 1 份教材 • 6 個資料夾</span>
+        <span id="libraryStatsText">共 2 份教材 • 6 個資料夾</span>
       </div>
     </div>
   </header>
@@ -790,10 +830,10 @@
 
       <div id="srcFileArea">
         <div class="dropzone" id="dropzone">
-          <input type="file" id="fileInput" accept=".html,.htm,text/html" class="hidden">
+          <input type="file" id="fileInput" accept=".html,.htm,text/html" multiple="" class="hidden">
           <div class="dropzone-icon">📄</div>
-          <div class="dropzone-title">點擊揀選 .html 檔，或直接拖放至此</div>
-          <div class="dropzone-sub">支援由 Gemini Canvas 下載的互動教材，會自動套用原檔名</div>
+          <div class="dropzone-title">點擊揀選一個或多個 .html 檔，或直接全部拖放至此</div>
+          <div class="dropzone-sub">支援單檔及「一次批量上載多個 .html」，每份均自動套用原本檔名</div>
           <div class="file-chip" id="fileChip">
             <div class="file-meta">
               <strong id="fileChipName"></strong>
@@ -801,6 +841,7 @@
             </div>
             <button type="button" class="btn btn-outline btn-sm" id="btnClearFile">重新選擇</button>
           </div>
+          <div class="batch-list" id="batchFileList"></div>
         </div>
       </div>
 
@@ -845,7 +886,14 @@
         <span>✅ 已發布並同步至雲端教材庫</span>
         <span class="badge success">iOS &amp; Android 通用</span>
       </div>
-      <div class="result-grid">
+      <div id="batchResultsWrap" class="hidden">
+        <div class="action-row" style="margin-bottom:10px;">
+          <button type="button" class="btn btn-primary btn-sm" id="btnCopyAllBatch">📋 一鍵複製全部網址清單（含檔名）</button>
+          <a href="#" target="_blank" rel="noopener" class="btn btn-whatsapp btn-sm" id="btnShareWaBatch">💬 WhatsApp 一次分享全部</a>
+        </div>
+        <div class="batch-results show" id="batchResultsList"></div>
+      </div>
+      <div class="result-grid" id="singleResultGrid">
         <div>
           <div style="font-weight:800;font-size:1rem;margin-bottom:6px;" id="resultTitleDisplay"></div>
           <div class="live-url-box" id="liveUrlText"></div>
@@ -881,7 +929,7 @@
       </div>
 
       <!-- Folder Filter Pills -->
-      <div class="folder-bar" id="folderBar"><button type="button" class="folder-pill active"><span>全部教材</span><span class="folder-count">1</span></button><button type="button" class="folder-pill"><span>📁 中三</span><span class="folder-count">0</span></button><button type="button" class="folder-pill"><span>📁 中四</span><span class="folder-count">0</span></button><button type="button" class="folder-pill"><span>📁 中五</span><span class="folder-count">0</span></button><button type="button" class="folder-pill"><span>📁 中六</span><span class="folder-count">0</span></button><button type="button" class="folder-pill"><span>📁 互動遊戲</span><span class="folder-count">0</span></button><button type="button" class="folder-pill"><span>📁 未分類</span><span class="folder-count">1</span></button></div>
+      <div class="folder-bar" id="folderBar"><button type="button" class="folder-pill active"><span>全部教材</span><span class="folder-count">2</span></button><button type="button" class="folder-pill"><span>📁 中三</span><span class="folder-count">0</span></button><button type="button" class="folder-pill"><span>📁 中四</span><span class="folder-count">0</span></button><button type="button" class="folder-pill"><span>📁 中五</span><span class="folder-count">0</span></button><button type="button" class="folder-pill"><span>📁 中六</span><span class="folder-count">0</span></button><button type="button" class="folder-pill"><span>📁 互動遊戲</span><span class="folder-count">0</span></button><button type="button" class="folder-pill"><span>📁 未分類</span><span class="folder-count">2</span></button></div>
 
       <!-- Search & Sort Toolbar -->
       <div class="library-toolbar">
@@ -1124,6 +1172,8 @@
     sourceMode: 'file',
     fileName: '',
     fileContent: '',
+    batchFiles: [],
+    lastBatchResults: [],
     zipFileName: '',
     zipFileContent: '',
     lastPublishedUrl: '',
@@ -1900,7 +1950,55 @@
     return '📚 ' + (title || '互動教學平台') + '\n請點擊以下網址直接開啟互動平台（支援 iPhone / iPad / Android）：\n' + url;
   }
 
+  function showBatchResults(results) {
+    state.lastBatchResults = results;
+    document.getElementById('singleResultGrid').classList.add('hidden');
+    document.getElementById('batchResultsWrap').classList.remove('hidden');
+    const listEl = document.getElementById('batchResultsList');
+    listEl.innerHTML = '';
+
+    const summaryLines = results.map((r, i) => (i + 1) + '. ' + r.displayName + '\n' + r.url).join('\n\n');
+    document.getElementById('btnShareWaBatch').href = 'https://wa.me/?text=' + encodeURIComponent('📚 本次互動教學平台網址清單（支援 iPhone / iPad / Android）：\n\n' + summaryLines);
+
+    results.forEach(r => {
+      const row = document.createElement('div');
+      row.className = 'batch-res-item';
+      const left = document.createElement('div');
+      left.style.cssText = 'flex:1;min-width:190px;';
+      const t = document.createElement('div');
+      t.style.cssText = 'font-weight:800;font-size:0.9rem;color:#065f46;';
+      t.textContent = '📄 ' + r.displayName;
+      const u = document.createElement('div');
+      u.style.cssText = 'font-family:monospace;font-size:0.77rem;color:var(--primary);word-break:break-all;';
+      u.textContent = r.url;
+      left.appendChild(t);
+      left.appendChild(u);
+
+      const acts = document.createElement('div');
+      acts.className = 'action-row';
+      const bCopy = document.createElement('button');
+      bCopy.type = 'button'; bCopy.className = 'btn btn-primary btn-xs'; bCopy.textContent = '📋 複製';
+      bCopy.addEventListener('click', () => copyText(r.url));
+      const bQr = document.createElement('button');
+      bQr.type = 'button'; bQr.className = 'btn btn-outline btn-xs'; bQr.textContent = '📱 QR';
+      bQr.addEventListener('click', () => openQrModal(r.url, r.displayName));
+      const aOpen = document.createElement('a');
+      aOpen.href = r.url; aOpen.target = '_blank'; aOpen.rel = 'noopener';
+      aOpen.className = 'btn btn-outline btn-xs'; aOpen.textContent = '🔗 開啟';
+      acts.appendChild(bCopy); acts.appendChild(bQr); acts.appendChild(aOpen);
+
+      row.appendChild(left); row.appendChild(acts);
+      listEl.appendChild(row);
+    });
+
+    const card = document.getElementById('resultCard');
+    card.classList.add('show');
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
   function showResult(url, title) {
+    document.getElementById('batchResultsWrap').classList.add('hidden');
+    document.getElementById('singleResultGrid').classList.remove('hidden');
     state.lastPublishedUrl = url;
     state.lastPublishedTitle = title || '互動教學平台';
     document.getElementById('resultTitleDisplay').textContent = '📄 ' + state.lastPublishedTitle;
@@ -2096,33 +2194,116 @@
   /* =========================================================
      6. File Handling
      ========================================================= */
-  function handleSelectedFile(file, isZipMode) {
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(ev) {
-      const content = ev.target.result || '';
-      if (isZipMode) {
+  function renderBatchFileList() {
+    const box = document.getElementById('batchFileList');
+    const chip = document.getElementById('fileChip');
+    const pubBtn = document.getElementById('btnPublish');
+    const nameInput = document.getElementById('displayNameInput');
+    const slugInput = document.getElementById('slugInput');
+
+    if (state.batchFiles.length <= 1) {
+      box.classList.remove('show');
+      box.innerHTML = '';
+      nameInput.disabled = false;
+      slugInput.disabled = false;
+      pubBtn.textContent = '🚀 一鍵發布並同步到所有裝置';
+      if (state.batchFiles.length === 1) {
+        const f = state.batchFiles[0];
+        state.fileName = f.name;
+        state.fileContent = f.content;
+        const baseName = stripHtmlExt(f.name);
+        document.getElementById('fileChipName').textContent = f.name;
+        document.getElementById('fileChipSize').textContent = formatBytes(f.size) + ' • 已自動套用原檔名';
+        chip.classList.add('show');
+        nameInput.value = baseName;
+        slugInput.value = sanitizeSlug(baseName);
+      }
+      updateUrlPreview();
+      return;
+    }
+
+    chip.classList.remove('show');
+    nameInput.value = '（批量模式：每份教材自動沿用各自原檔名）';
+    slugInput.value = '（自動依原檔名生成獨立網址）';
+    nameInput.disabled = true;
+    slugInput.disabled = true;
+    pubBtn.textContent = '🚀 一鍵批量發布 ' + state.batchFiles.length + ' 份教材並生成 ' + state.batchFiles.length + ' 條網址';
+
+    box.innerHTML = '';
+    const hdr = document.createElement('div');
+    hdr.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-weight:800;color:#065f46;font-size:0.84rem;';
+    const hdrTxt = document.createElement('span');
+    hdrTxt.textContent = '📦 已揀選 ' + state.batchFiles.length + ' 份 .html 檔案（將一次過全部發布）';
+    const clearAllBtn = document.createElement('button');
+    clearAllBtn.type = 'button';
+    clearAllBtn.className = 'btn btn-outline btn-xs';
+    clearAllBtn.textContent = '全部清除';
+    clearAllBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      state.batchFiles = []; state.fileName = ''; state.fileContent = '';
+      document.getElementById('fileInput').value = '';
+      nameInput.value = ''; slugInput.value = '';
+      renderBatchFileList();
+    });
+    hdr.appendChild(hdrTxt);
+    hdr.appendChild(clearAllBtn);
+    box.appendChild(hdr);
+
+    state.batchFiles.forEach((f, idx) => {
+      const row = document.createElement('div');
+      row.className = 'batch-row';
+      const left = document.createElement('span');
+      left.textContent = (idx + 1) + '. ' + f.name + ' (' + formatBytes(f.size) + ')';
+      left.style.wordBreak = 'break-all';
+      const rm = document.createElement('button');
+      rm.type = 'button';
+      rm.className = 'btn btn-danger-outline btn-xs';
+      rm.textContent = '✕';
+      rm.addEventListener('click', (e) => {
+        e.stopPropagation();
+        state.batchFiles.splice(idx, 1);
+        renderBatchFileList();
+      });
+      row.appendChild(left);
+      row.appendChild(rm);
+      box.appendChild(row);
+    });
+    box.classList.add('show');
+    const base = getPagesBaseUrl();
+    document.getElementById('urlPreview').textContent = base
+      ? ('批量模式：將自動生成 ' + state.batchFiles.length + ' 條獨立網址於 ' + base + '/...')
+      : '預計網址：請先完成上方連線設定';
+  }
+
+  function handleSelectedFiles(fileList, isZipMode) {
+    const files = Array.from(fileList || []).filter(f => f);
+    if (!files.length) return;
+    if (isZipMode) {
+      const file = files[0];
+      const reader = new FileReader();
+      reader.onload = function(ev) {
         state.zipFileName = file.name;
-        state.zipFileContent = content;
+        state.zipFileContent = ev.target.result || '';
         document.getElementById('fileChipZipName').textContent = file.name;
         document.getElementById('fileChipZipSize').textContent = formatBytes(file.size) + ' • 準備封裝為 index.html';
         document.getElementById('fileChipZip').classList.add('show');
-      } else {
-        state.fileName = file.name;
-        state.fileContent = content;
-        const baseName = stripHtmlExt(file.name);
-        document.getElementById('fileChipName').textContent = file.name;
-        document.getElementById('fileChipSize').textContent = formatBytes(file.size) + ' • 已自動套用原檔名';
-        document.getElementById('fileChip').classList.add('show');
-        // Always default displayName to the exact uploaded filename!
-        document.getElementById('displayNameInput').value = baseName;
-        // Generate safe URL slug
-        document.getElementById('slugInput').value = sanitizeSlug(baseName);
-        updateUrlPreview();
-      }
-      showToast('📄 已載入檔案：' + file.name);
-    };
-    reader.readAsText(file, 'utf-8');
+        showToast('📄 已載入檔案：' + file.name);
+      };
+      reader.readAsText(file, 'utf-8');
+      return;
+    }
+
+    const htmlFiles = files.filter(f => /\.html?$/i.test(f.name) || f.type === 'text/html');
+    const targetFiles = htmlFiles.length ? htmlFiles : files;
+    Promise.all(targetFiles.map(file => new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onload = ev => resolve({ name: file.name, size: file.size, content: ev.target.result || '' });
+      reader.readAsText(file, 'utf-8');
+    }))).then(loaded => {
+      state.batchFiles = loaded;
+      renderBatchFileList();
+      showToast(loaded.length > 1 ? ('📦 已載入 ' + loaded.length + ' 份 .html 檔案，準備一次過發布！') : ('📄 已載入檔案：' + loaded[0].name));
+    });
   }
 
   function bindDropzone(zoneId, inputId, isZipMode) {
@@ -2133,15 +2314,15 @@
       input.click();
     });
     input.addEventListener('change', () => {
-      if (input.files && input.files[0]) handleSelectedFile(input.files[0], isZipMode);
+      if (input.files && input.files.length) handleSelectedFiles(input.files, isZipMode);
     });
     zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('dragover'); });
     zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
     zone.addEventListener('drop', (e) => {
       e.preventDefault();
       zone.classList.remove('dragover');
-      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
-        handleSelectedFile(e.dataTransfer.files[0], isZipMode);
+      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
+        handleSelectedFiles(e.dataTransfer.files, isZipMode);
       }
     });
   }
@@ -2374,10 +2555,15 @@
   // File clear & inputs
   document.getElementById('btnClearFile').addEventListener('click', (e) => {
     e.stopPropagation();
-    state.fileName = ''; state.fileContent = '';
+    state.batchFiles = []; state.fileName = ''; state.fileContent = '';
     document.getElementById('fileInput').value = '';
     document.getElementById('fileChip').classList.remove('show');
-    updateUrlPreview();
+    renderBatchFileList();
+  });
+  document.getElementById('btnCopyAllBatch').addEventListener('click', () => {
+    if (!state.lastBatchResults.length) return;
+    const text = state.lastBatchResults.map((r, i) => (i + 1) + '. ' + r.displayName + '\n' + r.url).join('\n\n');
+    copyText(text, '✅ 已複製全部 ' + state.lastBatchResults.length + ' 份教材的名稱與網址！');
   });
   document.getElementById('btnClearFileZip').addEventListener('click', (e) => {
     e.stopPropagation();
@@ -2437,10 +2623,11 @@
     showToast('🔓 已清除本機儲存的授權碼');
   });
 
-  // Publish
+  // Publish (Single or Batch)
   document.getElementById('btnPublish').addEventListener('click', async () => {
+    const isBatch = state.sourceMode === 'file' && state.batchFiles.length > 1;
     const html = state.sourceMode === 'file' ? state.fileContent : document.getElementById('htmlCodeInput').value;
-    if (!html || !html.trim()) { showToast('⚠️ 請先揀選一個 .html 檔，或貼上 HTML 程式碼'); return; }
+    if (!isBatch && (!html || !html.trim())) { showToast('⚠️ 請先揀選一個或多個 .html 檔，或貼上 HTML 程式碼'); return; }
 
     if (!state.connected) {
       const tokenInput = document.getElementById('ghToken').value.trim();
@@ -2462,20 +2649,85 @@
         document.getElementById('setupCard').classList.add('hidden');
         startAutoSyncLoop();
       }
-      const displayName = document.getElementById('displayNameInput').value.trim() || stripHtmlExt(state.fileName) || extractTitle(html) || '未命名教材';
       const folder = document.getElementById('folderSelect').value || '未分類';
-      const rawSlug = document.getElementById('slugInput').value.trim();
-      const slug = sanitizeSlug(rawSlug || state.fileName || displayName);
-      document.getElementById('slugInput').value = slug;
-      updateUrlPreview();
 
-      const liveUrl = await publishHtmlToGithub(slug, html, displayName, state.fileName || (slug + '.html'), folder, showProgress);
-      showResult(liveUrl, displayName);
-      renderFolderControls();
-      renderHistoryList();
-      updateSyncStrip();
-      showToast('🎉 發布成功！手機與電腦已同步更新');
-      setTimeout(hideProgress, 1200);
+      if (isBatch) {
+        const total = state.batchFiles.length;
+        const usedSlugs = new Set();
+        const results = [];
+        if (!state.folders.includes(folder)) state.folders.unshift(folder);
+        for (let i = 0; i < total; i++) {
+          const f = state.batchFiles[i];
+          const displayName = stripHtmlExt(f.name) || extractTitle(f.content) || ('教材-' + (i + 1));
+          let baseSlug = stripHtmlExt(f.name).toLowerCase().replace(/[^a-z0-9\-_]+/g, '-').replace(/^-+|-+$/g, '').replace(/-{2,}/g, '-');
+          if (!baseSlug) baseSlug = sanitizeSlug('') + '-' + (i + 1);
+          let slug = baseSlug;
+          let suffix = 2;
+          while (usedSlugs.has(slug)) { slug = baseSlug + '-' + (suffix++); }
+          usedSlugs.add(slug);
+
+          const filePath = slug + '.html';
+          const apiPath = '/repos/' + encodeURIComponent(state.owner) + '/' + encodeURIComponent(state.repo) + '/contents/' + encodeURIComponent(filePath);
+          const pct = Math.round(((i + 0.3) / (total + 0.5)) * 100);
+          showProgress(pct, '正在上載第 ' + (i + 1) + '/' + total + ' 份：' + displayName + '...');
+
+          let sha = null;
+          const existing = await ghFetch(apiPath + '?ref=' + encodeURIComponent(state.branch), { noCache: true });
+          if (existing.ok && existing.data && existing.data.sha) sha = existing.data.sha;
+
+          const payload = {
+            message: (sha ? 'Update ' : 'Publish ') + filePath + ' (' + displayName + ')',
+            content: utf8ToBase64(f.content),
+            branch: state.branch
+          };
+          if (sha) payload.sha = sha;
+          const putRes = await ghFetch(apiPath, { method: 'PUT', body: JSON.stringify(payload) });
+          if (!putRes.ok) throw new Error('上載 ' + f.name + ' 失敗：' + ((putRes.data && putRes.data.message) || putRes.status));
+
+          const nowIso = new Date().toISOString();
+          const newSha = (putRes.data && putRes.data.content && putRes.data.content.sha) || sha || '';
+          const idx = state.items.findIndex(x => x.fileName === filePath);
+          const rec = {
+            fileName: filePath,
+            sha: newSha,
+            size: f.size || new TextEncoder().encode(f.content).length,
+            originalFileName: f.name,
+            displayName: displayName,
+            folder: folder,
+            createdAt: (idx >= 0 && state.items[idx].createdAt) ? state.items[idx].createdAt : nowIso,
+            updatedAt: nowIso
+          };
+          if (idx >= 0) state.items[idx] = rec;
+          else state.items.unshift(rec);
+
+          results.push({ displayName: displayName, url: getPagesBaseUrl() + '/' + filePath });
+        }
+
+        showProgress(92, '正在將全部 ' + total + ' 份教材同步至雲端目錄...');
+        await saveCatalogToGithub();
+        showProgress(100, '全部 ' + total + ' 份教材發布並同步完成！');
+
+        showBatchResults(results);
+        renderFolderControls();
+        renderHistoryList();
+        updateSyncStrip();
+        showToast('🎉 已一次過發布 ' + total + ' 份教材並同步到所有裝置！');
+        setTimeout(hideProgress, 1400);
+      } else {
+        const displayName = document.getElementById('displayNameInput').value.trim() || stripHtmlExt(state.fileName) || extractTitle(html) || '未命名教材';
+        const rawSlug = document.getElementById('slugInput').value.trim();
+        const slug = sanitizeSlug(rawSlug || state.fileName || displayName);
+        document.getElementById('slugInput').value = slug;
+        updateUrlPreview();
+
+        const liveUrl = await publishHtmlToGithub(slug, html, displayName, state.fileName || (slug + '.html'), folder, showProgress);
+        showResult(liveUrl, displayName);
+        renderFolderControls();
+        renderHistoryList();
+        updateSyncStrip();
+        showToast('🎉 發布成功！手機與電腦已同步更新');
+        setTimeout(hideProgress, 1200);
+      }
     } catch (e) {
       showToast('❌ ' + e.message);
       hideProgress();
