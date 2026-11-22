@@ -1,0 +1,1713 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>31.2 含惰性電極的化學電池內的氧化還原反應 - 中五化學互動平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .chem-sub {
+            font-size: 0.75em;
+            vertical-align: sub;
+        }
+        .chem-sup {
+            font-size: 0.75em;
+            vertical-align: super;
+        }
+        .ox-num {
+            display: inline-block;
+            font-size: 0.72rem;
+            padding: 1px 5px;
+            border-radius: 4px;
+            margin-left: 2px;
+            font-weight: 700;
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.4);
+        }
+        .zoom-btn.active-zoom {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            border-color: #60a5fa;
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- 頂部導航欄 (對應課本 31.2 章節標題與應試年份) -->
+    <header class="bg-slate-900/95 border-b border-slate-700/80 px-4 py-3 sticky top-0 z-30 backdrop-blur">
+        <div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <span class="bg-purple-700 text-white font-black px-3 py-1 rounded-full text-sm tracking-wide shadow">
+                    31.2
+                </span>
+                <div>
+                    <h1 class="text-lg md:text-xl font-black text-white tracking-tight">
+                        含惰性電極的化學電池內的氧化還原反應
+                    </h1>
+                    <p class="text-xs text-slate-400">
+                        惰性電極（鉑 Pt 或石墨 C）不參與電池反應，只提供表面讓氧化還原反應發生及傳導電子
+                    </p>
+                </div>
+            </div>
+
+            <!-- 歷屆 DSE / CE 試題標記 -->
+            <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                <span class="text-amber-400 font-bold mr-1">📌 歷屆試題熱點：</span>
+                <span class="bg-slate-800 border border-slate-600 text-slate-300 px-2 py-0.5 rounded">CE2001(II)44</span>
+                <span class="bg-slate-800 border border-slate-600 text-slate-300 px-2 py-0.5 rounded">CE2004(II)40</span>
+                <span class="bg-slate-800 border border-slate-600 text-sky-300 px-2 py-0.5 rounded">DSE2015(IA)16</span>
+                <span class="bg-slate-800 border border-slate-600 text-sky-300 px-2 py-0.5 rounded">DSE2019(IB)7b</span>
+                <span class="bg-slate-800 border border-slate-600 text-sky-300 px-2 py-0.5 rounded">DSE2022(IA)13</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主內容區 -->
+    <main class="flex-1 max-w-[1600px] w-full mx-auto p-3 md:p-5 grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+        <!-- 左側：巨型互動動畫畫布及微觀放大控制器 (佔 7 欄) -->
+        <div class="lg:col-span-7 flex flex-col gap-4">
+
+            <!-- 畫布頂部控制列：微觀視角切換 + 速度與進度控制 -->
+            <div class="bg-slate-800/90 border border-slate-700 rounded-xl p-3 flex flex-col gap-3 shadow-lg">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <!-- 視角切換按鈕 -->
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <span class="text-xs font-bold text-slate-400 mr-1">🔍 視角放大：</span>
+                        <button id="zoom-macro" onclick="setZoomMode('macro')" class="zoom-btn active-zoom px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold bg-slate-700 text-slate-200 border border-slate-600 transition">
+                            🔬 宏觀全圖 (圖31.2)
+                        </button>
+                        <button id="zoom-anode" onclick="setZoomMode('anode')" class="zoom-btn px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold bg-slate-700 text-slate-200 border border-slate-600 transition">
+                            ⚡ 放大鉑電極 P (左半電池)
+                        </button>
+                        <button id="zoom-cathode" onclick="setZoomMode('cathode')" class="zoom-btn px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold bg-slate-700 text-slate-200 border border-slate-600 transition">
+                            ✨ 放大鉑電極 Q (右半電池)
+                        </button>
+                        <button id="zoom-saltbridge" onclick="setZoomMode('saltbridge')" class="zoom-btn px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold bg-slate-700 text-slate-200 border border-slate-600 transition">
+                            🌉 放大鹽橋 (離子流)
+                        </button>
+                    </div>
+
+                    <!-- 播放 / 暫停 / 重設 -->
+                    <div class="flex items-center gap-2">
+                        <button id="play-pause-btn" onclick="togglePlay()" class="px-3.5 py-1.5 rounded-lg text-xs md:text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow flex items-center gap-1.5 transition">
+                            <span id="play-icon">⏸</span>
+                            <span id="play-text">暫停</span>
+                        </button>
+                        <button onclick="resetReaction()" class="px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold bg-slate-700 hover:bg-slate-600 text-slate-200 border border-slate-600 transition">
+                            🔄 重設反應
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 慢動作速度滑桿 & 反應進度條 -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-700/80">
+                    <div class="flex items-center gap-3 bg-slate-900/70 px-3 py-2 rounded-lg border border-slate-700/60">
+                        <label class="text-xs font-bold text-amber-400 whitespace-nowrap">⚡ 反應及粒子速度：</label>
+                        <input id="speed-slider" type="range" min="0.1" max="2.5" step="0.1" value="1.0" oninput="updateSpeed(this.value)" class="w-full accent-amber-400 cursor-pointer">
+                        <span id="speed-label" class="text-xs font-mono font-bold text-white min-w-[42px] text-right">1.0x</span>
+                    </div>
+
+                    <div class="flex items-center gap-3 bg-slate-900/70 px-3 py-2 rounded-lg border border-slate-700/60">
+                        <label class="text-xs font-bold text-sky-400 whitespace-nowrap">⏳ 反應進度 (觀察顏色)：</label>
+                        <input id="progress-slider" type="range" min="0" max="100" step="0.5" value="0" oninput="manualScrubProgress(this.value)" class="w-full accent-sky-400 cursor-pointer">
+                        <span id="progress-label" class="text-xs font-mono font-bold text-white min-w-[42px] text-right">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 巨型互動 Canvas 容器 -->
+            <div class="relative w-full h-[480px] md:h-[560px] bg-slate-900 border-2 border-slate-700 rounded-2xl overflow-hidden shadow-2xl">
+                <canvas id="cellCanvas"></canvas>
+
+                <!-- 畫布底部快速提示 -->
+                <div class="absolute bottom-3 left-3 right-3 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
+                    <div class="bg-slate-950/85 border border-slate-700/80 px-3 py-1.5 rounded-lg text-xs text-slate-300 backdrop-blur">
+                        💡 <span class="text-amber-300 font-bold">互動提示：</span>可直接點擊畫布中的「鉑電極 P」、「鉑電極 Q」或「鹽橋」放大微觀粒子過程！
+                    </div>
+                    <div class="bg-slate-950/85 border border-slate-700/80 px-3 py-1.5 rounded-lg text-xs text-slate-300 flex items-center gap-3 backdrop-blur">
+                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span> 電子 (e⁻)</span>
+                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-purple-400 inline-block"></span> K⁺(aq)</span>
+                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-sky-400 inline-block"></span> NO₃⁻(aq)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 試劑揀選器 (自由配搭左右半電池電解質，支援有反應、反向反應及沒有反應) -->
+            <div class="bg-slate-800/90 border border-slate-700 rounded-xl p-4 shadow-lg flex flex-col gap-3">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                    <div class="md:col-span-5">
+                        <label id="left-select-label" class="block text-xs font-bold text-rose-400 uppercase tracking-wider mb-1.5">
+                            ⬅️ 左半電池電解質 (鉑電極 P)
+                        </label>
+                        <select id="ra-select" onchange="onReagentChange()" class="w-full bg-slate-900 border border-slate-600 focus:border-sky-500 text-white rounded-lg px-3 py-2 text-sm font-medium outline-none transition">
+                            <optgroup label="常見還原劑 (RA - 傾向失去電子)">
+                                <option value="Na2SO3">亞硫酸鈉溶液 Na₂SO₃(aq) [含 SO₃²⁻]</option>
+                                <option value="KI" selected>碘化鉀溶液 KI(aq) [含 I⁻，課本圖 31.2]</option>
+                                <option value="FeSO4">硫酸鐵(II) 溶液 FeSO₄(aq) [含 Fe²⁺]</option>
+                                <option value="KBr">溴化鉀溶液 KBr(aq) [含 Br⁻]</option>
+                            </optgroup>
+                            <optgroup label="常見氧化劑 (OA - 傾向獲得電子)">
+                                <option value="I2">碘水溶液 I₂(aq) (溶於 KI)</option>
+                                <option value="Fe2_SO4_3">硫酸鐵(III) 溶液 Fe₂(SO₄)₃(aq) [含 Fe³⁺]</option>
+                                <option value="Br2">溴水溶液 Br₂(aq)</option>
+                                <option value="K2Cr2O7">酸化重鉻酸鉀溶液 K₂Cr₂O₇(aq)/H⁺(aq)</option>
+                                <option value="KMnO4">酸化高錳酸鉀溶液 KMnO₄(aq)/H⁺(aq)</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-5">
+                        <label id="right-select-label" class="block text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1.5">
+                            ➡️ 右半電池電解質 (鉑電極 Q)
+                        </label>
+                        <select id="oa-select" onchange="onReagentChange()" class="w-full bg-slate-900 border border-slate-600 focus:border-sky-500 text-white rounded-lg px-3 py-2 text-sm font-medium outline-none transition">
+                            <optgroup label="常見氧化劑 (OA - 傾向獲得電子)">
+                                <option value="Fe2_SO4_3" selected>硫酸鐵(III) 溶液 Fe₂(SO₄)₃(aq) [含 Fe³⁺，課本圖 31.2]</option>
+                                <option value="KMnO4">酸化高錳酸鉀溶液 KMnO₄(aq)/H⁺(aq)</option>
+                                <option value="K2Cr2O7">酸化重鉻酸鉀溶液 K₂Cr₂O₇(aq)/H⁺(aq)</option>
+                                <option value="Br2">溴水溶液 Br₂(aq)</option>
+                                <option value="I2">碘水溶液 I₂(aq) (溶於 KI)</option>
+                            </optgroup>
+                            <optgroup label="常見還原劑 (RA - 測試「沒有反應」或「反向電子流」)">
+                                <option value="FeSO4">硫酸鐵(II) 溶液 FeSO₄(aq) [含 Fe²⁺]</option>
+                                <option value="KI">碘化鉀溶液 KI(aq) [含 I⁻]</option>
+                                <option value="Na2SO3">亞硫酸鈉溶液 Na₂SO₃(aq) [含 SO₃²⁻]</option>
+                                <option value="KBr">溴化鉀溶液 KBr(aq) [含 Br⁻]</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-2 flex flex-col justify-end h-full">
+                        <button onclick="loadTextbookPreset()" class="w-full py-2 px-3 bg-purple-700 hover:bg-purple-600 text-white font-bold rounded-lg text-xs md:text-sm shadow transition flex items-center justify-center gap-1 border border-purple-500">
+                            <span>📖</span> 課本圖31.2
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 快速測試組合按鈕列 (包含經典反應及常考「沒有反應」例子) -->
+                <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-700/80 text-xs">
+                    <span class="text-slate-400 font-bold">🧪 快速載入 DSE 典型例子：</span>
+                    <button onclick="setPair('KI', 'Fe2_SO4_3')" class="px-2.5 py-1 rounded bg-slate-700 hover:bg-slate-600 text-sky-300 border border-slate-600 transition">
+                        ✅ KI + Fe₂(SO₄)₃ (課本例子)
+                    </button>
+                    <button onclick="setPair('FeSO4', 'KMnO4')" class="px-2.5 py-1 rounded bg-slate-700 hover:bg-slate-600 text-sky-300 border border-slate-600 transition">
+                        ✅ FeSO₄ + H⁺/KMnO₄
+                    </button>
+                    <button onclick="setPair('Na2SO3', 'K2Cr2O7')" class="px-2.5 py-1 rounded bg-slate-700 hover:bg-slate-600 text-sky-300 border border-slate-600 transition">
+                        ✅ Na₂SO₃ + H⁺/K₂Cr₂O₇
+                    </button>
+                    <button onclick="setPair('FeSO4', 'FeSO4')" class="px-2.5 py-1 rounded bg-rose-950/60 hover:bg-rose-900/70 text-rose-300 border border-rose-700/60 transition">
+                        ❌ Fe²⁺ + Fe²⁺ (相同溶液/無反應)
+                    </button>
+                    <button onclick="setPair('KI', 'FeSO4')" class="px-2.5 py-1 rounded bg-rose-950/60 hover:bg-rose-900/70 text-rose-300 border border-rose-700/60 transition">
+                        ❌ I⁻ + Fe²⁺ (兩者皆為RA/無反應)
+                    </button>
+                    <button onclick="setPair('KBr', 'Fe2_SO4_3')" class="px-2.5 py-1 rounded bg-rose-950/60 hover:bg-rose-900/70 text-rose-300 border border-rose-700/60 transition">
+                        ❌ Br⁻ + Fe³⁺ (氧化力不足/無反應)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右側：化學方程式、可觀察現象、DSE 學習錦囊 (佔 5 欄) -->
+        <div class="lg:col-span-5 flex flex-col gap-4">
+            
+            <!-- 兩條半反應方程式及總反應方程式卡片 -->
+            <div class="bg-slate-800/90 border border-slate-700 rounded-xl p-4 shadow-lg flex flex-col gap-3.5">
+                <div class="flex items-center justify-between border-b border-slate-700 pb-2.5">
+                    <h2 class="text-base md:text-lg font-bold text-white flex items-center gap-2">
+                        <span class="text-sky-400">⚖️</span> 半反應方程式與總平衡反應方程式
+                    </h2>
+                    <button onclick="toggleQuizMode()" id="quiz-btn" class="text-xs px-2.5 py-1 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 font-bold transition">
+                        📝 自測模式：遮蓋方程式
+                    </button>
+                </div>
+
+                <!-- 左半電池 (電極 P) -->
+                <div id="left-card-box" class="bg-rose-950/30 border border-rose-700/50 rounded-xl p-3.5 relative transition">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span id="left-pole-badge" class="text-xs font-extrabold px-2.5 py-0.5 rounded bg-rose-600 text-white">
+                            電極 P：陽極 (Anode) ＝ 負電極 (−)
+                        </span>
+                        <span id="left-process-badge" class="text-xs font-bold text-rose-300">氧化作用 (Oxidation)：失去電子</span>
+                    </div>
+                    <div id="anode-eq-box" class="my-2 py-2 px-3 bg-slate-900/90 rounded-lg border border-slate-700/80 text-center text-base md:text-lg font-bold tracking-wide text-white overflow-x-auto">
+                        <!-- 由 JS 動態填入 -->
+                    </div>
+                    <p id="anode-explanation" class="text-xs md:text-sm text-slate-300 leading-relaxed mt-1">
+                        <!-- 由 JS 動態填入 -->
+                    </p>
+                </div>
+
+                <!-- 右半電池 (電極 Q) -->
+                <div id="right-card-box" class="bg-emerald-950/30 border border-emerald-700/50 rounded-xl p-3.5 relative transition">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span id="right-pole-badge" class="text-xs font-extrabold px-2.5 py-0.5 rounded bg-emerald-600 text-white">
+                            電極 Q：陰極 (Cathode) ＝ 正電極 (+)
+                        </span>
+                        <span id="right-process-badge" class="text-xs font-bold text-emerald-300">還原作用 (Reduction)：獲得電子</span>
+                    </div>
+                    <div id="cathode-eq-box" class="my-2 py-2 px-3 bg-slate-900/90 rounded-lg border border-slate-700/80 text-center text-base md:text-lg font-bold tracking-wide text-white overflow-x-auto">
+                        <!-- 由 JS 動態填入 -->
+                    </div>
+                    <p id="cathode-explanation" class="text-xs md:text-sm text-slate-300 leading-relaxed mt-1">
+                        <!-- 由 JS 動態填入 -->
+                    </p>
+                </div>
+
+                <!-- 總平衡離子方程式 -->
+                <div class="bg-sky-950/40 border border-sky-600/60 rounded-xl p-3.5">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span class="text-xs font-extrabold px-2.5 py-0.5 rounded bg-sky-600 text-white">
+                            總平衡反應方程式 (Overall Ionic Equation)
+                        </span>
+                        <span id="electron-multiplier-badge" class="text-xs font-mono text-sky-300 bg-sky-900/80 px-2 py-0.5 rounded border border-sky-700">
+                            <!-- 電子倍數說明 -->
+                        </span>
+                    </div>
+                    <div id="overall-eq-box" class="my-1.5 py-2.5 px-3 bg-slate-900 rounded-lg border border-sky-500/40 text-center text-base md:text-lg font-extrabold tracking-wide text-amber-300 overflow-x-auto shadow-inner">
+                        <!-- 由 JS 動態填入 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 可觀察現象 (Observable Changes) 隨反應進度即時更新 -->
+            <div class="bg-slate-800/90 border border-slate-700 rounded-xl p-4 shadow-lg flex flex-col gap-3">
+                <div class="flex items-center justify-between border-b border-slate-700 pb-2">
+                    <h2 class="text-base md:text-lg font-bold text-white flex items-center gap-2">
+                        <span>👀</span> 可觀察現象 (Observable Changes)
+                    </h2>
+                    <span id="stage-badge" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                        反應剛開始
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <!-- 左半電池觀察 -->
+                    <div class="bg-slate-900/80 border border-slate-700 rounded-lg p-3 flex flex-col gap-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-rose-400">左半電池 (鉑電極 P 周圍)</span>
+                            <span id="left-color-swatch" class="w-5 h-5 rounded-full border border-white/40 shadow"></span>
+                        </div>
+                        <p id="left-obs-text" class="text-xs md:text-sm text-slate-200 font-medium leading-relaxed">
+                            <!-- 動態填入 -->
+                        </p>
+                    </div>
+
+                    <!-- 右半電池觀察 -->
+                    <div class="bg-slate-900/80 border border-slate-700 rounded-lg p-3 flex flex-col gap-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-emerald-400">右半電池 (鉑電極 Q 周圍)</span>
+                            <span id="right-color-swatch" class="w-5 h-5 rounded-full border border-white/40 shadow"></span>
+                        </div>
+                        <p id="right-obs-text" class="text-xs md:text-sm text-slate-200 font-medium leading-relaxed">
+                            <!-- 動態填入 -->
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 電子與離子流動總結 -->
+                <div id="flow-summary-box" class="bg-slate-900/60 border border-slate-700/80 rounded-lg p-3 text-xs md:text-sm grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div class="flex items-start gap-2">
+                        <span class="text-amber-400 font-bold">⚡ 外電路電子流：</span>
+                        <span id="electron-flow-text" class="text-slate-300">由 <strong>鉑電極 P (負極)</strong> 經外電路流向 <strong>鉑電極 Q (正極)</strong>。</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <span class="text-purple-400 font-bold">🌉 鹽橋離子流：</span>
+                        <span id="ion-flow-text" class="text-slate-300"><strong>K⁺</strong> 移向右半電池；<strong>NO₃⁻</strong> 移向左半電池以平衡電荷。</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 課本重點與 DSE 應試錦囊 (對應附圖註1、註2及學習錦囊) -->
+            <div class="bg-amber-950/30 border border-amber-600/50 rounded-xl p-4 shadow-lg">
+                <h3 class="text-sm font-extrabold text-amber-300 flex items-center gap-1.5 mb-2">
+                    <span>💡</span> 課本學習錦囊 & DSE 電化學次序分析
+                </h3>
+                <ul id="dse-notes-list" class="text-xs md:text-sm text-slate-200 space-y-2 list-disc list-inside leading-relaxed">
+                    <!-- 動態根據所選試劑顯示課本註釋 -->
+                </ul>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // ==========================================
+        // 1. 嚴謹 HKDSE 電解質試劑庫 (包含標準電極電勢 E° 及氧化/還原能力判斷)
+        // ==========================================
+        const ELECTROLYTES = {
+            Na2SO3: {
+                id: 'Na2SO3',
+                role: 'RA',
+                E0: 0.17,
+                coupleLabel: 'SO₄²⁻(aq) + 2H⁺(aq) + 2e⁻ ⇌ SO₃²⁻(aq) + H₂O(l)',
+                name: '亞硫酸鈉溶液 Na₂SO₃(aq)',
+                shortFormula: 'SO₃²⁻(aq)',
+                reactantParticle: 'SO₃²⁻',
+                productParticle: 'SO₄²⁻',
+                electrons: 2,
+                halfEqHTML: `SO<span class="chem-sub">3</span><span class="chem-sup">2−</span>(aq)<span class="ox-num">+4</span> + H<span class="chem-sub">2</span>O(l) ⟶ SO<span class="chem-sub">4</span><span class="chem-sup">2−</span>(aq)<span class="ox-num">+6</span> + 2H<span class="chem-sup">+</span>(aq) + 2e<span class="chem-sup">−</span>`,
+                cleanHalfEq: { left: 'SO<span class="chem-sub">3</span><span class="chem-sup">2−</span>(aq) + H<span class="chem-sub">2</span>O(l)', right: 'SO<span class="chem-sub">4</span><span class="chem-sup">2−</span>(aq) + 2H<span class="chem-sup">+</span>(aq)', e: 2 },
+                initialColor: { r: 215, g: 240, b: 255, a: 0.35 },
+                finalColor: { r: 215, g: 240, b: 255, a: 0.35 },
+                localCloudColor: 'rgba(180, 230, 255, ',
+                obsInitial: '無色溶液（含有 SO₃²⁻(aq) 離子）。',
+                obsProgress: '<strong>沒有明顯顏色變化（溶液保持無色）</strong>，因為亞硫酸根離子 SO₃²⁻(aq) 被氧化生成的硫酸根離子 SO₄²⁻(aq) 亦為無色。',
+                explanation: '亞硫酸根離子 <strong>SO₃²⁻(aq)</strong> 中 S 的氧化數由 <strong>+4 升至 +6</strong>，失去電子生成硫酸根離子 <strong>SO₄²⁻(aq)</strong>。這過程是<strong>氧化</strong>。',
+                specialNote: `<li><strong>DSE 陷阱提示：</strong>雖然 SO₃²⁻(aq) 發生了氧化反應失去電子，但由於 SO₃²⁻(aq) 和 SO₄²⁻(aq) 都是無色離子，所以該半電池<strong>沒有可觀察的顏色變化</strong>！</li>`
+            },
+            KI: {
+                id: 'KI',
+                role: 'RA',
+                E0: 0.54,
+                coupleLabel: 'I₂(aq) + 2e⁻ ⇌ 2I⁻(aq)',
+                name: '碘化鉀溶液 KI(aq)',
+                shortFormula: 'I⁻(aq)',
+                reactantParticle: 'I⁻',
+                productParticle: 'I₂',
+                electrons: 2,
+                halfEqHTML: `2I<span class="chem-sup">−</span>(aq)<span class="ox-num">−1</span> ⟶ I<span class="chem-sub">2</span>(aq)<span class="ox-num">0</span> + 2e<span class="chem-sup">−</span>`,
+                cleanHalfEq: { left: '2I<span class="chem-sup">−</span>(aq)', right: 'I<span class="chem-sub">2</span>(aq)', e: 2 },
+                initialColor: { r: 215, g: 240, b: 255, a: 0.35 },
+                finalColor: { r: 165, g: 75, b: 25, a: 0.85 },
+                localCloudColor: 'rgba(165, 65, 20, ',
+                obsInitial: '無色溶液（含有 I⁻(aq) 離子）。開始時電極周圍未有明顯顏色變化。',
+                obsProgress: '<strong>電極周圍呈現棕色（濃度低時呈黃色）</strong>，原因是碘離子 I⁻(aq) 失去電子生成碘 I₂(aq)。',
+                explanation: '碘離子 <strong>I⁻(aq)</strong> 氧化數由 <strong>−1 升至 0</strong>，失去電子生成碘 <strong>I₂(aq)</strong>。這過程是<strong>氧化</strong>。',
+                specialNote: `<li><strong>課本註 1（極重要 DSE 考點）：</strong>電極周圍呈現<strong>棕色</strong>（濃度低時則是黃色）的出現是因為有碘溶於碘化鉀溶液中，生成三碘化物 <strong>I₃⁻(aq)</strong>，而<strong>非</strong>因為有碘蒸氣（紫色）或碘固體（黑色）存在。</li>
+                              <li><strong>課本註 2（常見錯誤）：</strong>失去電子的是溶液中的 <strong>I⁻(aq) 離子</strong>，而不是負電極的鉑 (Pt) 金屬原子！</li>`
+            },
+            FeSO4: {
+                id: 'FeSO4',
+                role: 'RA',
+                E0: 0.77,
+                coupleLabel: 'Fe³⁺(aq) + e⁻ ⇌ Fe²⁺(aq)',
+                name: '硫酸鐵(II) 溶液 FeSO₄(aq)',
+                shortFormula: 'Fe²⁺(aq)',
+                reactantParticle: 'Fe²⁺',
+                productParticle: 'Fe³⁺',
+                electrons: 1,
+                halfEqHTML: `Fe<span class="chem-sup">2+</span>(aq)<span class="ox-num">+2</span> ⟶ Fe<span class="chem-sup">3+</span>(aq)<span class="ox-num">+3</span> + e<span class="chem-sup">−</span>`,
+                cleanHalfEq: { left: 'Fe<span class="chem-sup">2+</span>(aq)', right: 'Fe<span class="chem-sup">3+</span>(aq)', e: 1 },
+                initialColor: { r: 130, g: 220, b: 155, a: 0.55 },
+                finalColor: { r: 230, g: 190, b: 60, a: 0.75 },
+                localCloudColor: 'rgba(230, 180, 40, ',
+                obsInitial: '溶液呈淺綠色（含有 Fe²⁺(aq) 離子）。',
+                obsProgress: '<strong>溶液逐漸由淺綠色變為黃色</strong>，原因是鐵(II) 離子 Fe²⁺(aq) 失去電子生成鐵(III) 離子 Fe³⁺(aq)。',
+                explanation: '鐵(II) 離子 <strong>Fe²⁺(aq)</strong> 氧化數由 <strong>+2 升至 +3</strong>，失去電子生成鐵(III) 離子 <strong>Fe³⁺(aq)</strong>。這過程是<strong>氧化</strong>。',
+                specialNote: `<li><strong>顏色記憶錦囊：</strong>鐵(II) 離子 <strong>Fe²⁺(aq) 是淺綠色</strong>；當被強氧化劑（如 MnO₄⁻、Cr₂O₇²⁻、Br₂）氧化成 <strong>Fe³⁺(aq) 時會變為黃色</strong>。</li>`
+            },
+            KBr: {
+                id: 'KBr',
+                role: 'RA',
+                E0: 1.07,
+                coupleLabel: 'Br₂(aq) + 2e⁻ ⇌ 2Br⁻(aq)',
+                name: '溴化鉀溶液 KBr(aq)',
+                shortFormula: 'Br⁻(aq)',
+                reactantParticle: 'Br⁻',
+                productParticle: 'Br₂',
+                electrons: 2,
+                halfEqHTML: `2Br<span class="chem-sup">−</span>(aq)<span class="ox-num">−1</span> ⟶ Br<span class="chem-sub">2</span>(aq)<span class="ox-num">0</span> + 2e<span class="chem-sup">−</span>`,
+                cleanHalfEq: { left: '2Br<span class="chem-sup">−</span>(aq)', right: 'Br<span class="chem-sub">2</span>(aq)', e: 2 },
+                initialColor: { r: 215, g: 240, b: 255, a: 0.35 },
+                finalColor: { r: 235, g: 110, b: 25, a: 0.82 },
+                localCloudColor: 'rgba(235, 100, 20, ',
+                obsInitial: '無色溶液（含有 Br⁻(aq) 離子）。',
+                obsProgress: '<strong>電極周圍呈現橙色/紅棕色</strong>，原因是溴離子 Br⁻(aq) 失去電子生成溴水溶液 Br₂(aq)。',
+                explanation: '溴離子 <strong>Br⁻(aq)</strong> 氧化數由 <strong>−1 升至 0</strong>，失去電子生成溴 <strong>Br₂(aq)</strong>。這過程是<strong>氧化</strong>。',
+                specialNote: `<li><strong>電化學次序比較：</strong>Br⁻(aq) 是比 I⁻(aq) 和 Fe²⁺(aq) 更弱的還原劑，因此 <strong>Fe³⁺(aq) 不能把 Br⁻(aq) 氧化</strong>，必須使用更強的氧化劑（如酸化 KMnO₄ 或酸化 K₂Cr₂O₇）才能將 Br⁻ 氧化為橙色的 Br₂(aq)。</li>`
+            },
+            I2: {
+                id: 'I2',
+                role: 'OA',
+                E0: 0.54,
+                coupleLabel: 'I₂(aq) + 2e⁻ ⇌ 2I⁻(aq)',
+                name: '碘水溶液 I₂(aq)',
+                shortFormula: 'I₂(aq)',
+                reactantParticle: 'I₂',
+                productParticle: 'I⁻',
+                electrons: 2,
+                halfEqHTML: `I<span class="chem-sub">2</span>(aq)<span class="ox-num">0</span> + 2e<span class="chem-sup">−</span> ⟶ 2I<span class="chem-sup">−</span>(aq)<span class="ox-num">−1</span>`,
+                cleanHalfEq: { left: 'I<span class="chem-sub">2</span>(aq)', right: '2I<span class="chem-sup">−</span>(aq)', e: 2 },
+                initialColor: { r: 165, g: 75, b: 25, a: 0.85 },
+                finalColor: { r: 215, g: 240, b: 255, a: 0.35 },
+                localCloudColor: 'rgba(215, 240, 255, ',
+                obsInitial: '溶液呈棕色（含有 I₂(aq) 分子）。',
+                obsProgress: '<strong>溶液逐漸由棕色變為無色</strong>，原因是碘分子 I₂(aq) 獲得電子生成無色的碘離子 I⁻(aq)。',
+                explanation: '碘分子 <strong>I₂(aq)</strong> 氧化數由 <strong>0 降至 −1</strong>，獲得電子生成無色的碘離子 <strong>I⁻(aq)</strong>。這過程是<strong>還原</strong>。',
+                specialNote: `<li><strong>碘作為氧化劑：</strong>I₂(aq) 的氧化能力較弱，只能氧化比它更強的還原劑（例如亞硫酸根離子 SO₃²⁻(aq)），而不能氧化 Fe²⁺(aq) 或 Br⁻(aq)。</li>`
+            },
+            Fe2_SO4_3: {
+                id: 'Fe2_SO4_3',
+                role: 'OA',
+                E0: 0.77,
+                coupleLabel: 'Fe³⁺(aq) + e⁻ ⇌ Fe²⁺(aq)',
+                name: '硫酸鐵(III) 溶液 Fe₂(SO₄)₃(aq)',
+                shortFormula: 'Fe³⁺(aq)',
+                reactantParticle: 'Fe³⁺',
+                productParticle: 'Fe²⁺',
+                electrons: 1,
+                halfEqHTML: `Fe<span class="chem-sup">3+</span>(aq)<span class="ox-num">+3</span> + e<span class="chem-sup">−</span> ⟶ Fe<span class="chem-sup">2+</span>(aq)<span class="ox-num">+2</span>`,
+                cleanHalfEq: { left: 'Fe<span class="chem-sup">3+</span>(aq)', right: 'Fe<span class="chem-sup">2+</span>(aq)', e: 1 },
+                initialColor: { r: 235, g: 200, b: 55, a: 0.72 },
+                finalColor: { r: 125, g: 215, b: 145, a: 0.65 },
+                localCloudColor: 'rgba(125, 215, 145, ',
+                obsInitial: '溶液呈黃色（含有 Fe³⁺(aq) 離子）。',
+                obsProgress: '<strong>溶液逐漸由黃色變為淺綠色</strong>，原因是鐵(III) 離子 Fe³⁺(aq) 獲得電子，生成鐵(II) 離子 Fe²⁺(aq)。',
+                explanation: '鐵(III) 離子 <strong>Fe³⁺(aq)</strong> 氧化數由 <strong>+3 降至 +2</strong>，獲得電子生成鐵(II) 離子 <strong>Fe²⁺(aq)</strong>。這過程是<strong>還原</strong>。',
+                specialNote: `<li><strong>課本核心概念：</strong><strong>Fe³⁺(aq)（黃色）</strong>獲得由外電路流過來的電子，還原成 <strong>Fe²⁺(aq)（淺綠色）</strong>。</li>`
+            },
+            Br2: {
+                id: 'Br2',
+                role: 'OA',
+                E0: 1.07,
+                coupleLabel: 'Br₂(aq) + 2e⁻ ⇌ 2Br⁻(aq)',
+                name: '溴水溶液 Br₂(aq)',
+                shortFormula: 'Br₂(aq)',
+                reactantParticle: 'Br₂',
+                productParticle: 'Br⁻',
+                electrons: 2,
+                halfEqHTML: `Br<span class="chem-sub">2</span>(aq)<span class="ox-num">0</span> + 2e<span class="chem-sup">−</span> ⟶ 2Br<span class="chem-sup">−</span>(aq)<span class="ox-num">−1</span>`,
+                cleanHalfEq: { left: 'Br<span class="chem-sub">2</span>(aq)', right: '2Br<span class="chem-sup">−</span>(aq)', e: 2 },
+                initialColor: { r: 235, g: 110, b: 25, a: 0.80 },
+                finalColor: { r: 215, g: 240, b: 255, a: 0.35 },
+                localCloudColor: 'rgba(215, 240, 255, ',
+                obsInitial: '溶液呈橙色/紅棕色（含有 Br₂(aq) 分子）。',
+                obsProgress: '<strong>溶液逐漸由橙色/紅棕色變為無色</strong>，原因是溴分子 Br₂(aq) 獲得電子生成無色的溴離子 Br⁻(aq)。',
+                explanation: '溴分子 <strong>Br₂(aq)</strong> 的氧化數由 <strong>0 降至 −1</strong>，獲得電子生成無色的溴離子 <strong>Br⁻(aq)</strong>。這過程是<strong>還原</strong>。',
+                specialNote: `<li><strong>鹵素氧化能力：</strong>Br₂(aq) 的氧化能力強於 Fe³⁺(aq) 及 I₂(aq)，能將 SO₃²⁻、I⁻ 及 Fe²⁺ 氧化，自身還原為無色的 Br⁻(aq)。</li>`
+            },
+            K2Cr2O7: {
+                id: 'K2Cr2O7',
+                role: 'OA',
+                E0: 1.33,
+                coupleLabel: 'Cr₂O₇²⁻(aq) + 14H⁺(aq) + 6e⁻ ⇌ 2Cr³⁺(aq) + 7H₂O(l)',
+                name: '酸化重鉻酸鉀溶液 K₂Cr₂O₇(aq)/H⁺(aq)',
+                shortFormula: 'Cr₂O₇²⁻(aq)/H⁺',
+                reactantParticle: 'Cr₂O₇²⁻',
+                productParticle: 'Cr³⁺',
+                electrons: 6,
+                halfEqHTML: `Cr<span class="chem-sub">2</span>O<span class="chem-sub">7</span><span class="chem-sup">2−</span>(aq)<span class="ox-num">+6</span> + 14H<span class="chem-sup">+</span>(aq) + 6e<span class="chem-sup">−</span> ⟶ 2Cr<span class="chem-sup">3+</span>(aq)<span class="ox-num">+3</span> + 7H<span class="chem-sub">2</span>O(l)`,
+                cleanHalfEq: { left: 'Cr<span class="chem-sub">2</span>O<span class="chem-sub">7</span><span class="chem-sup">2−</span>(aq) + 14H<span class="chem-sup">+</span>(aq)', right: '2Cr<span class="chem-sup">3+</span>(aq) + 7H<span class="chem-sub">2</span>O(l)', e: 6 },
+                initialColor: { r: 245, g: 130, b: 30, a: 0.82 },
+                finalColor: { r: 45, g: 175, b: 95, a: 0.78 },
+                localCloudColor: 'rgba(45, 175, 95, ',
+                obsInitial: '溶液呈橙色（含有 Cr₂O₇²⁻(aq) 離子）。',
+                obsProgress: '<strong>溶液逐漸由橙色變為綠色</strong>，原因是重鉻酸根離子 Cr₂O₇²⁻(aq) 獲得電子生成綠色的鉻(III) 離子 Cr³⁺(aq)。',
+                explanation: '重鉻酸根離子 <strong>Cr₂O₇²⁻(aq)</strong> 中 Cr 的氧化數由 <strong>+6 降至 +3</strong>，獲得 6 個電子生成 <strong>2Cr³⁺(aq)</strong>。這過程是<strong>還原</strong>。',
+                specialNote: `<li><strong>DSE 必背半反應：</strong>酸化 K₂Cr₂O₇(aq) 中<strong>橙色</strong>的 Cr₂O₇²⁻(aq) 被還原為<strong>綠色</strong>的 Cr³⁺(aq)，注意平衡時右方有 <strong>2Cr³⁺</strong> 及 <strong>7H₂O</strong>！</li>`
+            },
+            KMnO4: {
+                id: 'KMnO4',
+                role: 'OA',
+                E0: 1.51,
+                coupleLabel: 'MnO₄⁻(aq) + 8H⁺(aq) + 5e⁻ ⇌ Mn²⁺(aq) + 4H₂O(l)',
+                name: '酸化高錳酸鉀溶液 KMnO₄(aq)/H⁺(aq)',
+                shortFormula: 'MnO₄⁻(aq)/H⁺',
+                reactantParticle: 'MnO₄⁻',
+                productParticle: 'Mn²⁺',
+                electrons: 5,
+                halfEqHTML: `MnO<span class="chem-sub">4</span><span class="chem-sup">−</span>(aq)<span class="ox-num">+7</span> + 8H<span class="chem-sup">+</span>(aq) + 5e<span class="chem-sup">−</span> ⟶ Mn<span class="chem-sup">2+</span>(aq)<span class="ox-num">+2</span> + 4H<span class="chem-sub">2</span>O(l)`,
+                cleanHalfEq: { left: 'MnO<span class="chem-sub">4</span><span class="chem-sup">−</span>(aq) + 8H<span class="chem-sup">+</span>(aq)', right: 'Mn<span class="chem-sup">2+</span>(aq) + 4H<span class="chem-sub">2</span>O(l)', e: 5 },
+                initialColor: { r: 155, g: 30, b: 185, a: 0.85 },
+                finalColor: { r: 245, g: 225, b: 245, a: 0.35 },
+                localCloudColor: 'rgba(245, 225, 245, ',
+                obsInitial: '溶液呈深紫色（含有 MnO₄⁻(aq) 離子）。',
+                obsProgress: '<strong>溶液逐漸由紫色變為無色</strong>，原因是高錳酸根離子 MnO₄⁻(aq) 獲得電子生成無色的錳(II) 離子 Mn²⁺(aq)。',
+                explanation: '高錳酸根離子 <strong>MnO₄⁻(aq)</strong> 中 Mn 的氧化數由 <strong>+7 降至 +2</strong>，獲得 5 個電子生成 <strong>Mn²⁺(aq)</strong>。這過程是<strong>還原</strong>。',
+                specialNote: `<li><strong>DSE 必背半反應：</strong>酸化 KMnO₄(aq) 是極強的氧化劑，<strong>紫色</strong>的 MnO₄⁻(aq) 被還原為<strong>無色</strong>的 Mn²⁺(aq)。</li>`
+            }
+        };
+
+        // ==========================================
+        // 2. 狀態管理與反應可行性判別引擎
+        // ==========================================
+        let leftReagent = ELECTROLYTES.KI;
+        let rightReagent = ELECTROLYTES.Fe2_SO4_3;
+        let reactionState = {
+            canReact: true,
+            direction: 'P_TO_Q',
+            reasonTitle: '',
+            reasonDetail: ''
+        };
+
+        let zoomMode = 'macro';
+        let isPlaying = true;
+        let speedMultiplier = 1.0;
+        let reactionProgress = 0;
+        let quizMode = false;
+
+        let wireElectrons = [];
+        let saltBridgeIons = [];
+        let microAnodeEvents = [];
+        let microCathodeEvents = [];
+
+        const canvas = document.getElementById('cellCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // 嚴謹評估左右兩個半電池是否能發生自發氧化還原反應
+        function evaluateCellReaction(left, right) {
+            if (left.id === right.id) {
+                return {
+                    canReact: false,
+                    direction: 'NONE',
+                    reasonTitle: `沒有反應 (兩邊均為相同的 ${left.shortFormula})`,
+                    reasonDetail: `左右兩個半電池均為 <strong>${left.name}</strong>，兩邊電極電勢完全相等（電勢差 = 0 V），因此沒有淨電子轉移，不會發生氧化還原反應。`
+                };
+            }
+
+            if (left.role === 'RA' && right.role === 'RA') {
+                return {
+                    canReact: false,
+                    direction: 'NONE',
+                    reasonTitle: `沒有反應 (兩邊均為還原劑：${left.shortFormula} 及 ${right.shortFormula})`,
+                    reasonDetail: `左邊的 <strong>${left.shortFormula}</strong> 與右邊的 <strong>${right.shortFormula}</strong> 均處於較低氧化態（同為還原劑，只傾向失去電子），裝置中<strong>缺乏氧化劑</strong>接收電子，因此無法發生氧化還原反應。`
+                };
+            }
+
+            if (left.role === 'OA' && right.role === 'OA') {
+                return {
+                    canReact: false,
+                    direction: 'NONE',
+                    reasonTitle: `沒有反應 (兩邊均為氧化劑：${left.shortFormula} 及 ${right.shortFormula})`,
+                    reasonDetail: `左邊的 <strong>${left.shortFormula}</strong> 與右邊的 <strong>${right.shortFormula}</strong> 均處於較高氧化態（同為氧化劑，只傾向獲得電子），裝置中<strong>缺乏還原劑</strong>提供電子，因此無法發生氧化還原反應。`
+                };
+            }
+
+            const ra = left.role === 'RA' ? left : right;
+            const oa = left.role === 'OA' ? left : right;
+            const dir = left.role === 'RA' ? 'P_TO_Q' : 'Q_TO_P';
+
+            if (Math.abs(oa.E0 - ra.E0) < 0.001) {
+                return {
+                    canReact: false,
+                    direction: 'NONE',
+                    reasonTitle: `沒有淨反應 (同屬一個氧化還原電對：${oa.shortFormula} / ${ra.shortFormula})`,
+                    reasonDetail: `<strong>${oa.shortFormula}</strong> 與 <strong>${ra.shortFormula}</strong> 屬於同一個共軛氧化還原電對（${oa.coupleLabel}），在標準條件下兩半電池的電極電勢相同（ΔE° = 0 V），因此沒有宏觀可觀察的淨化學反應。`
+                };
+            }
+
+            if (oa.E0 < ra.E0) {
+                return {
+                    canReact: false,
+                    direction: 'NONE',
+                    reasonTitle: `沒有反應 (${oa.shortFormula} 的氧化能力不足以氧化 ${ra.shortFormula})`,
+                    reasonDetail: `根據電化學次序（Electrochemical Series），<strong>${oa.shortFormula}</strong> 的氧化能力弱於 <strong>${ra.productParticle}</strong>（或 <strong>${ra.shortFormula}</strong> 的還原能力弱於 <strong>${oa.productParticle}</strong>），因此 <strong>${oa.shortFormula} 無法奪取 ${ra.shortFormula} 的電子</strong>，非自發反應不會發生。`
+                };
+            }
+
+            return {
+                canReact: true,
+                direction: dir,
+                ra: ra,
+                oa: oa,
+                reasonTitle: '自發氧化還原反應進行中',
+                reasonDetail: `根據電化學次序，<strong>${oa.shortFormula}</strong> 是較強的氧化劑，能氧化 <strong>${ra.shortFormula}</strong>。`
+            };
+        }
+
+        // ==========================================
+        // 3. 數學與化學方程式平衡工具
+        // ==========================================
+        function gcd(a, b) {
+            return b === 0 ? a : gcd(b, a % b);
+        }
+
+        function lcm(a, b) {
+            return (a * b) / gcd(a, b);
+        }
+
+        function scaleSpeciesString(str, factor) {
+            if (factor === 1) return str;
+            return str.split(' + ').map(term => {
+                const match = term.match(/^(\d+)(.*)$/);
+                if (match) {
+                    const newCoeff = parseInt(match[1], 10) * factor;
+                    return `${newCoeff}${match[2]}`;
+                } else {
+                    return `${factor}${term}`;
+                }
+            }).join(' + ');
+        }
+
+        function updateEquationsAndUI() {
+            reactionState = evaluateCellReaction(leftReagent, rightReagent);
+
+            const anodeBox = document.getElementById('anode-eq-box');
+            const cathodeBox = document.getElementById('cathode-eq-box');
+            const overallBox = document.getElementById('overall-eq-box');
+            const multBadge = document.getElementById('electron-multiplier-badge');
+
+            const leftCardBox = document.getElementById('left-card-box');
+            const rightCardBox = document.getElementById('right-card-box');
+            const leftPoleBadge = document.getElementById('left-pole-badge');
+            const rightPoleBadge = document.getElementById('right-pole-badge');
+            const leftProcessBadge = document.getElementById('left-process-badge');
+            const rightProcessBadge = document.getElementById('right-process-badge');
+
+            const eFlowText = document.getElementById('electron-flow-text');
+            const iFlowText = document.getElementById('ion-flow-text');
+            const notesList = document.getElementById('dse-notes-list');
+
+            if (!reactionState.canReact) {
+                leftCardBox.className = 'bg-slate-900/60 border border-slate-600 rounded-xl p-3.5 relative transition';
+                rightCardBox.className = 'bg-slate-900/60 border border-slate-600 rounded-xl p-3.5 relative transition';
+
+                leftPoleBadge.className = 'text-xs font-extrabold px-2.5 py-0.5 rounded bg-slate-600 text-slate-200';
+                leftPoleBadge.textContent = '電極 P：無淨電流 (0 V)';
+                leftProcessBadge.className = 'text-xs font-bold text-slate-400';
+                leftProcessBadge.textContent = '沒有氧化或還原反應';
+
+                rightPoleBadge.className = 'text-xs font-extrabold px-2.5 py-0.5 rounded bg-slate-600 text-slate-200';
+                rightPoleBadge.textContent = '電極 Q：無淨電流 (0 V)';
+                rightProcessBadge.className = 'text-xs font-bold text-slate-400';
+                rightProcessBadge.textContent = '沒有氧化或還原反應';
+
+                anodeBox.innerHTML = `<span class="text-slate-400 text-sm">❌ 沒有反應 (No Reaction)</span>`;
+                cathodeBox.innerHTML = `<span class="text-slate-400 text-sm">❌ 沒有反應 (No Reaction)</span>`;
+                overallBox.innerHTML = `<span class="text-rose-400 text-base">❌ 沒有總反應方程式（原因：${reactionState.reasonTitle}）</span>`;
+                multBadge.textContent = '沒有電子轉移 (0 e⁻)';
+
+                document.getElementById('anode-explanation').innerHTML = `左半電池盛載 <strong>${leftReagent.name}</strong>，沒有發生電子得失。`;
+                document.getElementById('cathode-explanation').innerHTML = `右半電池盛載 <strong>${rightReagent.name}</strong>，沒有發生電子得失。`;
+
+                eFlowText.innerHTML = `<span class="text-rose-400 font-bold">外電路沒有電子流動</span>（伏特計讀數為 0 V）。`;
+                iFlowText.innerHTML = `<span class="text-slate-400">鹽橋內沒有淨離子定向遷移。</span>`;
+
+                notesList.innerHTML = `
+                    <li class="text-rose-300 font-bold">⚠️ 為什麼這個組合沒有反應？</li>
+                    <li>${reactionState.reasonDetail}</li>
+                    <li><strong>DSE 應試要點：</strong>要構成能夠放電的化學電池，兩個半電池必須分別含有<strong>一個還原劑 (RA)</strong> 及 <strong>一個氧化劑 (OA)</strong>，而且該氧化劑在電化學次序中的氧化能力必須強於還原劑對應的共軛氧化態！</li>
+                `;
+
+                updateObservablePhenomena();
+                return;
+            }
+
+            const ra = reactionState.ra;
+            const oa = reactionState.oa;
+            const eLost = ra.electrons;
+            const eGained = oa.electrons;
+            const totalE = lcm(eLost, eGained);
+            const multRA = totalE / eLost;
+            const multOA = totalE / eGained;
+
+            const isPAnode = reactionState.direction === 'P_TO_Q';
+
+            if (isPAnode) {
+                leftCardBox.className = 'bg-rose-950/30 border border-rose-700/50 rounded-xl p-3.5 relative transition';
+                leftPoleBadge.className = 'text-xs font-extrabold px-2.5 py-0.5 rounded bg-rose-600 text-white';
+                leftPoleBadge.textContent = '電極 P：陽極 (Anode) ＝ 負電極 (−)';
+                leftProcessBadge.className = 'text-xs font-bold text-rose-300';
+                leftProcessBadge.textContent = '氧化作用 (Oxidation)：失去電子';
+
+                rightCardBox.className = 'bg-emerald-950/30 border border-emerald-700/50 rounded-xl p-3.5 relative transition';
+                rightPoleBadge.className = 'text-xs font-extrabold px-2.5 py-0.5 rounded bg-emerald-600 text-white';
+                rightPoleBadge.textContent = '電極 Q：陰極 (Cathode) ＝ 正電極 (+)';
+                rightProcessBadge.className = 'text-xs font-bold text-emerald-300';
+                rightProcessBadge.textContent = '還原作用 (Reduction)：獲得電子';
+
+                eFlowText.innerHTML = `由 <strong>鉑電極 P (負極)</strong> 經外電路流向 <strong>鉑電極 Q (正極)</strong>。`;
+                iFlowText.innerHTML = `<strong>K⁺</strong> 移向右半電池 (陰極)；<strong>NO₃⁻</strong> 移向左半電池 (陽極)。`;
+            } else {
+                leftCardBox.className = 'bg-emerald-950/30 border border-emerald-700/50 rounded-xl p-3.5 relative transition';
+                leftPoleBadge.className = 'text-xs font-extrabold px-2.5 py-0.5 rounded bg-emerald-600 text-white';
+                leftPoleBadge.textContent = '電極 P：陰極 (Cathode) ＝ 正電極 (+)';
+                leftProcessBadge.className = 'text-xs font-bold text-emerald-300';
+                leftProcessBadge.textContent = '還原作用 (Reduction)：獲得電子';
+
+                rightCardBox.className = 'bg-rose-950/30 border border-rose-700/50 rounded-xl p-3.5 relative transition';
+                rightPoleBadge.className = 'text-xs font-extrabold px-2.5 py-0.5 rounded bg-rose-600 text-white';
+                rightPoleBadge.textContent = '電極 Q：陽極 (Anode) ＝ 負電極 (−)';
+                rightProcessBadge.className = 'text-xs font-bold text-rose-300';
+                rightProcessBadge.textContent = '氧化作用 (Oxidation)：失去電子';
+
+                eFlowText.innerHTML = `由 <strong>鉑電極 Q (負極)</strong> 經外電路反向流向 <strong>鉑電極 P (正極)</strong>。`;
+                iFlowText.innerHTML = `<strong>K⁺</strong> 移向左半電池 (陰極)；<strong>NO₃⁻</strong> 移向右半電池 (陽極)。`;
+            }
+
+            if (quizMode) {
+                anodeBox.innerHTML = `<span class="text-slate-400 text-sm cursor-pointer" onclick="toggleQuizMode()">🔒 點擊此處顯示電極 P 半反應方程式</span>`;
+                cathodeBox.innerHTML = `<span class="text-slate-400 text-sm cursor-pointer" onclick="toggleQuizMode()">🔒 點擊此處顯示電極 Q 半反應方程式</span>`;
+                overallBox.innerHTML = `<span class="text-slate-400 text-sm cursor-pointer" onclick="toggleQuizMode()">🔒 先自行嘗試平衡電子數目 (LCM = ${totalE}e⁻)，再點擊核對答案！</span>`;
+            } else {
+                anodeBox.innerHTML = `${leftReagent.halfEqHTML} <span class="text-xs ${isPAnode ? 'text-rose-400' : 'text-emerald-400'} ml-2 font-normal">(${isPAnode ? '氧化' : '還原'})</span>`;
+                cathodeBox.innerHTML = `${rightReagent.halfEqHTML} <span class="text-xs ${!isPAnode ? 'text-rose-400' : 'text-emerald-400'} ml-2 font-normal">(${!isPAnode ? '氧化' : '還原'})</span>`;
+
+                const leftSide = `${scaleSpeciesString(ra.cleanHalfEq.left, multRA)} + ${scaleSpeciesString(oa.cleanHalfEq.left, multOA)}`;
+                const rightSide = `${scaleSpeciesString(ra.cleanHalfEq.right, multRA)} + ${scaleSpeciesString(oa.cleanHalfEq.right, multOA)}`;
+                overallBox.innerHTML = `${leftSide} ⟶ ${rightSide}`;
+            }
+
+            multBadge.textContent = `平衡電子：氧化半反應 ×${multRA} ｜ 還原半反應 ×${multOA} (共轉移 ${totalE}e⁻)`;
+
+            document.getElementById('anode-explanation').innerHTML = `在左邊半電池 (電極 P)：${leftReagent.explanation}`;
+            document.getElementById('cathode-explanation').innerHTML = `在右邊半電池 (電極 Q)：${rightReagent.explanation}`;
+
+            let notesHTML = leftReagent.specialNote + rightReagent.specialNote;
+            notesHTML += `<li><strong>鹽橋的作用：</strong>浸有飽和 KNO₃(aq) 的濾紙作為鹽橋，(1) 透過離子移動完成電路，以及 (2) 提供 K⁺ 和 NO₃⁻ 離子以平衡兩個半電池溶液中的電荷。</li>`;
+            notesList.innerHTML = notesHTML;
+
+            updateObservablePhenomena();
+        }
+
+        function lerpColor(c1, c2, t) {
+            const r = Math.round(c1.r + (c2.r - c1.r) * t);
+            const g = Math.round(c1.g + (c2.g - c1.g) * t);
+            const b = Math.round(c1.b + (c2.b - c1.b) * t);
+            const a = (c1.a + (c2.a - c1.a) * t).toFixed(2);
+            return { r, g, b, a, css: `rgba(${r}, ${g}, ${b}, ${a})` };
+        }
+
+        function updateObservablePhenomena() {
+            const stageBadge = document.getElementById('stage-badge');
+            const leftObs = document.getElementById('left-obs-text');
+            const rightObs = document.getElementById('right-obs-text');
+
+            if (!reactionState.canReact) {
+                const leftCol = leftReagent.initialColor;
+                const rightCol = rightReagent.initialColor;
+                document.getElementById('left-color-swatch').style.backgroundColor = `rgb(${leftCol.r}, ${leftCol.g}, ${leftCol.b})`;
+                document.getElementById('right-color-swatch').style.backgroundColor = `rgb(${rightCol.r}, ${rightCol.g}, ${rightCol.b})`;
+
+                stageBadge.textContent = `沒有發生反應 (No Reaction)`;
+                stageBadge.className = 'text-xs font-bold px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40';
+                leftObs.innerHTML = `${leftReagent.obsInitial}<br><span class="text-rose-400 font-bold">➔ 沒有可觀察變化（溶液顏色保持不變）。</span>`;
+                rightObs.innerHTML = `${rightReagent.obsInitial}<br><span class="text-rose-400 font-bold">➔ 沒有可觀察變化（溶液顏色保持不變）。</span>`;
+                return;
+            }
+
+            const t = reactionProgress / 100;
+            const leftCol = lerpColor(leftReagent.initialColor, leftReagent.finalColor, t);
+            const rightCol = lerpColor(rightReagent.initialColor, rightReagent.finalColor, t);
+
+            document.getElementById('left-color-swatch').style.backgroundColor = `rgb(${leftCol.r}, ${leftCol.g}, ${leftCol.b})`;
+            document.getElementById('right-color-swatch').style.backgroundColor = `rgb(${rightCol.r}, ${rightCol.g}, ${rightCol.b})`;
+
+            if (reactionProgress < 8) {
+                stageBadge.textContent = `反應初期 (${Math.round(reactionProgress)}%)`;
+                stageBadge.className = 'text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-700 text-slate-300 border border-slate-500';
+                leftObs.innerHTML = leftReagent.obsInitial;
+                rightObs.innerHTML = rightReagent.obsInitial;
+            } else if (reactionProgress < 85) {
+                stageBadge.textContent = `反應進行中 (${Math.round(reactionProgress)}%)`;
+                stageBadge.className = 'text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40';
+                leftObs.innerHTML = `在左邊的半電池，${leftReagent.obsProgress}`;
+                rightObs.innerHTML = `在右邊的半電池，${rightReagent.obsProgress}`;
+            } else {
+                stageBadge.textContent = `反應明顯完成 (${Math.round(reactionProgress)}%)`;
+                stageBadge.className = 'text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+                leftObs.innerHTML = `在左邊的半電池，${leftReagent.obsProgress} <span class="text-amber-300 font-bold">（現象十分明顯）</span>`;
+                rightObs.innerHTML = `在右邊的半電池，${rightReagent.obsProgress} <span class="text-emerald-300 font-bold">（現象十分明顯）</span>`;
+            }
+        }
+
+        // ==========================================
+        // 4. 初始化微觀粒子系統
+        // ==========================================
+        function initParticles() {
+            wireElectrons = [];
+            for (let i = 0; i < 14; i++) {
+                wireElectrons.push({ progress: i / 14 });
+            }
+
+            saltBridgeIons = [];
+            for (let i = 0; i < 6; i++) {
+                saltBridgeIons.push({
+                    type: 'K+',
+                    t: i / 6,
+                    offset: (Math.random() - 0.5) * 14
+                });
+                saltBridgeIons.push({
+                    type: 'NO3-',
+                    t: i / 6,
+                    offset: (Math.random() - 0.5) * 14
+                });
+            }
+
+            microAnodeEvents = [];
+            for (let i = 0; i < 5; i++) {
+                microAnodeEvents.push({
+                    phase: i * 0.2,
+                    yRatio: 0.18 + i * 0.16
+                });
+            }
+
+            microCathodeEvents = [];
+            for (let i = 0; i < 5; i++) {
+                microCathodeEvents.push({
+                    phase: i * 0.2,
+                    yRatio: 0.18 + i * 0.16
+                });
+            }
+        }
+
+        // ==========================================
+        // 5. 控件互動函數
+        // ==========================================
+        function setZoomMode(mode) {
+            zoomMode = mode;
+            document.querySelectorAll('.zoom-btn').forEach(btn => btn.classList.remove('active-zoom'));
+            document.getElementById(`zoom-${mode}`).classList.add('active-zoom');
+        }
+
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            const icon = document.getElementById('play-icon');
+            const text = document.getElementById('play-text');
+            const btn = document.getElementById('play-pause-btn');
+            if (isPlaying) {
+                icon.textContent = '⏸';
+                text.textContent = '暫停';
+                btn.className = 'px-3.5 py-1.5 rounded-lg text-xs md:text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow flex items-center gap-1.5 transition';
+            } else {
+                icon.textContent = '▶';
+                text.textContent = '繼續播放';
+                btn.className = 'px-3.5 py-1.5 rounded-lg text-xs md:text-sm font-bold bg-amber-600 hover:bg-amber-500 text-white shadow flex items-center gap-1.5 transition';
+            }
+        }
+
+        function resetReaction() {
+            reactionProgress = 0;
+            document.getElementById('progress-slider').value = 0;
+            document.getElementById('progress-label').textContent = '0%';
+            updateObservablePhenomena();
+        }
+
+        function updateSpeed(val) {
+            speedMultiplier = parseFloat(val);
+            document.getElementById('speed-label').textContent = `${speedMultiplier.toFixed(1)}x`;
+        }
+
+        function manualScrubProgress(val) {
+            reactionProgress = parseFloat(val);
+            document.getElementById('progress-label').textContent = `${Math.round(reactionProgress)}%`;
+            updateObservablePhenomena();
+        }
+
+        function onReagentChange() {
+            const leftKey = document.getElementById('ra-select').value;
+            const rightKey = document.getElementById('oa-select').value;
+            leftReagent = ELECTROLYTES[leftKey];
+            rightReagent = ELECTROLYTES[rightKey];
+            resetReaction();
+            updateEquationsAndUI();
+        }
+
+        function setPair(leftKey, rightKey) {
+            document.getElementById('ra-select').value = leftKey;
+            document.getElementById('oa-select').value = rightKey;
+            onReagentChange();
+        }
+
+        function loadTextbookPreset() {
+            setPair('KI', 'Fe2_SO4_3');
+            setZoomMode('macro');
+        }
+
+        function toggleQuizMode() {
+            quizMode = !quizMode;
+            const btn = document.getElementById('quiz-btn');
+            if (quizMode) {
+                btn.textContent = '👁️ 顯示答案方程式';
+                btn.className = 'text-xs px-2.5 py-1 rounded-md bg-sky-500/30 text-sky-200 border border-sky-400 font-bold transition';
+            } else {
+                btn.textContent = '📝 自測模式：遮蓋方程式';
+                btn.className = 'text-xs px-2.5 py-1 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 font-bold transition';
+            }
+            updateEquationsAndUI();
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const w = rect.width;
+            const h = rect.height;
+
+            if (zoomMode !== 'macro') {
+                if (x < 180 && y < 70) {
+                    setZoomMode('macro');
+                }
+                return;
+            }
+
+            if (x > w * 0.20 && x < w * 0.36 && y > h * 0.32 && y < h * 0.80) {
+                setZoomMode('anode');
+            } else if (x > w * 0.64 && x < w * 0.80 && y > h * 0.32 && y < h * 0.80) {
+                setZoomMode('cathode');
+            } else if (x > w * 0.38 && x < w * 0.62 && y > h * 0.28 && y < h * 0.58) {
+                setZoomMode('saltbridge');
+            }
+        });
+
+        // ==========================================
+        // 6. Canvas 響應式調整與繪圖輔助函數
+        // ==========================================
+        function resizeCanvas() {
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        function drawArrow(x1, y1, x2, y2, color, lineWidth = 2.5) {
+            const headLen = 9;
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            ctx.save();
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineWidth = lineWidth;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(x2, y2);
+            ctx.lineTo(x2 - headLen * Math.cos(angle - Math.PI / 6), y2 - headLen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(x2 - headLen * Math.cos(angle + Math.PI / 6), y2 - headLen * Math.sin(angle + Math.PI / 6));
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function drawParticleBadge(x, y, radius, bgColor, borderColor, label, textColor = '#ffffff') {
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = bgColor;
+            ctx.fill();
+            ctx.lineWidth = 1.8;
+            ctx.strokeStyle = borderColor;
+            ctx.stroke();
+
+            ctx.fillStyle = textColor;
+            ctx.font = `bold ${Math.max(10, Math.round(radius * 0.72))}px "Noto Sans TC", sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(label, x, y + 0.5);
+            ctx.restore();
+        }
+
+        // ==========================================
+        // 7. 宏觀視角繪製
+        // ==========================================
+        function drawMacroView(w, h, dt) {
+            const centerX = w * 0.5;
+            const beakerW = Math.min(200, w * 0.21);
+            const beakerH = 210;
+            const beakerBottomY = h * 0.77;
+            const beakerTopY = beakerBottomY - beakerH;
+            const liquidTopY = beakerTopY + 45;
+
+            const leftBeakerX = centerX - beakerW - 42;
+            const rightBeakerX = centerX + 42;
+
+            const elecW = 24;
+            const elecTopY = beakerTopY - 35;
+            const elecBottomY = beakerBottomY - 22;
+            const leftElecX = leftBeakerX + beakerW * 0.34 - elecW / 2;
+            const rightElecX = rightBeakerX + beakerW * 0.66 - elecW / 2;
+
+            const wireTopY = 58;
+            const canReact = reactionState.canReact;
+            const isPtoQ = reactionState.direction === 'P_TO_Q';
+            const tProgress = canReact ? (reactionProgress / 100) : 0;
+
+            const leftColor = (leftReagent.id === 'KI' || leftReagent.id === 'KBr')
+                ? lerpColor(leftReagent.initialColor, { r: 215, g: 235, b: 250, a: 0.40 }, tProgress)
+                : lerpColor(leftReagent.initialColor, leftReagent.finalColor, tProgress);
+            const rightColor = (rightReagent.id === 'KI' || rightReagent.id === 'KBr')
+                ? lerpColor(rightReagent.initialColor, { r: 215, g: 235, b: 250, a: 0.40 }, tProgress)
+                : lerpColor(rightReagent.initialColor, rightReagent.finalColor, tProgress);
+
+            ctx.save();
+            ctx.fillStyle = leftColor.css;
+            ctx.beginPath();
+            ctx.roundRect(leftBeakerX + 3, liquidTopY, beakerW - 6, beakerBottomY - liquidTopY - 3, [0, 0, 14, 14]);
+            ctx.fill();
+
+            if (canReact && reactionProgress > 1 && (leftReagent.id === 'KI' || leftReagent.id === 'KBr')) {
+                const cloudRadius = 26 + tProgress * 58;
+                const gradX = leftElecX + elecW / 2;
+                const gradY = (liquidTopY + elecBottomY) / 2;
+                const radialGrad = ctx.createRadialGradient(gradX, gradY, 6, gradX, gradY, cloudRadius);
+                const alphaCore = Math.min(0.92, 0.25 + tProgress * 0.72);
+                radialGrad.addColorStop(0, `${leftReagent.localCloudColor}${alphaCore})`);
+                radialGrad.addColorStop(0.6, `${leftReagent.localCloudColor}${alphaCore * 0.55})`);
+                radialGrad.addColorStop(1, `${leftReagent.localCloudColor}0)`);
+
+                ctx.fillStyle = radialGrad;
+                ctx.beginPath();
+                ctx.roundRect(leftBeakerX + 4, liquidTopY + 2, beakerW - 8, beakerBottomY - liquidTopY - 5, [0, 0, 12, 12]);
+                ctx.fill();
+            }
+
+            ctx.fillStyle = rightColor.css;
+            ctx.beginPath();
+            ctx.roundRect(rightBeakerX + 3, liquidTopY, beakerW - 6, beakerBottomY - liquidTopY - 3, [0, 0, 14, 14]);
+            ctx.fill();
+
+            if (canReact && reactionProgress > 1 && (rightReagent.id === 'KI' || rightReagent.id === 'KBr')) {
+                const cloudRadius = 26 + tProgress * 58;
+                const gradX = rightElecX + elecW / 2;
+                const gradY = (liquidTopY + elecBottomY) / 2;
+                const radialGrad = ctx.createRadialGradient(gradX, gradY, 6, gradX, gradY, cloudRadius);
+                const alphaCore = Math.min(0.92, 0.25 + tProgress * 0.72);
+                radialGrad.addColorStop(0, `${rightReagent.localCloudColor}${alphaCore})`);
+                radialGrad.addColorStop(0.6, `${rightReagent.localCloudColor}${alphaCore * 0.55})`);
+                radialGrad.addColorStop(1, `${rightReagent.localCloudColor}0)`);
+
+                ctx.fillStyle = radialGrad;
+                ctx.beginPath();
+                ctx.roundRect(rightBeakerX + 4, liquidTopY + 2, beakerW - 8, beakerBottomY - liquidTopY - 5, [0, 0, 12, 12]);
+                ctx.fill();
+            }
+            ctx.restore();
+
+            // 鹽橋
+            const sbLeftX = leftBeakerX + beakerW * 0.74;
+            const sbRightX = rightBeakerX + beakerW * 0.26;
+            const sbTopY = beakerTopY - 16;
+            const sbBottomY = liquidTopY + 75;
+
+            ctx.save();
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.lineWidth = 28;
+            ctx.strokeStyle = '#64748b';
+            ctx.beginPath();
+            ctx.moveTo(sbLeftX, sbBottomY);
+            ctx.lineTo(sbLeftX, sbTopY + 20);
+            ctx.quadraticCurveTo(sbLeftX, sbTopY, centerX, sbTopY);
+            ctx.quadraticCurveTo(sbRightX, sbTopY, sbRightX, sbTopY + 20);
+            ctx.lineTo(sbRightX, sbBottomY);
+            ctx.stroke();
+
+            ctx.lineWidth = 22;
+            ctx.strokeStyle = '#f1f5f9';
+            ctx.stroke();
+
+            saltBridgeIons.forEach(ion => {
+                if (isPlaying && canReact) {
+                    ion.t = (ion.t + 0.0022 * speedMultiplier) % 1;
+                }
+                const kGoesRight = isPtoQ;
+                const p = (ion.type === 'K+' ? (kGoesRight ? ion.t : 1 - ion.t) : (kGoesRight ? 1 - ion.t : ion.t));
+                let ix, iy;
+                if (p < 0.3) {
+                    const localP = p / 0.3;
+                    ix = sbLeftX;
+                    iy = sbBottomY - localP * (sbBottomY - sbTopY - 10);
+                } else if (p < 0.7) {
+                    const localP = (p - 0.3) / 0.4;
+                    ix = sbLeftX + localP * (sbRightX - sbLeftX);
+                    iy = sbTopY + 4;
+                } else {
+                    const localP = (p - 0.7) / 0.3;
+                    ix = sbRightX;
+                    iy = sbTopY + 10 + localP * (sbBottomY - sbTopY - 10);
+                }
+                if (ion.type === 'K+') {
+                    drawParticleBadge(ix, iy, 8, '#7c3aed', '#ddd6fe', 'K⁺');
+                } else {
+                    drawParticleBadge(ix, iy, 9, '#0284c7', '#bae6fd', 'NO₃⁻');
+                }
+            });
+            ctx.restore();
+
+            // 電極 P 和 Q
+            function drawElectrode(x, poleSign, poleColor) {
+                ctx.save();
+                const grad = ctx.createLinearGradient(x, 0, x + elecW, 0);
+                grad.addColorStop(0, '#94a3b8');
+                grad.addColorStop(0.5, '#e2e8f0');
+                grad.addColorStop(1, '#64748b');
+                ctx.fillStyle = grad;
+                ctx.strokeStyle = '#334155';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.roundRect(x, elecTopY, elecW, elecBottomY - elecTopY, 4);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.font = 'bold 15px "Noto Sans TC", sans-serif';
+                ctx.fillStyle = poleColor;
+                ctx.textAlign = 'center';
+                ctx.fillText(poleSign, x + elecW / 2, elecTopY - 10);
+                ctx.restore();
+            }
+
+            if (!canReact) {
+                drawElectrode(leftElecX, '無極性 (沒有反應)', '#94a3b8');
+                drawElectrode(rightElecX, '無極性 (沒有反應)', '#94a3b8');
+            } else if (isPtoQ) {
+                drawElectrode(leftElecX, '(−) 負極 / 陽極', '#fb7185');
+                drawElectrode(rightElecX, '(+) 正極 / 陰極', '#34d399');
+            } else {
+                drawElectrode(leftElecX, '(+) 正極 / 陰極', '#34d399');
+                drawElectrode(rightElecX, '(−) 負極 / 陽極', '#fb7185');
+            }
+
+            // 燒杯輪廓
+            function drawBeakerOutline(x) {
+                ctx.save();
+                ctx.strokeStyle = 'rgba(255,255,255,0.45)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(x + 3, liquidTopY);
+                ctx.lineTo(x + beakerW - 3, liquidTopY);
+                ctx.stroke();
+
+                ctx.strokeStyle = '#cbd5e1';
+                ctx.lineWidth = 3.5;
+                ctx.beginPath();
+                ctx.moveTo(x, beakerTopY);
+                ctx.lineTo(x, beakerBottomY - 14);
+                ctx.quadraticCurveTo(x, beakerBottomY, x + 14, beakerBottomY);
+                ctx.lineTo(x + beakerW - 14, beakerBottomY);
+                ctx.quadraticCurveTo(x + beakerW, beakerBottomY, x + beakerW, beakerBottomY - 14);
+                ctx.lineTo(x + beakerW, beakerTopY);
+                ctx.stroke();
+                ctx.restore();
+            }
+            drawBeakerOutline(leftBeakerX);
+            drawBeakerOutline(rightBeakerX);
+
+            // 外電路與伏特計
+            const wireLeftX = leftElecX + elecW / 2;
+            const wireRightX = rightElecX + elecW / 2;
+
+            ctx.save();
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(wireLeftX, elecTopY);
+            ctx.lineTo(wireLeftX, wireTopY);
+            ctx.lineTo(wireRightX, wireTopY);
+            ctx.lineTo(wireRightX, elecTopY);
+            ctx.stroke();
+
+            if (canReact) {
+                if (isPtoQ) {
+                    drawArrow(wireLeftX - 18, (elecTopY + wireTopY) / 2 + 25, wireLeftX - 18, (elecTopY + wireTopY) / 2 - 25, '#f43f5e', 2.5);
+                    drawArrow(centerX - 75, wireTopY - 14, centerX - 30, wireTopY - 14, '#f43f5e', 2.5);
+                    drawArrow(centerX + 30, wireTopY - 14, centerX + 75, wireTopY - 14, '#f43f5e', 2.5);
+                    drawArrow(wireRightX + 18, (elecTopY + wireTopY) / 2 - 25, wireRightX + 18, (elecTopY + wireTopY) / 2 + 25, '#f43f5e', 2.5);
+                } else {
+                    drawArrow(wireRightX + 18, (elecTopY + wireTopY) / 2 + 25, wireRightX + 18, (elecTopY + wireTopY) / 2 - 25, '#f43f5e', 2.5);
+                    drawArrow(centerX + 75, wireTopY - 14, centerX + 30, wireTopY - 14, '#f43f5e', 2.5);
+                    drawArrow(centerX - 30, wireTopY - 14, centerX - 75, wireTopY - 14, '#f43f5e', 2.5);
+                    drawArrow(wireLeftX - 18, (elecTopY + wireTopY) / 2 - 25, wireLeftX - 18, (elecTopY + wireTopY) / 2 + 25, '#f43f5e', 2.5);
+                }
+
+                ctx.fillStyle = '#fb7185';
+                ctx.font = 'bold 13px "Noto Sans TC", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(isPtoQ ? '電子流動 (P ➔ Q)' : '電子流動 (Q ➔ P)', centerX - 95, wireTopY - 22);
+
+                const totalWireLen = (elecTopY - wireTopY) * 2 + (wireRightX - wireLeftX);
+                wireElectrons.forEach(el => {
+                    if (isPlaying) {
+                        el.progress = (el.progress + 0.0028 * speedMultiplier) % 1;
+                    }
+                    const effectiveP = isPtoQ ? el.progress : (1 - el.progress);
+                    const dist = effectiveP * totalWireLen;
+                    const upLeg = elecTopY - wireTopY;
+                    const topLeg = wireRightX - wireLeftX;
+                    let ex, ey;
+                    if (dist < upLeg) {
+                        ex = wireLeftX;
+                        ey = elecTopY - dist;
+                    } else if (dist < upLeg + topLeg) {
+                        ex = wireLeftX + (dist - upLeg);
+                        ey = wireTopY;
+                    } else {
+                        ex = wireRightX;
+                        ey = wireTopY + (dist - upLeg - topLeg);
+                    }
+                    drawParticleBadge(ex, ey, 7, '#f59e0b', '#fef08a', 'e⁻', '#0f172a');
+                });
+            } else {
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = 'bold 13px "Noto Sans TC", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('沒有電子流動 (0 V)', centerX, wireTopY - 30);
+            }
+
+            ctx.beginPath();
+            ctx.arc(centerX, wireTopY, 22, 0, Math.PI * 2);
+            ctx.fillStyle = '#0f172a';
+            ctx.fill();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = canReact ? '#38bdf8' : '#ef4444';
+            ctx.stroke();
+            ctx.fillStyle = canReact ? '#ffffff' : '#fca5a5';
+            ctx.font = 'bold 16px "Noto Sans TC", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(canReact ? 'V' : '0 V', centerX, wireTopY);
+            ctx.restore();
+
+            if (!canReact) {
+                ctx.save();
+                ctx.fillStyle = 'rgba(127, 29, 29, 0.92)';
+                ctx.strokeStyle = '#f87171';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.roundRect(centerX - 210, 92, 420, 44, 10);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.fillStyle = '#fef2f2';
+                ctx.font = 'bold 14px "Noto Sans TC", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(`⚠️ ${reactionState.reasonTitle}`, centerX, 114);
+                ctx.restore();
+            }
+
+            // 標籤文字
+            ctx.save();
+            ctx.font = 'bold 14px "Noto Sans TC", sans-serif';
+            ctx.fillStyle = '#f8fafc';
+            ctx.textAlign = 'right';
+            ctx.fillText('鉑電極 P', leftElecX - 12, elecTopY + 35);
+            ctx.fillStyle = leftReagent.role === 'RA' ? '#fb7185' : '#34d399';
+            ctx.font = 'bold 15px "Noto Sans TC", sans-serif';
+            ctx.fillText(`${leftReagent.shortFormula} (${leftReagent.role})`, leftBeakerX - 12, liquidTopY + 55);
+
+            ctx.fillStyle = '#f8fafc';
+            ctx.font = 'bold 14px "Noto Sans TC", sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('鉑電極 Q', rightElecX + elecW + 12, elecTopY + 35);
+            ctx.fillStyle = rightReagent.role === 'OA' ? '#34d399' : '#fb7185';
+            ctx.font = 'bold 15px "Noto Sans TC", sans-serif';
+            ctx.fillText(`${rightReagent.shortFormula} (${rightReagent.role})`, rightBeakerX + beakerW + 12, liquidTopY + 55);
+
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#e2e8f0';
+            ctx.font = 'bold 12px "Noto Sans TC", sans-serif';
+            ctx.fillText('浸有飽和 KNO₃(aq)', centerX, sbTopY - 26);
+            ctx.fillText('的濾紙作為鹽橋', centerX, sbTopY - 10);
+
+            ctx.font = 'bold 14px "Noto Sans TC", sans-serif';
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillText(leftReagent.name, leftBeakerX + beakerW / 2, beakerBottomY + 24);
+            ctx.fillText(rightReagent.name, rightBeakerX + beakerW / 2, beakerBottomY + 24);
+            ctx.restore();
+
+            if (w >= 760) {
+                drawMiniMicroCallout(22, h * 0.44, 175, 195, 'left');
+                drawMiniMicroCallout(w - 197, h * 0.44, 175, 195, 'right');
+            }
+        }
+
+        function drawMiniMicroCallout(x, y, boxW, boxH, side) {
+            const isLeft = side === 'left';
+            const reagent = isLeft ? leftReagent : rightReagent;
+            const canReact = reactionState.canReact;
+            const isOxidation = canReact && ((isLeft && reactionState.direction === 'P_TO_Q') || (!isLeft && reactionState.direction === 'Q_TO_P'));
+
+            ctx.save();
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+            ctx.strokeStyle = !canReact ? '#64748b' : (isOxidation ? '#f43f5e' : '#10b981');
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.roundRect(x, y, boxW, boxH, 12);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = !canReact ? '#cbd5e1' : (isOxidation ? '#fda4af' : '#6ee7b7');
+            ctx.font = 'bold 12px "Noto Sans TC", sans-serif';
+            ctx.textAlign = 'center';
+            const titleText = !canReact
+                ? `🔍 電極 ${isLeft ? 'P' : 'Q'} 微觀 (沒有反應)`
+                : `🔍 電極 ${isLeft ? 'P' : 'Q'} 微觀${isOxidation ? '氧化' : '還原'}`;
+            ctx.fillText(titleText, x + boxW / 2, y + 18);
+
+            const rodX = isLeft ? x + 28 : x + boxW - 50;
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillRect(rodX, y + 32, 22, boxH - 44);
+
+            const events = isLeft ? microAnodeEvents.slice(0, 3) : microCathodeEvents.slice(0, 3);
+            events.forEach((ev, idx) => {
+                const p = ev.phase;
+                const py = y + 52 + idx * 48;
+
+                if (!canReact) {
+                    const dist = Math.abs(p - 0.5) * 2;
+                    const px = isLeft
+                        ? (rodX + 34) + dist * (boxW - 90)
+                        : (rodX - 12) - dist * (boxW - 90);
+                    drawParticleBadge(px, py, 13, '#475569', '#cbd5e1', reagent.reactantParticle);
+                    return;
+                }
+
+                if (isOxidation) {
+                    if (p < 0.5) {
+                        const px = isLeft
+                            ? (x + boxW - 25) - (p / 0.5) * (boxW - 85)
+                            : (x + 25) + (p / 0.5) * (boxW - 85);
+                        drawParticleBadge(px, py, 12, '#0369a1', '#7dd3fc', reagent.reactantParticle);
+                    } else {
+                        const localP = (p - 0.5) / 0.5;
+                        const px = isLeft
+                            ? (rodX + 30) + localP * (boxW - 85)
+                            : (rodX - 10) - localP * (boxW - 85);
+                        drawParticleBadge(px, py, 12, '#b45309', '#fcd34d', reagent.productParticle);
+                        const ey = py - localP * 32;
+                        drawParticleBadge(rodX + 11, ey, 6, '#f59e0b', '#fef08a', 'e⁻', '#0f172a');
+                    }
+                } else {
+                    if (p < 0.5) {
+                        const px = isLeft
+                            ? (x + boxW - 25) - (p / 0.5) * (boxW - 85)
+                            : (x + 25) + (p / 0.5) * (boxW - 85);
+                        drawParticleBadge(px, py, 12, '#a16207', '#fde047', reagent.reactantParticle);
+                        const ey = (y + 36) + (p / 0.5) * (py - y - 36);
+                        drawParticleBadge(rodX + 11, ey, 6, '#f59e0b', '#fef08a', 'e⁻', '#0f172a');
+                    } else {
+                        const localP = (p - 0.5) / 0.5;
+                        const px = isLeft
+                            ? (rodX + 30) + localP * (boxW - 85)
+                            : (rodX - 10) - localP * (boxW - 85);
+                        drawParticleBadge(px, py, 12, '#15803d', '#86efac', reagent.productParticle);
+                    }
+                }
+            });
+
+            ctx.restore();
+        }
+
+        // ==========================================
+        // 8. 放大微觀視角繪製 (電極 P / 電極 Q / 鹽橋)
+        // ==========================================
+        function drawMicroZoomElectrode(w, h, mode) {
+            const isLeft = mode === 'anode';
+            const reagent = isLeft ? leftReagent : rightReagent;
+            const canReact = reactionState.canReact;
+            const isOxidation = canReact && ((isLeft && reactionState.direction === 'P_TO_Q') || (!isLeft && reactionState.direction === 'Q_TO_P'));
+            const tProgress = canReact ? (reactionProgress / 100) : 0;
+
+            const bgCol = lerpColor(reagent.initialColor, reagent.finalColor, tProgress);
+
+            ctx.save();
+            ctx.fillStyle = bgCol.css;
+            ctx.fillRect(0, 0, w, h);
+
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.roundRect(16, 16, 155, 38, 8);
+            ctx.fill();
+            ctx.stroke();
+            ctx.fillStyle = '#38bdf8';
+            ctx.font = 'bold 13px "Noto Sans TC", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('⬅ 返回宏觀全圖', 93, 35);
+
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+            ctx.strokeStyle = !canReact ? '#f87171' : (isOxidation ? '#f43f5e' : '#10b981');
+            ctx.beginPath();
+            ctx.roundRect(w * 0.20, 14, w * 0.60, 56, 12);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 16px "Noto Sans TC", sans-serif';
+            if (!canReact) {
+                ctx.fillText(`🔬 放大微觀視角：鉑電極 ${isLeft ? 'P' : 'Q'} 表面（沒有發生反應）`, w * 0.5, 34);
+                ctx.fillStyle = '#fca5a5';
+                ctx.font = 'bold 13px "Noto Sans TC", sans-serif';
+                ctx.fillText(`${reagent.reactantParticle} 粒子在電極表面碰撞後直接彈開，沒有發生電子得失 (${reactionState.reasonTitle})`, w * 0.5, 55);
+            } else {
+                ctx.fillText(
+                    `🔬 放大微觀視角：鉑電極 ${isLeft ? 'P' : 'Q'} 表面（${isOxidation ? '陽極 / 負電極 — 氧化作用' : '陰極 / 正電極 — 還原作用'}）`,
+                    w * 0.5,
+                    34
+                );
+                ctx.fillStyle = isOxidation ? '#fda4af' : '#6ee7b7';
+                ctx.font = 'bold 13px "Noto Sans TC", sans-serif';
+                ctx.fillText(
+                    isOxidation
+                        ? `${reagent.reactantParticle} 離子碰撞鉑電極表面 ➔ 失去電子 (e⁻) 進入電極向上流 ➔ 生成 ${reagent.productParticle}`
+                        : `電子 (e⁻) 由外電路向下流入鉑電極 ➔ ${reagent.reactantParticle} 在電極表面獲得電子 ➔ 還原生成 ${reagent.productParticle}`,
+                    w * 0.5,
+                    55
+                );
+            }
+
+            const elecWidth = Math.min(180, w * 0.24);
+            const elecX = isLeft ? w * 0.14 : w - w * 0.14 - elecWidth;
+            const elecTop = 82;
+            const elecBottom = h - 75;
+
+            const grad = ctx.createLinearGradient(elecX, 0, elecX + elecWidth, 0);
+            grad.addColorStop(0, '#64748b');
+            grad.addColorStop(0.5, '#cbd5e1');
+            grad.addColorStop(1, '#475569');
+            ctx.fillStyle = grad;
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.roundRect(elecX, elecTop, elecWidth, elecBottom - elecTop, 12);
+            ctx.fill();
+            ctx.stroke();
+
+            const cols = 3;
+            const rows = 7;
+            const cellW = elecWidth / cols;
+            const cellH = (elecBottom - elecTop - 30) / rows;
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const ax = elecX + cellW * (c + 0.5);
+                    const ay = elecTop + 28 + cellH * (r + 0.5);
+                    drawParticleBadge(ax, ay, 16, 'rgba(51, 65, 85, 0.85)', '#94a3b8', 'Pt', '#e2e8f0');
+                }
+            }
+
+            ctx.fillStyle = '#0f172a';
+            ctx.font = 'bold 13px "Noto Sans TC", sans-serif';
+            ctx.fillText('惰性鉑電極 (Pt 原子不參與反應)', elecX + elecWidth / 2, elecTop + 14);
+
+            const events = isLeft ? microAnodeEvents : microCathodeEvents;
+            const surfaceX = isLeft ? elecX + elecWidth : elecX;
+            const solutionFarX = isLeft ? w - 90 : 90;
+
+            events.forEach((ev) => {
+                const p = ev.phase;
+                const py = elecTop + 55 + ev.yRatio * (elecBottom - elecTop - 80);
+
+                if (!canReact) {
+                    const dist = Math.abs(p - 0.5) * 2;
+                    const px = isLeft
+                        ? (surfaceX + 28) + dist * (solutionFarX - (surfaceX + 28))
+                        : (surfaceX - 28) - dist * ((surfaceX - 28) - solutionFarX);
+                    drawParticleBadge(px, py, 22, '#475569', '#cbd5e1', reagent.reactantParticle);
+                    return;
+                }
+
+                if (isOxidation) {
+                    if (p < 0.48) {
+                        const localP = p / 0.48;
+                        const px = isLeft
+                            ? solutionFarX - localP * (solutionFarX - (surfaceX + 26))
+                            : solutionFarX + localP * ((surfaceX - 26) - solutionFarX);
+                        drawParticleBadge(px, py, 22, '#0369a1', '#7dd3fc', reagent.reactantParticle);
+                    } else if (p < 0.58) {
+                        const flashX = isLeft ? surfaceX + 10 : surfaceX - 10;
+                        const badgeX = isLeft ? surfaceX + 22 : surfaceX - 22;
+                        ctx.beginPath();
+                        ctx.arc(flashX, py, 28, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(251, 191, 36, 0.45)';
+                        ctx.fill();
+                        drawParticleBadge(badgeX, py, 22, '#d97706', '#fde047', `失去 ${reagent.electrons}e⁻`);
+                    } else {
+                        const localP = (p - 0.58) / 0.42;
+                        const px = isLeft
+                            ? (surfaceX + 26) + localP * (solutionFarX - (surfaceX + 26))
+                            : (surfaceX - 26) - localP * ((surfaceX - 26) - solutionFarX);
+                        drawParticleBadge(px, py, 22, '#b45309', '#fcd34d', reagent.productParticle);
+
+                        const ex = elecX + elecWidth * 0.5;
+                        const ey = py - localP * (py - elecTop + 10);
+                        drawArrow(ex, ey + 18, ex, ey - 18, '#f43f5e', 2.5);
+                        drawParticleBadge(ex, ey, 12, '#f59e0b', '#fef08a', 'e⁻', '#0f172a');
+                    }
+                } else {
+                    if (p < 0.48) {
+                        const localP = p / 0.48;
+                        const px = isLeft
+                            ? solutionFarX - localP * (solutionFarX - (surfaceX + 26))
+                            : solutionFarX + localP * ((surfaceX - 26) - solutionFarX);
+                        drawParticleBadge(px, py, 22, '#a16207', '#fde047', reagent.reactantParticle);
+
+                        const ex = elecX + elecWidth * 0.5;
+                        const ey = elecTop + localP * (py - elecTop);
+                        drawArrow(ex, ey - 18, ex, ey + 18, '#f43f5e', 2.5);
+                        drawParticleBadge(ex, ey, 12, '#f59e0b', '#fef08a', 'e⁻', '#0f172a');
+                    } else if (p < 0.58) {
+                        const flashX = isLeft ? surfaceX + 10 : surfaceX - 10;
+                        const badgeX = isLeft ? surfaceX + 22 : surfaceX - 22;
+                        ctx.beginPath();
+                        ctx.arc(flashX, py, 28, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(52, 211, 153, 0.45)';
+                        ctx.fill();
+                        drawParticleBadge(badgeX, py, 22, '#059669', '#6ee7b7', `獲得 ${reagent.electrons}e⁻`);
+                    } else {
+                        const localP = (p - 0.58) / 0.42;
+                        const px = isLeft
+                            ? (surfaceX + 26) + localP * (solutionFarX - (surfaceX + 26))
+                            : (surfaceX - 26) - localP * ((surfaceX - 26) - solutionFarX);
+                        drawParticleBadge(px, py, 22, '#15803d', '#86efac', reagent.productParticle);
+                    }
+                }
+            });
+
+            ctx.restore();
+        }
+
+        // 鹽橋微觀放大視角
+        function drawMicroZoomSaltBridge(w, h) {
+            const canReact = reactionState.canReact;
+            const isPtoQ = reactionState.direction === 'P_TO_Q';
+
+            ctx.save();
+
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.roundRect(16, 16, 155, 38, 8);
+            ctx.fill();
+            ctx.stroke();
+            ctx.fillStyle = '#38bdf8';
+            ctx.font = 'bold 13px "Noto Sans TC", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('⬅ 返回宏觀全圖', 93, 35);
+
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+            ctx.strokeStyle = canReact ? '#a855f7' : '#f87171';
+            ctx.beginPath();
+            ctx.roundRect(w * 0.2, 14, w * 0.6, 58, 12);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 16px "Noto Sans TC", sans-serif';
+            ctx.fillText('🔬 放大微觀視角：浸有飽和 KNO₃(aq) 的濾紙鹽橋內部', w * 0.5, 34);
+            ctx.fillStyle = canReact ? '#d8b4fe' : '#fca5a5';
+            ctx.font = 'bold 13px "Noto Sans TC", sans-serif';
+            if (!canReact) {
+                ctx.fillText('因為電池沒有發生反應，鹽橋內的 K⁺(aq) 與 NO₃⁻(aq) 沒有淨定向移動', w * 0.5, 56);
+            } else if (isPtoQ) {
+                ctx.fillText('陰離子 NO₃⁻(aq) 移向左半電池（陽極）；陽離子 K⁺(aq) 移向右半電池（陰極）以平衡電荷', w * 0.5, 56);
+            } else {
+                ctx.fillText('陽離子 K⁺(aq) 移向左半電池（陰極）；陰離子 NO₃⁻(aq) 移向右半電池（陽極）以平衡電荷', w * 0.5, 56);
+            }
+
+            const bridgeTop = 125;
+            const bridgeH = 260;
+            ctx.fillStyle = '#e2e8f0';
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 6;
+            ctx.beginPath();
+            ctx.roundRect(70, bridgeTop, w - 140, bridgeH, 28);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.35)';
+            ctx.lineWidth = 1.5;
+            for (let x = 100; x < w - 100; x += 35) {
+                ctx.beginPath();
+                ctx.moveTo(x, bridgeTop + 6);
+                ctx.lineTo(x, bridgeTop + bridgeH - 6);
+                ctx.stroke();
+            }
+
+            ctx.fillStyle = '#f43f5e';
+            ctx.font = 'bold 16px "Noto Sans TC", sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('⬅ 往左半電池 (電極 P)', 95, bridgeTop - 14);
+
+            ctx.fillStyle = '#10b981';
+            ctx.textAlign = 'right';
+            ctx.fillText('往右半電池 (電極 Q) ➡', w - 95, bridgeTop - 14);
+
+            saltBridgeIons.forEach((ion, index) => {
+                const rowY = bridgeTop + 45 + (index % 4) * 55;
+                if (ion.type === 'K+') {
+                    const p = isPtoQ ? ion.t : (1 - ion.t);
+                    const px = 120 + p * (w - 240);
+                    if (canReact) {
+                        if (isPtoQ) drawArrow(px + 22, rowY, px + 44, rowY, '#7c3aed', 3);
+                        else drawArrow(px - 22, rowY, px - 44, rowY, '#7c3aed', 3);
+                    }
+                    drawParticleBadge(px, rowY, 22, '#7c3aed', '#ddd6fe', 'K⁺');
+                } else {
+                    const p = isPtoQ ? (1 - ion.t) : ion.t;
+                    const px = 120 + p * (w - 240);
+                    if (canReact) {
+                        if (isPtoQ) drawArrow(px - 22, rowY, px - 44, rowY, '#0284c7', 3);
+                        else drawArrow(px + 22, rowY, px + 44, rowY, '#0284c7', 3);
+                    }
+                    drawParticleBadge(px, rowY, 24, '#0284c7', '#bae6fd', 'NO₃⁻');
+                }
+            });
+
+            ctx.restore();
+        }
+
+        // ==========================================
+        // 9. 主動畫迴圈與啟動
+        // ==========================================
+        let lastTime = performance.now();
+
+        function animate(now) {
+            const dt = (now - lastTime) / 1000;
+            lastTime = now;
+
+            const w = canvas.clientWidth;
+            const h = canvas.clientHeight;
+
+            ctx.clearRect(0, 0, w, h);
+
+            if (isPlaying) {
+                if (reactionState.canReact && reactionProgress < 100) {
+                    reactionProgress = Math.min(100, reactionProgress + dt * 4.2 * speedMultiplier);
+                    document.getElementById('progress-slider').value = reactionProgress;
+                    document.getElementById('progress-label').textContent = `${Math.round(reactionProgress)}%`;
+                    updateObservablePhenomena();
+                }
+
+                microAnodeEvents.forEach(ev => {
+                    ev.phase = (ev.phase + dt * 0.28 * speedMultiplier) % 1;
+                });
+                microCathodeEvents.forEach(ev => {
+                    ev.phase = (ev.phase + dt * 0.28 * speedMultiplier) % 1;
+                });
+            }
+
+            if (zoomMode === 'macro') {
+                drawMacroView(w, h, dt);
+            } else if (zoomMode === 'anode' || zoomMode === 'cathode') {
+                drawMicroZoomElectrode(w, h, zoomMode);
+            } else if (zoomMode === 'saltbridge') {
+                drawMicroZoomSaltBridge(w, h);
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        window.onload = function () {
+            resizeCanvas();
+            initParticles();
+            updateEquationsAndUI();
+            requestAnimationFrame(animate);
+        };
+    </script>
+</body>
+</html>
