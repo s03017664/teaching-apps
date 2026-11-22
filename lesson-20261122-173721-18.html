@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-HK">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>鬥獸棋 — 親子雙人對戰</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700;900&display=swap');
+    :root {
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100dvh;
+      overflow: hidden;
+      font-family: 'Noto Sans TC', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at 50% 25%, #2b3d28 0%, #1a2718 55%, #111a10 100%);
+      color: #f8f5ec;
+    }
+    .app-shell {
+      height: 100dvh;
+      width: 100vw;
+      padding-top: max(6px, var(--safe-top));
+      padding-bottom: max(6px, var(--safe-bottom));
+    }
+    .wood-frame {
+      background: linear-gradient(145deg, #9a6432 0%, #6d411c 48%, #4d2c10 100%);
+      box-shadow:
+        0 18px 42px rgba(0, 0, 0, 0.55),
+        inset 0 2px 3px rgba(255, 224, 174, 0.45),
+        inset 0 -3px 6px rgba(34, 16, 4, 0.65);
+      border: 1.5px solid rgba(255, 218, 160, 0.25);
+    }
+    .glass-bar {
+      background: rgba(255, 250, 240, 0.1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 244, 219, 0.16);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    }
+    .player-card {
+      background: rgba(255, 252, 245, 0.94);
+      color: #2c241b;
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, opacity 0.25s ease;
+    }
+    .turn-glow-red {
+      border-color: #ef4444 !important;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.35), 0 8px 24px rgba(220, 38, 38, 0.35) !important;
+    }
+    .turn-glow-blue {
+      border-color: #3b82f6 !important;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.35), 0 8px 24px rgba(37, 99, 235, 0.35) !important;
+    }
+    .inactive-card {
+      opacity: 0.84;
+    }
+    .timer-digits {
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.03em;
+    }
+    .lost-scroll {
+      scrollbar-width: none;
+    }
+    .lost-scroll::-webkit-scrollbar {
+      display: none;
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.45); opacity: 0; }
+      75% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .pop-in {
+      animation: popIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    canvas#boardCanvas {
+      display: block;
+      touch-action: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell flex flex-col px-2 sm:px-4 gap-1.5 sm:gap-2.5 overflow-hidden">
+
+    <!-- Top Toolbar: Brand + Live Turn & Move Stopwatch + Quick Actions -->
+    <header class="w-full max-w-6xl mx-auto shrink-0 flex items-center justify-between gap-1.5 sm:gap-3 glass-bar rounded-2xl px-2.5 py-1.5 sm:px-4 sm:py-2">
+      <!-- Brand -->
+      <div class="flex items-center gap-2 shrink-0">
+        <div class="w-7 h-7 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 text-amber-50 flex items-center justify-center font-black text-sm sm:text-lg shadow-md border border-amber-300/60">獸</div>
+        <div class="hidden sm:block leading-tight">
+          <h1 class="text-base font-black tracking-wide text-amber-100">鬥獸棋</h1>
+          <p class="text-[11px] text-amber-200/75 font-medium">親子雙人對戰 · 一人一步</p>
+        </div>
+      </div>
+
+      <!-- Center Turn + Per-Move Timer Pill -->
+      <div class="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
+        <div id="turnBanner" class="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 rounded-full font-black text-xs sm:text-sm shadow-sm border transition-all duration-300 bg-red-500/20 text-red-100 border-red-400/60">
+          <span id="turnDot" class="w-2.5 h-2.5 rounded-full bg-red-400 animate-pulse shrink-0"></span>
+          <span id="turnText" class="truncate">輪到 紅方</span>
+        </div>
+
+        <!-- Per-Move Stopwatch -->
+        <div id="timerBox" class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/35 border border-amber-300/30 text-amber-200 text-xs sm:text-sm font-black shadow-inner" title="今步已用時間（行一步後重新計時）">
+          <span class="text-[11px] sm:text-xs opacity-85">⏱</span>
+          <span id="moveTimerText" class="timer-digits">00:00</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
+        <button id="btnUndo" type="button" class="px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-xl bg-white/12 hover:bg-white/20 active:scale-95 text-amber-50 font-bold text-xs border border-white/15 transition disabled:opacity-35 disabled:cursor-not-allowed" disabled title="悔棋">↩ <span class="hidden sm:inline">悔棋</span></button>
+        <button id="btnSound" type="button" class="px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-xl bg-white/12 hover:bg-white/20 active:scale-95 text-amber-50 font-bold text-xs border border-white/15 transition" title="音效開關">🔊 <span class="hidden sm:inline">音效</span></button>
+        <button id="btnRules" type="button" class="px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-xl bg-white/12 hover:bg-white/20 active:scale-95 text-amber-50 font-bold text-xs border border-white/15 transition" title="規則說明">📖 <span class="hidden sm:inline">規則</span></button>
+        <button id="btnFullscreen" type="button" class="px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-xl bg-white/12 hover:bg-white/20 active:scale-95 text-amber-50 font-bold text-xs border border-white/15 transition inline-flex items-center gap-1" title="全螢幕切換"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg><span class="hidden md:inline">全螢幕</span></button>
+        <button id="btnRestart" type="button" class="px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 active:scale-95 text-white font-bold text-xs shadow-sm transition" title="重新開局">↻ <span class="hidden sm:inline">重玩</span></button>
+      </div>
+    </header>
+
+    <!-- Main Full-Viewport Responsive Arena -->
+    <main class="w-full max-w-6xl mx-auto flex-1 min-h-0 flex flex-col lg:flex-row items-stretch justify-between lg:justify-center gap-1.5 sm:gap-3 overflow-hidden">
+
+      <!-- Blue Player HUD (Top on Mobile, Left on Desktop) -->
+      <aside id="bluePanel" class="player-card rotate-180 lg:rotate-0 w-full lg:w-60 lg:self-center lg:h-full lg:max-h-[660px] shrink-0 rounded-2xl px-2.5 py-1.5 sm:p-3 flex flex-col justify-between order-1">
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-1.5 min-w-0">
+            <span class="w-3 h-3 rounded-full bg-blue-600 shadow-sm shrink-0"></span>
+            <h2 class="font-black text-blue-900 text-xs sm:text-sm lg:text-base truncate">藍方（上方）</h2>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <span id="blueLastTime" class="text-[10px] sm:text-xs font-bold text-blue-700/80 timer-digits hidden">上步 00:00</span>
+            <span id="blueRemain" class="text-[11px] sm:text-xs font-black px-2 py-0.5 rounded-full bg-blue-100 text-blue-800">剩 8</span>
+          </div>
+        </div>
+
+        <div class="mt-1 lg:mt-2 flex items-center lg:flex-col lg:items-stretch gap-1.5 flex-1 min-h-0">
+          <div class="text-[10px] sm:text-xs font-bold text-slate-500 shrink-0 flex items-center justify-between">
+            <span>已失<span class="hidden lg:inline">去的棋子</span>：</span>
+            <span id="blueLostCount" class="text-blue-700 font-black ml-0.5">0</span>
+          </div>
+          <div id="blueLostTray" class="lost-scroll flex-1 min-h-[34px] lg:min-h-[160px] rounded-xl bg-blue-50/85 border border-blue-200/80 px-1.5 py-1 lg:p-2 flex flex-nowrap lg:flex-wrap items-center lg:items-start lg:content-start gap-1 overflow-x-auto lg:overflow-y-auto">
+            <span class="text-[11px] text-slate-400 mx-auto">暫無失去棋子</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Center Maximized Board Stage -->
+      <section id="boardStage" class="order-2 flex-1 min-h-0 min-w-0 h-full w-full flex flex-col items-center justify-center overflow-hidden py-0.5">
+        <div id="boardWrapper" class="wood-frame p-1.5 sm:p-2.5 rounded-2xl flex items-center justify-center">
+          <canvas id="boardCanvas" class="rounded-xl"></canvas>
+        </div>
+        <div id="statusHint" class="mt-1 text-[11px] sm:text-xs font-medium text-amber-100/80 text-center truncate max-w-full px-2">
+          點擊紅色棋子開始第一步行棋（行完即開始計時）
+        </div>
+      </section>
+
+      <!-- Red Player HUD (Bottom on Mobile, Right on Desktop) -->
+      <aside id="redPanel" class="player-card w-full lg:w-60 lg:self-center lg:h-full lg:max-h-[660px] shrink-0 rounded-2xl px-2.5 py-1.5 sm:p-3 flex flex-col justify-between order-3">
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-1.5 min-w-0">
+            <span class="w-3 h-3 rounded-full bg-red-600 shadow-sm shrink-0"></span>
+            <h2 class="font-black text-red-900 text-xs sm:text-sm lg:text-base truncate">紅方（下方）</h2>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <span id="redLastTime" class="text-[10px] sm:text-xs font-bold text-red-700/80 timer-digits hidden">上步 00:00</span>
+            <span id="redRemain" class="text-[11px] sm:text-xs font-black px-2 py-0.5 rounded-full bg-red-100 text-red-800">剩 8</span>
+          </div>
+        </div>
+
+        <div class="mt-1 lg:mt-2 flex items-center lg:flex-col lg:items-stretch gap-1.5 flex-1 min-h-0">
+          <div class="text-[10px] sm:text-xs font-bold text-slate-500 shrink-0 flex items-center justify-between">
+            <span>已失<span class="hidden lg:inline">去的棋子</span>：</span>
+            <span id="redLostCount" class="text-red-700 font-black ml-0.5">0</span>
+          </div>
+          <div id="redLostTray" class="lost-scroll flex-1 min-h-[34px] lg:min-h-[160px] rounded-xl bg-red-50/85 border border-red-200/80 px-1.5 py-1 lg:p-2 flex flex-nowrap lg:flex-wrap items-center lg:items-start lg:content-start gap-1 overflow-x-auto lg:overflow-y-auto">
+            <span class="text-[11px] text-slate-400 mx-auto">暫無失去棋子</span>
+          </div>
+        </div>
+
+        <!-- Desktop-only Compact Food Chain Reference -->
+        <div class="mt-2.5 pt-2 border-t border-amber-900/15 hidden lg:block shrink-0">
+          <div class="text-[11px] font-bold text-amber-900/75 mb-1">大小次序（大食細，同級互食）</div>
+          <div class="text-xs font-bold text-amber-950 bg-amber-100/80 rounded-xl px-2 py-1.5 text-center leading-relaxed">
+            象(8) &gt; 獅(7) &gt; 虎(6) &gt; 豹(5)<br/>
+            &gt; 狼(4) &gt; 狗(3) &gt; 貓(2) &gt; 鼠(1)<br/>
+            <span class="text-red-700">★ 鼠(1) 可食 象(8)！</span>
+          </div>
+        </div>
+      </aside>
+
+    </main>
+  </div>
+
+  <!-- Rules Modal -->
+  <div id="rulesModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/65 p-4 backdrop-blur-xs">
+    <div class="bg-[#fffcf5] text-amber-950 border-2 border-amber-700/40 rounded-2xl max-w-md w-full p-5 shadow-2xl max-h-[88dvh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-black text-amber-950">📖 鬥獸棋正統規則</h3>
+        <button id="btnCloseRules" type="button" class="w-8 h-8 rounded-full bg-amber-100 hover:bg-amber-200 text-amber-950 font-bold flex items-center justify-center">✕</button>
+      </div>
+      <ul class="space-y-2.5 text-sm text-amber-950/90 leading-relaxed">
+        <li><strong class="text-amber-900">1. 棋子大小：</strong>象(8) &gt; 獅(7) &gt; 虎(6) &gt; 豹(5) &gt; 狼(4) &gt; 狗(3) &gt; 貓(2) &gt; 鼠(1)。大可以食細，同級可以互食。</li>
+        <li><strong class="text-red-700">2. 鼠食象：</strong>老鼠係唯一可以食大象嘅棋子；大象唔可以食老鼠。</li>
+        <li><strong class="text-blue-700">3. 落水游水：</strong>只有<strong>老鼠</strong>可以落河。喺水入面嘅老鼠唔可以食岸上動物，岸上動物亦唔可以食水中嘅老鼠（水中只可以鼠食鼠）。</li>
+        <li><strong class="text-orange-700">4. 跳河：</strong><strong>獅子</strong>同<strong>老虎</strong>企喺河邊時，可以直線（橫或直）跳過條河到對岸，仲可以直接食對岸比自己細或同級嘅敵棋！但如果河道中間有老鼠擋住（無論敵我），就唔可以跳過去。</li>
+        <li><strong class="text-purple-700">5. 三個陷阱：</strong>敵方棋子踩入我方陷阱時，戰力即刻變 <strong>0</strong>，我方任何一隻棋都可以食咗佢！踩自己陷阱唔會扣戰力。</li>
+        <li><strong class="text-emerald-700">6. 洞穴勝利：</strong>唔可以行入自己嘅洞穴。先成功行入對方<strong>獸穴</strong>，或者食曬對方所有棋子，就即時勝出！</li>
+        <li><strong class="text-amber-800">7. 每步計時：</strong>每行完一步，上方計時器會自動由 00:00 重新開始計，唔設限時，純粹記錄每步諗咗幾耐。</li>
+      </ul>
+      <button id="btnCloseRulesBottom" type="button" class="mt-4 w-full py-2.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white font-bold text-sm">明白，繼續捉棋！</button>
+    </div>
+  </div>
+
+  <!-- Restart Confirm Modal -->
+  <div id="restartModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/65 p-4">
+    <div class="bg-[#fffcf5] text-amber-950 border-2 border-amber-700/40 rounded-2xl max-w-xs w-full p-5 shadow-2xl text-center">
+      <div class="text-3xl mb-2">🔄</div>
+      <h3 class="text-lg font-black text-amber-950 mb-1">確定重新開局？</h3>
+      <p class="text-sm text-amber-900/75 mb-4">目前嘅棋局進度同計時將會重設。</p>
+      <div class="flex gap-2">
+        <button id="btnCancelRestart" type="button" class="flex-1 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 font-bold text-sm">取消</button>
+        <button id="btnConfirmRestart" type="button" class="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-sm">重新開局</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Victory Modal -->
+  <div id="victoryModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/65 p-4">
+    <div class="bg-[#fffcf5] text-amber-950 border-4 border-amber-500 rounded-3xl max-w-sm w-full p-6 shadow-2xl text-center pop-in">
+      <div class="text-5xl mb-2">🏆</div>
+      <h2 id="victoryTitle" class="text-2xl font-black text-red-700 mb-1">紅方勝出！</h2>
+      <p id="victoryReason" class="text-sm font-bold text-amber-900/80 mb-5">成功攻入對方獸穴！</p>
+      <div class="flex gap-2">
+        <button id="btnCloseVictory" type="button" class="flex-1 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 font-bold text-sm">睇下棋盤</button>
+        <button id="btnPlayAgain" type="button" class="flex-1 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 text-white font-bold text-sm shadow-md">再捉一盤！</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  'use strict';
+
+  // ==================== CONSTANTS & BOARD DEFINITION ====================
+  const COLS = 7;
+  const ROWS = 9;
+
+  const ANIMALS = {
+    8: { rank: 8, name: '象', title: '大象' },
+    7: { rank: 7, name: '獅', title: '獅子' },
+    6: { rank: 6, name: '虎', title: '老虎' },
+    5: { rank: 5, name: '豹', title: '花豹' },
+    4: { rank: 4, name: '狼', title: '野狼' },
+    3: { rank: 3, name: '狗', title: '獵狗' },
+    2: { rank: 2, name: '貓', title: '小貓' },
+    1: { rank: 1, name: '鼠', title: '老鼠' }
+  };
+
+  const BLUE_DEN = { c: 3, r: 0 };
+  const RED_DEN  = { c: 3, r: 8 };
+
+  const BLUE_TRAPS = [{ c: 2, r: 0 }, { c: 4, r: 0 }, { c: 3, r: 1 }];
+  const RED_TRAPS  = [{ c: 2, r: 8 }, { c: 4, r: 8 }, { c: 3, r: 7 }];
+
+  function isRiver(c, r) {
+    return (r >= 3 && r <= 5) && ((c === 1 || c === 2) || (c === 4 || c === 5));
+  }
+
+  function isDen(c, r, side) {
+    if (side === 'blue') return c === BLUE_DEN.c && r === BLUE_DEN.r;
+    if (side === 'red') return c === RED_DEN.c && r === RED_DEN.r;
+    return (c === BLUE_DEN.c && r === BLUE_DEN.r) || (c === RED_DEN.c && r === RED_DEN.r);
+  }
+
+  function isTrap(c, r, side) {
+    if (side === 'blue') return BLUE_TRAPS.some(t => t.c === c && t.r === r);
+    if (side === 'red') return RED_TRAPS.some(t => t.c === c && t.r === r);
+    return BLUE_TRAPS.some(t => t.c === c && t.r === r) || RED_TRAPS.some(t => t.c === c && t.r === r);
+  }
+
+  function inBounds(c, r) {
+    return c >= 0 && c < COLS && r >= 0 && r < ROWS;
+  }
+
+  function createInitialPieces() {
+    let id = 1;
+    const make = (side, rank, c, r) => ({ id: id++, side, rank, c, r });
+    return [
+      // Blue (Top, rows 0-2)
+      make('blue', 7, 0, 0), // 獅
+      make('blue', 6, 6, 0), // 虎
+      make('blue', 3, 1, 1), // 狗
+      make('blue', 2, 5, 1), // 貓
+      make('blue', 1, 0, 2), // 鼠
+      make('blue', 5, 2, 2), // 豹
+      make('blue', 4, 4, 2), // 狼
+      make('blue', 8, 6, 2), // 象
+      // Red (Bottom, rows 6-8)
+      make('red', 8, 0, 6),  // 象
+      make('red', 4, 2, 6),  // 狼
+      make('red', 5, 4, 6),  // 豹
+      make('red', 1, 6, 6),  // 鼠
+      make('red', 2, 1, 7),  // 貓
+      make('red', 3, 5, 7),  // 狗
+      make('red', 6, 0, 8),  // 虎
+      make('red', 7, 6, 8)   // 獅
+    ];
+  }
+
+  // ==================== WEB AUDIO SYNTHESIZER ====================
+  let audioCtx = null;
+  let soundEnabled = true;
+
+  function ensureAudio() {
+    if (!soundEnabled) return null;
+    if (!audioCtx) {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (Ctx) audioCtx = new Ctx();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume().catch(() => {});
+    }
+    return audioCtx;
+  }
+
+  function playSound(type) {
+    const ctx = ensureAudio();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    if (type === 'select') {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(520, now);
+      osc.frequency.exponentialRampToValueAtTime(720, now + 0.06);
+      gain.gain.setValueAtTime(0.12, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.08);
+    } else if (type === 'walk') {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(220, now);
+      osc.frequency.exponentialRampToValueAtTime(110, now + 0.09);
+      gain.gain.setValueAtTime(0.22, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.1);
+    } else if (type === 'jump') {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(220, now);
+      osc.frequency.exponentialRampToValueAtTime(640, now + 0.18);
+      osc.frequency.exponentialRampToValueAtTime(180, now + 0.42);
+      gain.gain.setValueAtTime(0.16, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.46);
+    } else if (type === 'splash') {
+      const bufferSize = Math.floor(ctx.sampleRate * 0.28);
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.35));
+      }
+      const noise = ctx.createBufferSource();
+      noise.buffer = buffer;
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(900, now);
+      filter.frequency.exponentialRampToValueAtTime(360, now + 0.25);
+      filter.Q.value = 1.4;
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.32, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+      noise.connect(filter).connect(gain).connect(ctx.destination);
+      noise.start(now);
+      noise.stop(now + 0.28);
+    } else if (type === 'capture') {
+      const freqs = [330, 440, 620];
+      freqs.forEach((f, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(f, now + idx * 0.045);
+        gain.gain.setValueAtTime(0.18, now + idx * 0.045);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.045 + 0.14);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(now + idx * 0.045);
+        osc.stop(now + idx * 0.045 + 0.15);
+      });
+    } else if (type === 'trap') {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(340, now);
+      osc.frequency.linearRampToValueAtTime(190, now + 0.22);
+      gain.gain.setValueAtTime(0.11, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.26);
+    } else if (type === 'win') {
+      const notes = [523.25, 659.25, 783.99, 1046.5];
+      notes.forEach((f, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(f, now + idx * 0.11);
+        gain.gain.setValueAtTime(0.2, now + idx * 0.11);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.11 + 0.35);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(now + idx * 0.11);
+        osc.stop(now + idx * 0.11 + 0.36);
+      });
+    }
+  }
+
+  // ==================== GAME & TIMER STATE ====================
+  let pieces = [];
+  let capturedRed = [];
+  let capturedBlue = [];
+  let currentTurn = 'red';
+  let selectedPieceId = null;
+  let validMoves = [];
+  let lastMove = null;
+  let history = [];
+  let gameOver = false;
+  let winner = null;
+
+  // Per-move stopwatch (starts after first move, resets to 00:00 after every move)
+  let timerRunning = false;
+  let turnStartTs = 0;
+  let timerIntervalId = null;
+  let lastMoveDurationSec = { red: null, blue: null };
+
+  // Animation state
+  let activeAnim = null;
+  let particles = [];
+  let ripples = [];
+  let floatingTexts = [];
+  let rafId = null;
+
+  // Canvas geometry
+  const canvas = document.getElementById('boardCanvas');
+  const ctx = canvas.getContext('2d');
+  let cellSize = 56;
+  let boardPad = 8;
+  let dpr = 1;
+
+  function formatDuration(sec) {
+    const safe = Math.max(0, Math.floor(sec));
+    const m = Math.floor(safe / 60);
+    const s = safe % 60;
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  }
+
+  function updateTimerDisplay() {
+    const el = document.getElementById('moveTimerText');
+    if (!timerRunning) {
+      el.textContent = '00:00';
+      return;
+    }
+    const elapsedSec = (Date.now() - turnStartTs) / 1000;
+    el.textContent = formatDuration(elapsedSec);
+  }
+
+  function restartTurnTimer() {
+    if (timerIntervalId) {
+      clearInterval(timerIntervalId);
+      timerIntervalId = null;
+    }
+    timerRunning = true;
+    turnStartTs = Date.now();
+    updateTimerDisplay();
+    timerIntervalId = setInterval(updateTimerDisplay, 250);
+  }
+
+  function stopTurnTimer(resetToZero = false) {
+    if (timerIntervalId) {
+      clearInterval(timerIntervalId);
+      timerIntervalId = null;
+    }
+    if (resetToZero) {
+      timerRunning = false;
+      turnStartTs = 0;
+      document.getElementById('moveTimerText').textContent = '00:00';
+    }
+  }
+
+  // ==================== RULES ENGINE ====================
+  function getPieceAt(c, r, list = pieces) {
+    return list.find(p => p.c === c && p.r === r) || null;
+  }
+
+  function canCapture(attacker, defender, fromC, fromR, toC, toR) {
+    if (!defender || attacker.side === defender.side) return false;
+    const attackerInRiver = isRiver(fromC, fromR);
+    const defenderInRiver = isRiver(toC, toR);
+    if (attackerInRiver !== defenderInRiver) return false;
+    if (isTrap(toC, toR, attacker.side)) return true;
+    if (attacker.rank === 1 && defender.rank === 8) return true;
+    if (attacker.rank === 8 && defender.rank === 1) return false;
+    return attacker.rank >= defender.rank;
+  }
+
+  function getValidMovesForPiece(piece, list = pieces) {
+    const moves = [];
+    const dirs = [
+      { dc: 0, dr: -1 },
+      { dc: 0, dr: 1 },
+      { dc: -1, dr: 0 },
+      { dc: 1, dr: 0 }
+    ];
+
+    for (const { dc, dr } of dirs) {
+      const nc = piece.c + dc;
+      const nr = piece.r + dr;
+      if (!inBounds(nc, nr)) continue;
+      if (isDen(nc, nr, piece.side)) continue;
+
+      if (isRiver(nc, nr)) {
+        if (piece.rank === 1) {
+          const target = getPieceAt(nc, nr, list);
+          if (!target) {
+            moves.push({
+              c: nc, r: nr,
+              kind: isRiver(piece.c, piece.r) ? 'swim' : 'splashIn',
+              capture: null
+            });
+          } else if (canCapture(piece, target, piece.c, piece.r, nc, nr)) {
+            moves.push({ c: nc, r: nr, kind: 'swim', capture: target });
+          }
+        } else if (piece.rank === 7 || piece.rank === 6) {
+          let jc = nc;
+          let jr = nr;
+          let blocked = false;
+          while (inBounds(jc, jr) && isRiver(jc, jr)) {
+            if (getPieceAt(jc, jr, list)) {
+              blocked = true;
+              break;
+            }
+            jc += dc;
+            jr += dr;
+          }
+          if (!blocked && inBounds(jc, jr) && !isRiver(jc, jr) && !isDen(jc, jr, piece.side)) {
+            const target = getPieceAt(jc, jr, list);
+            if (!target) {
+              moves.push({ c: jc, r: jr, kind: 'jump', capture: null });
+            } else if (canCapture(piece, target, piece.c, piece.r, jc, jr)) {
+              moves.push({ c: jc, r: jr, kind: 'jump', capture: target });
+            }
+          }
+        }
+      } else {
+        const target = getPieceAt(nc, nr, list);
+        const leavingRiver = isRiver(piece.c, piece.r);
+        if (!target) {
+          moves.push({
+            c: nc, r: nr,
+            kind: leavingRiver ? 'splashOut' : 'walk',
+            capture: null
+          });
+        } else if (canCapture(piece, target, piece.c, piece.r, nc, nr)) {
+          moves.push({
+            c: nc, r: nr,
+            kind: leavingRiver ? 'splashOut' : 'walk',
+            capture: target
+          });
+        }
+      }
+    }
+    return moves;
+  }
+
+  function hasAnyLegalMove(side) {
+    return pieces.some(p => p.side === side && getValidMovesForPiece(p).length > 0);
+  }
+
+  // ==================== PARTICLE & EFFECT HELPERS ====================
+  function cellCenter(c, r) {
+    return {
+      x: boardPad + c * cellSize + cellSize / 2,
+      y: boardPad + r * cellSize + cellSize / 2
+    };
+  }
+
+  function spawnSplash(x, y, count = 16) {
+    ripples.push({ x, y, r: cellSize * 0.14, maxR: cellSize * 0.72, alpha: 0.9, color: '#e0f2fe' });
+    ripples.push({ x, y, r: cellSize * 0.06, maxR: cellSize * 0.52, alpha: 0.75, color: '#7dd3fc' });
+    for (let i = 0; i < count; i++) {
+      const ang = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.35;
+      const spd = 1.4 + Math.random() * 2.6;
+      particles.push({
+        x, y,
+        vx: Math.cos(ang) * spd,
+        vy: Math.sin(ang) * spd - 1.5,
+        gravity: 0.12,
+        size: 2.5 + Math.random() * 3.5,
+        color: i % 2 === 0 ? '#bae6fd' : '#ffffff',
+        life: 1,
+        decay: 0.028 + Math.random() * 0.015
+      });
+    }
+  }
+
+  function spawnDust(x, y, color = '#d6c39b', count = 10) {
+    ripples.push({ x, y, r: cellSize * 0.18, maxR: cellSize * 0.62, alpha: 0.65, color });
+    for (let i = 0; i < count; i++) {
+      const ang = Math.random() * Math.PI * 2;
+      const spd = 0.8 + Math.random() * 2.0;
+      particles.push({
+        x, y,
+        vx: Math.cos(ang) * spd,
+        vy: Math.sin(ang) * spd - 0.4,
+        gravity: 0.04,
+        size: 2.5 + Math.random() * 3,
+        color,
+        life: 1,
+        decay: 0.035 + Math.random() * 0.015
+      });
+    }
+  }
+
+  function spawnCaptureBurst(x, y, victimSide) {
+    const colors = victimSide === 'red'
+      ? ['#ef4444', '#fca5a5', '#fde047', '#ffffff']
+      : ['#3b82f6', '#93c5fd', '#fde047', '#ffffff'];
+    ripples.push({ x, y, r: cellSize * 0.15, maxR: cellSize * 0.85, alpha: 0.9, color: '#facc15' });
+    for (let i = 0; i < 22; i++) {
+      const ang = (Math.PI * 2 * i) / 22 + (Math.random() - 0.5) * 0.3;
+      const spd = 1.8 + Math.random() * 3.5;
+      particles.push({
+        x, y,
+        vx: Math.cos(ang) * spd,
+        vy: Math.sin(ang) * spd - 0.8,
+        gravity: 0.08,
+        size: 3 + Math.random() * 4,
+        color: colors[i % colors.length],
+        life: 1,
+        decay: 0.025 + Math.random() * 0.015
+      });
+    }
+  }
+
+  function spawnFloatingText(x, y, text, color = '#991b1b') {
+    floatingTexts.push({ x, y, vy: -0.9, text, color, life: 1, decay: 0.018 });
+  }
+
+  // ==================== MOVE EXECUTION ====================
+  function executeMove(piece, move) {
+    // Record how long this player took on this move (if timer was already running)
+    if (timerRunning) {
+      lastMoveDurationSec[piece.side] = Math.floor((Date.now() - turnStartTs) / 1000);
+    }
+
+    history.push({
+      pieces: pieces.map(p => ({ ...p })),
+      capturedRed: capturedRed.map(p => ({ ...p })),
+      capturedBlue: capturedBlue.map(p => ({ ...p })),
+      currentTurn,
+      lastMove: lastMove ? { ...lastMove } : null,
+      lastMoveDurationSec: { ...lastMoveDurationSec }
+    });
+
+    const fromC = piece.c;
+    const fromR = piece.r;
+    const toC = move.c;
+    const toR = move.r;
+    const victim = move.capture ? pieces.find(p => p.id === move.capture.id) : null;
+
+    selectedPieceId = null;
+    validMoves = [];
+
+    const durationMap = { walk: 250, swim: 280, splashIn: 370, splashOut: 330, jump: 510 };
+    const duration = durationMap[move.kind] || 260;
+
+    if (move.kind === 'jump') {
+      playSound('jump');
+      const mid = cellCenter((fromC + toC) / 2, (fromR + toR) / 2);
+      spawnFloatingText(mid.x, mid.y - cellSize * 0.25, '跳河！', '#b45309');
+    } else if (move.kind === 'splashIn') {
+      playSound('splash');
+    } else if (move.kind === 'splashOut') {
+      playSound('splash');
+      const startPt = cellCenter(fromC, fromR);
+      spawnSplash(startPt.x, startPt.y, 10);
+    }
+
+    activeAnim = {
+      pieceId: piece.id,
+      fromC, fromR, toC, toR,
+      kind: move.kind,
+      victim,
+      startTime: performance.now(),
+      duration
+    };
+  }
+
+  function finishAnimation(anim) {
+    const piece = pieces.find(p => p.id === anim.pieceId);
+    if (!piece) {
+      activeAnim = null;
+      return;
+    }
+
+    piece.c = anim.toC;
+    piece.r = anim.toR;
+    lastMove = { fromC: anim.fromC, fromR: anim.fromR, toC: anim.toC, toR: anim.toR };
+
+    const endPt = cellCenter(anim.toC, anim.toR);
+
+    if (anim.kind === 'splashIn') {
+      spawnSplash(endPt.x, endPt.y, 18);
+      spawnFloatingText(endPt.x, endPt.y - cellSize * 0.35, '落水！', '#0369a1');
+    } else if (anim.kind === 'swim') {
+      ripples.push({ x: endPt.x, y: endPt.y, r: cellSize * 0.12, maxR: cellSize * 0.56, alpha: 0.75, color: '#bae6fd' });
+      playSound('splash');
+    } else if (anim.kind === 'jump') {
+      spawnDust(endPt.x, endPt.y, '#d6b67c', 14);
+      if (!anim.victim) playSound('walk');
+    } else {
+      spawnDust(endPt.x, endPt.y, '#c9b58b', 6);
+      if (!anim.victim) playSound('walk');
+    }
+
+    if (anim.victim) {
+      pieces = pieces.filter(p => p.id !== anim.victim.id);
+      if (anim.victim.side === 'red') {
+        capturedRed.push(anim.victim);
+        capturedRed.sort((a, b) => b.rank - a.rank);
+      } else {
+        capturedBlue.push(anim.victim);
+        capturedBlue.sort((a, b) => b.rank - a.rank);
+      }
+      playSound('capture');
+      spawnCaptureBurst(endPt.x, endPt.y, anim.victim.side);
+
+      const label = (piece.rank === 1 && anim.victim.rank === 8)
+        ? '鼠食象！'
+        : `食咗 ${ANIMALS[anim.victim.rank].name}！`;
+      spawnFloatingText(endPt.x, endPt.y - cellSize * 0.42, label, piece.side === 'red' ? '#b91c1c' : '#1d4ed8');
+    }
+
+    const oppSide = piece.side === 'red' ? 'blue' : 'red';
+    if (isTrap(piece.c, piece.r, oppSide)) {
+      playSound('trap');
+      spawnFloatingText(endPt.x, endPt.y - cellSize * 0.18, '中陷阱！', '#7e22ce');
+    }
+
+    activeAnim = null;
+
+    if (isDen(piece.c, piece.r, oppSide)) {
+      triggerWin(piece.side, `${piece.side === 'red' ? '紅方' : '藍方'}嘅${ANIMALS[piece.rank].title}成功攻入對方獸穴！`);
+      return;
+    }
+
+    const oppPieces = pieces.filter(p => p.side === oppSide);
+    if (oppPieces.length === 0) {
+      triggerWin(piece.side, `${piece.side === 'red' ? '紅方' : '藍方'}食曬對方所有棋子！`);
+      return;
+    }
+
+    currentTurn = oppSide;
+
+    if (!hasAnyLegalMove(currentTurn)) {
+      triggerWin(piece.side, `${currentTurn === 'red' ? '紅方' : '藍方'}已無棋可行！`);
+      return;
+    }
+
+    // Start / reset per-move stopwatch from 00:00 on every completed move!
+    restartTurnTimer();
+    updateUI();
+  }
+
+  function triggerWin(side, reason) {
+    gameOver = true;
+    winner = side;
+    stopTurnTimer(false);
+    playSound('win');
+    updateUI();
+
+    const titleEl = document.getElementById('victoryTitle');
+    const reasonEl = document.getElementById('victoryReason');
+    titleEl.textContent = side === 'red' ? '紅方勝出！' : '藍方勝出！';
+    titleEl.className = `text-2xl font-black mb-1 ${side === 'red' ? 'text-red-700' : 'text-blue-700'}`;
+    reasonEl.textContent = reason;
+    const modal = document.getElementById('victoryModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+
+  function undoMove() {
+    if (activeAnim || history.length === 0) return;
+    const prev = history.pop();
+    pieces = prev.pieces;
+    capturedRed = prev.capturedRed;
+    capturedBlue = prev.capturedBlue;
+    currentTurn = prev.currentTurn;
+    lastMove = prev.lastMove;
+    lastMoveDurationSec = { ...prev.lastMoveDurationSec };
+    selectedPieceId = null;
+    validMoves = [];
+    gameOver = false;
+    winner = null;
+    document.getElementById('victoryModal').classList.add('hidden');
+    document.getElementById('victoryModal').classList.remove('flex');
+    if (history.length === 0) {
+      stopTurnTimer(true);
+    } else {
+      restartTurnTimer();
+    }
+    playSound('select');
+    updateUI();
+  }
+
+  function resetGame() {
+    pieces = createInitialPieces();
+    capturedRed = [];
+    capturedBlue = [];
+    currentTurn = 'red';
+    selectedPieceId = null;
+    validMoves = [];
+    lastMove = null;
+    history = [];
+    gameOver = false;
+    winner = null;
+    activeAnim = null;
+    particles = [];
+    ripples = [];
+    floatingTexts = [];
+    lastMoveDurationSec = { red: null, blue: null };
+    stopTurnTimer(true);
+    document.getElementById('victoryModal').classList.add('hidden');
+    document.getElementById('victoryModal').classList.remove('flex');
+    updateUI();
+  }
+
+  // ==================== CUSTOM ANIMAL VECTOR PORTRAITS ====================
+  function drawAnimalFace(c2d, rank, cx, cy, r) {
+    c2d.save();
+    c2d.translate(cx, cy);
+    c2d.lineJoin = 'round';
+    c2d.lineCap = 'round';
+
+    if (rank === 8) {
+      c2d.fillStyle = '#94a3b8';
+      c2d.strokeStyle = '#475569';
+      c2d.lineWidth = Math.max(1.2, r * 0.08);
+      c2d.beginPath();
+      c2d.ellipse(-r * 0.62, -r * 0.05, r * 0.38, r * 0.52, -0.25, 0, Math.PI * 2);
+      c2d.ellipse(r * 0.62, -r * 0.05, r * 0.38, r * 0.52, 0.25, 0, Math.PI * 2);
+      c2d.fill(); c2d.stroke();
+      c2d.fillStyle = '#f9a8d4';
+      c2d.beginPath();
+      c2d.ellipse(-r * 0.62, 0, r * 0.2, r * 0.3, -0.2, 0, Math.PI * 2);
+      c2d.ellipse(r * 0.62, 0, r * 0.2, r * 0.3, 0.2, 0, Math.PI * 2);
+      c2d.fill();
+      c2d.fillStyle = '#cbd5e1';
+      c2d.beginPath();
+      c2d.arc(0, -r * 0.08, r * 0.56, 0, Math.PI * 2);
+      c2d.fill(); c2d.stroke();
+      c2d.fillStyle = '#ffffff';
+      c2d.beginPath();
+      c2d.moveTo(-r * 0.28, r * 0.2); c2d.quadraticCurveTo(-r * 0.42, r * 0.48, -r * 0.16, r * 0.48); c2d.closePath();
+      c2d.moveTo(r * 0.28, r * 0.2); c2d.quadraticCurveTo(r * 0.42, r * 0.48, r * 0.16, r * 0.48); c2d.closePath();
+      c2d.fill();
+      c2d.fillStyle = '#94a3b8';
+      c2d.beginPath();
+      c2d.moveTo(-r * 0.15, r * 0.05);
+      c2d.quadraticCurveTo(-r * 0.12, r * 0.68, r * 0.22, r * 0.62);
+      c2d.quadraticCurveTo(r * 0.3, r * 0.56, r * 0.14, r * 0.46);
+      c2d.quadraticCurveTo(r * 0.08, r * 0.32, r * 0.15, r * 0.05);
+      c2d.fill(); c2d.stroke();
+      c2d.fillStyle = '#1e293b';
+      c2d.beginPath();
+      c2d.arc(-r * 0.22, -r * 0.14, r * 0.08, 0, Math.PI * 2);
+      c2d.arc(r * 0.22, -r * 0.14, r * 0.08, 0, Math.PI * 2);
+      c2d.fill();
+    } else if (rank === 7) {
+      c2d.fillStyle = '#b45309';
+      c2d.strokeStyle = '#78350f';
+      c2d.lineWidth = Math.max(1.2, r * 0.07);
+      const spikes = 12;
+      c2d.beginPath();
+      for (let i = 0; i < spikes; i++) {
+        const a = (i / spikes) * Math.PI * 2;
+        const mx = Math.cos(a) * r * 0.72;
+        const my = Math.sin(a) * r * 0.72;
+        c2d.moveTo(mx + r * 0.25, my);
+        c2d.arc(mx, my, r * 0.25, 0, Math.PI * 2);
+      }
+      c2d.fill();
+      c2d.fillStyle = '#fbbf24';
+      c2d.beginPath();
+      c2d.arc(0, 0, r * 0.56, 0, Math.PI * 2);
+      c2d.fill(); c2d.stroke();
+      c2d.fillStyle = '#f59e0b';
+      c2d.beginPath();
+      c2d.arc(-r * 0.42, -r * 0.42, r * 0.18, 0, Math.PI * 2);
+      c2d.arc(r * 0.42, -r * 0.42, r * 0.18, 0, Math.PI * 2);
+      c2d.fill(); c2d.stroke();
+      c2d.fillStyle = '#fef3c7';
+      c2d.beginPath();
+      c2d.ellipse(0, r * 0.2, r * 0.28, r * 0.2, 0, 0, Math.PI * 2);
+      c2d.fill();
+      c2d.fillStyle = '#78350f';
+      c2d.beginPath();
+      c2d.moveTo(-r * 0.12, r * 0.08); c2d.lineTo(r * 0.12, r * 0.08); c2d.lineTo(0, r * 0.22); c2d.closePath();
+      c2d.fill();
+      c2d.fillStyle = '#1e293b';
+      c2d.beginPath();
+      c2d.arc(-r * 0.2, -r * 0.12, r * 0.08, 0, Math.PI * 2);
+      c2d.arc(r * 0.2, -r * 0.12, r * 0.08, 0, Math.PI * 2);
+      c2d.fill();
+    } else if (rank === 6) {
+      c2d.fillStyle = '#f97316';
+      c2d.strokeStyle = '#9a3412';
+      c2d.lineWidth = Math.max(1.2, r * 0.08);
+      c2d.beginPath();
+      c2d.arc(-r * 0.48, -r * 0.46, r * 0.22, 0, Math.PI * 2);
+      c2d.arc(r * 0.48, -r * 0.46, r * 0.22, 0, Math.PI * 2);
+      c2d.fill(); c2d.stroke();
+      c2d.beginPath();
+      c2d.arc(0, 0, r * 0.65, 0, Math.PI * 2);
+      c2d.fill(); c2d.stroke();
+      c2d.fillStyle = '#fff7ed';
+      c2d.beginPath();
+      c2d.ellipse(-r * 0.18, r * 0.24, r * 0.22, r * 0.16, 0, 0, Math.PI * 2);
+      c2d.ellipse(r * 0.18, r * 0.24, r * 0.22, r * 0.16, 0, 0, Math.PI * 2);
+      c2d.fill();
+      c2d.strokeStyle = '#1e293b';
+      c2d.lineWidth = Math.max(1.5, r * 0.1);
+      c2d.beginPath();
+      c2d.moveTo(-r * 0.16, -r * 0.44); c2d.lineTo(r * 0.16, -r * 0.44);
+      c2d.moveTo(-r * 0.2, -r * 0.3); c2d.lineTo(r * 0.2, -r * 0.3);
+      c2d.moveTo(0, -r * 0.52); c2d.lineTo(0, -r * 0.22);
+      c2d.moveTo(-r * 0.6, -r * 0.05); c2d.lineTo(-r * 0.38, 0);
+      c2d.moveTo(r * 0.6, -r * 0.05); c2d.lineTo(r * 0.38, 0);
+      c2d.stroke();
+      c2d.fillStyle = '#db2777';
+      c2d.beginPath();
+      c2d.moveTo(-r * 0.11, r * 0.1); c2d.lineTo(r * 0.11, r * 0.1); c2d.lineTo(0, r * 0.22); c2d.closePath();
+      c2d.fill();
+      c2d.fillStyle = '#1e293b';
+      c2d.beginPath();
+      c2d.arc(-r * 0.22, -r * 0.08, r * 0.08, 0, Math.PI * 2);
+      c2d.arc(r * 0.22, -r * 0.08, r * 0.08, 0, Math.PI * 2);
+      c2d.fill();
+    } else if (rank === 5) {
+      c2d.fillStyle = '#facc15';
+      c2d.strokeStyle = '#854d0e';
+      c2d.lineWidth = Math.max(1.2, r * 0.08);
+      c2d.beginPath();
+      c2d.arc(-r * 0.46, -r * 0.46, r * 0.2, 0, Math.PI * 2);
+      c2d.arc(r * 0.46, -r * 0.46, r * 0.2, 0, Math.PI * 2);
+      c2d.fill(); c2d.stroke();
+      c2d.beginPath();
+      c2d.arc(0, 0, r * 0.64, 0, Math.PI * 2);
+      c2d.fill(); c2d.stroke();
+      c2d.fillStyle = '#713f12';
+      [[-0.36, -0.26], [0.36, -0.26], [0, -0.42], [-0.42, 0.12], [0.42, 0.12], [-0.18, -0.34], [0.18, -0.34]].forEach(([sx, sy]) => {
+        c2d.beginPath(); c2d.arc(sx * r, sy * r, r * 0.08, 0, Math.PI * 2); c2d.fill();
+      });
+      c2d.fillStyle = '#fef9c3';
+      c2d.beginPath(); c2d.ellipse(0, r * 0.22, r * 0.26, r * 0.18, 0, 0, Math.PI * 2); c2d.fill();
+      c2d.fillStyle = '#451a03';
+      c2d.beginPath(); c2d.moveTo(-r * 0.1, r * 0.12); c2d.lineTo(r * 0.1, r * 0.12); c2d.lineTo(0, r * 0.22); c2d.closePath(); c2d.fill();
+      c2d.fillStyle = '#1e293b';
+      c2d.beginPath();
+      c2d.arc(-r * 0.22, -r * 0.06, r * 0.08, 0, Math.PI * 2);
+      c2d.arc(r * 0.22, -r * 0.06, r * 0.08, 0, Math.PI * 2);
+      c2d.fill();
+    } else if (rank === 4) {
+      c2d.fillStyle = '#64748b';
+      c2d.strokeStyle = '#334155';
+      c2d.lineWidth = Math.max(1.2, r * 0.08);
+      c2d.beginPath();
+      c2d.moveTo(-r * 0.52, -r * 0.15); c2d.lineTo(-r * 0.5, -r * 0.72); c2d.lineTo(-r * 0.12, -r * 0.45); c2d.closePath();
+      c2d.moveTo(r * 0.52, -r * 0.15); c2d.lineTo(r * 0.5, -r * 0.72); c2d.lineTo(r * 0.12, -r * 0.45); c2d.closePath();
+      c2d.fill(); c2d.stroke();
+      c2d.beginPath(); c2d.arc(0, 0.04 * r, r * 0.6, 0, Math.PI * 2); c2d.fill(); c2d.stroke();
+      c2d.fillStyle = '#f1f5f9';
+      c2d.beginPath();
+      c2d.moveTo(-r * 0.52, r * 0.12);
+      c2d.quadraticCurveTo(0, -r * 0.08, r * 0.52, r * 0.12);
+      c2d.quadraticCurveTo(r * 0.35, r * 0.62, 0, r * 0.64);
+      c2d.quadraticCurveTo(-r * 0.35, r * 0.62, -r * 0.52, r * 0.12);
+      c2d.fill();
+      c2d.fillStyle = '#0f172a';
+      c2d.beginPath(); c2d.ellipse(0, r * 0.32, r * 0.13, r * 0.09, 0, 0, Math.PI * 2); c2d.fill();
+      c2d.fillStyle = '#fef08a';
+      c2d.beginPath();
+      c2d.arc(-r * 0.22, -r * 0.06, r * 0.1, 0, Math.PI * 2);
+      c2d.arc(r * 0.22, -r * 0.06, r * 0.1, 0, Math.PI * 2);
+      c2d.fill();
+      c2d.fillStyle = '#0f172a';
+      c2d.beginPath();
+      c2d.arc(-r * 0.22, -r * 0.06, r * 0.055, 0, Math.PI * 2);
+      c2d.arc(r * 0.22, -r * 0.06, r * 0.055, 0, Math.PI * 2);
+      c2d.fill();
+    } else if (rank === 3) {
+      c2d.fillStyle = '#92400e';
+      c2d.strokeStyle = '#451a03';
+      c2d.lineWidth = Math.max(1.2, r * 0.08);
+      c2d.beginPath();
+      c2d.ellipse(-r * 0.56, r * 0.05, r * 0.24, r * 0.45, 0.25, 0, Math.PI * 2);
+      c2d.ellipse(r * 0.56, r * 0.05, r * 0.24, r * 0.45, -0.25, 0, Math.PI * 2);
+      c2d.fill(); c2d.stroke();
+      c2d.fillStyle = '#d97706';
+      c2d.beginPath(); c2d.arc(0, 0, r * 0.58, 0, Math.PI * 2); c2d.fill(); c2d.stroke();
+      c2d.fillStyle = '#fef3c7';
+      c2d.beginPath(); c2d.ellipse(0, r * 0.2, r * 0.34, r * 0.24, 0, 0, Math.PI * 2); c2d.fill();
+      c2d.fillStyle = '#f43f5e';
+      c2d.beginPath(); c2d.ellipse(0, r * 0.42, r * 0.12, r * 0.14, 0, 0, Math.PI * 2); c2d.fill();
+      c2d.fillStyle = '#1e293b';
+      c2d.beginPath(); c2d.ellipse(0, r * 0.14, r * 0.13, r * 0.09, 0, 0, Math.PI * 2); c2d.fill();
+      c2d.beginPath();
+      c2d.arc(-r * 0.22, -r * 0.12, r * 0.085, 0, Math.PI * 2);
+      c2d.arc(r * 0.22, -r * 0.12, r * 0.085, 0, Math.PI * 2);
+      c2d.fill();
+    } else if (rank === 2) {
+      c2d.fillStyle = '#fdba74';
+      c2d.strokeStyle = '#9a3412';
+      c2d.lineWidth = Math.max(1.2, r * 0.08);
+      c2d.beginPath();
+      c2d.moveTo(-r * 0.52, -r * 0.1); c2d.lineTo(-r * 0.52, -r * 0.68); c2d.lineTo(-r * 0.1, -r * 0.44); c2d.closePath();
+      c2d.moveTo(r * 0.52, -r * 0.1); c2d.lineTo(r * 0.52, -r * 0.68); c2d.lineTo(r * 0.1, -r * 0.44); c2d.closePath();
+      c2d.fill(); c2d.stroke();
+      c2d.fillStyle = '#ffedd5';
+      c2d.beginPath(); c2d.ellipse(0, r * 0.04, r * 0.6, r * 0.54, 0, 0, Math.PI * 2); c2d.fill(); c2d.stroke();
+      c2d.strokeStyle = '#7c2d12';
+      c2d.lineWidth = Math.max(1, r * 0.06);
+      c2d.beginPath();
+      c2d.moveTo(-r * 0.68, r * 0.08); c2d.lineTo(-r * 0.36, r * 0.14);
+      c2d.moveTo(-r * 0.66, r * 0.24); c2d.lineTo(-r * 0.36, r * 0.22);
+      c2d.moveTo(r * 0.68, r * 0.08); c2d.lineTo(r * 0.36, r * 0.14);
+      c2d.moveTo(r * 0.66, r * 0.24); c2d.lineTo(r * 0.36, r * 0.22);
+      c2d.stroke();
+      c2d.fillStyle = '#fb7185';
+      c2d.beginPath(); c2d.moveTo(-r * 0.09, r * 0.1); c2d.lineTo(r * 0.09, r * 0.1); c2d.lineTo(0, r * 0.2); c2d.closePath(); c2d.fill();
+      c2d.fillStyle = '#1e293b';
+      c2d.beginPath();
+      c2d.arc(-r * 0.22, -r * 0.06, r * 0.085, 0, Math.PI * 2);
+      c2d.arc(r * 0.22, -r * 0.06, r * 0.085, 0, Math.PI * 2);
+      c2d.fill();
+    } else if (rank === 1) {
+      c2d.fillStyle = '#a8a29e';
+      c2d.strokeStyle = '#44403c';
+      c2d.lineWidth = Math.max(1.2, r * 0.08);
+      c2d.beginPath();
+      c2d.arc(-r * 0.48, -r * 0.42, r * 0.34, 0, Math.PI * 2);
+      c2d.arc(r * 0.48, -r * 0.42, r * 0.34, 0, Math.PI * 2);
+      c2d.fill(); c2d.stroke();
+      c2d.fillStyle = '#fda4af';
+      c2d.beginPath();
+      c2d.arc(-r * 0.48, -r * 0.42, r * 0.18, 0, Math.PI * 2);
+      c2d.arc(r * 0.48, -r * 0.42, r * 0.18, 0, Math.PI * 2);
+      c2d.fill();
+      c2d.fillStyle = '#d6d3d1';
+      c2d.beginPath(); c2d.ellipse(0, r * 0.08, r * 0.52, r * 0.48, 0, 0, Math.PI * 2); c2d.fill(); c2d.stroke();
+      c2d.strokeStyle = '#57534e';
+      c2d.lineWidth = Math.max(1, r * 0.06);
+      c2d.beginPath();
+      c2d.moveTo(-r * 0.65, r * 0.2); c2d.lineTo(-r * 0.3, r * 0.24);
+      c2d.moveTo(r * 0.65, r * 0.2); c2d.lineTo(r * 0.3, r * 0.24);
+      c2d.stroke();
+      c2d.fillStyle = '#f43f5e';
+      c2d.beginPath(); c2d.arc(0, r * 0.3, r * 0.1, 0, Math.PI * 2); c2d.fill();
+      c2d.fillStyle = '#1c1917';
+      c2d.beginPath();
+      c2d.arc(-r * 0.2, 0, r * 0.085, 0, Math.PI * 2);
+      c2d.arc(r * 0.2, 0, r * 0.085, 0, Math.PI * 2);
+      c2d.fill();
+    }
+
+    c2d.restore();
+  }
+
+  const iconCache = {};
+  function getMiniPieceIcon(side, rank) {
+    const key = `${side}_${rank}`;
+    if (iconCache[key]) return iconCache[key];
+    const off = document.createElement('canvas');
+    off.width = 72;
+    off.height = 72;
+    const octx = off.getContext('2d');
+    octx.fillStyle = side === 'red' ? '#dc2626' : '#2563eb';
+    octx.beginPath(); octx.arc(36, 36, 33, 0, Math.PI * 2); octx.fill();
+    octx.fillStyle = side === 'red' ? '#fff7ed' : '#eff6ff';
+    octx.beginPath(); octx.arc(36, 36, 28, 0, Math.PI * 2); octx.fill();
+    drawAnimalFace(octx, rank, 36, 33, 21);
+    iconCache[key] = off.toDataURL('image/png');
+    return iconCache[key];
+  }
+
+  // ==================== ENHANCED BOARD & PIECE RENDERING ====================
+  function drawBoard(now) {
+    const width = boardPad * 2 + COLS * cellSize;
+    const height = boardPad * 2 + ROWS * cellSize;
+
+    // Warm parchment/earth base under tiles
+    ctx.fillStyle = '#c8b182';
+    ctx.fillRect(0, 0, width, height);
+
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const x = boardPad + c * cellSize;
+        const y = boardPad + r * cellSize;
+
+        if (isRiver(c, r)) {
+          const grad = ctx.createLinearGradient(x, y, x + cellSize * 0.4, y + cellSize);
+          grad.addColorStop(0, '#38bdf8');
+          grad.addColorStop(0.55, '#0ea5e9');
+          grad.addColorStop(1, '#0284c7');
+          ctx.fillStyle = grad;
+          ctx.fillRect(x, y, cellSize, cellSize);
+
+          // Shimmering animated water waves
+          ctx.save();
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.36)';
+          ctx.lineWidth = Math.max(1.2, cellSize * 0.032);
+          const phase = now * 0.0022 + c * 1.1 + r * 0.75;
+          const wy1 = y + cellSize * 0.32 + Math.sin(phase) * 2.2;
+          const wy2 = y + cellSize * 0.68 + Math.cos(phase * 0.85) * 2.2;
+          ctx.beginPath();
+          ctx.moveTo(x + cellSize * 0.14, wy1);
+          ctx.quadraticCurveTo(x + cellSize * 0.5, wy1 - 4, x + cellSize * 0.86, wy1);
+          ctx.moveTo(x + cellSize * 0.2, wy2);
+          ctx.quadraticCurveTo(x + cellSize * 0.5, wy2 + 4, x + cellSize * 0.8, wy2);
+          ctx.stroke();
+          ctx.restore();
+        } else {
+          // Lush jungle lawn checkerboard
+          const isAlt = (c + r) % 2 === 0;
+          ctx.fillStyle = isAlt ? '#e7f1c3' : '#d8e7a8';
+          ctx.fillRect(x, y, cellSize, cellSize);
+
+          // Subtle grass blade accent on empty land tiles
+          if (!isTrap(c, r) && !isDen(c, r) && (c * 7 + r * 13) % 5 === 0) {
+            ctx.save();
+            ctx.strokeStyle = 'rgba(101, 133, 52, 0.22)';
+            ctx.lineWidth = 1.2;
+            const gx = x + cellSize * 0.2;
+            const gy = y + cellSize * 0.82;
+            ctx.beginPath();
+            ctx.moveTo(gx, gy); ctx.lineTo(gx - 2, gy - 5);
+            ctx.moveTo(gx, gy); ctx.lineTo(gx + 3, gy - 6);
+            ctx.stroke();
+            ctx.restore();
+          }
+        }
+
+        // Traps
+        if (isTrap(c, r, 'blue') || isTrap(c, r, 'red')) {
+          const isBlueTrap = isTrap(c, r, 'blue');
+          ctx.save();
+          ctx.fillStyle = isBlueTrap ? 'rgba(59, 130, 246, 0.16)' : 'rgba(239, 68, 68, 0.16)';
+          ctx.fillRect(x + 2, y + 2, cellSize - 4, cellSize - 4);
+          ctx.strokeStyle = isBlueTrap ? 'rgba(37, 99, 235, 0.42)' : 'rgba(220, 38, 38, 0.42)';
+          ctx.lineWidth = 1.3;
+          ctx.setLineDash([4, 3]);
+          ctx.strokeRect(x + 5, y + 5, cellSize - 10, cellSize - 10);
+          ctx.beginPath();
+          ctx.moveTo(x + 8, y + 8); ctx.lineTo(x + cellSize - 8, y + cellSize - 8);
+          ctx.moveTo(x + cellSize - 8, y + 8); ctx.lineTo(x + 8, y + cellSize - 8);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.save();
+          ctx.translate(x + cellSize / 2, y + cellSize / 2);
+          if (isBlueTrap) ctx.rotate(Math.PI);
+          ctx.fillStyle = isBlueTrap ? 'rgba(30, 64, 175, 0.82)' : 'rgba(153, 27, 27, 0.82)';
+          ctx.font = `900 ${Math.max(10, Math.floor(cellSize * 0.25))}px "Noto Sans TC", sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('陷阱', 0, 0);
+          ctx.restore();
+          ctx.restore();
+        }
+
+        // Dens
+        if (isDen(c, r, 'blue') || isDen(c, r, 'red')) {
+          const isBlueDen = isDen(c, r, 'blue');
+          ctx.save();
+          ctx.fillStyle = isBlueDen ? '#dbeafe' : '#fee2e2';
+          ctx.fillRect(x + 2, y + 2, cellSize - 4, cellSize - 4);
+          const cx = x + cellSize / 2;
+          const cy = y + cellSize / 2;
+          ctx.save();
+          ctx.translate(cx, cy);
+          if (isBlueDen) ctx.rotate(Math.PI);
+          const denGrad = ctx.createLinearGradient(0, -cellSize * 0.35, 0, cellSize * 0.35);
+          if (isBlueDen) {
+            denGrad.addColorStop(0, '#2563eb');
+            denGrad.addColorStop(1, '#1e3a8a');
+          } else {
+            denGrad.addColorStop(0, '#dc2626');
+            denGrad.addColorStop(1, '#7f1d1d');
+          }
+          ctx.fillStyle = denGrad;
+          ctx.beginPath();
+          ctx.arc(0, cellSize * 0.06, cellSize * 0.36, Math.PI, 0, false);
+          ctx.lineTo(cellSize * 0.36, cellSize * 0.36);
+          ctx.lineTo(-cellSize * 0.36, cellSize * 0.36);
+          ctx.closePath();
+          ctx.fill();
+          ctx.strokeStyle = isBlueDen ? '#93c5fd' : '#fca5a5';
+          ctx.lineWidth = 1.6;
+          ctx.stroke();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = `900 ${Math.max(10, Math.floor(cellSize * 0.25))}px "Noto Sans TC", sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('獸穴', 0, cellSize * 0.11);
+          ctx.restore();
+          ctx.restore();
+        }
+
+        // Tile grid border
+        ctx.strokeStyle = isRiver(c, r) ? 'rgba(255,255,255,0.24)' : 'rgba(92, 114, 48, 0.28)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x, y, cellSize, cellSize);
+      }
+    }
+
+    // River banks embossed border
+    ctx.save();
+    ctx.strokeStyle = '#0369a1';
+    ctx.lineWidth = 2.6;
+    ctx.strokeRect(boardPad + 1 * cellSize, boardPad + 3 * cellSize, 2 * cellSize, 3 * cellSize);
+    ctx.strokeRect(boardPad + 4 * cellSize, boardPad + 3 * cellSize, 2 * cellSize, 3 * cellSize);
+    ctx.restore();
+
+    // Last move highlight
+    if (lastMove) {
+      ctx.save();
+      ctx.fillStyle = 'rgba(250, 204, 21, 0.26)';
+      ctx.fillRect(boardPad + lastMove.fromC * cellSize + 1, boardPad + lastMove.fromR * cellSize + 1, cellSize - 2, cellSize - 2);
+      ctx.fillStyle = 'rgba(250, 204, 21, 0.42)';
+      ctx.fillRect(boardPad + lastMove.toC * cellSize + 1, boardPad + lastMove.toR * cellSize + 1, cellSize - 2, cellSize - 2);
+      ctx.restore();
+    }
+
+    // Valid move highlights
+    const pulse = 0.5 + 0.5 * Math.sin(now * 0.008);
+    for (const m of validMoves) {
+      const { x, y } = cellCenter(m.c, m.r);
+      ctx.save();
+      if (m.capture) {
+        ctx.strokeStyle = `rgba(220, 38, 38, ${0.65 + pulse * 0.35})`;
+        ctx.lineWidth = Math.max(3, cellSize * 0.08);
+        ctx.beginPath();
+        ctx.arc(x, y, cellSize * 0.44, 0, Math.PI * 2);
+        ctx.stroke();
+      } else if (m.kind === 'jump') {
+        ctx.fillStyle = `rgba(245, 158, 11, ${0.38 + pulse * 0.25})`;
+        ctx.beginPath();
+        ctx.arc(x, y, cellSize * 0.29, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#b45309';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+        ctx.fillStyle = '#78350f';
+        ctx.font = `900 ${Math.max(10, Math.floor(cellSize * 0.23))}px "Noto Sans TC", sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('跳', x, y);
+      } else {
+        ctx.fillStyle = (m.kind === 'splashIn' || m.kind === 'swim')
+          ? `rgba(255, 255, 255, ${0.58 + pulse * 0.35})`
+          : `rgba(22, 163, 74, ${0.48 + pulse * 0.35})`;
+        ctx.beginPath();
+        ctx.arc(x, y, cellSize * 0.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    // Ripples
+    for (const rp of ripples) {
+      ctx.save();
+      ctx.strokeStyle = rp.color;
+      ctx.globalAlpha = rp.alpha;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.arc(rp.x, rp.y, rp.r, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Stationary pieces
+    for (const p of pieces) {
+      if (activeAnim && activeAnim.pieceId === p.id) continue;
+      const pt = cellCenter(p.c, p.r);
+      const bob = isRiver(p.c, p.r) ? Math.sin(now * 0.005 + p.id) * 2.2 : 0;
+      const isSelected = p.id === selectedPieceId;
+      const lift = isSelected ? -4 : 0;
+      const oppSide = p.side === 'red' ? 'blue' : 'red';
+      const trapped = isTrap(p.c, p.r, oppSide);
+      drawPiece(p, pt.x, pt.y + bob + lift, 1, isSelected, trapped, isRiver(p.c, p.r));
+    }
+
+    // Animating piece
+    if (activeAnim) {
+      const elapsed = now - activeAnim.startTime;
+      const t = Math.min(1, elapsed / activeAnim.duration);
+      const ease = 1 - Math.pow(1 - t, 3);
+      const p = pieces.find(item => item.id === activeAnim.pieceId);
+      if (p) {
+        const start = cellCenter(activeAnim.fromC, activeAnim.fromR);
+        const end = cellCenter(activeAnim.toC, activeAnim.toR);
+        const curX = start.x + (end.x - start.x) * ease;
+        const curY = start.y + (end.y - start.y) * ease;
+
+        let arcHeight = 0;
+        let scale = 1;
+        if (activeAnim.kind === 'jump') {
+          arcHeight = Math.sin(t * Math.PI) * cellSize * 1.15;
+          scale = 1 + Math.sin(t * Math.PI) * 0.3;
+          ctx.save();
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.25)';
+          ctx.beginPath();
+          ctx.ellipse(curX, curY + cellSize * 0.14, cellSize * 0.34 * (1 - Math.sin(t * Math.PI) * 0.25), cellSize * 0.16, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        } else if (activeAnim.kind === 'splashIn' || activeAnim.kind === 'splashOut') {
+          arcHeight = Math.sin(t * Math.PI) * cellSize * 0.45;
+          scale = 1 + Math.sin(t * Math.PI) * 0.14;
+        } else {
+          arcHeight = Math.sin(t * Math.PI) * cellSize * 0.16;
+          scale = 1 + Math.sin(t * Math.PI) * 0.06;
+        }
+
+        drawPiece(p, curX, curY - arcHeight, scale, false, false, false);
+      }
+
+      if (t >= 1) {
+        finishAnimation(activeAnim);
+      }
+    }
+
+    // Particles
+    for (const pt of particles) {
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, pt.life);
+      ctx.fillStyle = pt.color;
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, pt.size, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // Floating texts
+    for (const ft of floatingTexts) {
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, ft.life);
+      ctx.font = `900 ${Math.max(15, Math.floor(cellSize * 0.35))}px "Noto Sans TC", sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = '#ffffff';
+      ctx.strokeText(ft.text, ft.x, ft.y);
+      ctx.fillStyle = ft.color;
+      ctx.fillText(ft.text, ft.x, ft.y);
+      ctx.restore();
+    }
+  }
+
+  function drawPiece(piece, x, y, scale, isSelected, isTrapped, inWater) {
+    const rad = cellSize * 0.42 * scale;
+    const isRed = piece.side === 'red';
+
+    ctx.save();
+    ctx.translate(x, y);
+
+    if (inWater) {
+      ctx.strokeStyle = 'rgba(224, 242, 254, 0.78)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.ellipse(0, rad * 0.48, rad * 0.96, rad * 0.42, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    // Soft shadow
+    ctx.fillStyle = isSelected ? 'rgba(0,0,0,0.42)' : 'rgba(0,0,0,0.28)';
+    ctx.beginPath();
+    ctx.arc(0, rad * 0.14, rad, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Selection glow ring
+    if (isSelected) {
+      ctx.strokeStyle = '#fde047';
+      ctx.lineWidth = Math.max(3, cellSize * 0.08);
+      ctx.beginPath();
+      ctx.arc(0, 0, rad + 3, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    // Outer glossy token ring
+    const outerGrad = ctx.createRadialGradient(-rad * 0.3, -rad * 0.35, rad * 0.1, 0, 0, rad);
+    if (isRed) {
+      outerGrad.addColorStop(0, '#f87171');
+      outerGrad.addColorStop(0.55, '#dc2626');
+      outerGrad.addColorStop(1, '#7f1d1d');
+    } else {
+      outerGrad.addColorStop(0, '#60a5fa');
+      outerGrad.addColorStop(0.55, '#2563eb');
+      outerGrad.addColorStop(1, '#1e3a8a');
+    }
+    ctx.fillStyle = outerGrad;
+    ctx.beginPath();
+    ctx.arc(0, 0, rad, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Inner ivory/ice medallion
+    ctx.fillStyle = isRed ? '#fffaf0' : '#f0f7ff';
+    ctx.beginPath();
+    ctx.arc(0, 0, rad * 0.84, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Subtle glossy rim highlight
+    ctx.strokeStyle = 'rgba(255,255,255,0.65)';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.arc(0, 0, rad * 0.82, Math.PI * 1.1, Math.PI * 1.9);
+    ctx.stroke();
+
+    // Rotate Blue piece artwork & text 180deg for face-to-face tabletop play
+    ctx.save();
+    if (!isRed) ctx.rotate(Math.PI);
+
+    // Animal portrait
+    drawAnimalFace(ctx, piece.rank, 0, -rad * 0.14, rad * 0.58);
+
+    // Name pill
+    const pillW = rad * 1.06;
+    const pillH = rad * 0.46;
+    const pillY = rad * 0.44;
+    ctx.fillStyle = isRed ? '#b91c1c' : '#1d4ed8';
+    ctx.beginPath();
+    if (ctx.roundRect) {
+      ctx.roundRect(-pillW / 2, pillY - pillH / 2, pillW, pillH, pillH / 2);
+    } else {
+      ctx.rect(-pillW / 2, pillY - pillH / 2, pillW, pillH);
+    }
+    ctx.fill();
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = `900 ${Math.max(10, Math.floor(rad * 0.44))}px "Noto Sans TC", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(ANIMALS[piece.rank].name, 0, pillY + 0.5);
+
+    // Rank badge
+    const badgeR = rad * 0.27;
+    const bx = rad * 0.68;
+    const by = -rad * 0.64;
+    ctx.fillStyle = isTrapped ? '#7e22ce' : '#f59e0b';
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    ctx.arc(bx, by, badgeR, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = `900 ${Math.max(9, Math.floor(badgeR * 1.25))}px "Noto Sans TC", sans-serif`;
+    ctx.fillText(isTrapped ? '0' : String(piece.rank), bx, by + 0.5);
+
+    ctx.restore();
+
+    ctx.restore();
+  }
+
+  // ==================== ANIMATION LOOP ====================
+  function stepEffects() {
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const pt = particles[i];
+      pt.x += pt.vx;
+      pt.y += pt.vy;
+      pt.vy += pt.gravity;
+      pt.life -= pt.decay;
+      if (pt.life <= 0) particles.splice(i, 1);
+    }
+    for (let i = ripples.length - 1; i >= 0; i--) {
+      const rp = ripples[i];
+      rp.r += (rp.maxR - rp.r) * 0.14;
+      rp.alpha -= 0.032;
+      if (rp.alpha <= 0) ripples.splice(i, 1);
+    }
+    for (let i = floatingTexts.length - 1; i >= 0; i--) {
+      const ft = floatingTexts[i];
+      ft.y += ft.vy;
+      ft.life -= ft.decay;
+      if (ft.life <= 0) floatingTexts.splice(i, 1);
+    }
+  }
+
+  function loop(now) {
+    stepEffects();
+    drawBoard(now);
+    rafId = requestAnimationFrame(loop);
+  }
+
+  // ==================== UI & LOST PIECES RENDERING ====================
+  function renderLostTray(trayEl, list, side) {
+    trayEl.innerHTML = '';
+    if (list.length === 0) {
+      const empty = document.createElement('span');
+      empty.className = 'text-[11px] text-slate-400 mx-auto';
+      empty.textContent = '暫無失去棋子';
+      trayEl.appendChild(empty);
+      return;
+    }
+    list.forEach(p => {
+      const chip = document.createElement('div');
+      chip.className = `pop-in shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded-lg border shadow-xs ${
+        side === 'red'
+          ? 'bg-white border-red-200 text-red-900'
+          : 'bg-white border-blue-200 text-blue-900'
+      }`;
+      const img = document.createElement('img');
+      img.src = getMiniPieceIcon(side, p.rank);
+      img.alt = ANIMALS[p.rank].title;
+      img.className = 'w-5 h-5 sm:w-6 sm:h-6 rounded-full shrink-0';
+      const label = document.createElement('span');
+      label.className = 'text-[11px] sm:text-xs font-black leading-none';
+      label.textContent = `${ANIMALS[p.rank].name}${p.rank}`;
+      chip.appendChild(img);
+      chip.appendChild(label);
+      trayEl.appendChild(chip);
+    });
+  }
+
+  function updateUI() {
+    const turnBanner = document.getElementById('turnBanner');
+    const turnDot = document.getElementById('turnDot');
+    const turnText = document.getElementById('turnText');
+    const redPanel = document.getElementById('redPanel');
+    const bluePanel = document.getElementById('bluePanel');
+    const statusHint = document.getElementById('statusHint');
+
+    if (gameOver) {
+      turnText.textContent = winner === 'red' ? '🏆 紅方勝出' : '🏆 藍方勝出';
+      turnBanner.className = `flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 rounded-full font-black text-xs sm:text-sm shadow-sm border transition-all duration-300 ${
+        winner === 'red'
+          ? 'bg-red-600 text-white border-red-400'
+          : 'bg-blue-600 text-white border-blue-400'
+      }`;
+      turnDot.className = 'w-2.5 h-2.5 rounded-full bg-amber-300 shrink-0';
+      redPanel.classList.remove('turn-glow-red', 'inactive-card');
+      bluePanel.classList.remove('turn-glow-blue', 'inactive-card');
+      statusHint.textContent = '棋局已結束，按「重玩」可以再捉一盤！';
+    } else if (currentTurn === 'red') {
+      turnText.textContent = '輪到 紅方';
+      turnBanner.className = 'flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 rounded-full font-black text-xs sm:text-sm shadow-sm border transition-all duration-300 bg-red-500/25 text-red-100 border-red-400/70';
+      turnDot.className = 'w-2.5 h-2.5 rounded-full bg-red-400 animate-pulse shrink-0';
+      redPanel.classList.add('turn-glow-red');
+      redPanel.classList.remove('inactive-card');
+      bluePanel.classList.remove('turn-glow-blue');
+      bluePanel.classList.add('inactive-card');
+      statusHint.textContent = selectedPieceId
+        ? '請點擊發光格仔移動或食棋'
+        : (history.length === 0 ? '點擊紅色棋子開始第一步行棋（行完即開始計時）' : '紅方回合：點擊紅色棋子行棋');
+    } else {
+      turnText.textContent = '輪到 藍方';
+      turnBanner.className = 'flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 rounded-full font-black text-xs sm:text-sm shadow-sm border transition-all duration-300 bg-blue-500/25 text-blue-100 border-blue-400/70';
+      turnDot.className = 'w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse shrink-0';
+      bluePanel.classList.add('turn-glow-blue');
+      bluePanel.classList.remove('inactive-card');
+      redPanel.classList.remove('turn-glow-red');
+      redPanel.classList.add('inactive-card');
+      statusHint.textContent = selectedPieceId
+        ? '請點擊發光格仔移動或食棋'
+        : '藍方回合：點擊藍色棋子行棋';
+    }
+
+    // Last move duration badges
+    const redLastEl = document.getElementById('redLastTime');
+    if (lastMoveDurationSec.red !== null) {
+      redLastEl.textContent = `上步 ${formatDuration(lastMoveDurationSec.red)}`;
+      redLastEl.classList.remove('hidden');
+    } else {
+      redLastEl.classList.add('hidden');
+    }
+
+    const blueLastEl = document.getElementById('blueLastTime');
+    if (lastMoveDurationSec.blue !== null) {
+      blueLastEl.textContent = `上步 ${formatDuration(lastMoveDurationSec.blue)}`;
+      blueLastEl.classList.remove('hidden');
+    } else {
+      blueLastEl.classList.add('hidden');
+    }
+
+    const redAlive = pieces.filter(p => p.side === 'red').length;
+    const blueAlive = pieces.filter(p => p.side === 'blue').length;
+
+    document.getElementById('redRemain').textContent = `剩 ${redAlive}`;
+    document.getElementById('blueRemain').textContent = `剩 ${blueAlive}`;
+    document.getElementById('redLostCount').textContent = `${capturedRed.length}`;
+    document.getElementById('blueLostCount').textContent = `${capturedBlue.length}`;
+
+    renderLostTray(document.getElementById('redLostTray'), capturedRed, 'red');
+    renderLostTray(document.getElementById('blueLostTray'), capturedBlue, 'blue');
+
+    document.getElementById('btnUndo').disabled = history.length === 0;
+  }
+
+  // ==================== INPUT HANDLING ====================
+  function handleBoardPointer(e) {
+    if (gameOver || activeAnim) return;
+    ensureAudio();
+
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+
+    const c = Math.floor((x - boardPad) / cellSize);
+    const r = Math.floor((y - boardPad) / cellSize);
+    if (!inBounds(c, r)) return;
+
+    if (selectedPieceId !== null) {
+      const move = validMoves.find(m => m.c === c && m.r === r);
+      if (move) {
+        const piece = pieces.find(p => p.id === selectedPieceId);
+        if (piece) {
+          executeMove(piece, move);
+          return;
+        }
+      }
+    }
+
+    const clickedPiece = getPieceAt(c, r);
+    if (clickedPiece && clickedPiece.side === currentTurn) {
+      if (selectedPieceId === clickedPiece.id) {
+        selectedPieceId = null;
+        validMoves = [];
+      } else {
+        selectedPieceId = clickedPiece.id;
+        validMoves = getValidMovesForPiece(clickedPiece);
+        playSound('select');
+      }
+      updateUI();
+    } else {
+      selectedPieceId = null;
+      validMoves = [];
+      updateUI();
+    }
+  }
+
+  // ==================== FULL-VIEWPORT RESPONSIVE SIZING ====================
+  function resizeCanvas() {
+    const stage = document.getElementById('boardStage');
+    const hint = document.getElementById('statusHint');
+    const rect = stage.getBoundingClientRect();
+    const availW = Math.max(220, rect.width - 20);
+    const availH = Math.max(260, rect.height - (hint ? hint.offsetHeight + 10 : 24) - 22);
+
+    const sizeByW = Math.floor((availW - boardPad * 2) / COLS);
+    const sizeByH = Math.floor((availH - boardPad * 2) / ROWS);
+    cellSize = Math.max(30, Math.min(sizeByW, sizeByH, 86));
+
+    const cssW = boardPad * 2 + COLS * cellSize;
+    const cssH = boardPad * 2 + ROWS * cellSize;
+    dpr = window.devicePixelRatio || 1;
+
+    canvas.style.width = `${cssW}px`;
+    canvas.style.height = `${cssH}px`;
+    canvas.width = Math.floor(cssW * dpr);
+    canvas.height = Math.floor(cssH * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  // ==================== FULLSCREEN TOGGLE ====================
+  function toggleFullscreen() {
+    const doc = document;
+    const root = doc.documentElement;
+    if (!doc.fullscreenElement && !doc.webkitFullscreenElement) {
+      const req = root.requestFullscreen || root.webkitRequestFullscreen;
+      if (req) {
+        Promise.resolve(req.call(root)).catch(() => {});
+      }
+    } else {
+      const exit = doc.exitFullscreen || doc.webkitExitFullscreen;
+      if (exit) {
+        Promise.resolve(exit.call(doc)).catch(() => {});
+      }
+    }
+  }
+
+  // ==================== EVENT LISTENERS ====================
+  canvas.addEventListener('pointerdown', handleBoardPointer);
+
+  document.getElementById('btnUndo').addEventListener('click', undoMove);
+
+  document.getElementById('btnSound').addEventListener('click', () => {
+    soundEnabled = !soundEnabled;
+    const btn = document.getElementById('btnSound');
+    btn.innerHTML = soundEnabled
+      ? '🔊<span class="hidden sm:inline ml-1">音效</span>'
+      : '🔇<span class="hidden sm:inline ml-1">靜音</span>';
+    if (soundEnabled) playSound('select');
+  });
+
+  document.getElementById('btnFullscreen').addEventListener('click', toggleFullscreen);
+
+  const rulesModal = document.getElementById('rulesModal');
+  const openRules = () => { rulesModal.classList.remove('hidden'); rulesModal.classList.add('flex'); };
+  const closeRules = () => { rulesModal.classList.add('hidden'); rulesModal.classList.remove('flex'); };
+  document.getElementById('btnRules').addEventListener('click', openRules);
+  document.getElementById('btnCloseRules').addEventListener('click', closeRules);
+  document.getElementById('btnCloseRulesBottom').addEventListener('click', closeRules);
+  rulesModal.addEventListener('click', (e) => { if (e.target === rulesModal) closeRules(); });
+
+  const restartModal = document.getElementById('restartModal');
+  document.getElementById('btnRestart').addEventListener('click', () => {
+    if (history.length === 0 || gameOver) {
+      resetGame();
+    } else {
+      restartModal.classList.remove('hidden');
+      restartModal.classList.add('flex');
+    }
+  });
+  document.getElementById('btnCancelRestart').addEventListener('click', () => {
+    restartModal.classList.add('hidden');
+    restartModal.classList.remove('flex');
+  });
+  document.getElementById('btnConfirmRestart').addEventListener('click', () => {
+    restartModal.classList.add('hidden');
+    restartModal.classList.remove('flex');
+    resetGame();
+  });
+
+  document.getElementById('btnCloseVictory').addEventListener('click', () => {
+    document.getElementById('victoryModal').classList.add('hidden');
+    document.getElementById('victoryModal').classList.remove('flex');
+  });
+  document.getElementById('btnPlayAgain').addEventListener('click', resetGame);
+
+  window.addEventListener('resize', () => {
+    resizeCanvas();
+  });
+  document.addEventListener('fullscreenchange', () => {
+    setTimeout(resizeCanvas, 80);
+  });
+
+  if (typeof ResizeObserver !== 'undefined') {
+    const ro = new ResizeObserver(() => resizeCanvas());
+    ro.observe(document.getElementById('boardStage'));
+  }
+
+  window.onload = () => {
+    resetGame();
+    resizeCanvas();
+    requestAnimationFrame(() => resizeCanvas());
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(loop);
+  };
+})();
+</script>
+</body>
+</html>
