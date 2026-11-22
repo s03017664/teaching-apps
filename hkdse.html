@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="化學離子大師">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#312e81">
+    <title>HKDSE 化學離子大師 · 手機自學版</title>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <style>
+        :root {
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+        html, body {
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior-y: none;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans TC", "Microsoft JhengHei", "Inter", sans-serif;
+        }
+        sub, sup {
+            line-height: 0;
+        }
+        /* 3D Flashcard Flip */
+        .flip-card {
+            perspective: 1200px;
+        }
+        .flip-card-inner {
+            transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+            transform-style: preserve-3d;
+        }
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+        /* Masked self-test blur */
+        .mask-hidden {
+            filter: blur(7px);
+            user-select: none;
+            transition: filter 0.2s ease;
+        }
+        .mask-revealed {
+            filter: none;
+        }
+        /* Hide scrollbar on horizontal pill bars */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Safe bottom nav padding */
+        .pb-safe-nav {
+            padding-bottom: calc(5.5rem + var(--safe-bottom));
+        }
+        .bottom-nav-safe {
+            padding-bottom: var(--safe-bottom);
+        }
+        /* Swatch for colorless solution */
+        .swatch-colorless {
+            background: linear-gradient(135deg, #ffffff 45%, #e2e8f0 50%, #f8fafc 55%);
+            border: 1.5px solid #cbd5e1;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col selection:bg-indigo-100">
+
+    <!-- Top App Header -->
+    <header class="bg-indigo-900 text-white sticky top-0 z-40 shadow-md">
+        <div class="max-w-3xl mx-auto px-3.5 sm:px-5 py-2 flex items-center justify-between gap-2.5">
+            <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-11 h-11 rounded-xl bg-white p-0.5 flex items-center justify-center shrink-0 shadow-md ring-1 ring-white/40">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJMAAACSCAYAAABBufiwAAAACXBIWXMAAAsTAAALEwEAmpwYAAAF0WlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxNDUgNzkuMTYzNDk5LCAyMDE4LzA4LzEzLTE2OjQwOjIyICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdEV2dD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlRXZlbnQjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ0MgMjAxOSAoV2luZG93cykiIHhtcDpDcmVhdGVEYXRlPSIyMDIzLTA3LTIxVDEwOjEwOjI0KzA4OjAwIiB4bXA6TWV0YWRhdGFEYXRlPSIyMDIzLTA3LTIxVDEwOjEwOjI0KzA4OjAwIiB4bXA6TW9kaWZ5RGF0ZT0iMjAyMy0wNy0yMVQxMDoxMDoyNCswODowMCIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpmMWE5NWRlYS1hY2NhLTFlNGUtOTBhNy03ZGQzYmVjMzQ5MjMiIHhtcE1NOkRvY3VtZW50SUQ9ImFkb2JlOmRvY2lkOnBob3Rvc2hvcDoxNDNiZGYzMi0zZDJjLTNmNGMtODg5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Pfro7ylcuS0+xMmTJ++ycNGiC9atr37xpJPO/ras5y5/V9wVB0rh0fXsbPz156LmPgdc+P3+G+iYRBT43S62aDN33333lTudzvEIFUf6RRyJ1/HXTaSkbjje8FU40q8jrLAinKW7+cr6XTFsxLg3X58y48tVq9c+8O13353697//vW+rTIkfliwxrrvuuguklE0Ww5zzMBKhf9nDE80EhUQwa+leGNZm7Guq6yRnvMeGs08n8ttJWOvWo5SV2vPmpNplyQT2FPIpX49ruZCqxB57LLmFrPskmmdoyZIlN9x44401zZ5uKusLLrgg8NHHH49btnzFres3RKaPO+T4WaU9d75D81QegoJTy36JJ/pnAvUH46/bF2fscbyRq7BUN0KIkq+/+eYgChOpveavXXK1N5zSVmBtfSVi/wMOGK4oYgAyiyP1EjIfuppdiDuzEJR7MPWeGNoYDMf+mPpoDH33Xu6Snqf2Kul56un9hxinnHb2vES8/rP169d/9t6773594403Vj/x+OPR00477fS99977RSGErlgRMp4zEFYET+QqBLavkqkrfLxgn82axChTKUr/ejcbPviM7PIfWHvYBES+oLxnXoDaq1eXwwaIpT18Mn8f9hvwBTIHwoJk4FqS/htQzY3KfV1d3T2jR416q/H34Ycf7r766qv36te//95+v3+07q7cRyoiAKBYFoqxAEfuK7Tsx2i5mWjGAjAtm5sqSB207Beoue+RSj969ux5GTCDwmN4XRqnK2ZsriNSNTG5Z8+e54JAWLVo2RlNTzSO5AsJam4damYyzuRkpCIw9R0xtZEY+igsbRfNUvoP1YM9hpaEqi4aPHgw099/v9+HM2ZkDzv00Fnfff/9TX369PkzgGKGSfsuw1LK8TWcjsCiJlrJ3DU7URHYjEVPDQNtwADKP59J6qVXMJetQnhc6MP3xHP6yfYgbzsLWHSEcn89j7x/KvsN/gKykCj5G2n//6GaMRqHjGKx2POjRo68K/+KAOTjTzzxmNPpOkQKHSFTaJm3ETKMlpmJasxGNb5BMbIbKaFA61ldUgFn8knSvpvQdX3Pl19+eccTTzxxafN4OjhvF5vrNdBEqkMOOcTpdDonWkoQb+wPBVMgm6uKYE8pyixFSy/FaT6H5awgXvoKljoYxVgPwsVpp53W58MZM5YCDB0y5PH5Cxb4qqqq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" alt="SKHLYSS 校徽" class="w-full h-full object-contain">
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-1.5">
+                        <span class="font-extrabold text-base leading-tight truncate" id="app-title">化學離子大師</span>
+                        <span class="text-[10px] font-bold bg-amber-400/20 text-amber-300 border border-amber-300/30 px-1.5 py-0.5 rounded-md shrink-0">SKHLYSS</span>
+                    </div>
+                    <div class="text-[11px] text-indigo-200 leading-tight truncate mt-0.5" id="app-subtitle">由吳柏霖老師設計 · HKDSE 手機自學</div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-1.5 shrink-0">
+                <!-- Language Toggle -->
+                <button type="button" id="lang-toggle-btn" class="px-2.5 py-1.5 rounded-lg bg-indigo-800 hover:bg-indigo-700 active:scale-95 text-xs font-bold text-indigo-100 border border-indigo-700 transition flex items-center gap-1" aria-label="切換語言">
+                    <span id="lang-toggle-label">中 / EN</span>
+                </button>
+                <!-- Add to Home Screen Guide Button -->
+                <button type="button" id="install-guide-btn" class="w-9 h-9 rounded-lg bg-indigo-800 hover:bg-indigo-700 active:scale-95 text-indigo-100 border border-indigo-700 flex items-center justify-center transition" aria-label="免安裝加到電話主畫面" title="加到電話主畫面">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                        <line x1="12" y1="18" x2="12.01" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Desktop / Tablet Clear Page Switcher Bar (also visible as compact indicator) -->
+        <div class="hidden sm:block bg-indigo-950/60 border-t border-indigo-800/80">
+            <div class="max-w-3xl mx-auto px-4 py-1.5 grid grid-cols-4 gap-2" id="desktop-nav">
+                <button type="button" data-tab="study" class="desktop-nav-btn py-1.5 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 bg-white text-indigo-900 shadow-sm">
+                    <span>溫習庫</span>
+                </button>
+                <button type="button" data-tab="flashcards" class="desktop-nav-btn py-1.5 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 text-indigo-200 hover:bg-indigo-800/70">
+                    <span>記憶閃卡</span>
+                </button>
+                <button type="button" data-tab="builder" class="desktop-nav-btn py-1.5 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 text-indigo-200 hover:bg-indigo-800/70">
+                    <span>配對實驗室</span>
+                </button>
+                <button type="button" data-tab="quiz" class="desktop-nav-btn py-1.5 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 text-indigo-200 hover:bg-indigo-800/70">
+                    <span>小測計分</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Scrollable Content -->
+    <main class="flex-grow max-w-3xl w-full mx-auto px-3.5 sm:px-5 pt-4 pb-safe-nav">
+
+        <!-- ==================== TAB 1: STUDY LIBRARY ==================== -->
+        <section id="view-study" class="tab-content space-y-3.5">
+            <!-- Page Intro & Quick Jump Banner -->
+            <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-3">
+                <div class="flex items-start justify-between gap-2">
+                    <div>
+                        <h1 class="text-lg font-extrabold text-slate-900" data-i18n="studyTitle">離子與化合物溫習庫</h1>
+                        <p class="text-xs text-slate-500 mt-0.5" data-i18n="studyDesc">點擊卡片可收藏「待加強」，開啟遮罩即可隨時自測</p>
+                    </div>
+                    <span id="study-count-badge" class="shrink-0 text-xs font-bold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full border border-indigo-100">42 項</span>
+                </div>
+
+                <!-- Search Input -->
+                <div class="relative">
+                    <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                    <input type="search" id="study-search" placeholder="搜尋中文、英文、化學式或顏色（如 Cu、紫色）..." class="w-full pl-10 pr-9 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+                    <button type="button" id="study-search-clear" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-slate-200 text-slate-600 text-xs font-bold flex items-center justify-center">×</button>
+                </div>
+
+                <!-- Category Filter Pills (Horizontal Scrollable on Phone) -->
+                <div class="flex gap-1.5 overflow-x-auto no-scrollbar pb-0.5" id="study-filter-bar">
+                    <button type="button" data-filter="all" class="study-filter-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-sm transition">全部離子</button>
+                    <button type="button" data-filter="cation" class="study-filter-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">陽離子 (+)</button>
+                    <button type="button" data-filter="anion" class="study-filter-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">陰離子 (-)</button>
+                    <button type="button" data-filter="colored" class="study-filter-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">特有顏色</button>
+                    <button type="button" data-filter="compound" class="study-filter-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">常考化合物</button>
+                    <button type="button" data-filter="starred" class="study-filter-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">★ 待加強</button>
+                </div>
+
+                <!-- Self-Test Mask Bar -->
+                <div class="flex items-center gap-1.5 pt-2 border-t border-slate-100 overflow-x-auto no-scrollbar">
+                    <span class="text-[11px] font-bold text-slate-500 shrink-0 mr-0.5" data-i18n="maskLabel">自測遮罩：</span>
+                    <button type="button" data-mask="none" class="mask-btn shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-800 text-white transition">全部顯示</button>
+                    <button type="button" data-mask="formula" class="mask-btn shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">遮化學式</button>
+                    <button type="button" data-mask="name" class="mask-btn shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">遮名稱</button>
+                    <button type="button" data-mask="color" class="mask-btn shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">遮顏色</button>
+                </div>
+            </div>
+
+            <!-- Study Cards Grid -->
+            <div id="study-cards-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <!-- Populated dynamically -->
+            </div>
+        </section>
+
+        <!-- ==================== TAB 2: FLASHCARDS ==================== -->
+        <section id="view-flashcards" class="tab-content hidden space-y-4">
+            <!-- Controls Card -->
+            <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-3">
+                <div class="flex items-center justify-between gap-2">
+                    <div>
+                        <h1 class="text-lg font-extrabold text-slate-900" data-i18n="fcTitle">互動記憶閃卡</h1>
+                        <p class="text-xs text-slate-500" data-i18n="fcDesc">點擊翻卡 · 左右滑動切換下一張</p>
+                    </div>
+                    <span id="fc-progress-pill" class="text-xs font-extrabold bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full border border-indigo-100">1 / 42</span>
+                </div>
+
+                <!-- Deck Category Pills -->
+                <div class="flex gap-1.5 overflow-x-auto no-scrollbar pb-0.5" id="fc-filter-bar">
+                    <button type="button" data-fc-filter="all" class="fc-filter-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-sm">全部離子</button>
+                    <button type="button" data-fc-filter="cation" class="fc-filter-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700">陽離子</button>
+                    <button type="button" data-fc-filter="anion" class="fc-filter-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700">陰離子</button>
+                    <button type="button" data-fc-filter="compound" class="fc-filter-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700">常考化合物</button>
+                    <button type="button" data-fc-filter="color" class="fc-filter-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700">特有顏色</button>
+                    <button type="button" data-fc-filter="starred" class="fc-filter-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700">★ 待加強</button>
+                </div>
+
+                <!-- Direction & Shuffle Row -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                    <div class="grid grid-cols-2 bg-slate-100 p-1 rounded-xl gap-1">
+                        <button type="button" data-fc-dir="formula-to-name" class="fc-dir-btn py-1.5 px-2 rounded-lg text-xs font-bold bg-white text-indigo-700 shadow-sm transition">化學式 → 名稱</button>
+                        <button type="button" data-fc-dir="name-to-formula" class="fc-dir-btn py-1.5 px-2 rounded-lg text-xs font-bold text-slate-600 transition">名稱 → 化學式</button>
+                    </div>
+                    <button type="button" id="fc-shuffle-btn" class="py-2 px-3 rounded-xl text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 active:scale-[0.99] transition flex items-center justify-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/>
+                            <polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/>
+                            <line x1="4" y1="4" x2="9" y2="9"/>
+                        </svg>
+                        <span id="fc-shuffle-label">順序排列（點擊隨機洗牌）</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Interactive 3D Flashcard -->
+            <div id="flashcard-stage" class="flip-card w-full h-80 sm:h-84 cursor-pointer select-none">
+                <div id="flashcard-inner" class="flip-card-inner w-full h-full relative rounded-3xl shadow-lg">
+                    <!-- Front Face -->
+                    <div class="flip-card-front absolute inset-0 bg-white border-2 border-indigo-200 rounded-3xl p-6 flex flex-col justify-between items-center text-center">
+                        <div class="w-full flex items-center justify-between">
+                            <span id="fc-type-tag" class="text-xs font-bold px-2.5 py-1 rounded-full bg-blue-50 text-blue-700">陽離子</span>
+                            <button type="button" id="fc-star-front" class="w-9 h-9 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-lg text-slate-400 hover:text-amber-500 transition" aria-label="標記待加強">☆</button>
+                        </div>
+
+                        <div class="my-auto px-2 space-y-2">
+                            <div id="fc-prompt-hint" class="text-xs font-semibold text-slate-400">請說出此化學式的名稱及水溶液顏色</div>
+                            <div id="fc-front-main" class="text-5xl font-extrabold text-slate-900 tracking-wide break-words">Na⁺</div>
+                            <div id="fc-front-sub" class="text-sm font-medium text-slate-500"></div>
+                        </div>
+
+                        <div class="text-xs font-semibold text-indigo-500 flex items-center gap-1.5 bg-indigo-50 px-3.5 py-1.5 rounded-full">
+                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                            </svg>
+                            <span data-i18n="tapToFlip">輕觸卡片查看答案</span>
+                        </div>
+                    </div>
+
+                    <!-- Back Face -->
+                    <div class="flip-card-back absolute inset-0 bg-gradient-to-br from-indigo-900 to-slate-900 text-white rounded-3xl p-6 flex flex-col justify-between items-center text-center">
+                        <div class="w-full flex items-center justify-between">
+                            <span id="fc-back-type" class="text-xs font-bold px-2.5 py-1 rounded-full bg-indigo-800 text-indigo-200">答案詳情</span>
+                            <button type="button" id="fc-star-back" class="w-9 h-9 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-lg text-amber-300 transition" aria-label="標記待加強">☆</button>
+                        </div>
+
+                        <div class="my-auto space-y-2.5 w-full">
+                            <div id="fc-back-name" class="text-3xl font-extrabold text-amber-300 leading-snug">鈉離子</div>
+                            <div id="fc-back-en" class="text-sm font-medium text-indigo-200">Sodium ion</div>
+                            <div id="fc-back-formula" class="text-2xl font-bold text-white bg-white/10 px-4 py-1.5 rounded-xl inline-block">Na⁺</div>
+                            <div class="flex flex-wrap items-center justify-center gap-2 pt-1">
+                                <span id="fc-back-charge" class="text-xs font-bold bg-indigo-800/90 px-3 py-1 rounded-full text-indigo-100">電荷：1+</span>
+                                <span id="fc-back-color-pill" class="text-xs font-bold bg-white/15 px-3 py-1 rounded-full text-white inline-flex items-center gap-1.5">
+                                    <span id="fc-back-swatch" class="w-3 h-3 rounded-full inline-block shrink-0 swatch-colorless"></span>
+                                    <span id="fc-back-color">無色</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="text-xs text-indigo-300" data-i18n="tapToReturn">再次輕觸返回正面 · 左右滑動換卡</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty state for starred filter -->
+            <div id="fc-empty-state" class="hidden bg-white rounded-3xl border border-slate-200 p-8 text-center space-y-3">
+                <div class="text-3xl">⭐</div>
+                <div class="font-bold text-slate-800">目前沒有標記「待加強」的項目</div>
+                <p class="text-xs text-slate-500">在溫習庫或閃卡右上角點擊星星 ☆，即可將難記的離子加入此清單！</p>
+                <button type="button" id="fc-reset-filter-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold">返回全部離子</button>
+            </div>
+
+            <!-- Flashcard Action Buttons -->
+            <div id="fc-controls" class="grid grid-cols-3 gap-2.5">
+                <button type="button" id="fc-prev-btn" class="py-3.5 px-3 bg-white border border-slate-200 rounded-2xl text-sm font-bold text-slate-700 active:scale-95 shadow-sm flex items-center justify-center gap-1.5">
+                    <span>← 上一張</span>
+                </button>
+                <button type="button" id="fc-flip-btn" class="py-3.5 px-3 bg-indigo-50 border border-indigo-200 rounded-2xl text-sm font-bold text-indigo-700 active:scale-95 flex items-center justify-center gap-1">
+                    <span>翻轉核對</span>
+                </button>
+                <button type="button" id="fc-next-btn" class="py-3.5 px-3 bg-indigo-600 rounded-2xl text-sm font-bold text-white active:scale-95 shadow-sm flex items-center justify-center gap-1.5">
+                    <span>下一張 →</span>
+                </button>
+            </div>
+
+            <!-- Progress bar -->
+            <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                <div id="fc-progress-bar" class="bg-indigo-600 h-full transition-all duration-300" style="width: 5%"></div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 3: COMPOUND BUILDER LAB ==================== -->
+        <section id="view-builder" class="tab-content hidden space-y-4">
+            <!-- Instant Result Summary Card (Sticky-friendly top highlight) -->
+            <div class="bg-gradient-to-br from-indigo-900 to-slate-900 text-white rounded-2xl p-4 sm:p-5 shadow-md space-y-3">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-xs font-bold text-indigo-200">配對結果 · 十字交叉法實驗室</span>
+                    <button type="button" id="builder-random-btn" class="px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 text-xs font-bold text-amber-300 transition">
+                        🎲 隨機配對
+                    </button>
+                </div>
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white/10 rounded-xl p-3.5 border border-white/10">
+                    <div>
+                        <div id="builder-result-formula" class="text-3xl sm:text-4xl font-extrabold text-amber-300 tracking-wide">(NH<sub>4</sub>)<sub>2</sub>SO<sub>4</sub></div>
+                        <div id="builder-result-name" class="text-base font-bold text-white mt-0.5">硫酸銨</div>
+                        <div id="builder-result-en" class="text-xs text-indigo-200">Ammonium sulphate</div>
+                    </div>
+                    <div class="flex sm:flex-col items-center sm:items-end justify-between gap-1.5 border-t sm:border-t-0 border-white/10 pt-2 sm:pt-0">
+                        <span class="text-[11px] text-indigo-200">水溶液預測顏色</span>
+                        <span id="builder-color-pill" class="inline-flex items-center gap-1.5 bg-white/15 px-3 py-1 rounded-full text-xs font-bold">
+                            <span id="builder-color-swatch" class="w-3 h-3 rounded-full swatch-colorless"></span>
+                            <span id="builder-result-color">無色溶液</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cation & Anion Pickers -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                <!-- Cation Selector -->
+                <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-sm font-extrabold text-blue-800 flex items-center gap-1.5">
+                            <span class="w-5 h-5 rounded-full bg-blue-100 text-blue-700 text-xs flex items-center justify-center font-bold">1</span>
+                            選擇陽離子 (+)
+                        </h2>
+                        <span id="builder-selected-cat-badge" class="text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-lg">NH₄⁺</span>
+                    </div>
+                    <div id="builder-cation-list" class="grid grid-cols-3 gap-1.5 max-h-52 overflow-y-auto pr-0.5">
+                        <!-- Dynamic -->
+                    </div>
+                </div>
+
+                <!-- Anion Selector -->
+                <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-sm font-extrabold text-pink-800 flex items-center gap-1.5">
+                            <span class="w-5 h-5 rounded-full bg-pink-100 text-pink-700 text-xs flex items-center justify-center font-bold">2</span>
+                            選擇陰離子 (-)
+                        </h2>
+                        <span id="builder-selected-ani-badge" class="text-xs font-bold text-pink-700 bg-pink-50 px-2 py-0.5 rounded-lg">SO₄²⁻</span>
+                    </div>
+                    <div id="builder-anion-list" class="grid grid-cols-3 gap-1.5 max-h-52 overflow-y-auto pr-0.5">
+                        <!-- Dynamic -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Crossover Step-by-Step Visual -->
+            <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                    <span class="text-sm font-extrabold text-indigo-800">十字交叉法步驟 (Cross-over Method)</span>
+                    <span id="builder-gcd-badge" class="hidden text-[11px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">已約至最簡比例</span>
+                </div>
+
+                <div class="relative max-w-xs mx-auto bg-slate-50 rounded-2xl border border-slate-200 p-4">
+                    <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 280 150" preserveAspectRatio="none">
+                        <defs>
+                            <marker id="arr-blue" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b82f6"/>
+                            </marker>
+                            <marker id="arr-pink" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#ec4899"/>
+                            </marker>
+                        </defs>
+                        <line x1="108" y1="48" x2="178" y2="105" stroke="#3b82f6" stroke-width="2.5" stroke-dasharray="5,3" marker-end="url(#arr-blue)"/>
+                        <line x1="172" y1="48" x2="102" y2="105" stroke="#ec4899" stroke-width="2.5" stroke-dasharray="5,3" marker-end="url(#arr-pink)"/>
+                    </svg>
+
+                    <div class="flex justify-around items-center mb-12 relative z-10">
+                        <div class="text-center">
+                            <div class="text-[11px] font-bold text-blue-600 mb-0.5">陽離子</div>
+                            <span id="co-cat-symbol" class="text-2xl font-extrabold text-slate-900">NH<sub>4</sub></span>
+                            <sup id="co-cat-charge-num" class="text-xs font-black text-white bg-blue-500 rounded-full px-1.5 py-0.5 ml-0.5">1+</sup>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-[11px] font-bold text-pink-600 mb-0.5">陰離子</div>
+                            <span id="co-ani-symbol" class="text-2xl font-extrabold text-slate-900">SO<sub>4</sub></span>
+                            <sup id="co-ani-charge-num" class="text-xs font-black text-white bg-pink-500 rounded-full px-1.5 py-0.5 ml-0.5">2-</sup>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-around items-center pt-2 border-t border-slate-200/70 relative z-10">
+                        <div class="text-center">
+                            <div class="text-[10px] font-semibold text-slate-400">最簡腳標</div>
+                            <span id="co-cat-res-sym" class="text-xl font-bold text-slate-800">NH<sub>4</sub></span>
+                            <sub id="co-cat-res-sub" class="text-sm font-extrabold text-pink-600 bg-pink-100 px-1.5 py-0.5 rounded ml-0.5">2</sub>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-[10px] font-semibold text-slate-400">最簡腳標</div>
+                            <span id="co-ani-res-sym" class="text-xl font-bold text-slate-800">SO<sub>4</sub></span>
+                            <sub id="co-ani-res-sub" class="text-sm font-extrabold text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded ml-0.5">1</sub>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Neutrality Formula -->
+                <div class="bg-slate-50 rounded-xl p-3 border border-slate-200 text-xs text-slate-700 font-medium text-center" id="builder-explanation">
+                    銨離子 (1+) × 2 + 硫酸根離子 (2-) × 1 = 總電荷 0
+                </div>
+
+                <!-- Polyatomic Bracket Warning -->
+                <div id="bracket-warning-box" class="hidden bg-amber-50 border border-amber-300 rounded-xl p-3.5 text-xs text-amber-900 space-y-1">
+                    <div class="font-extrabold text-amber-800">⚠️ 為什麼這裡要加括號 ( )？</div>
+                    <p id="bracket-warning-reason" class="leading-relaxed"></p>
+                </div>
+
+                <!-- HKDSE Electron Diagram -->
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-extrabold text-slate-700">HKDSE 電子結構圖 (Dot-and-Cross)</span>
+                        <span class="text-[10px] font-bold text-slate-500 bg-slate-200/80 px-2 py-0.5 rounded">最外層電子</span>
+                    </div>
+                    <div id="electron-diagram-display" class="bg-white rounded-xl border border-slate-200 p-3 flex items-center justify-center min-h-[150px] overflow-x-auto">
+                        <!-- Dynamic SVG -->
+                    </div>
+                    <div id="electron-diagram-note" class="text-[11px] text-slate-500 text-center"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 4: QUIZ & SCORING ARENA ==================== -->
+        <section id="view-quiz" class="tab-content hidden space-y-4">
+            <!-- Setup View -->
+            <div id="quiz-setup-card" class="space-y-4">
+                <!-- Personal Scoreboard Banner -->
+                <div class="bg-gradient-to-r from-indigo-900 to-indigo-700 text-white rounded-2xl p-4 shadow-md">
+                    <div class="flex items-center justify-between mb-2.5">
+                        <span class="text-xs font-bold text-indigo-200">我的小測成績紀錄</span>
+                        <button type="button" id="reset-stats-btn" class="text-[11px] text-indigo-200 hover:text-white underline">重設紀錄</button>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center">
+                        <div class="bg-white/10 rounded-xl py-2 px-1">
+                            <div id="stat-best-score" class="text-xl font-extrabold text-amber-300">0%</div>
+                            <div class="text-[10px] text-indigo-200">最高正確率</div>
+                        </div>
+                        <div class="bg-white/10 rounded-xl py-2 px-1">
+                            <div id="stat-quizzes-done" class="text-xl font-extrabold text-white">0</div>
+                            <div class="text-[10px] text-indigo-200">完成小測次數</div>
+                        </div>
+                        <div class="bg-white/10 rounded-xl py-2 px-1">
+                            <div id="stat-total-correct" class="text-xl font-extrabold text-emerald-300">0</div>
+                            <div class="text-[10px] text-indigo-200">累計答對題數</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mode Selection Card -->
+                <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm space-y-4">
+                    <div>
+                        <h1 class="text-lg font-extrabold text-slate-900">小測計分擂台</h1>
+                        <p class="text-xs text-slate-500 mt-0.5">選擇題型與題數，即時批改、計分及錯題重溫</p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-xs font-extrabold text-slate-700">1. 選擇測試模式</label>
+                        <div class="grid grid-cols-2 gap-2" id="quiz-mode-grid">
+                            <button type="button" data-qcat="mixed" class="quiz-cat-btn p-3 rounded-xl border-2 border-indigo-600 bg-indigo-50 text-indigo-800 text-left transition">
+                                <div class="text-sm font-extrabold">🔥 綜合挑戰</div>
+                                <div class="text-[11px] opacity-80 mt-0.5">離子 + 化合物 + 顏色</div>
+                            </button>
+                            <button type="button" data-qcat="formula-to-ion" class="quiz-cat-btn p-3 rounded-xl border border-slate-200 bg-white text-slate-700 text-left transition">
+                                <div class="text-sm font-extrabold">化學式 → 離子名</div>
+                                <div class="text-[11px] text-slate-500 mt-0.5">看化學式辨認名稱</div>
+                            </button>
+                            <button type="button" data-qcat="ion-to-formula" class="quiz-cat-btn p-3 rounded-xl border border-slate-200 bg-white text-slate-700 text-left transition">
+                                <div class="text-sm font-extrabold">離子名 → 化學式</div>
+                                <div class="text-[11px] text-slate-500 mt-0.5">背誦電荷與化學式</div>
+                            </button>
+                            <button type="button" data-qcat="compound-name" class="quiz-cat-btn p-3 rounded-xl border border-slate-200 bg-white text-slate-700 text-left transition">
+                                <div class="text-sm font-extrabold">化學式 → 化合物名</div>
+                                <div class="text-[11px] text-slate-500 mt-0.5">辨認離子化合物名稱</div>
+                            </button>
+                            <button type="button" data-qcat="compound-formula" class="quiz-cat-btn p-3 rounded-xl border border-slate-200 bg-white text-slate-700 text-left transition">
+                                <div class="text-sm font-extrabold">化合物名 → 化學式</div>
+                                <div class="text-[11px] text-slate-500 mt-0.5">練習十字交叉法與括號</div>
+                            </button>
+                            <button type="button" data-qcat="color" class="quiz-cat-btn p-3 rounded-xl border border-slate-200 bg-white text-slate-700 text-left transition">
+                                <div class="text-sm font-extrabold">🎨 離子顏色特訓</div>
+                                <div class="text-[11px] text-slate-500 mt-0.5">必考水溶液特有顏色</div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-xs font-extrabold text-slate-700">2. 選擇題目數量</label>
+                        <div class="grid grid-cols-4 gap-2" id="quiz-count-grid">
+                            <button type="button" data-qcount="5" class="quiz-count-btn py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700">5 題</button>
+                            <button type="button" data-qcount="10" class="quiz-count-btn py-2.5 rounded-xl border-2 border-indigo-600 bg-indigo-50 text-xs font-extrabold text-indigo-700">10 題</button>
+                            <button type="button" data-qcount="15" class="quiz-count-btn py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700">15 題</button>
+                            <button type="button" data-qcount="20" class="quiz-count-btn py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700">20 題</button>
+                        </div>
+                    </div>
+
+                    <button type="button" id="start-quiz-btn" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-extrabold rounded-2xl shadow-md transition text-base">
+                        開始小測 ▶
+                    </button>
+                </div>
+            </div>
+
+            <!-- Active Quiz View -->
+            <div id="quiz-active-card" class="hidden bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-md space-y-4">
+                <div class="flex items-center justify-between gap-2">
+                    <button type="button" id="exit-quiz-btn" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-600 transition">
+                        ← 結束小測
+                    </button>
+                    <div class="flex items-center gap-2">
+                        <span id="quiz-streak-badge" class="hidden text-xs font-extrabold bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full">🔥 連對 2</span>
+                        <span id="quiz-live-score" class="text-xs font-extrabold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full">0 分</span>
+                        <span id="quiz-progress-text" class="text-xs font-bold text-slate-500">1 / 10</span>
+                    </div>
+                </div>
+
+                <!-- Quiz Progress Bar -->
+                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                    <div id="quiz-progress-bar" class="bg-indigo-600 h-full transition-all duration-300" style="width: 10%"></div>
+                </div>
+
+                <!-- Question Display -->
+                <div class="space-y-2 text-center">
+                    <span id="quiz-badge" class="inline-block text-[11px] font-bold bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-full">綜合挑戰</span>
+                    <h2 id="quiz-question-title" class="text-sm sm:text-base font-bold text-slate-700">題目</h2>
+                    <div id="quiz-question-main" class="text-3xl sm:text-4xl font-extrabold text-indigo-950 py-5 px-4 bg-slate-50 rounded-2xl border border-slate-200 tracking-wide">
+                        Cu²⁺
+                    </div>
+                </div>
+
+                <!-- Options -->
+                <div id="quiz-options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <!-- Dynamic -->
+                </div>
+
+                <!-- Instant Feedback & Next Button -->
+                <div id="quiz-feedback" class="hidden rounded-2xl p-3.5 space-y-2.5">
+                    <div id="quiz-feedback-text" class="text-sm font-bold leading-snug"></div>
+                    <div id="quiz-feedback-explain" class="text-xs opacity-90"></div>
+                    <button type="button" id="next-q-btn" class="w-full py-3 bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white rounded-xl text-sm font-extrabold transition">
+                        下一題 →
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quiz Result & Mistake Review View -->
+            <div id="quiz-result-card" class="hidden space-y-4">
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-md text-center space-y-4">
+                    <div id="quiz-grade-emoji" class="text-4xl">🏆</div>
+                    <div>
+                        <h2 id="quiz-grade-title" class="text-xl font-extrabold text-slate-900">小測完成！</h2>
+                        <p id="quiz-grade-sub" class="text-xs text-slate-500 mt-0.5">繼續保持，熟記離子化學式與顏色！</p>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 bg-slate-50 rounded-2xl p-3 border border-slate-200">
+                        <div>
+                            <div id="quiz-score-num" class="text-2xl font-extrabold text-indigo-600">80%</div>
+                            <div class="text-[11px] text-slate-500">正確率</div>
+                        </div>
+                        <div>
+                            <div id="quiz-score-points" class="text-2xl font-extrabold text-amber-600">95</div>
+                            <div class="text-[11px] text-slate-500">總積分</div>
+                        </div>
+                        <div>
+                            <div id="quiz-score-detail" class="text-2xl font-extrabold text-emerald-600">8/10</div>
+                            <div class="text-[11px] text-slate-500">答對題數</div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                        <button type="button" id="retry-wrong-btn" class="hidden py-3 px-4 bg-rose-600 hover:bg-rose-700 text-white font-extrabold rounded-xl text-sm shadow-sm transition">
+                            🔄 只重測錯題 (<span id="wrong-count-num">0</span> 題)
+                        </button>
+                        <button type="button" id="retry-quiz-btn" class="py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold rounded-xl text-sm shadow-sm transition">
+                            再測一次
+                        </button>
+                        <button type="button" id="back-to-study-btn" class="py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-sm transition sm:col-span-2">
+                            返回溫習庫
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mistake Review List -->
+                <div id="quiz-mistakes-box" class="hidden bg-white rounded-2xl p-4 border border-rose-200 shadow-sm space-y-3">
+                    <h3 class="text-sm font-extrabold text-rose-800">錯題重溫清單</h3>
+                    <div id="quiz-mistakes-list" class="space-y-2.5"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Fixed Mobile Bottom Navigation Bar (Clear Labels & Icons) -->
+    <nav class="fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-[0_-4px_16px_rgba(15,23,42,0.06)] bottom-nav-safe sm:hidden" aria-label="主導覽列">
+        <div class="max-w-3xl mx-auto grid grid-cols-4 h-16 px-1">
+            <button type="button" data-tab="study" class="mobile-nav-btn flex flex-col items-center justify-center gap-0.5 text-indigo-700 font-extrabold transition">
+                <span class="nav-pill px-3.5 py-1 rounded-full bg-indigo-100 flex items-center justify-center">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                    </svg>
+                </span>
+                <span class="text-[11px] leading-tight">溫習庫</span>
+            </button>
+
+            <button type="button" data-tab="flashcards" class="mobile-nav-btn flex flex-col items-center justify-center gap-0.5 text-slate-500 font-semibold transition">
+                <span class="nav-pill px-3.5 py-1 rounded-full flex items-center justify-center">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="6" width="16" height="14" rx="2"/><path d="M6 6V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-2"/>
+                    </svg>
+                </span>
+                <span class="text-[11px] leading-tight">記憶卡</span>
+            </button>
+
+            <button type="button" data-tab="builder" class="mobile-nav-btn flex flex-col items-center justify-center gap-0.5 text-slate-500 font-semibold transition">
+                <span class="nav-pill px-3.5 py-1 rounded-full flex items-center justify-center">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(30 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-30 12 12)"/>
+                    </svg>
+                </span>
+                <span class="text-[11px] leading-tight">配對室</span>
+            </button>
+
+            <button type="button" data-tab="quiz" class="mobile-nav-btn flex flex-col items-center justify-center gap-0.5 text-slate-500 font-semibold transition">
+                <span class="nav-pill px-3.5 py-1 rounded-full flex items-center justify-center">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+                    </svg>
+                </span>
+                <span class="text-[11px] leading-tight">小測計分</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Add to Home Screen Guide Modal -->
+    <div id="install-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-5 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-base font-extrabold text-slate-900">📱 免安裝加到電話主畫面</h3>
+                <button type="button" id="close-install-modal" class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 font-bold flex items-center justify-center">×</button>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed">
+                本程式為單一網頁檔案，無需到 App Store 或 Google Play 下載。只需加到電話主畫面，即可像普通 App 一樣全螢幕開啟溫習：
+            </p>
+            <div class="space-y-2.5 text-xs">
+                <div class="bg-slate-50 rounded-xl p-3 border border-slate-200">
+                    <div class="font-extrabold text-slate-800 mb-1">iPhone / iPad (Safari)</div>
+                    <p class="text-slate-600">點擊底部「分享」按鈕 ⎋ → 往下拉點選「加入主畫面」→ 按右上角「新增」。</p>
+                </div>
+                <div class="bg-slate-50 rounded-xl p-3 border border-slate-200">
+                    <div class="font-extrabold text-slate-800 mb-1">Android 電話 (Chrome)</div>
+                    <p class="text-slate-600">點擊右上角「⋮」選單 → 點選「加到主畫面」或「安裝應用程式」。</p>
+                </div>
+            </div>
+            <button type="button" id="install-modal-ok" class="w-full py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-sm">明白了</button>
+        </div>
+    </div>
+
+    <!-- In-Page Toast Notification -->
+    <div id="toast" class="hidden fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg"></div>
+
+    <script>
+        // ==================== 1. CHEMISTRY DATABASE (HKDSE) ====================
+        const COLOR_SWATCH = {
+            "無色": { bg: "", cls: "swatch-colorless", en: "Colourless" },
+            "淺綠色": { bg: "#86efac", cls: "border border-emerald-400", en: "Pale green" },
+            "粉紅色": { bg: "#f9a8d4", cls: "border border-pink-400", en: "Pink" },
+            "綠色": { bg: "#22c55e", cls: "border border-green-600", en: "Green" },
+            "非常淺的粉紅色": { bg: "#fce7f3", cls: "border border-pink-300", en: "Very pale pink" },
+            "藍色或綠色": { bg: "linear-gradient(135deg, #38bdf8 50%, #10b981 50%)", cls: "border border-sky-500", en: "Blue or green" },
+            "黃色或棕色": { bg: "linear-gradient(135deg, #facc15 50%, #b45309 50%)", cls: "border border-amber-600", en: "Yellow or brown" },
+            "紫色": { bg: "#9333ea", cls: "border border-purple-700", en: "Purple" },
+            "黃色": { bg: "#fde047", cls: "border border-yellow-500", en: "Yellow" },
+            "橙色": { bg: "#f97316", cls: "border border-orange-600", en: "Orange" }
+        };
+
+        const CATIONS = [
+            { id: "Na", name: "鈉離子", en: "Sodium ion", formula: "Na⁺", simpleFormula: "Na", charge: 1, color: "無色" },
+            { id: "K", name: "鉀離子", en: "Potassium ion", formula: "K⁺", simpleFormula: "K", charge: 1, color: "無色" },
+            { id: "Cu1", name: "銅(I) 離子", en: "Copper(I) ion", formula: "Cu⁺", simpleFormula: "Cu", charge: 1, color: "無色" },
+            { id: "Ag", name: "銀離子", en: "Silver ion", formula: "Ag⁺", simpleFormula: "Ag", charge: 1, color: "無色" },
+            { id: "Hg1", name: "汞(I) 離子", en: "Mercury(I) ion", formula: "Hg⁺", simpleFormula: "Hg", charge: 1, color: "無色" },
+            { id: "H", name: "氫離子", en: "Hydrogen ion", formula: "H⁺", simpleFormula: "H", charge: 1, color: "無色" },
+            { id: "NH4", name: "銨離子", en: "Ammonium ion", formula: "NH₄⁺", simpleFormula: "NH4", charge: 1, color: "無色", poly: true },
+
+            { id: "Mg", name: "鎂離子", en: "Magnesium ion", formula: "Mg²⁺", simpleFormula: "Mg", charge: 2, color: "無色" },
+            { id: "Ca", name: "鈣離子", en: "Calcium ion", formula: "Ca²⁺", simpleFormula: "Ca", charge: 2, color: "無色" },
+            { id: "Ba", name: "鋇離子", en: "Barium ion", formula: "Ba²⁺", simpleFormula: "Ba", charge: 2, color: "無色" },
+            { id: "Pb2", name: "鉛(II) 離子", en: "Lead(II) ion", formula: "Pb²⁺", simpleFormula: "Pb", charge: 2, color: "無色" },
+            { id: "Fe2", name: "鐵(II) 離子", en: "Iron(II) ion", formula: "Fe²⁺", simpleFormula: "Fe", charge: 2, color: "淺綠色" },
+            { id: "Co2", name: "鈷(II) 離子", en: "Cobalt(II) ion", formula: "Co²⁺", simpleFormula: "Co", charge: 2, color: "粉紅色" },
+            { id: "Ni2", name: "鎳(II) 離子", en: "Nickel(II) ion", formula: "Ni²⁺", simpleFormula: "Ni", charge: 2, color: "綠色" },
+            { id: "Mn2", name: "錳(II) 離子", en: "Manganese(II) ion", formula: "Mn²⁺", simpleFormula: "Mn", charge: 2, color: "非常淺的粉紅色" },
+            { id: "Cu2", name: "銅(II) 離子", en: "Copper(II) ion", formula: "Cu²⁺", simpleFormula: "Cu", charge: 2, color: "藍色或綠色" },
+            { id: "Zn", name: "鋅離子", en: "Zinc ion", formula: "Zn²⁺", simpleFormula: "Zn", charge: 2, color: "無色" },
+            { id: "Hg2", name: "汞(II) 離子", en: "Mercury(II) ion", formula: "Hg²⁺", simpleFormula: "Hg", charge: 2, color: "無色" },
+
+            { id: "Al", name: "鋁離子", en: "Aluminium ion", formula: "Al³⁺", simpleFormula: "Al", charge: 3, color: "無色" },
+            { id: "Fe3", name: "鐵(III) 離子", en: "Iron(III) ion", formula: "Fe³⁺", simpleFormula: "Fe", charge: 3, color: "黃色或棕色" },
+            { id: "Cr3", name: "鉻(III) 離子", en: "Chromium(III) ion", formula: "Cr³⁺", simpleFormula: "Cr", charge: 3, color: "綠色" }
+        ];
+
+        const ANIONS = [
+            { id: "H-", name: "氫陰離子", en: "Hydride ion", formula: "H⁻", simpleFormula: "H", charge: 1, color: "無色", zhPrefix: "氫化" },
+            { id: "Cl", name: "氯離子", en: "Chloride ion", formula: "Cl⁻", simpleFormula: "Cl", charge: 1, color: "無色", zhPrefix: "氯化" },
+            { id: "Br", name: "溴離子", en: "Bromide ion", formula: "Br⁻", simpleFormula: "Br", charge: 1, color: "無色", zhPrefix: "溴化" },
+            { id: "I", name: "碘離子", en: "Iodide ion", formula: "I⁻", simpleFormula: "I", charge: 1, color: "無色", zhPrefix: "碘化" },
+            { id: "OH", name: "氫氧根離子", en: "Hydroxide ion", formula: "OH⁻", simpleFormula: "OH", charge: 1, color: "無色", poly: true, zhPrefix: "氫氧化" },
+            { id: "NO3", name: "硝酸根離子", en: "Nitrate ion", formula: "NO₃⁻", simpleFormula: "NO3", charge: 1, color: "無色", poly: true, zhPrefix: "硝酸" },
+            { id: "NO2", name: "亞硝酸根離子", en: "Nitrite ion", formula: "NO₂⁻", simpleFormula: "NO2", charge: 1, color: "無色", poly: true, zhPrefix: "亞硝酸" },
+            { id: "HCO3", name: "碳酸氫根離子", en: "Hydrogencarbonate ion", formula: "HCO₃⁻", simpleFormula: "HCO3", charge: 1, color: "無色", poly: true, zhPrefix: "碳酸氫" },
+            { id: "HSO4", name: "硫酸氫根離子", en: "Hydrogensulphate ion", formula: "HSO₄⁻", simpleFormula: "HSO4", charge: 1, color: "無色", poly: true, zhPrefix: "硫酸氫" },
+            { id: "CN", name: "氰離子", en: "Cyanide ion", formula: "CN⁻", simpleFormula: "CN", charge: 1, color: "無色", poly: true, zhPrefix: "氰化" },
+            { id: "MnO4", name: "高錳酸根離子", en: "Permanganate ion", formula: "MnO₄⁻", simpleFormula: "MnO4", charge: 1, color: "紫色", poly: true, zhPrefix: "高錳酸" },
+
+            { id: "O", name: "氧離子", en: "Oxide ion", formula: "O²⁻", simpleFormula: "O", charge: 2, color: "無色", zhPrefix: "氧化" },
+            { id: "S", name: "硫離子", en: "Sulphide ion", formula: "S²⁻", simpleFormula: "S", charge: 2, color: "無色", zhPrefix: "硫化" },
+            { id: "SO4", name: "硫酸根離子", en: "Sulphate ion", formula: "SO₄²⁻", simpleFormula: "SO4", charge: 2, color: "無色", poly: true, zhPrefix: "硫酸" },
+            { id: "SO3", name: "亞硫酸根離子", en: "Sulphite ion", formula: "SO₃²⁻", simpleFormula: "SO3", charge: 2, color: "無色", poly: true, zhPrefix: "亞硫酸" },
+            { id: "CO3", name: "碳酸根離子", en: "Carbonate ion", formula: "CO₃²⁻", simpleFormula: "CO3", charge: 2, color: "無色", poly: true, zhPrefix: "碳酸" },
+            { id: "CrO4", name: "鉻酸根離子", en: "Chromate ion", formula: "CrO₄²⁻", simpleFormula: "CrO4", charge: 2, color: "黃色", poly: true, zhPrefix: "鉻酸" },
+            { id: "Cr2O7", name: "重鉻酸根離子", en: "Dichromate ion", formula: "Cr₂O₇²⁻", simpleFormula: "Cr2O7", charge: 2, color: "橙色", poly: true, zhPrefix: "重鉻酸" },
+
+            { id: "N", name: "氮離子", en: "Nitride ion", formula: "N³⁻", simpleFormula: "N", charge: 3, color: "無色", zhPrefix: "氮化" },
+            { id: "P", name: "磷離子", en: "Phosphide ion", formula: "P³⁻", simpleFormula: "P", charge: 3, color: "無色", zhPrefix: "磷化" },
+            { id: "PO4", name: "磷酸根離子", en: "Phosphate ion", formula: "PO₄³⁻", simpleFormula: "PO4", charge: 3, color: "無色", poly: true, zhPrefix: "磷酸" }
+        ];
+
+        const ALL_IONS = [
+            ...CATIONS.map(c => ({ ...c, type: "cation" })),
+            ...ANIONS.map(a => ({ ...a, type: "anion" }))
+        ];
+
+        // Curated high-frequency HKDSE Ionic Compounds
+        const KEY_COMPOUND_PAIRS = [
+            ["Na", "Cl"], ["Na", "OH"], ["Na", "CO3"], ["Na", "HCO3"], ["Na", "SO4"],
+            ["K", "MnO4"], ["K", "Cr2O7"], ["K", "CrO4"], ["K", "NO3"], ["K", "I"],
+            ["Mg", "O"], ["Mg", "Cl"], ["Mg", "SO4"], ["Mg", "OH"], ["Mg", "NO3"],
+            ["Ca", "CO3"], ["Ca", "OH"], ["Ca", "Cl"], ["Ca", "HCO3"], ["Ba", "SO4"],
+            ["Al", "O"], ["Al", "Cl"], ["Al", "SO4"], ["Al", "OH"], ["Zn", "SO4"],
+            ["Cu2", "SO4"], ["Cu2", "O"], ["Cu2", "Cl"], ["Cu2", "NO3"], ["Cu2", "OH"],
+            ["Fe2", "SO4"], ["Fe2", "Cl"], ["Fe3", "Cl"], ["Fe3", "SO4"], ["Fe3", "O"],
+            ["NH4", "Cl"], ["NH4", "NO3"], ["NH4", "SO4"], ["NH4", "CO3"],
+            ["Ag", "NO3"], ["Ag", "Cl"], ["Pb2", "NO3"], ["Pb2", "I"],
+            ["Cr3", "SO4"], ["Co2", "Cl"], ["Ni2", "SO4"], ["Mn2", "SO4"], ["Na", "PO4"]
+        ];
+
+        function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
+        function formatSub(text) { return text.replace(/(\d+)/g, "<sub>$1</sub>"); }
+
+        function buildCompound(cation, anion) {
+            const common = gcd(cation.charge, anion.charge);
+            const cRatio = anion.charge / common;
+            const aRatio = cation.charge / common;
+            const catPart = cRatio > 1 ? (cation.poly ? `(${cation.simpleFormula})${cRatio}` : `${cation.simpleFormula}${cRatio}`) : cation.simpleFormula;
+            const aniPart = aRatio > 1 ? (anion.poly ? `(${anion.simpleFormula})${aRatio}` : `${anion.simpleFormula}${aRatio}`) : anion.simpleFormula;
+            const rawFormula = catPart + aniPart;
+
+            const catClean = cation.name.replace("離子", "").trim();
+            const zhName = `${anion.zhPrefix}${catClean}`;
+            const enCat = cation.en.replace(/\s*ion$/i, "");
+            const enAni = anion.en.replace(/\s*ion$/i, "").toLowerCase();
+            const enName = `${enCat} ${enAni}`;
+
+            let color = "無色";
+            if (cation.color !== "無色" && anion.color !== "無色") color = `${cation.color} / ${anion.color}`;
+            else if (cation.color !== "無色") color = cation.color;
+            else if (anion.color !== "無色") color = anion.color;
+
+            return {
+                id: `comp-${cation.id}-${anion.id}`,
+                type: "compound",
+                cation,
+                anion,
+                cRatio,
+                aRatio,
+                common,
+                rawFormula,
+                formula: formatSub(rawFormula),
+                name: zhName,
+                en: enName,
+                charge: `${cation.formula} × ${cRatio} + ${anion.formula} × ${aRatio}`,
+                color
+            };
+        }
+
+        const COMPOUND_CARDS = KEY_COMPOUND_PAIRS.map(([cId, aId]) => {
+            const c = CATIONS.find(x => x.id === cId);
+            const a = ANIONS.find(x => x.id === aId);
+            return buildCompound(c, a);
+        });
+
+        // ==================== 2. APP STATE & PERSISTENCE ====================
+        const STORAGE_KEY = "hkdse_ion_master_mobile_v2";
+        const state = {
+            tab: "study",
+            lang: "zh", // "zh" (bilingual with ZH primary) or "en" (EN primary)
+            studyFilter: "all",
+            studySearch: "",
+            studyMask: "none",
+            starred: new Set(),
+            fcFilter: "all",
+            fcDir: "formula-to-name",
+            fcRandom: false,
+            fcList: [],
+            fcIndex: 0,
+            builderCatId: "NH4",
+            builderAniId: "SO4",
+            quizCat: "mixed",
+            quizCount: 10,
+            quizQuestions: [],
+            quizIndex: 0,
+            quizCorrect: 0,
+            quizPoints: 0,
+            quizStreak: 0,
+            quizMistakes: [],
+            stats: { bestPct: 0, completed: 0, totalCorrect: 0 }
+        };
+
+        function loadSavedState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return;
+                const parsed = JSON.parse(raw);
+                if (Array.isArray(parsed.starred)) state.starred = new Set(parsed.starred);
+                if (parsed.stats) {
+                    state.stats.bestPct = Number(parsed.stats.bestPct) || 0;
+                    state.stats.completed = Number(parsed.stats.completed) || 0;
+                    state.stats.totalCorrect = Number(parsed.stats.totalCorrect) || 0;
+                }
+            } catch (_) {}
+        }
+
+        function persistState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                    starred: Array.from(state.starred),
+                    stats: state.stats
+                }));
+            } catch (_) {}
+        }
+
+        function showToast(msg) {
+            const el = document.getElementById("toast");
+            el.textContent = msg;
+            el.classList.remove("hidden");
+            clearTimeout(el._timer);
+            el._timer = setTimeout(() => el.classList.add("hidden"), 1800);
+        }
+
+        function getSwatchStyle(colorName) {
+            const primary = colorName.split(" / ")[0].trim();
+            const info = COLOR_SWATCH[primary];
+            if (!info) return { style: "", cls: "swatch-colorless" };
+            return {
+                style: info.bg ? `background:${info.bg};` : "",
+                cls: info.cls
+            };
+        }
+
+        function getColorText(colorName) {
+            if (state.lang === "zh") return colorName;
+            return colorName.split(" / ").map(c => (COLOR_SWATCH[c.trim()]?.en || c.trim())).join(" / ");
+        }
+
+        function displayTitle(item) {
+            return state.lang === "zh" ? item.name : item.en;
+        }
+        function displaySubTitle(item) {
+            return state.lang === "zh" ? item.en : item.name;
+        }
+
+        // ==================== 3. NAVIGATION ====================
+        function switchTab(tabId) {
+            state.tab = tabId;
+            document.querySelectorAll(".tab-content").forEach(s => s.classList.add("hidden"));
+            const target = document.getElementById(`view-${tabId}`);
+            if (target) target.classList.remove("hidden");
+
+            // Update Mobile Bottom Nav
+            document.querySelectorAll(".mobile-nav-btn").forEach(btn => {
+                const active = btn.dataset.tab === tabId;
+                const pill = btn.querySelector(".nav-pill");
+                btn.className = `mobile-nav-btn flex flex-col items-center justify-center gap-0.5 transition ${active ? "text-indigo-700 font-extrabold" : "text-slate-500 font-semibold"}`;
+                if (pill) {
+                    pill.className = `nav-pill px-3.5 py-1 rounded-full flex items-center justify-center transition ${active ? "bg-indigo-100" : ""}`;
+                }
+            });
+
+            // Update Desktop Top Nav
+            document.querySelectorAll(".desktop-nav-btn").forEach(btn => {
+                const active = btn.dataset.tab === tabId;
+                btn.className = `desktop-nav-btn py-1.5 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 ${active ? "bg-white text-indigo-900 shadow-sm" : "text-indigo-200 hover:bg-indigo-800/70"}`;
+            });
+
+            if (tabId === "study") renderStudyCards();
+            else if (tabId === "flashcards") prepareFlashcards();
+            else if (tabId === "builder") renderBuilder();
+            else if (tabId === "quiz") renderStats();
+
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        // ==================== 4. TAB 1: STUDY LIBRARY ====================
+        function renderStudyCards() {
+            const q = state.studySearch.trim().toLowerCase();
+            let list = [];
+            if (state.studyFilter === "compound") list = COMPOUND_CARDS;
+            else if (state.studyFilter === "cation") list = ALL_IONS.filter(i => i.type === "cation");
+            else if (state.studyFilter === "anion") list = ALL_IONS.filter(i => i.type === "anion");
+            else if (state.studyFilter === "colored") list = ALL_IONS.filter(i => i.color !== "無色");
+            else if (state.studyFilter === "starred") list = [...ALL_IONS, ...COMPOUND_CARDS].filter(i => state.starred.has(i.id));
+            else list = ALL_IONS;
+
+            if (q) {
+                list = list.filter(item =>
+                    item.name.toLowerCase().includes(q) ||
+                    item.en.toLowerCase().includes(q) ||
+                    item.formula.toLowerCase().includes(q) ||
+                    (item.simpleFormula || "").toLowerCase().includes(q) ||
+                    (item.rawFormula || "").toLowerCase().includes(q) ||
+                    item.color.toLowerCase().includes(q)
+                );
+            }
+
+            document.getElementById("study-count-badge").textContent = `${list.length} 項`;
+            const grid = document.getElementById("study-cards-grid");
+
+            if (list.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full bg-white rounded-2xl border border-slate-200 p-8 text-center space-y-2">
+                        <div class="text-2xl">🔍</div>
+                        <div class="text-sm font-bold text-slate-700">找不到符合條件的項目</div>
+                        <p class="text-xs text-slate-400">可嘗試清除搜尋字詞或切換分類</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const fMask = state.studyMask === "formula" ? "mask-hidden" : "";
+            const nMask = state.studyMask === "name" ? "mask-hidden" : "";
+            const cMask = state.studyMask === "color" ? "mask-hidden" : "";
+
+            grid.innerHTML = list.map(item => {
+                const isStar = state.starred.has(item.id);
+                const sw = getSwatchStyle(item.color);
+                const typeBadge = item.type === "cation"
+                    ? `<span class="text-[11px] font-extrabold px-2 py-0.5 rounded-md bg-blue-100 text-blue-800">${item.charge}+</span>`
+                    : item.type === "anion"
+                    ? `<span class="text-[11px] font-extrabold px-2 py-0.5 rounded-md bg-pink-100 text-pink-800">${item.charge}-</span>`
+                    : `<span class="text-[11px] font-extrabold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800">化合物</span>`;
+
+                return `
+                    <div class="study-item-card bg-white rounded-2xl p-3.5 border border-slate-200 shadow-xs hover:border-indigo-300 transition flex items-center justify-between gap-3 cursor-pointer" data-reveal-card="1">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="w-16 h-14 rounded-xl ${item.type === "cation" ? "bg-blue-50 text-blue-900" : item.type === "anion" ? "bg-pink-50 text-pink-900" : "bg-emerald-50 text-emerald-900"} flex items-center justify-center shrink-0 px-1 text-center">
+                                <span class="mask-target text-base sm:text-lg font-extrabold tracking-tight leading-none ${fMask}">${item.formula}</span>
+                            </div>
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-1.5 flex-wrap">
+                                    ${typeBadge}
+                                    <span class="mask-target text-sm font-extrabold text-slate-900 truncate ${nMask}">${displayTitle(item)}</span>
+                                </div>
+                                <div class="mask-target text-[11px] text-slate-500 truncate mt-0.5 ${nMask}">${displaySubTitle(item)}</div>
+                                <div class="mask-target inline-flex items-center gap-1.5 mt-1 text-[11px] font-semibold ${item.color !== "無色" ? "text-amber-700" : "text-slate-500"} ${cMask}">
+                                    <span class="w-3 h-3 rounded-full shrink-0 ${sw.cls}" style="${sw.style}"></span>
+                                    <span>${getColorText(item.color)}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" data-star-id="${item.id}" class="star-toggle-btn w-10 h-10 rounded-xl shrink-0 flex items-center justify-center text-lg transition ${isStar ? "bg-amber-50 text-amber-500 border border-amber-200" : "bg-slate-50 text-slate-300 hover:text-amber-400 border border-slate-100"}" aria-label="收藏待加強">
+                            ${isStar ? "★" : "☆"}
+                        </button>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function toggleStar(id) {
+            if (state.starred.has(id)) {
+                state.starred.delete(id);
+                showToast("已從「待加強」移除");
+            } else {
+                state.starred.add(id);
+                showToast("已加入「★ 待加強」溫習清單");
+            }
+            persistState();
+            if (state.tab === "study") renderStudyCards();
+            if (state.tab === "flashcards") {
+                if (state.fcFilter === "starred") prepareFlashcards();
+                else updateFlashcardStarUI();
+            }
+        }
+
+        // ==================== 5. TAB 2: FLASHCARDS ====================
+        function prepareFlashcards() {
+            let base = [];
+            if (state.fcFilter === "all") base = [...ALL_IONS];
+            else if (state.fcFilter === "cation") base = ALL_IONS.filter(i => i.type === "cation");
+            else if (state.fcFilter === "anion") base = ALL_IONS.filter(i => i.type === "anion");
+            else if (state.fcFilter === "compound") base = [...COMPOUND_CARDS];
+            else if (state.fcFilter === "color") base = ALL_IONS.filter(i => i.color !== "無色");
+            else if (state.fcFilter === "starred") base = [...ALL_IONS, ...COMPOUND_CARDS].filter(i => state.starred.has(i.id));
+
+            state.fcList = state.fcRandom ? shuffleArray([...base]) : [...base];
+            state.fcIndex = 0;
+            renderFlashcard();
+        }
+
+        function updateFlashcardStarUI() {
+            const card = state.fcList[state.fcIndex];
+            if (!card) return;
+            const isStar = state.starred.has(card.id);
+            const frontBtn = document.getElementById("fc-star-front");
+            const backBtn = document.getElementById("fc-star-back");
+            frontBtn.textContent = isStar ? "★" : "☆";
+            frontBtn.className = `w-9 h-9 rounded-full border flex items-center justify-center text-lg transition ${isStar ? "bg-amber-50 border-amber-300 text-amber-500" : "bg-slate-50 border-slate-200 text-slate-400"}`;
+            backBtn.textContent = isStar ? "★" : "☆";
+        }
+
+        function renderFlashcard() {
+            const stage = document.getElementById("flashcard-stage");
+            const empty = document.getElementById("fc-empty-state");
+            const controls = document.getElementById("fc-controls");
+
+            if (state.fcList.length === 0) {
+                stage.classList.add("hidden");
+                controls.classList.add("hidden");
+                empty.classList.remove("hidden");
+                document.getElementById("fc-progress-pill").textContent = "0 / 0";
+                document.getElementById("fc-progress-bar").style.width = "0%";
+                return;
+            }
+
+            stage.classList.remove("hidden");
+            controls.classList.remove("hidden");
+            empty.classList.add("hidden");
+
+            const card = state.fcList[state.fcIndex];
+            stage.classList.remove("flipped");
+
+            const tag = document.getElementById("fc-type-tag");
+            if (card.type === "cation") {
+                tag.textContent = "陽離子 Cation";
+                tag.className = "text-xs font-bold px-2.5 py-1 rounded-full bg-blue-50 text-blue-700";
+            } else if (card.type === "anion") {
+                tag.textContent = "陰離子 Anion";
+                tag.className = "text-xs font-bold px-2.5 py-1 rounded-full bg-pink-50 text-pink-700";
+            } else {
+                tag.textContent = "離子化合物 Compound";
+                tag.className = "text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700";
+            }
+
+            const frontMain = document.getElementById("fc-front-main");
+            const frontSub = document.getElementById("fc-front-sub");
+            const promptHint = document.getElementById("fc-prompt-hint");
+
+            if (state.fcDir === "formula-to-name") {
+                promptHint.textContent = "看化學式 → 說出名稱與水溶液顏色";
+                frontMain.innerHTML = card.formula;
+                frontMain.className = "text-5xl font-extrabold text-slate-900 tracking-wide";
+                frontSub.textContent = "";
+            } else {
+                promptHint.textContent = "看名稱 → 寫出化學式、電荷與顏色";
+                frontMain.textContent = displayTitle(card);
+                frontMain.className = "text-3xl sm:text-4xl font-extrabold text-slate-900 leading-snug";
+                frontSub.textContent = displaySubTitle(card);
+            }
+
+            document.getElementById("fc-back-type").textContent = card.type === "compound" ? "化合物詳情" : (card.type === "cation" ? "陽離子詳情" : "陰離子詳情");
+            document.getElementById("fc-back-name").textContent = displayTitle(card);
+            document.getElementById("fc-back-en").textContent = displaySubTitle(card);
+            document.getElementById("fc-back-formula").innerHTML = card.formula;
+            document.getElementById("fc-back-charge").textContent = card.type === "compound"
+                ? `組成：${card.charge}`
+                : `電荷：${card.charge}${card.type === "cation" ? "+" : "-"}`;
+
+            const sw = getSwatchStyle(card.color);
+            const swEl = document.getElementById("fc-back-swatch");
+            swEl.className = `w-3.5 h-3.5 rounded-full inline-block shrink-0 ${sw.cls}`;
+            swEl.setAttribute("style", sw.style);
+            document.getElementById("fc-back-color").textContent = `水溶液：${getColorText(card.color)}`;
+
+            document.getElementById("fc-progress-pill").textContent = `${state.fcIndex + 1} / ${state.fcList.length}`;
+            document.getElementById("fc-progress-bar").style.width = `${Math.round(((state.fcIndex + 1) / state.fcList.length) * 100)}%`;
+            updateFlashcardStarUI();
+        }
+
+        // ==================== 6. TAB 3: COMPOUND BUILDER ====================
+        function renderBuilder() {
+            const selectedCat = CATIONS.find(c => c.id === state.builderCatId) || CATIONS[0];
+            const selectedAni = ANIONS.find(a => a.id === state.builderAniId) || ANIONS[0];
+
+            document.getElementById("builder-selected-cat-badge").textContent = selectedCat.formula;
+            document.getElementById("builder-selected-ani-badge").textContent = selectedAni.formula;
+
+            document.getElementById("builder-cation-list").innerHTML = CATIONS.map(c => {
+                const active = c.id === selectedCat.id;
+                const sw = getSwatchStyle(c.color);
+                const dot = c.color !== "無色" ? `<span class="w-2 h-2 rounded-full inline-block ml-1 ${sw.cls}" style="${sw.style}"></span>` : "";
+                return `
+                    <button type="button" data-cat-id="${c.id}" class="builder-cat-btn p-2 rounded-xl border text-center transition flex flex-col items-center justify-center ${active ? "border-blue-600 bg-blue-50 text-blue-800 font-extrabold ring-1 ring-blue-500" : "border-slate-200 text-slate-700 hover:bg-slate-50"}">
+                        <span class="text-sm font-extrabold leading-tight flex items-center">${c.formula}${dot}</span>
+                        <span class="text-[10px] opacity-80 truncate w-full mt-0.5">${c.name.replace("離子", "")}</span>
+                    </button>
+                `;
+            }).join("");
+
+            document.getElementById("builder-anion-list").innerHTML = ANIONS.map(a => {
+                const active = a.id === selectedAni.id;
+                const sw = getSwatchStyle(a.color);
+                const dot = a.color !== "無色" ? `<span class="w-2 h-2 rounded-full inline-block ml-1 ${sw.cls}" style="${sw.style}"></span>` : "";
+                return `
+                    <button type="button" data-ani-id="${a.id}" class="builder-ani-btn p-2 rounded-xl border text-center transition flex flex-col items-center justify-center ${active ? "border-pink-600 bg-pink-50 text-pink-800 font-extrabold ring-1 ring-pink-500" : "border-slate-200 text-slate-700 hover:bg-slate-50"}">
+                        <span class="text-sm font-extrabold leading-tight flex items-center">${a.formula}${dot}</span>
+                        <span class="text-[10px] opacity-80 truncate w-full mt-0.5">${a.name.replace("離子", "")}</span>
+                    </button>
+                `;
+            }).join("");
+
+            const comp = buildCompound(selectedCat, selectedAni);
+            document.getElementById("builder-result-formula").innerHTML = comp.formula;
+            document.getElementById("builder-result-name").textContent = displayTitle(comp);
+            document.getElementById("builder-result-en").textContent = displaySubTitle(comp);
+
+            const sw = getSwatchStyle(comp.color);
+            const swEl = document.getElementById("builder-color-swatch");
+            swEl.className = `w-3 h-3 rounded-full shrink-0 ${sw.cls}`;
+            swEl.setAttribute("style", sw.style);
+            document.getElementById("builder-result-color").textContent = comp.color === "無色" ? (state.lang === "zh" ? "無色溶液" : "Colourless solution") : getColorText(comp.color);
+
+            const catSym = selectedCat.poly ? formatSub(selectedCat.simpleFormula) : selectedCat.simpleFormula;
+            const aniSym = selectedAni.poly ? formatSub(selectedAni.simpleFormula) : selectedAni.simpleFormula;
+            document.getElementById("co-cat-symbol").innerHTML = catSym;
+            document.getElementById("co-cat-charge-num").textContent = `${selectedCat.charge}+`;
+            document.getElementById("co-cat-res-sym").innerHTML = catSym;
+            document.getElementById("co-cat-res-sub").textContent = comp.cRatio;
+
+            document.getElementById("co-ani-symbol").innerHTML = aniSym;
+            document.getElementById("co-ani-charge-num").textContent = `${selectedAni.charge}-`;
+            document.getElementById("co-ani-res-sym").innerHTML = aniSym;
+            document.getElementById("co-ani-res-sub").textContent = comp.aRatio;
+
+            const gcdBadge = document.getElementById("builder-gcd-badge");
+            if (comp.common > 1) gcdBadge.classList.remove("hidden");
+            else gcdBadge.classList.add("hidden");
+
+            document.getElementById("builder-explanation").textContent =
+                `${selectedCat.name} (${selectedCat.charge}+) × ${comp.cRatio}  +  ${selectedAni.name} (${selectedAni.charge}-) × ${comp.aRatio}  =  總電荷 0`;
+
+            const needCatB = selectedCat.poly && comp.cRatio > 1;
+            const needAniB = selectedAni.poly && comp.aRatio > 1;
+            const bBox = document.getElementById("bracket-warning-box");
+            const bReason = document.getElementById("bracket-warning-reason");
+            if (needCatB || needAniB) {
+                bBox.classList.remove("hidden");
+                if (needCatB && needAniB) {
+                    bReason.innerHTML = `<b>${selectedCat.name}</b> 與 <b>${selectedAni.name}</b> 均為多原子離子且數量大於 1，兩者皆須加括號：<b>${comp.formula}</b>。`;
+                } else if (needCatB) {
+                    bReason.innerHTML = `<b>${selectedCat.name} (${catSym})</b> 是多原子離子，需要 ${comp.cRatio} 個時必須加括號寫作 <b>(${catSym})<sub>${comp.cRatio}</sub></b>。`;
+                } else {
+                    bReason.innerHTML = `<b>${selectedAni.name} (${aniSym})</b> 是多原子離子，需要 ${comp.aRatio} 個時必須加括號寫作 <b>(${aniSym})<sub>${comp.aRatio}</sub></b>。`;
+                }
+            } else {
+                bBox.classList.add("hidden");
+            }
+
+            renderElectronDiagram(selectedCat, selectedAni, comp.cRatio, comp.aRatio);
+        }
+
+        function renderElectronDiagram(cation, anion, catRatio, aniRatio) {
+            const container = document.getElementById("electron-diagram-display");
+            const noteEl = document.getElementById("electron-diagram-note");
+
+            if (cation.poly || anion.poly) {
+                container.innerHTML = `
+                    <div class="py-3 text-center space-y-1.5">
+                        <div class="text-xs font-extrabold text-amber-700">含有多原子離子 (${cation.poly ? cation.name : anion.name})</div>
+                        <p class="text-[11px] text-slate-500 max-w-sm mx-auto leading-relaxed">
+                            HKDSE 必修電子結構圖考核只涵蓋單原子離子組成的簡單離子化合物（如 MgCl₂、Al₂O₃）。多原子離子請重點掌握化學式與括號用法。
+                        </p>
+                    </div>
+                `;
+                noteEl.textContent = "提示：點選單原子離子（如 Mg²⁺ + Cl⁻ 或 Al³⁺ + O²⁻）可即時查看電子結構圖。";
+                return;
+            }
+
+            const catChargeStr = cation.charge > 1 ? `${cation.charge}+` : "+";
+            const aniChargeStr = anion.charge > 1 ? `${anion.charge}-` : "-";
+            const catCoef = catRatio > 1 ? `<text x="18" y="96" font-size="24" font-weight="800" fill="#1e293b" text-anchor="middle">${catRatio}</text>` : "";
+            const aniCoef = aniRatio > 1 ? `<text x="18" y="96" font-size="24" font-weight="800" fill="#1e293b" text-anchor="middle">${aniRatio}</text>` : "";
+
+            const dot = (x, y) => `<circle cx="${x}" cy="${y}" r="3.2" fill="#0f172a"/>`;
+            const cross = (x, y) => `<path d="M ${x-3.5} ${y-3.5} L ${x+3.5} ${y+3.5} M ${x+3.5} ${y-3.5} L ${x-3.5} ${y+3.5}" stroke="#dc2626" stroke-width="2.2" stroke-linecap="round"/>`;
+
+            // Accurate valence shell electron pairs (8 electrons total; crosses = electrons gained = anion.charge)
+            let electrons = "";
+            if (anion.id === "H-") {
+                // Hydride H- has 2 electrons (duplet): 1 dot + 1 cross
+                electrons = dot(85, 48) + cross(95, 48);
+            } else if (anion.charge === 1) {
+                // 7 original dots + 1 gained cross
+                electrons = dot(85, 48) + dot(95, 48) + dot(85, 122) + dot(95, 122) + dot(53, 80) + dot(53, 90) + dot(127, 80) + cross(127, 90);
+            } else if (anion.charge === 2) {
+                // 6 original dots + 2 gained crosses
+                electrons = dot(85, 48) + dot(95, 48) + dot(85, 122) + dot(95, 122) + dot(53, 80) + dot(53, 90) + cross(127, 80) + cross(127, 90);
+            } else {
+                // 5 original dots + 3 gained crosses
+                electrons = dot(85, 48) + dot(95, 48) + dot(53, 80) + dot(53, 90) + dot(85, 122) + cross(95, 122) + cross(127, 80) + cross(127, 90);
+            }
+
+            container.innerHTML = `
+                <svg viewBox="0 0 470 170" class="w-full max-w-[440px] h-auto">
+                    <g transform="translate(10, 0)">
+                        ${catCoef}
+                        <path d="M 52 24 L 38 24 L 38 144 L 52 144" stroke="#1e293b" stroke-width="2.5" fill="none"/>
+                        <text x="90" y="94" font-size="26" font-weight="800" text-anchor="middle" fill="#0f172a">${cation.simpleFormula}</text>
+                        <path d="M 128 24 L 142 24 L 142 144 L 128 144" stroke="#1e293b" stroke-width="2.5" fill="none"/>
+                        <text x="150" y="42" font-size="20" font-weight="800" fill="#2563eb">${catChargeStr}</text>
+                    </g>
+                    <g transform="translate(230, 0)">
+                        ${aniCoef}
+                        <path d="M 50 24 L 36 24 L 36 144 L 50 144" stroke="#1e293b" stroke-width="2.5" fill="none"/>
+                        <circle cx="90" cy="85" r="37" stroke="#38bdf8" stroke-width="2.5" fill="none"/>
+                        <text x="90" y="93" font-size="24" font-weight="800" text-anchor="middle" fill="#0f172a">${anion.simpleFormula}</text>
+                        ${electrons}
+                        <path d="M 134 24 L 148 24 L 148 144 L 134 144" stroke="#1e293b" stroke-width="2.5" fill="none"/>
+                        <text x="156" y="42" font-size="20" font-weight="800" fill="#db2777">${aniChargeStr}</text>
+                    </g>
+                </svg>
+            `;
+            noteEl.textContent = "黑點 (•) 代表陰離子原有最外層電子，紅叉 (×) 代表從陽離子獲得的電子。";
+        }
+
+        // ==================== 7. TAB 4: QUIZ & SCORING ====================
+        function shuffleArray(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        function renderStats() {
+            document.getElementById("stat-best-score").textContent = `${state.stats.bestPct}%`;
+            document.getElementById("stat-quizzes-done").textContent = state.stats.completed;
+            document.getElementById("stat-total-correct").textContent = state.stats.totalCorrect;
+        }
+
+        function uniqueOptions(correct, pool) {
+            const set = new Set([correct]);
+            const shuffled = shuffleArray(pool);
+            for (const item of shuffled) {
+                if (set.size >= 4) break;
+                if (item && item !== correct) set.add(item);
+            }
+            return shuffleArray(Array.from(set));
+        }
+
+        function makeCompoundDistractors(comp) {
+            const c = comp.cation;
+            const a = comp.anion;
+            const candidates = new Set();
+
+            // 1. Missing brackets if polyatomic
+            if (c.poly && comp.cRatio > 1) candidates.add(formatSub(`${c.simpleFormula}${comp.cRatio}${a.simpleFormula}${comp.aRatio > 1 ? comp.aRatio : ""}`));
+            if (a.poly && comp.aRatio > 1) candidates.add(formatSub(`${c.simpleFormula}${comp.cRatio > 1 ? comp.cRatio : ""}${a.simpleFormula}${comp.aRatio}`));
+            // 2. Swapped ratios
+            if (comp.cRatio !== comp.aRatio) {
+                const cp = comp.aRatio > 1 ? (c.poly ? `(${c.simpleFormula})${comp.aRatio}` : `${c.simpleFormula}${comp.aRatio}`) : c.simpleFormula;
+                const ap = comp.cRatio > 1 ? (a.poly ? `(${a.simpleFormula})${comp.cRatio}` : `${a.simpleFormula}${comp.cRatio}`) : a.simpleFormula;
+                candidates.add(formatSub(cp + ap));
+            }
+            // 3. Unsimplified ratio if gcd > 1
+            if (comp.common > 1) {
+                const cp = c.poly ? `(${c.simpleFormula})${a.charge}` : `${c.simpleFormula}${a.charge}`;
+                const ap = a.poly ? `(${a.simpleFormula})${c.charge}` : `${a.simpleFormula}${c.charge}`;
+                candidates.add(formatSub(cp + ap));
+            }
+            // 4. Plain 1:1 or altered subscripts
+            candidates.add(formatSub(`${c.simpleFormula}${a.simpleFormula}`));
+            candidates.add(formatSub(`${c.simpleFormula}2${a.simpleFormula}`));
+            candidates.add(formatSub(`${c.simpleFormula}${a.poly ? `(${a.simpleFormula})2` : `${a.simpleFormula}2`}`));
+            candidates.add(formatSub(`${c.simpleFormula}2${a.poly ? `(${a.simpleFormula})3` : `${a.simpleFormula}3`}`));
+            candidates.add(formatSub(`${c.simpleFormula}3${a.poly ? `(${a.simpleFormula})2` : `${a.simpleFormula}2`}`));
+
+            candidates.delete(comp.formula);
+            return uniqueOptions(comp.formula, Array.from(candidates));
+        }
+
+        function createQuestionByType(type) {
+            if (type === "formula-to-ion") {
+                const item = ALL_IONS[Math.floor(Math.random() * ALL_IONS.length)];
+                const samePool = ALL_IONS.filter(x => x.type === item.type).map(x => displayTitle(x));
+                return {
+                    badge: "化學式 → 離子名稱",
+                    title: "這個化學式代表哪一個離子？",
+                    main: item.formula,
+                    correct: displayTitle(item),
+                    options: uniqueOptions(displayTitle(item), samePool),
+                    explain: `${item.formula} 是 ${item.name} (${item.en})，水溶液呈「${item.color}」。`
+                };
+            }
+            if (type === "ion-to-formula") {
+                const item = ALL_IONS[Math.floor(Math.random() * ALL_IONS.length)];
+                const samePool = ALL_IONS.filter(x => x.type === item.type).map(x => x.formula);
+                return {
+                    badge: "離子名稱 → 化學式",
+                    title: "以下哪一個是正確的離子化學式？",
+                    main: displayTitle(item),
+                    correct: item.formula,
+                    options: uniqueOptions(item.formula, samePool),
+                    explain: `${item.name} (${item.en}) 帶 ${item.charge}${item.type === "cation" ? "+" : "-"} 電荷，化學式為 ${item.formula}。`
+                };
+            }
+            if (type === "color") {
+                const colored = ALL_IONS.filter(i => i.color !== "無色");
+                const item = colored[Math.floor(Math.random() * colored.length)];
+                const allColors = Object.keys(COLOR_SWATCH).map(c => getColorText(c));
+                const ans = getColorText(item.color);
+                return {
+                    badge: "離子顏色特訓",
+                    title: "此離子在水溶液中呈現什麼顏色？",
+                    main: `${item.formula} <span class="text-lg font-bold text-slate-500 block mt-1">${displayTitle(item)}</span>`,
+                    correct: ans,
+                    options: uniqueOptions(ans, allColors),
+                    isColorQ: true,
+                    explain: `${item.name} (${item.formula}) 的水溶液特有顏色為「${item.color}」。`
+                };
+            }
+            if (type === "compound-name") {
+                const comp = COMPOUND_CARDS[Math.floor(Math.random() * COMPOUND_CARDS.length)];
+                const otherCats = CATIONS.filter(c => c.id !== comp.cation.id);
+                const otherAnis = ANIONS.filter(a => a.id !== comp.anion.id);
+                const distractors = [
+                    displayTitle(buildCompound(otherCats[Math.floor(Math.random() * otherCats.length)], comp.anion)),
+                    displayTitle(buildCompound(comp.cation, otherAnis[Math.floor(Math.random() * otherAnis.length)])),
+                    displayTitle(buildCompound(otherCats[Math.floor(Math.random() * otherCats.length)], otherAnis[Math.floor(Math.random() * otherAnis.length)])),
+                    ...COMPOUND_CARDS.map(x => displayTitle(x))
+                ];
+                return {
+                    badge: "化學式 → 化合物名稱",
+                    title: "請說出此離子化合物的正確名稱：",
+                    main: comp.formula,
+                    correct: displayTitle(comp),
+                    options: uniqueOptions(displayTitle(comp), distractors),
+                    explain: `由 ${comp.cation.name} (${comp.cation.formula}) 與 ${comp.anion.name} (${comp.anion.formula}) 組成，名為「${comp.name}」(${comp.en})。`
+                };
+            }
+            // compound-formula
+            const comp = COMPOUND_CARDS[Math.floor(Math.random() * COMPOUND_CARDS.length)];
+            return {
+                badge: "化合物名稱 → 化學式",
+                title: "請選出以下化合物的正確化學式：",
+                main: `${displayTitle(comp)} <span class="text-sm font-semibold text-slate-500 block mt-1">${displaySubTitle(comp)}</span>`,
+                correct: comp.formula,
+                options: makeCompoundDistractors(comp),
+                explain: `${comp.cation.formula} (${comp.cRatio}個) 與 ${comp.anion.formula} (${comp.aRatio}個) 電荷中和，寫作 ${comp.rawFormula}。`
+            };
+        }
+
+        function startQuiz(customQuestions = null) {
+            if (customQuestions) {
+                state.quizQuestions = shuffleArray(customQuestions);
+            } else {
+                const types = ["formula-to-ion", "ion-to-formula", "compound-name", "compound-formula", "color"];
+                const qs = [];
+                const seenMain = new Set();
+                let attempts = 0;
+                while (qs.length < state.quizCount && attempts < 120) {
+                    attempts++;
+                    const t = state.quizCat === "mixed" ? types[qs.length % types.length] : state.quizCat;
+                    const q = createQuestionByType(t);
+                    const key = `${t}|${q.main}`;
+                    if (!seenMain.has(key) || attempts > 60) {
+                        seenMain.add(key);
+                        qs.push(q);
+                    }
+                }
+                state.quizQuestions = shuffleArray(qs);
+            }
+
+            state.quizIndex = 0;
+            state.quizCorrect = 0;
+            state.quizPoints = 0;
+            state.quizStreak = 0;
+            state.quizMistakes = [];
+
+            document.getElementById("quiz-setup-card").classList.add("hidden");
+            document.getElementById("quiz-result-card").classList.add("hidden");
+            document.getElementById("quiz-active-card").classList.remove("hidden");
+            renderQuizQuestion();
+        }
+
+        function renderQuizQuestion() {
+            const q = state.quizQuestions[state.quizIndex];
+            const total = state.quizQuestions.length;
+
+            document.getElementById("quiz-badge").textContent = q.badge;
+            document.getElementById("quiz-progress-text").textContent = `${state.quizIndex + 1} / ${total}`;
+            document.getElementById("quiz-progress-bar").style.width = `${Math.round(((state.quizIndex + 1) / total) * 100)}%`;
+            document.getElementById("quiz-live-score").textContent = `${state.quizPoints} 分`;
+
+            const streakEl = document.getElementById("quiz-streak-badge");
+            if (state.quizStreak >= 2) {
+                streakEl.textContent = `🔥 連對 ${state.quizStreak}`;
+                streakEl.classList.remove("hidden");
+            } else {
+                streakEl.classList.add("hidden");
+            }
+
+            document.getElementById("quiz-question-title").textContent = q.title;
+            document.getElementById("quiz-question-main").innerHTML = q.main;
+            document.getElementById("quiz-feedback").classList.add("hidden");
+
+            const container = document.getElementById("quiz-options-container");
+            container.innerHTML = q.options.map((opt, idx) => {
+                let swatchHtml = "";
+                if (q.isColorQ) {
+                    const zhKey = Object.keys(COLOR_SWATCH).find(k => k === opt || COLOR_SWATCH[k].en === opt);
+                    if (zhKey) {
+                        const sw = getSwatchStyle(zhKey);
+                        swatchHtml = `<span class="w-4 h-4 rounded-full shrink-0 ${sw.cls}" style="${sw.style}"></span>`;
+                    }
+                }
+                return `
+                    <button type="button" data-opt-idx="${idx}" class="quiz-opt-btn p-4 rounded-2xl border-2 border-slate-200 bg-white hover:border-indigo-400 active:scale-[0.98] font-bold text-slate-800 text-base transition flex items-center justify-center gap-2 min-h-[58px]">
+                        ${swatchHtml}<span>${opt}</span>
+                    </button>
+                `;
+            }).join("");
+        }
+
+        function handleQuizAnswer(idx) {
+            const q = state.quizQuestions[state.quizIndex];
+            const selected = q.options[idx];
+            const buttons = document.querySelectorAll(".quiz-opt-btn");
+            buttons.forEach(b => b.disabled = true);
+
+            const isRight = selected === q.correct;
+            const fb = document.getElementById("quiz-feedback");
+            const fbText = document.getElementById("quiz-feedback-text");
+            const fbExp = document.getElementById("quiz-feedback-explain");
+
+            buttons.forEach((btn, i) => {
+                if (q.options[i] === q.correct) {
+                    btn.className = "quiz-opt-btn p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50 text-emerald-800 font-extrabold text-base flex items-center justify-center gap-2 min-h-[58px]";
+                } else if (i === idx && !isRight) {
+                    btn.className = "quiz-opt-btn p-4 rounded-2xl border-2 border-rose-500 bg-rose-50 text-rose-800 font-extrabold text-base flex items-center justify-center gap-2 min-h-[58px]";
+                } else {
+                    btn.className = "quiz-opt-btn p-4 rounded-2xl border border-slate-200 bg-slate-50 text-slate-400 font-bold text-base flex items-center justify-center gap-2 min-h-[58px]";
+                }
+            });
+
+            if (isRight) {
+                state.quizCorrect++;
+                state.quizStreak++;
+                const bonus = state.quizStreak >= 3 ? 5 : 0;
+                state.quizPoints += 10 + bonus;
+                fb.className = "rounded-2xl p-3.5 space-y-2.5 bg-emerald-50 border border-emerald-200 text-emerald-900";
+                fbText.innerHTML = `✅ 答對了！+${10 + bonus} 分${bonus ? "（連對加分！）" : ""}`;
+            } else {
+                state.quizStreak = 0;
+                state.quizMistakes.push({ question: q, picked: selected });
+                fb.className = "rounded-2xl p-3.5 space-y-2.5 bg-rose-50 border border-rose-200 text-rose-900";
+                fbText.innerHTML = `❌ 答錯了！正確答案是：<span class="underline">${q.correct}</span>`;
+            }
+
+            fbExp.textContent = q.explain;
+            document.getElementById("quiz-live-score").textContent = `${state.quizPoints} 分`;
+            document.getElementById("next-q-btn").textContent = state.quizIndex + 1 < state.quizQuestions.length ? "下一題 →" : "查看成績統計 →";
+            fb.classList.remove("hidden");
+        }
+
+        function finishQuiz() {
+            const total = state.quizQuestions.length || 1;
+            const pct = Math.round((state.quizCorrect / total) * 100);
+
+            state.stats.completed += 1;
+            state.stats.totalCorrect += state.quizCorrect;
+            if (pct > state.stats.bestPct) state.stats.bestPct = pct;
+            persistState();
+
+            document.getElementById("quiz-active-card").classList.add("hidden");
+            document.getElementById("quiz-result-card").classList.remove("hidden");
+
+            document.getElementById("quiz-score-num").textContent = `${pct}%`;
+            document.getElementById("quiz-score-points").textContent = state.quizPoints;
+            document.getElementById("quiz-score-detail").textContent = `${state.quizCorrect}/${total}`;
+
+            let emoji = "💪", title = "繼續加油！", sub = "建議先重溫以下錯題，再挑戰一次。";
+            if (pct === 100) { emoji = "🏆"; title = "滿分！5** 化學離子大師！"; sub = "全部答對，化學式與顏色已完全掌握！"; }
+            else if (pct >= 80) { emoji = "🌟"; title = "表現出色！"; sub = "離子概念非常穩固，只差少許就滿分！"; }
+            else if (pct >= 60) { emoji = "👍"; title = "合格過關！"; sub = "多用閃卡溫習錯題，很快便能突破 80%！"; }
+
+            document.getElementById("quiz-grade-emoji").textContent = emoji;
+            document.getElementById("quiz-grade-title").textContent = title;
+            document.getElementById("quiz-grade-sub").textContent = sub;
+
+            const retryWrongBtn = document.getElementById("retry-wrong-btn");
+            const mistakesBox = document.getElementById("quiz-mistakes-box");
+            const mistakesList = document.getElementById("quiz-mistakes-list");
+
+            if (state.quizMistakes.length > 0) {
+                retryWrongBtn.classList.remove("hidden");
+                document.getElementById("wrong-count-num").textContent = state.quizMistakes.length;
+                mistakesBox.classList.remove("hidden");
+                mistakesList.innerHTML = state.quizMistakes.map(m => `
+                    <div class="p-3 rounded-xl bg-rose-50/60 border border-rose-100 text-xs space-y-1">
+                        <div class="font-bold text-slate-800">${m.question.title} <span class="text-indigo-800 font-extrabold ml-1">${m.question.main.replace(/<[^>]+>/g, " ")}</span></div>
+                        <div class="flex flex-wrap gap-x-3 gap-y-1">
+                            <span class="text-rose-700">你的答案：<b>${m.picked}</b></span>
+                            <span class="text-emerald-700">正確答案：<b>${m.question.correct}</b></span>
+                        </div>
+                        <div class="text-slate-500">${m.question.explain}</div>
+                    </div>
+                `).join("");
+            } else {
+                retryWrongBtn.classList.add("hidden");
+                mistakesBox.classList.add("hidden");
+            }
+        }
+
+        // ==================== 8. EVENT LISTENERS ====================
+        function bindEvents() {
+            // Navigation (both mobile bottom bar & desktop top bar)
+            document.querySelectorAll("[data-tab]").forEach(btn => {
+                btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+            });
+
+            // Language toggle
+            document.getElementById("lang-toggle-btn").addEventListener("click", () => {
+                state.lang = state.lang === "zh" ? "en" : "zh";
+                document.getElementById("lang-toggle-label").textContent = state.lang === "zh" ? "中 / EN" : "EN / 中";
+                showToast(state.lang === "zh" ? "已切換為中文為主（附英文）" : "Switched to English primary");
+                if (state.tab === "study") renderStudyCards();
+                if (state.tab === "flashcards") renderFlashcard();
+                if (state.tab === "builder") renderBuilder();
+            });
+
+            // Install guide modal
+            const modal = document.getElementById("install-modal");
+            document.getElementById("install-guide-btn").addEventListener("click", () => modal.classList.remove("hidden"));
+            document.getElementById("close-install-modal").addEventListener("click", () => modal.classList.add("hidden"));
+            document.getElementById("install-modal-ok").addEventListener("click", () => modal.classList.add("hidden"));
+            modal.addEventListener("click", e => { if (e.target === modal) modal.classList.add("hidden"); });
+
+            // Study search
+            const searchInput = document.getElementById("study-search");
+            const clearBtn = document.getElementById("study-search-clear");
+            searchInput.addEventListener("input", () => {
+                state.studySearch = searchInput.value;
+                clearBtn.classList.toggle("hidden", !state.studySearch);
+                renderStudyCards();
+            });
+            clearBtn.addEventListener("click", () => {
+                searchInput.value = "";
+                state.studySearch = "";
+                clearBtn.classList.add("hidden");
+                renderStudyCards();
+            });
+
+            // Study filter pills
+            document.querySelectorAll(".study-filter-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    state.studyFilter = btn.dataset.filter;
+                    document.querySelectorAll(".study-filter-btn").forEach(b => {
+                        const active = b.dataset.filter === state.studyFilter;
+                        b.className = `study-filter-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition ${active ? "bg-indigo-600 text-white shadow-sm" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`;
+                    });
+                    renderStudyCards();
+                });
+            });
+
+            // Study mask pills
+            document.querySelectorAll(".mask-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    state.studyMask = btn.dataset.mask;
+                    document.querySelectorAll(".mask-btn").forEach(b => {
+                        const active = b.dataset.mask === state.studyMask;
+                        b.className = `mask-btn shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${active ? "bg-slate-800 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`;
+                    });
+                    renderStudyCards();
+                });
+            });
+
+            // Study cards delegation (star toggle & tap-to-reveal mask)
+            document.getElementById("study-cards-grid").addEventListener("click", e => {
+                const starBtn = e.target.closest(".star-toggle-btn");
+                if (starBtn) {
+                    e.stopPropagation();
+                    toggleStar(starBtn.dataset.starId);
+                    return;
+                }
+                const card = e.target.closest("[data-reveal-card]");
+                if (card && state.studyMask !== "none") {
+                    card.querySelectorAll(".mask-hidden, .mask-revealed").forEach(el => {
+                        el.classList.toggle("mask-hidden");
+                        el.classList.toggle("mask-revealed");
+                    });
+                }
+            });
+
+            // Flashcard filters
+            document.querySelectorAll(".fc-filter-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    state.fcFilter = btn.dataset.fcFilter;
+                    document.querySelectorAll(".fc-filter-btn").forEach(b => {
+                        const active = b.dataset.fcFilter === state.fcFilter;
+                        b.className = `fc-filter-btn shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold ${active ? "bg-indigo-600 text-white shadow-sm" : "bg-slate-100 text-slate-700"}`;
+                    });
+                    prepareFlashcards();
+                });
+            });
+
+            // Flashcard direction toggle
+            document.querySelectorAll(".fc-dir-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    state.fcDir = btn.dataset.fcDir;
+                    document.querySelectorAll(".fc-dir-btn").forEach(b => {
+                        const active = b.dataset.fcDir === state.fcDir;
+                        b.className = `fc-dir-btn py-1.5 px-2 rounded-lg text-xs font-bold transition ${active ? "bg-white text-indigo-700 shadow-sm" : "text-slate-600"}`;
+                    });
+                    renderFlashcard();
+                });
+            });
+
+            // Flashcard shuffle toggle
+            document.getElementById("fc-shuffle-btn").addEventListener("click", () => {
+                state.fcRandom = !state.fcRandom;
+                document.getElementById("fc-shuffle-label").textContent = state.fcRandom ? "已開啟隨機洗牌（點擊重排）" : "順序排列（點擊隨機洗牌）";
+                prepareFlashcards();
+                showToast(state.fcRandom ? "已隨機洗牌！" : "已恢復順序排列");
+            });
+
+            // Flashcard flip & stars
+            const fcStage = document.getElementById("flashcard-stage");
+            fcStage.addEventListener("click", e => {
+                if (e.target.closest("#fc-star-front") || e.target.closest("#fc-star-back")) {
+                    e.stopPropagation();
+                    const card = state.fcList[state.fcIndex];
+                    if (card) toggleStar(card.id);
+                    return;
+                }
+                fcStage.classList.toggle("flipped");
+            });
+
+            // Touch swipe on flashcard
+            let touchStartX = 0;
+            fcStage.addEventListener("touchstart", e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+            fcStage.addEventListener("touchend", e => {
+                const dx = e.changedTouches[0].screenX - touchStartX;
+                if (Math.abs(dx) > 55 && state.fcList.length > 0) {
+                    if (dx < 0) state.fcIndex = (state.fcIndex + 1) % state.fcList.length;
+                    else state.fcIndex = (state.fcIndex - 1 + state.fcList.length) % state.fcList.length;
+                    renderFlashcard();
+                }
+            }, { passive: true });
+
+            document.getElementById("fc-flip-btn").addEventListener("click", () => fcStage.classList.toggle("flipped"));
+            document.getElementById("fc-next-btn").addEventListener("click", () => {
+                if (!state.fcList.length) return;
+                state.fcIndex = (state.fcIndex + 1) % state.fcList.length;
+                renderFlashcard();
+            });
+            document.getElementById("fc-prev-btn").addEventListener("click", () => {
+                if (!state.fcList.length) return;
+                state.fcIndex = (state.fcIndex - 1 + state.fcList.length) % state.fcList.length;
+                renderFlashcard();
+            });
+            document.getElementById("fc-reset-filter-btn").addEventListener("click", () => {
+                document.querySelector('[data-fc-filter="all"]').click();
+            });
+
+            // Builder delegation
+            document.getElementById("builder-cation-list").addEventListener("click", e => {
+                const btn = e.target.closest(".builder-cat-btn");
+                if (btn) { state.builderCatId = btn.dataset.catId; renderBuilder(); }
+            });
+            document.getElementById("builder-anion-list").addEventListener("click", e => {
+                const btn = e.target.closest(".builder-ani-btn");
+                if (btn) { state.builderAniId = btn.dataset.aniId; renderBuilder(); }
+            });
+            document.getElementById("builder-random-btn").addEventListener("click", () => {
+                state.builderCatId = CATIONS[Math.floor(Math.random() * CATIONS.length)].id;
+                state.builderAniId = ANIONS[Math.floor(Math.random() * ANIONS.length)].id;
+                renderBuilder();
+            });
+
+            // Quiz setup
+            document.querySelectorAll(".quiz-cat-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    state.quizCat = btn.dataset.qcat;
+                    document.querySelectorAll(".quiz-cat-btn").forEach(b => {
+                        const active = b.dataset.qcat === state.quizCat;
+                        b.className = `quiz-cat-btn p-3 rounded-xl text-left transition ${active ? "border-2 border-indigo-600 bg-indigo-50 text-indigo-800" : "border border-slate-200 bg-white text-slate-700"}`;
+                    });
+                });
+            });
+
+            document.querySelectorAll(".quiz-count-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    state.quizCount = Number(btn.dataset.qcount);
+                    document.querySelectorAll(".quiz-count-btn").forEach(b => {
+                        const active = Number(b.dataset.qcount) === state.quizCount;
+                        b.className = `quiz-count-btn py-2.5 rounded-xl text-xs transition ${active ? "border-2 border-indigo-600 bg-indigo-50 font-extrabold text-indigo-700" : "border border-slate-200 font-bold text-slate-700"}`;
+                    });
+                });
+            });
+
+            document.getElementById("start-quiz-btn").addEventListener("click", () => startQuiz());
+            document.getElementById("exit-quiz-btn").addEventListener("click", () => {
+                document.getElementById("quiz-active-card").classList.add("hidden");
+                document.getElementById("quiz-setup-card").classList.remove("hidden");
+                renderStats();
+            });
+            document.getElementById("quiz-options-container").addEventListener("click", e => {
+                const btn = e.target.closest(".quiz-opt-btn");
+                if (btn && !btn.disabled) handleQuizAnswer(Number(btn.dataset.optIdx));
+            });
+            document.getElementById("next-q-btn").addEventListener("click", () => {
+                state.quizIndex++;
+                if (state.quizIndex < state.quizQuestions.length) renderQuizQuestion();
+                else finishQuiz();
+            });
+            document.getElementById("retry-quiz-btn").addEventListener("click", () => {
+                document.getElementById("quiz-result-card").classList.add("hidden");
+                document.getElementById("quiz-setup-card").classList.remove("hidden");
+                renderStats();
+            });
+            document.getElementById("retry-wrong-btn").addEventListener("click", () => {
+                const wrongQs = state.quizMistakes.map(m => m.question);
+                if (wrongQs.length) startQuiz(wrongQs);
+            });
+            document.getElementById("back-to-study-btn").addEventListener("click", () => switchTab("study"));
+            document.getElementById("reset-stats-btn").addEventListener("click", () => {
+                state.stats = { bestPct: 0, completed: 0, totalCorrect: 0 };
+                persistState();
+                renderStats();
+                showToast("已重設個人小測紀錄");
+            });
+        }
+
+        // ==================== 9. INIT ====================
+        window.addEventListener("DOMContentLoaded", () => {
+            loadSavedState();
+            bindEvents();
+            renderStudyCards();
+            renderStats();
+        });
+    </script>
+</body>
+</html>
