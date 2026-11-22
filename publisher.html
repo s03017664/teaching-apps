@@ -593,6 +593,32 @@
     gap: 10px;
     transition: border-color 0.15s, box-shadow 0.15s;
   }
+  .batch-action-bar {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 11px 14px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #eff6ff 0%, #eef2ff 100%);
+    border: 1.5px solid #93c5fd;
+  }
+  .batch-action-bar.show { display: flex; }
+  .item-check {
+    width: 19px;
+    height: 19px;
+    accent-color: var(--primary);
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .history-item.selected {
+    border-color: var(--primary);
+    background: #eff6ff;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.14);
+  }
   .history-item:hover {
     border-color: #93c5fd;
     box-shadow: 0 4px 14px rgba(37, 99, 235, 0.08);
@@ -769,14 +795,14 @@
     </div>
     <div class="sync-strip">
       <div class="sync-meta">
-        <span id="syncStatusText">🟢 雲端實時同步中（上次同步 17:04:03）</span>
+        <span id="syncStatusText">🟢 雲端實時同步中（上次同步 21:36:19）</span>
         <label class="switch-label">
           <input type="checkbox" id="chkAutoSync" checked="">
           <span>每 15 秒自動同步</span>
         </label>
       </div>
       <div class="sync-meta">
-        <span id="libraryStatsText">共 2 份教材 • 6 個資料夾</span>
+        <span id="libraryStatsText">共 20 份教材 • 6 個資料夾</span>
       </div>
     </div>
   </header>
@@ -923,13 +949,14 @@
       <div class="card-title">
         <span>📚 已發布的互動教材庫</span>
         <div class="action-row">
+          <button type="button" class="btn btn-outline btn-sm" id="btnSelectAllVisible">☑️ 全選</button>
           <button type="button" class="btn btn-outline btn-sm" id="btnNewFolderBar">📁 新增資料夾</button>
           <button type="button" class="btn btn-primary btn-sm" id="btnRefreshList">🔄 立即同步</button>
         </div>
       </div>
 
       <!-- Folder Filter Pills -->
-      <div class="folder-bar" id="folderBar"><button type="button" class="folder-pill active"><span>全部教材</span><span class="folder-count">2</span></button><button type="button" class="folder-pill"><span>📁 中三</span><span class="folder-count">0</span></button><button type="button" class="folder-pill"><span>📁 中四</span><span class="folder-count">0</span></button><button type="button" class="folder-pill"><span>📁 中五</span><span class="folder-count">0</span></button><button type="button" class="folder-pill"><span>📁 中六</span><span class="folder-count">0</span></button><button type="button" class="folder-pill"><span>📁 互動遊戲</span><span class="folder-count">0</span></button><button type="button" class="folder-pill"><span>📁 未分類</span><span class="folder-count">2</span></button></div>
+      <div class="folder-bar" id="folderBar"><button type="button" class="folder-pill active"><span>全部教材</span><span class="folder-count">20</span></button><button type="button" class="folder-pill"><span>📁 中三</span><span class="folder-count">0</span></button><button type="button" class="folder-pill"><span>📁 中四</span><span class="folder-count">0</span></button><button type="button" class="folder-pill"><span>📁 中五</span><span class="folder-count">0</span></button><button type="button" class="folder-pill"><span>📁 中六</span><span class="folder-count">0</span></button><button type="button" class="folder-pill"><span>📁 互動遊戲</span><span class="folder-count">0</span></button><button type="button" class="folder-pill"><span>📁 未分類</span><span class="folder-count">20</span></button></div>
 
       <!-- Search & Sort Toolbar -->
       <div class="library-toolbar">
@@ -941,6 +968,16 @@
           <option value="name-desc">🔤 按名稱排序：Z → A</option>
           <option value="folder-group">📁 按資料夾分組顯示</option>
         </select>
+      </div>
+
+      <div class="batch-action-bar" id="batchActionBar">
+        <div style="font-weight:800;font-size:0.88rem;color:#1e3a8a;" id="batchSelectedCount">已選取 0 份教材</div>
+        <div class="action-row" style="align-items:center;">
+          <select id="batchMoveFolderSelect" style="width:auto;padding:6px 10px;font-size:0.82rem;"><option value="中三">📁 中三</option><option value="中四">📁 中四</option><option value="中五">📁 中五</option><option value="中六">📁 中六</option><option value="互動遊戲">📁 互動遊戲</option><option value="未分類">📁 未分類</option></select>
+          <button type="button" class="btn btn-outline btn-sm" id="btnBatchMove">📁 批量搬移</button>
+          <button type="button" class="btn btn-danger-outline btn-sm" id="btnBatchDelete" style="background:var(--danger);color:#fff;border-color:var(--danger);">🗑️ 一次刪除已選</button>
+          <button type="button" class="btn btn-outline btn-sm" id="btnClearSelection">取消</button>
+        </div>
       </div>
 
       <div class="history-list" id="historyList"><div class="empty-state">連線 GitHub 後，你從電腦或手機發布的所有互動教材都會自動同步顯示在這裡。</div></div>
@@ -1150,7 +1187,7 @@
   </div>
 </div>
 
-<div class="toast" id="toast">⚠️ 請先揀選一個或多個 .html 檔，或貼上 HTML 程式碼</div>
+<div class="toast" id="toast">✅ 連線成功！正在同步雲端教材庫</div>
 
 <script>
 (function() {
@@ -1179,6 +1216,8 @@
     lastPublishedUrl: '',
     lastPublishedTitle: '',
     pendingDelete: null,
+    pendingBatchDelete: [],
+    selectedFiles: new Set(),
     editingItem: null,
     // Cloud catalog state
     catalogSha: null,
@@ -1878,7 +1917,7 @@
 
   function renderFolderControls() {
     // 1. Upload folder dropdown + Edit folder dropdown
-    const selects = [document.getElementById('folderSelect'), document.getElementById('editFolderSelect')];
+    const selects = [document.getElementById('folderSelect'), document.getElementById('editFolderSelect'), document.getElementById('batchMoveFolderSelect')];
     selects.forEach(sel => {
       if (!sel) return;
       const prev = sel.value;
@@ -2016,10 +2055,44 @@
     card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
+  function getVisibleFilteredItems() {
+    const q = state.searchQuery.trim().toLowerCase();
+    return state.items.filter(it => {
+      if (state.activeFolder !== 'ALL' && (it.folder || '未分類') !== state.activeFolder) return false;
+      if (q) {
+        const hay = ((it.displayName || '') + ' ' + (it.originalFileName || '') + ' ' + (it.fileName || '') + ' ' + (it.folder || '')).toLowerCase();
+        if (hay.indexOf(q) === -1) return false;
+      }
+      return true;
+    });
+  }
+
+  function updateBatchActionBar() {
+    // Prune any selected files that no longer exist
+    const existingNames = new Set(state.items.map(x => x.fileName));
+    Array.from(state.selectedFiles).forEach(fn => { if (!existingNames.has(fn)) state.selectedFiles.delete(fn); });
+
+    const count = state.selectedFiles.size;
+    const bar = document.getElementById('batchActionBar');
+    const visible = getVisibleFilteredItems();
+    const selAllBtn = document.getElementById('btnSelectAllVisible');
+    const allVisSelected = visible.length > 0 && visible.every(it => state.selectedFiles.has(it.fileName));
+    selAllBtn.textContent = allVisSelected ? '❎ 取消全選' : '☑️ 全選';
+
+    if (count > 0) {
+      document.getElementById('batchSelectedCount').textContent = '已選取 ' + count + ' 份教材';
+      document.getElementById('btnBatchDelete').textContent = '🗑️ 一次刪除已選 (' + count + ')';
+      bar.classList.add('show');
+    } else {
+      bar.classList.remove('show');
+    }
+  }
+
   function createItemCard(item, base) {
     const liveUrl = base + '/' + item.fileName;
+    const isSelected = state.selectedFiles.has(item.fileName);
     const row = document.createElement('div');
-    row.className = 'history-item';
+    row.className = 'history-item' + (isSelected ? ' selected' : '');
 
     const top = document.createElement('div');
     top.className = 'history-top';
@@ -2029,6 +2102,19 @@
 
     const titleRow = document.createElement('div');
     titleRow.className = 'history-title-row';
+
+    const chk = document.createElement('input');
+    chk.type = 'checkbox';
+    chk.className = 'item-check';
+    chk.checked = isSelected;
+    chk.title = '勾選以進行批量操作';
+    chk.addEventListener('change', () => {
+      if (chk.checked) state.selectedFiles.add(item.fileName);
+      else state.selectedFiles.delete(item.fileName);
+      row.classList.toggle('selected', chk.checked);
+      updateBatchActionBar();
+    });
+    titleRow.appendChild(chk);
 
     const folderBadge = document.createElement('span');
     folderBadge.className = 'badge folder';
@@ -2134,14 +2220,15 @@
     const getName = it => (it.displayName || it.fileName || '').toLowerCase();
 
     if (state.sortBy === 'date-desc') {
-      filtered.sort((a, b) => getTime(b) - getTime(a) || getName(a).localeCompare(getName(b), 'zh-Hant'));
+      filtered.sort((a, b) => getTime(b) - getTime(a) || getName(a).localeCompare(getName(b), 'zh-Hant', { numeric: true }));
     } else if (state.sortBy === 'date-asc') {
-      filtered.sort((a, b) => getTime(a) - getTime(b) || getName(a).localeCompare(getName(b), 'zh-Hant'));
+      filtered.sort((a, b) => getTime(a) - getTime(b) || getName(a).localeCompare(getName(b), 'zh-Hant', { numeric: true }));
     } else if (state.sortBy === 'name-asc') {
-      filtered.sort((a, b) => getName(a).localeCompare(getName(b), 'zh-Hant'));
+      filtered.sort((a, b) => getName(a).localeCompare(getName(b), 'zh-Hant', { numeric: true }));
     } else if (state.sortBy === 'name-desc') {
-      filtered.sort((a, b) => getName(b).localeCompare(getName(a), 'zh-Hant'));
+      filtered.sort((a, b) => getName(b).localeCompare(getName(a), 'zh-Hant', { numeric: true }));
     }
+    updateBatchActionBar();
 
     const base = getPagesBaseUrl();
     listEl.innerHTML = '';
@@ -2186,8 +2273,17 @@
   }
 
   function openDeleteModal(item) {
+    state.pendingBatchDelete = [];
     state.pendingDelete = item;
     document.getElementById('deleteModalText').textContent = '確定要從雲端刪除「' + (item.displayName || item.fileName) + '」嗎？刪除後電腦與手機清單會同步移除，學生亦無法再開啟此網址。';
+    document.getElementById('deleteModal').classList.add('show');
+  }
+
+  function openBatchDeleteModal(items) {
+    state.pendingDelete = null;
+    state.pendingBatchDelete = items;
+    const previewNames = items.slice(0, 5).map(i => i.displayName || i.fileName).join('、') + (items.length > 5 ? ' 等共 ' + items.length + ' 份' : '');
+    document.getElementById('deleteModalText').textContent = '確定要一次過從雲端刪除這 ' + items.length + ' 份教材（' + previewNames + '）嗎？刪除後電腦與手機清單會同步移除，學生亦無法再開啟這些網址。';
     document.getElementById('deleteModal').classList.add('show');
   }
 
@@ -2531,24 +2627,84 @@
   document.getElementById('btnCloseDelete').addEventListener('click', () => document.getElementById('deleteModal').classList.remove('show'));
   document.getElementById('btnCancelDelete').addEventListener('click', () => document.getElementById('deleteModal').classList.remove('show'));
   document.getElementById('btnConfirmDelete').addEventListener('click', async () => {
-    const item = state.pendingDelete;
+    const targets = state.pendingBatchDelete.length ? state.pendingBatchDelete.slice() : (state.pendingDelete ? [state.pendingDelete] : []);
+    state.pendingDelete = null;
+    state.pendingBatchDelete = [];
     document.getElementById('deleteModal').classList.remove('show');
-    if (!item) return;
+    if (!targets.length) return;
+
+    let deletedCount = 0;
+    const deletedNames = new Set();
     try {
-      const apiPath = '/repos/' + encodeURIComponent(state.owner) + '/' + encodeURIComponent(state.repo) + '/contents/' + encodeURIComponent(item.fileName);
-      const res = await ghFetch(apiPath, {
-        method: 'DELETE',
-        body: JSON.stringify({ message: 'Delete ' + item.fileName, sha: item.sha, branch: state.branch })
-      });
-      if (!res.ok) throw new Error((res.data && res.data.message) || res.status);
-      state.items = state.items.filter(x => x.fileName !== item.fileName);
+      for (let i = 0; i < targets.length; i++) {
+        const item = targets[i];
+        if (targets.length > 1) showToast('🗑️ 正在刪除第 ' + (i + 1) + '/' + targets.length + ' 份：' + (item.displayName || item.fileName));
+        const apiPath = '/repos/' + encodeURIComponent(state.owner) + '/' + encodeURIComponent(state.repo) + '/contents/' + encodeURIComponent(item.fileName);
+        let sha = item.sha;
+        if (!sha) {
+          const check = await ghFetch(apiPath + '?ref=' + encodeURIComponent(state.branch), { noCache: true });
+          if (check.ok && check.data && check.data.sha) sha = check.data.sha;
+        }
+        const res = await ghFetch(apiPath, {
+          method: 'DELETE',
+          body: JSON.stringify({ message: 'Delete ' + item.fileName, sha: sha, branch: state.branch })
+        });
+        if (!res.ok && res.status !== 404) throw new Error('刪除 ' + item.fileName + ' 失敗：' + ((res.data && res.data.message) || res.status));
+        deletedNames.add(item.fileName);
+        state.selectedFiles.delete(item.fileName);
+        deletedCount++;
+      }
+      state.items = state.items.filter(x => !deletedNames.has(x.fileName));
       await saveCatalogToGithub();
       renderFolderControls();
       renderHistoryList();
       updateSyncStrip();
-      showToast('🗑️ 已刪除並同步雲端清單');
+      showToast('🗑️ 已一次刪除 ' + deletedCount + ' 份教材並同步雲端');
     } catch (e) {
-      showToast('⚠️ 刪除失敗：' + e.message);
+      if (deletedNames.size) {
+        state.items = state.items.filter(x => !deletedNames.has(x.fileName));
+        try { await saveCatalogToGithub(); } catch (err) {}
+        renderFolderControls();
+        renderHistoryList();
+        updateSyncStrip();
+      }
+      showToast('⚠️ ' + e.message);
+    }
+  });
+
+  document.getElementById('btnSelectAllVisible').addEventListener('click', () => {
+    const visible = getVisibleFilteredItems();
+    if (!visible.length) return;
+    const allSelected = visible.every(it => state.selectedFiles.has(it.fileName));
+    if (allSelected) visible.forEach(it => state.selectedFiles.delete(it.fileName));
+    else visible.forEach(it => state.selectedFiles.add(it.fileName));
+    renderHistoryList();
+  });
+
+  document.getElementById('btnClearSelection').addEventListener('click', () => {
+    state.selectedFiles.clear();
+    renderHistoryList();
+  });
+
+  document.getElementById('btnBatchDelete').addEventListener('click', () => {
+    const selectedItems = state.items.filter(it => state.selectedFiles.has(it.fileName));
+    if (!selectedItems.length) { showToast('⚠️ 請先勾選要刪除的教材'); return; }
+    openBatchDeleteModal(selectedItems);
+  });
+
+  document.getElementById('btnBatchMove').addEventListener('click', async () => {
+    const selectedItems = state.items.filter(it => state.selectedFiles.has(it.fileName));
+    const targetFolder = document.getElementById('batchMoveFolderSelect').value || '未分類';
+    if (!selectedItems.length) { showToast('⚠️ 請先勾選要搬移的教材'); return; }
+    selectedItems.forEach(it => { it.folder = targetFolder; });
+    state.selectedFiles.clear();
+    renderFolderControls();
+    renderHistoryList();
+    try {
+      await saveCatalogToGithub();
+      showToast('📁 已一次搬移 ' + selectedItems.length + ' 份教材至「' + targetFolder + '」並同步');
+    } catch (e) {
+      showToast('⚠️ 雲端同步失敗：' + e.message);
     }
   });
 
