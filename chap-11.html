@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSE 化學 - 置換反應互動學習平台</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f3f4f6; }
+        
+        /* 宏觀燒杯動畫樣式 */
+        .beaker-glass {
+            border: 4px solid rgba(255, 255, 255, 0.8);
+            border-top: none;
+            border-radius: 0 0 16px 16px;
+            box-shadow: inset 0 -10px 20px rgba(0,0,0,0.1), 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .liquid {
+            transition: background-color 3s ease;
+        }
+        .metal-strip {
+            transition: all 3s ease;
+            box-shadow: inset -2px 0 5px rgba(0,0,0,0.2);
+        }
+        
+        /* 微觀粒子動畫樣式 */
+        .particle {
+            transition: all 2s ease-in-out;
+        }
+        .zoom-lens {
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.3), 0 0 15px rgba(0,0,0,0.5) inset;
+        }
+
+        /* 刪除線動畫 */
+        .strike-through {
+            position: relative;
+        }
+        .strike-through::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 0;
+            height: 2px;
+            background-color: red;
+            animation: strike 0.5s forwards ease-out;
+        }
+        @keyframes strike {
+            to { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // 化學數據庫
+        const ELEMENTS = {
+            Mg: { symbol: 'Mg', name: '鎂', reactivity: 5, color: '#d9e0e3', ion: 'Mg²⁺', valency: 2, state: 's' },
+            Zn: { symbol: 'Zn', name: '鋅', reactivity: 4, color: '#a5a9ac', ion: 'Zn²⁺', valency: 2, state: 's' },
+            Fe: { symbol: 'Fe', name: '鐵', reactivity: 3, color: '#7a7f82', ion: 'Fe²⁺', valency: 2, state: 's' },
+            Cu: { symbol: 'Cu', name: '銅', reactivity: 2, color: '#b87333', ion: 'Cu²⁺', valency: 2, state: 's' },
+            Ag: { symbol: 'Ag', name: '銀', reactivity: 1, color: '#e6e8fa', ion: 'Ag⁺', valency: 1, state: 's' }
+        };
+
+        const SOLUTIONS = {
+            Mg: { metal: 'Mg', formula: 'Mg(NO₃)₂', name: '硝酸鎂', color: 'rgba(240, 248, 255, 0.4)', colorName: '無色', anion: 'NO₃⁻', anionFormula: 'NO3', anionValency: 1 },
+            Zn: { metal: 'Zn', formula: 'Zn(NO₃)₂', name: '硝酸鋅', color: 'rgba(240, 248, 255, 0.4)', colorName: '無色', anion: 'NO₃⁻', anionFormula: 'NO3', anionValency: 1 },
+            Fe: { metal: 'Fe', formula: 'Fe(NO₃)₂', name: '硝酸鐵(II)', color: 'rgba(193, 225, 193, 0.7)', colorName: '淺綠色', anion: 'NO₃⁻', anionFormula: 'NO3', anionValency: 1 },
+            Cu: { metal: 'Cu', formula: 'Cu(NO₃)₂', name: '硝酸銅(II)', color: 'rgba(65, 105, 225, 0.7)', colorName: '藍色', anion: 'NO₃⁻', anionFormula: 'NO3', anionValency: 1 },
+            Ag: { metal: 'Ag', formula: 'AgNO₃', name: '硝酸銀', color: 'rgba(240, 248, 255, 0.4)', colorName: '無色', anion: 'NO₃⁻', anionFormula: 'NO3', anionValency: 1 }
+        };
+
+        // 輔助函數：生成方程式
+        const generateEquations = (metal, solMetalKey) => {
+            const m1 = ELEMENTS[metal];
+            const m2 = ELEMENTS[solMetalKey];
+            const sol = SOLUTIONS[solMetalKey];
+            
+            // 計算摩爾比例 ( LCM )
+            const v1 = m1.valency;
+            const v2 = m2.valency;
+            let c1 = 1, c2 = 1;
+            if (v1 === 2 && v2 === 1) { c1 = 1; c2 = 2; }
+            else if (v1 === 1 && v2 === 2) { c1 = 2; c2 = 1; }
+
+            const c1Str = c1 > 1 ? c1 : '';
+            const c2Str = c2 > 1 ? c2 : '';
+            
+            let fullEq, ionicEq;
+            
+            const prodSolFormula = v1 === 1 ? `${m1.symbol}NO₃` : `${m1.symbol}(NO₃)₂`;
+            fullEq = `${c1Str}${m1.symbol}(s) + ${c2Str}${sol.formula}(aq) → ${c1Str}${prodSolFormula}(aq) + ${c2Str}${m2.symbol}(s)`;
+            
+            ionicEq = `${c1Str}${m1.symbol}(s) + ${c2Str}${m2.ion}(aq) → ${c1Str}${m1.ion}(aq) + ${c2Str}${m2.symbol}(s)`;
+
+            return { fullEq, ionicEq };
+        };
+
+
+        // --- 主應用組件 ---
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('simulator');
+            const [logoSrc, setLogoSrc] = useState('logo_4.png');
+            const [logoError, setLogoError] = useState(false);
+
+            return (
+                <div className="min-h-screen flex flex-col">
+                    <header className="bg-blue-800 text-white p-4 shadow-md">
+                        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+                            <div className="flex items-center">
+                                {!logoError ? (
+                                    <img 
+                                        src={logoSrc} 
+                                        alt="SKHLKYSS Logo" 
+                                        className="h-12 w-auto bg-white p-1 rounded-lg mr-4 shadow-sm object-contain" 
+                                        onError={() => {
+                                            // 如果 logo_4.png 找不到，嘗試找 logo.png；如果還是不行，就顯示備用圖示
+                                            if (logoSrc === 'logo_4.png') {
+                                                setLogoSrc('logo.png');
+                                            } else {
+                                                setLogoError(true);
+                                            }
+                                        }}
+                                    />
+                                ) : (
+                                    <div className="h-12 w-12 min-w-[48px] bg-white text-blue-900 rounded-lg mr-4 shadow-sm flex items-center justify-center font-bold text-[10px] leading-tight text-center border-b-4 border-yellow-400">
+                                        SKH<br/>LKYSS
+                                    </div>
+                                )}
+                                <div>
+                                    <h1 className="text-2xl font-bold flex items-center"><i className="fa-solid fa-flask mr-3"></i>置換反應 (Displacement Reactions)</h1>
+                                </div>
+                            </div>
+                            <div className="flex items-center space-x-4">
+                                <span className="text-blue-200 text-sm hidden md:inline-block">由吳柏霖老師設計</span>
+                                <div className="space-x-2">
+                                    <button 
+                                        onClick={() => setActiveTab('simulator')}
+                                        className={`px-4 py-2 rounded-md font-semibold transition ${activeTab === 'simulator' ? 'bg-white text-blue-800' : 'bg-blue-700 hover:bg-blue-600'}`}>
+                                        互動模擬器
+                                    </button>
+                                    <button 
+                                        onClick={() => setActiveTab('tutorial')}
+                                        className={`px-4 py-2 rounded-md font-semibold transition ${activeTab === 'tutorial' ? 'bg-white text-blue-800' : 'bg-blue-700 hover:bg-blue-600'}`}>
+                                        書寫離子方程式教學
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+
+                    <main className="flex-grow p-6 max-w-7xl mx-auto w-full">
+                        {activeTab === 'simulator' ? <Simulator /> : <EquationTutorial />}
+                    </main>
+                    
+                    <footer className="bg-gray-800 text-gray-400 text-center p-4 text-sm mt-auto">
+                        <p>為香港中學文憑試 (HKDSE) 化學科學生設計</p>
+                    </footer>
+                </div>
+            );
+        };
+
+        // --- 組件 1: 互動模擬器 ---
+        const Simulator = () => {
+            const [metal, setMetal] = useState('Cu');
+            const [solution, setSolution] = useState('Ag');
+            const [progress, setProgress] = useState(0);
+            const [status, setStatus] = useState('idle'); // idle, reacting, finished, no_reaction
+            const timerRef = useRef(null);
+
+            const hasReaction = ELEMENTS[metal].reactivity > ELEMENTS[solution].reactivity;
+
+            // 處理開始反應
+            const handleStart = () => {
+                if (!hasReaction) {
+                    setStatus('no_reaction');
+                    return;
+                }
+                
+                setStatus('reacting');
+                setProgress(0);
+                
+                let p = 0;
+                clearInterval(timerRef.current);
+                timerRef.current = setInterval(() => {
+                    p += 1;
+                    setProgress(p);
+                    if (p >= 100) {
+                        clearInterval(timerRef.current);
+                        setStatus('finished');
+                    }
+                }, 50); // 總需時約 5 秒
+            };
+
+            const handleReset = () => {
+                clearInterval(timerRef.current);
+                setProgress(0);
+                setStatus('idle');
+            };
+
+            // 當選項改變時重置
+            useEffect(() => {
+                handleReset();
+            }, [metal, solution]);
+
+            // 計算動畫中的顏色混合
+            const currentLiquidColor = progress > 0 && hasReaction
+                ? (progress === 100 ? SOLUTIONS[metal].color : blendColors(SOLUTIONS[solution].color, SOLUTIONS[metal].color, progress / 100))
+                : SOLUTIONS[solution].color;
+                
+            const equations = generateEquations(metal, solution);
+
+            return (
+                <div className="flex flex-col md:flex-row gap-6">
+                    {/* 左側：控制面板與宏觀視角 */}
+                    <div className="w-full md:w-1/2 flex flex-col gap-4">
+                        <div className="bg-white p-5 rounded-xl shadow-md border-t-4 border-blue-500">
+                            <h2 className="text-xl font-bold mb-4 text-gray-800"><i className="fa-solid fa-sliders mr-2"></i>控制面板</h2>
+                            <div className="grid grid-cols-2 gap-4 mb-6">
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-600 mb-2">固體金屬 (Metal)</label>
+                                    <select 
+                                        className="w-full p-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                        value={metal} onChange={e => setMetal(e.target.value)} disabled={status === 'reacting'}>
+                                        {Object.keys(ELEMENTS).map(k => <option key={k} value={k}>{ELEMENTS[k].name} ({ELEMENTS[k].symbol})</option>)}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-600 mb-2">鹽溶液 (Solution)</label>
+                                    <select 
+                                        className="w-full p-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                        value={solution} onChange={e => setSolution(e.target.value)} disabled={status === 'reacting'}>
+                                        {Object.keys(SOLUTIONS).map(k => <option key={k} value={k}>{SOLUTIONS[k].name} ({SOLUTIONS[k].formula})</option>)}
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="flex space-x-3">
+                                <button onClick={handleStart} disabled={status === 'reacting'}
+                                    className="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg shadow disabled:opacity-50 transition">
+                                    <i className="fa-solid fa-play mr-2"></i> 開始反應
+                                </button>
+                                <button onClick={handleReset}
+                                    className="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-lg shadow transition">
+                                    <i className="fa-solid fa-rotate-right mr-2"></i> 重置
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* 宏觀視角 */}
+                        <div className="bg-white p-5 rounded-xl shadow-md flex-grow flex flex-col items-center justify-center relative overflow-hidden">
+                            <h3 className="text-lg font-bold absolute top-4 left-4 text-gray-700 bg-white/80 px-2 py-1 rounded">宏觀視角 (Macroscopic)</h3>
+                            
+                            <div className="relative mt-8" style={{ width: '200px', height: '250px' }}>
+                                {/* 燒杯 */}
+                                <div className="beaker-glass absolute bottom-0 left-0 w-full h-[200px] bg-white z-10 z-10 opacity-40 mix-blend-overlay pointer-events-none"></div>
+                                <div className="absolute bottom-0 left-0 w-full h-[200px] border-4 border-t-0 border-white rounded-b-xl z-20 pointer-events-none"></div>
+                                {/* 液體 */}
+                                <div className="liquid absolute bottom-1 left-1 w-[190px] rounded-b-lg z-0" 
+                                     style={{ height: '160px', backgroundColor: currentLiquidColor }}></div>
+                                {/* 溶液標籤 */}
+                                <div className="absolute bottom-4 right-[-80px] bg-white px-2 py-1 rounded border shadow-sm text-sm text-gray-600 font-mono z-30">
+                                    {status === 'idle' || !hasReaction ? SOLUTIONS[solution].formula : (progress === 100 ? SOLUTIONS[metal].formula : '混合物')} (aq)
+                                </div>
+                                
+                                {/* 金屬片 */}
+                                <div className="absolute top-0 left-[80px] w-[40px] h-[220px] z-10 flex flex-col">
+                                    {/* 頂部未浸入部分 */}
+                                    <div className="w-full h-[60px]" style={{ backgroundColor: ELEMENTS[metal].color }}></div>
+                                    {/* 底部浸入部分 (反應時會被新金屬覆蓋) */}
+                                    <div className="w-full h-[160px] relative metal-strip" style={{ backgroundColor: ELEMENTS[metal].color }}>
+                                        {hasReaction && progress > 0 && (
+                                            <div className="absolute inset-0 transition-opacity duration-1000"
+                                                 style={{ 
+                                                     backgroundColor: ELEMENTS[solution].color, 
+                                                     opacity: (progress / 100) * 0.9,
+                                                     backgroundImage: 'radial-gradient(circle, rgba(0,0,0,0.2) 2px, transparent 2px)',
+                                                     backgroundSize: '8px 8px'
+                                                 }}>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                                {/* 金屬標籤 */}
+                                <div className="absolute top-2 left-[20px] bg-white px-2 py-1 rounded border shadow-sm text-sm text-gray-600 font-mono z-30">
+                                    {ELEMENTS[metal].symbol} (s)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 右側：微觀視角與結果 */}
+                    <div className="w-full md:w-1/2 flex flex-col gap-4">
+                        
+                        {/* 微觀視角 */}
+                        <div className="bg-gray-800 p-5 rounded-xl shadow-md h-64 relative overflow-hidden flex items-center justify-center border-4 border-yellow-400">
+                            <h3 className="text-lg font-bold absolute top-4 left-4 text-white bg-black/50 px-2 py-1 rounded z-20">
+                                <i className="fa-solid fa-magnifying-glass mr-2"></i>微觀視角 (Microscopic)
+                            </h3>
+                            
+                            {/* 微觀畫布 */}
+                            <div className="relative w-[300px] h-[200px] bg-[#1a202c] rounded-full zoom-lens flex flex-col">
+                                {/* 上半部：金屬晶格 */}
+                                <div className="w-full h-[35%] relative border-b-2 border-gray-600 border-dashed">
+                                    <MicroLattice metal={metal} solution={solution} progress={progress} hasReaction={hasReaction} />
+                                </div>
+                                {/* 下半部：溶液 */}
+                                <div className="w-full h-[65%] relative">
+                                    <MicroSolution metal={metal} solution={solution} progress={progress} hasReaction={hasReaction} />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* 反應結果與方程式 */}
+                        <div className="bg-white p-5 rounded-xl shadow-md flex-grow border-t-4 border-green-500">
+                            <h2 className="text-xl font-bold mb-4 text-gray-800"><i className="fa-solid fa-clipboard-check mr-2"></i>觀察結果與化學原理</h2>
+                            
+                            {status === 'no_reaction' ? (
+                                <div className="bg-red-50 text-red-700 p-4 rounded-lg border border-red-200">
+                                    <h4 className="font-bold flex items-center text-lg"><i className="fa-solid fa-triangle-exclamation mr-2"></i>沒有反應 (No reaction)</h4>
+                                    <p className="mt-2">因為 <strong>{ELEMENTS[metal].name} ({ELEMENTS[metal].symbol})</strong> 的活潑性低於 <strong>{ELEMENTS[solution].name} ({ELEMENTS[solution].symbol})</strong>，所以不能將其從鹽溶液中置換出來。</p>
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    <div>
+                                        <h4 className="font-bold text-gray-700 text-sm">可觀察變化 (Observable Changes)：</h4>
+                                        <ul className="list-disc pl-5 mt-1 text-gray-600 text-sm">
+                                            {progress === 0 ? <li>等待反應開始...</li> : (
+                                                <>
+                                                    <li>有固體沉澱物在 {ELEMENTS[metal].symbol} 表面生成（那是置換出來的 {ELEMENTS[solution].symbol}）。</li>
+                                                    <li>{ELEMENTS[metal].symbol} 固體逐漸溶解。</li>
+                                                    {SOLUTIONS[solution].color !== SOLUTIONS[metal].color && (
+                                                        <li>溶液的顏色改變。</li>
+                                                    )}
+                                                </>
+                                            )}
+                                        </ul>
+                                    </div>
+
+                                    <div className="bg-gray-50 p-3 rounded border">
+                                        <h4 className="font-bold text-gray-700 text-sm mb-1">化學方程式 (Chemical Equation)：</h4>
+                                        <p className="font-mono text-blue-800 overflow-x-auto whitespace-nowrap">{equations.fullEq}</p>
+                                    </div>
+
+                                    <div className="bg-gray-50 p-3 rounded border">
+                                        <h4 className="font-bold text-gray-700 text-sm mb-1">離子方程式 (Ionic Equation)：</h4>
+                                        <p className="font-mono text-purple-800 overflow-x-auto whitespace-nowrap">{equations.ionicEq}</p>
+                                    </div>
+                                    
+                                    {progress > 0 && progress < 100 && (
+                                        <div className="w-full bg-gray-200 rounded-full h-2.5 mt-4">
+                                            <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${progress}%` }}></div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+
+        // --- 微觀粒子動畫組件 (輔助) ---
+        const MicroLattice = ({ metal, solution, progress, hasReaction }) => {
+            const m = ELEMENTS[metal];
+            const s = ELEMENTS[solution];
+            
+            // 創建 5x2 的金屬原子網格 (改為橫向排列)
+            const atoms = [];
+            for(let i=0; i<2; i++) {
+                for(let j=0; j<5; j++) {
+                    // 底部的部分原子會在反應時溶解進入溶液
+                    const willDissolve = hasReaction && i === 1 && (j === 1 || j === 3);
+                    const isDissolving = willDissolve && progress > 30;
+                    
+                    atoms.push(
+                        <div key={`lat-${i}-${j}`} 
+                             className="absolute rounded-full flex items-center justify-center font-bold text-[10px] shadow-inner particle"
+                             style={{
+                                 width: '26px', height: '26px',
+                                 backgroundColor: isDissolving ? 'transparent' : m.color,
+                                 border: isDissolving ? '2px dashed ' + m.color : 'none',
+                                 color: isDissolving ? m.color : '#000',
+                                 left: `${j * 28 + 80}px`,
+                                 top: `${i * 28 + 10}px`,
+                                 transform: isDissolving ? 'translateY(30px) scale(0)' : 'none',
+                                 opacity: isDissolving ? 0 : 1
+                             }}>
+                            {m.symbol}
+                        </div>
+                    );
+                }
+            }
+            
+            // 在表面沉積的置換金屬 (Ag 等)
+            if (hasReaction) {
+                for(let k=0; k<4; k++) {
+                    const isDeposited = progress > 50;
+                    atoms.push(
+                        <div key={`dep-${k}`} 
+                             className="absolute rounded-full flex items-center justify-center font-bold text-[10px] shadow-md particle z-10"
+                             style={{
+                                 width: '22px', height: '22px',
+                                 backgroundColor: s.color,
+                                 color: '#000',
+                                 left: `${k * 35 + 86}px`,
+                                 top: `58px`, /* 剛好在分界線上 */
+                                 transform: isDeposited ? 'scale(1)' : 'scale(0) translateY(20px)',
+                                 opacity: isDeposited ? 1 : 0
+                             }}>
+                            {s.symbol}
+                        </div>
+                    );
+                }
+            }
+
+            return <>{atoms}</>;
+        };
+
+        const MicroSolution = ({ metal, solution, progress, hasReaction }) => {
+            const m = ELEMENTS[metal];
+            const s = ELEMENTS[solution];
+            const anion = SOLUTIONS[solution].anion;
+            
+            // 溶液中的離子
+            return (
+                <>
+                    {/* 陰離子 (旁觀離子) - 隨機漂浮 */}
+                    <div className="absolute w-8 h-8 rounded-full bg-yellow-200/80 border border-yellow-400 flex items-center justify-center text-[10px] font-bold text-yellow-800 particle"
+                         style={{ top: '25%', left: '20%', transform: `translateY(${Math.sin(progress/10)*5}px)` }}>{anion}</div>
+                    <div className="absolute w-8 h-8 rounded-full bg-yellow-200/80 border border-yellow-400 flex items-center justify-center text-[10px] font-bold text-yellow-800 particle"
+                         style={{ top: '65%', left: '75%', transform: `translateY(${Math.cos(progress/15)*5}px)` }}>{anion}</div>
+                         
+                    {/* 原本溶液的金屬離子 (會向上移動並沉積) */}
+                    <div className="absolute w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold shadow-sm particle z-20"
+                         style={{ 
+                             backgroundColor: s.color, color: '#000',
+                             top: hasReaction && progress > 50 ? '-10%' : '35%',
+                             left: '45%',
+                             opacity: hasReaction && progress > 50 ? 0 : 1
+                         }}>{s.ion}</div>
+                    <div className="absolute w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold shadow-sm particle z-20"
+                         style={{ 
+                             backgroundColor: s.color, color: '#000',
+                             top: hasReaction && progress > 50 ? '-10%' : '65%',
+                             left: '55%',
+                             opacity: hasReaction && progress > 50 ? 0 : 1
+                         }}>{s.ion}</div>
+                         
+                    {/* 新生成的金屬離子 (從上方金屬片向下游離出來) */}
+                    {hasReaction && (
+                        <>
+                            <div className="absolute w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold shadow-sm particle"
+                                 style={{ 
+                                     backgroundColor: m.color, color: '#000',
+                                     top: progress > 30 ? '30%' : '-20%',
+                                     left: '36%',
+                                     opacity: progress > 30 ? 1 : 0,
+                                     transform: progress > 30 ? 'scale(1)' : 'scale(0)'
+                                 }}>{m.ion}</div>
+                            <div className="absolute w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold shadow-sm particle"
+                                 style={{ 
+                                     backgroundColor: m.color, color: '#000',
+                                     top: progress > 30 ? '55%' : '-20%',
+                                     left: '60%',
+                                     opacity: progress > 30 ? 1 : 0,
+                                     transform: progress > 30 ? 'scale(1)' : 'scale(0)'
+                                 }}>{m.ion}</div>
+                        </>
+                    )}
+                </>
+            );
+        };
+
+        // --- 輔助函數：顏色混合 (hex/rgba to rgb blend) ---
+        function blendColors(c1, c2, ratio) {
+            // 簡化的 rgba 解析器，針對此代碼中的格式
+            const parseRgba = (c) => {
+                if(c.startsWith('rgba')) {
+                    const match = c.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/);
+                    if(match) return [parseInt(match[1]), parseInt(match[2]), parseInt(match[3]), parseFloat(match[4])];
+                }
+                return [255, 255, 255, 1]; // fallback
+            };
+            const [r1, g1, b1, a1] = parseRgba(c1);
+            const [r2, g2, b2, a2] = parseRgba(c2);
+            
+            const r = Math.round(r1 * (1 - ratio) + r2 * ratio);
+            const g = Math.round(g1 * (1 - ratio) + g2 * ratio);
+            const b = Math.round(b1 * (1 - ratio) + b2 * ratio);
+            const a = (a1 * (1 - ratio) + a2 * ratio).toFixed(2);
+            
+            return `rgba(${r}, ${g}, ${b}, ${a})`;
+        }
+
+
+        // --- 組件 2: 離子方程式教學 ---
+        const EquationTutorial = () => {
+            const [metal, setMetal] = useState('Cu');
+            const [solution, setSolution] = useState('Ag');
+            const [step, setStep] = useState(0);
+            
+            const MAX_STEPS = 4;
+
+            const nextStep = () => {
+                if (step < MAX_STEPS) setStep(step + 1);
+            };
+            const prevStep = () => {
+                if (step > 0) setStep(step - 1);
+            };
+
+            const hasReaction = ELEMENTS[metal].reactivity > ELEMENTS[solution].reactivity;
+            
+            const m1 = ELEMENTS[metal];
+            const m2 = ELEMENTS[solution];
+            const sol = SOLUTIONS[solution];
+            
+            // 計算方程式中的係數 (Stoichiometry)
+            let c1 = 1, c2 = 1;
+            if (m1.valency === 2 && m2.valency === 1) { c1 = 1; c2 = 2; }
+            else if (m1.valency === 1 && m2.valency === 2) { c1 = 2; c2 = 1; }
+            
+            // 計算旁觀離子數量
+            const anionCount = (c2 * m2.valency) / sol.anionValency;
+            
+            const formatCoeff = (c) => c > 1 ? c : '';
+            
+            const equations = hasReaction ? generateEquations(metal, solution) : { fullEq: '', ionicEq: '' };
+
+            return (
+                <div className="max-w-4xl mx-auto flex flex-col gap-6">
+                    <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div className="bg-indigo-600 text-white p-6">
+                            <h2 className="text-2xl font-bold">書寫離子方程式 (Ionic Equations) 步驟教學</h2>
+                            <p className="mt-2 opacity-80">選擇不同的金屬及溶液，逐步學習如何書寫淨離子方程式。</p>
+                        </div>
+                        
+                        {/* 選擇控制項 */}
+                        <div className="p-6 bg-gray-50 border-b flex flex-col sm:flex-row gap-4">
+                            <div className="flex-1">
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">固體金屬 (Metal)</label>
+                                <select 
+                                    className="w-full p-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                    value={metal} onChange={e => {setMetal(e.target.value); setStep(0);}}>
+                                    {Object.keys(ELEMENTS).map(k => <option key={k} value={k}>{ELEMENTS[k].name} ({ELEMENTS[k].symbol})</option>)}
+                                </select>
+                            </div>
+                            <div className="flex-1">
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">鹽溶液 (Solution)</label>
+                                <select 
+                                    className="w-full p-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                    value={solution} onChange={e => {setSolution(e.target.value); setStep(0);}}>
+                                    {Object.keys(SOLUTIONS).map(k => <option key={k} value={k}>{SOLUTIONS[k].name} ({SOLUTIONS[k].formula})</option>)}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="p-8">
+                            {!hasReaction ? (
+                                <div className="bg-red-50 text-red-700 p-6 rounded-lg border border-red-200 text-center">
+                                    <h4 className="text-xl font-bold mb-2"><i className="fa-solid fa-triangle-exclamation mr-2"></i>沒有反應 (No reaction)</h4>
+                                    <p>沒有反應，無法寫出方程式。因為 <strong>{m1.name} ({m1.symbol})</strong> 的活潑性低於 <strong>{m2.name} ({m2.symbol})</strong>。</p>
+                                    <p className="text-sm mt-2 opacity-80">請選擇活潑性較高的金屬與活潑性較低的金屬鹽溶液組合來觀察方程式寫法。</p>
+                                </div>
+                            ) : (
+                                <div className="space-y-8">
+                                    {/* 可觀察結果 */}
+                                    <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-5 shadow-sm">
+                                        <h3 className="text-lg font-bold text-emerald-800 mb-2"><i className="fa-solid fa-eye mr-2"></i>可觀察結果 (Observable Results)：</h3>
+                                        <ul className="list-disc pl-6 text-emerald-700 space-y-1">
+                                            <li>有固體沉澱物在 {m1.name} ({m1.symbol}) 表面生成。</li>
+                                            <li>{m1.name} ({m1.symbol}) 固體逐漸溶解。</li>
+                                            {SOLUTIONS[solution].colorName !== SOLUTIONS[metal].colorName ? (
+                                                <li>溶液顏色由 <strong>{SOLUTIONS[solution].colorName}</strong> 變為 <strong>{SOLUTIONS[metal].colorName}</strong>。</li>
+                                            ) : (
+                                                <li>溶液保持 <strong>{SOLUTIONS[solution].colorName}</strong>。</li>
+                                            )}
+                                        </ul>
+                                    </div>
+                                    
+                                    {/* 步驟 1 */}
+                                    <div className={`transition-all duration-500 ${step >= 1 ? 'opacity-100 translate-y-0' : 'opacity-30 blur-sm translate-y-4'}`}>
+                                        <h3 className="text-lg font-bold text-indigo-700 border-l-4 border-indigo-500 pl-3">步驟 1：寫出配平的化學方程式（包含狀態符號）</h3>
+                                        <div className="mt-3 bg-gray-50 p-4 rounded-lg font-mono text-xl text-center border overflow-x-auto whitespace-nowrap">
+                                            {equations.fullEq}
+                                        </div>
+                                    </div>
+
+                                    {/* 步驟 2 */}
+                                    <div className={`transition-all duration-500 ${step >= 2 ? 'opacity-100 translate-y-0' : 'opacity-10 blur-sm translate-y-4'}`}>
+                                        <h3 className="text-lg font-bold text-indigo-700 border-l-4 border-indigo-500 pl-3">步驟 2：將水溶液中的可溶性離子化合物拆解成流動離子</h3>
+                                        <p className="text-sm text-gray-500 mt-1 pl-4">注意：固體 (s) 保持不變。{sol.formula} 和 {m1.symbol}{m1.valency === 1 ? 'NO₃' : '(NO₃)₂'} 均為可溶於水的鹽類，以離子狀態存在。</p>
+                                        <div className="mt-3 bg-blue-50 p-4 rounded-lg font-mono text-lg text-center border border-blue-200 flex justify-center items-center flex-wrap gap-2">
+                                            <span>{formatCoeff(c1)}{m1.symbol}(s)</span>
+                                            <span>+</span>
+                                            <span className="text-blue-700 font-bold bg-blue-100 px-2 rounded">{formatCoeff(c2)}{m2.ion}(aq)</span>
+                                            <span>+</span>
+                                            <span className="text-blue-700 font-bold bg-blue-100 px-2 rounded">{formatCoeff(anionCount)}{sol.anion}(aq)</span>
+                                            <span>→</span>
+                                            <span className="text-blue-700 font-bold bg-blue-100 px-2 rounded">{formatCoeff(c1)}{m1.ion}(aq)</span>
+                                            <span>+</span>
+                                            <span className="text-blue-700 font-bold bg-blue-100 px-2 rounded">{formatCoeff(anionCount)}{sol.anion}(aq)</span>
+                                            <span>+</span>
+                                            <span>{formatCoeff(c2)}{m2.symbol}(s)</span>
+                                        </div>
+                                    </div>
+
+                                    {/* 步驟 3 */}
+                                    <div className={`transition-all duration-500 ${step >= 3 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                                        <h3 className="text-lg font-bold text-indigo-700 border-l-4 border-indigo-500 pl-3">步驟 3：找出並刪去兩邊相同的「旁觀離子 (Spectator Ions)」</h3>
+                                        <p className="text-sm text-gray-500 mt-1 pl-4">旁觀離子在反應前後沒有改變狀態，不參與淨反應。這裡的 {sol.anion} 是旁觀離子。</p>
+                                        <div className="mt-3 bg-yellow-50 p-4 rounded-lg font-mono text-lg text-center border border-yellow-200 flex justify-center items-center flex-wrap gap-2">
+                                            <span>{formatCoeff(c1)}{m1.symbol}(s)</span>
+                                            <span>+</span>
+                                            <span>{formatCoeff(c2)}{m2.ion}(aq)</span>
+                                            <span>+</span>
+                                            <span className="text-gray-400 strike-through relative inline-block px-1">{formatCoeff(anionCount)}{sol.anion}(aq)</span>
+                                            <span>→</span>
+                                            <span>{formatCoeff(c1)}{m1.ion}(aq)</span>
+                                            <span>+</span>
+                                            <span className="text-gray-400 strike-through relative inline-block px-1">{formatCoeff(anionCount)}{sol.anion}(aq)</span>
+                                            <span>+</span>
+                                            <span>{formatCoeff(c2)}{m2.symbol}(s)</span>
+                                        </div>
+                                    </div>
+
+                                    {/* 步驟 4 */}
+                                    <div className={`transition-all duration-500 ${step >= 4 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                                        <h3 className="text-lg font-bold text-green-700 border-l-4 border-green-500 pl-3">步驟 4：寫出最終的淨離子方程式</h3>
+                                        <div className="mt-3 bg-green-50 p-5 rounded-lg font-mono text-xl sm:text-2xl text-center border border-green-300 font-bold text-gray-800 shadow-inner overflow-x-auto whitespace-nowrap">
+                                            {equations.ionicEq}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        
+                        {/* 導航按鈕 */}
+                        <div className="bg-gray-100 p-4 border-t flex justify-between items-center">
+                            <button 
+                                onClick={prevStep} 
+                                disabled={step === 0 || !hasReaction}
+                                className="px-4 sm:px-6 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold rounded shadow disabled:opacity-30 transition">
+                                <i className="fa-solid fa-arrow-left mr-2"></i> 上一步
+                            </button>
+                            
+                            {step === 0 && hasReaction && <span className="text-indigo-600 font-bold animate-pulse text-sm sm:text-base hidden sm:inline-block">點擊「下一步」開始學習</span>}
+                            
+                            <button 
+                                onClick={nextStep} 
+                                disabled={step === MAX_STEPS || !hasReaction}
+                                className="px-4 sm:px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded shadow disabled:opacity-30 transition">
+                                {step === MAX_STEPS ? '完成' : '下一步'} <i className="fa-solid fa-arrow-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
