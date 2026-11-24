@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="zh-HK"><head>
+<html lang="zh-HK">
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#1e3a8a">
@@ -7,9 +8,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="HTML一鍵變網址">
-<link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22HTML%20%E4%B8%80%E9%8D%B5%E8%AE%8A%E7%B6%B2%E5%9D%80%20Pro%22%2C%22short_name%22%3A%22%E4%B8%80%E9%8D%B5%E8%AE%8A%E7%B6%B2%E5%9D%80%22%2C%22display%22%3A%22standalone%22%2C%22theme_color%22%3A%22%231e3a8a%22%2C%22background_color%22%3A%22%23eef2f7%22%7D">
+<link rel="manifest" href='data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22HTML%20%E4%B8%80%E9%8D%B5%E8%AE%8A%E7%B6%B2%E5%9D%80%20Pro%22%2C%22short_name%22%3A%22%E4%B8%80%E9%8D%B5%E8%AE%8A%E7%B6%B2%E5%9D%80%22%2C%22display%22%3A%22standalone%22%2C%22theme_color%22%3A%22%231e3a8a%22%2C%22background_color%22%3A%22%23eef2f7%22%7D'>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%232563eb'/%3E%3Cstop offset='100%25' stop-color='%230d9488'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Ctext x='32' y='43' font-size='32' text-anchor='middle'%3E%F0%9F%9A%80%3C/text%3E%3C/svg%3E">
-<title>HTML 一鍵變網址 Pro｜跨裝置互動教學平台發布庫</title>
+<title>HTML 一鍵變網址 Pro v2.0.0｜跨裝置互動教學平台發布庫</title>
 <style>
   :root {
     --bg: #eef2f7;
@@ -36,6 +37,45 @@
     --radius-sm: 11px;
     --shadow: 0 6px 24px rgba(15, 23, 42, 0.06);
     --shadow-lg: 0 14px 36px rgba(30, 58, 138, 0.16);
+  }
+  body.dark {
+    --bg: #0b1120;
+    --surface: #111827;
+    --surface-alt: #1e293b;
+    --border: #334155;
+    --border-strong: #475569;
+    --text: #f1f5f9;
+    --text-muted: #94a3b8;
+    --primary-soft: rgba(37, 99, 235, 0.18);
+    --teal-soft: rgba(13, 148, 136, 0.18);
+    --success-soft: rgba(5, 150, 105, 0.18);
+    --warning-soft: rgba(217, 119, 6, 0.18);
+    --danger-soft: rgba(220, 38, 38, 0.18);
+    --shadow: 0 8px 26px rgba(0, 0, 0, 0.35);
+  }
+  body.dark input[type="text"], body.dark input[type="password"], body.dark select, body.dark textarea {
+    background: #0f172a;
+    color: #f1f5f9;
+    border-color: #334155;
+  }
+  body.dark .btn-outline { background: #1e293b; color: #f1f5f9; border-color: #475569; }
+  body.dark .btn-outline:hover:not(:disabled) { background: #334155; }
+  body.dark .setup-banner { background: linear-gradient(180deg, rgba(37, 99, 235, 0.18) 0%, #111827 100%); border-color: #1d4ed8; }
+  body.dark .dropzone { background: linear-gradient(180deg, #1e293b 0%, rgba(37, 99, 235, 0.14) 100%); border-color: #3b82f6; }
+  body.dark .result-card { background: linear-gradient(180deg, rgba(5, 150, 105, 0.2) 0%, #111827 42%); }
+  body.dark .live-url-box { background: #0f172a; color: #6ee7b7; border-color: #059669; }
+  body.dark .qr-box { background: #1e293b; }
+  body.dark .modal { background: #111827; color: #f1f5f9; border: 1px solid #334155; }
+  body.dark .batch-action-bar { background: linear-gradient(135deg, rgba(37,99,235,0.22) 0%, rgba(79,70,229,0.22) 100%); border-color: #3b82f6; }
+  body.dark .batch-action-bar #batchSelectedCount { color: #bfdbfe !important; }
+  body.dark .history-item.selected { background: rgba(37, 99, 235, 0.22); }
+  body.dark .badge.folder { background: rgba(99, 102, 241, 0.24); color: #c7d2fe; border-color: #4f46e5; }
+  body.dark .folder-group-header { background: #1e293b; color: #e2e8f0; }
+  body.dark .info-callout { background: rgba(37, 99, 235, 0.18); color: #bfdbfe; border-color: #1d4ed8; }
+  body.dark .batch-list { background: rgba(5, 150, 105, 0.16); border-color: #059669; }
+  body.dark .batch-res-item { background: #0f172a; border-color: #059669; }
+  @media (min-width: 1024px) {
+    .container { max-width: 1040px; }
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -781,28 +821,29 @@
   <header>
     <div class="header-top">
       <div class="brand">
-        <h1>🚀 HTML 一鍵變網址 <span class="pro-tag">PRO 雲端同步</span></h1>
+        <h1>🚀 HTML 一鍵變網址 Pro <span class="pro-tag">v2.0.0</span></h1>
         <p>Gemini Canvas 互動教學平台發布庫｜電腦上載・手機即時同步・跨 Android / iOS</p>
       </div>
       <div class="header-actions">
         <button type="button" class="status-pill" id="btnToggleSetup">
-          <span class="dot online" id="statusDot"></span>
-          <span id="statusLabel">@s03017664/teaching-apps</span>
+          <span class="dot" id="statusDot"></span>
+          <span id="statusLabel">未連線（按此設定）</span>
         </button>
         <button type="button" class="status-pill" id="btnOpenSyncModal">📱 手機同步 / 裝 App</button>
+        <button type="button" class="status-pill" id="btnToggleTheme" title="切換深色/淺色模式">🌙 深色</button>
         <button type="button" class="status-pill" id="btnOpenGuide">❓ 教學</button>
       </div>
     </div>
     <div class="sync-strip">
       <div class="sync-meta">
-        <span id="syncStatusText">🟢 雲端實時同步中（上次同步 21:38:08）</span>
+        <span id="syncStatusText">☁️ 連線後自動支援電腦與手機實時雲端同步</span>
         <label class="switch-label">
-          <input type="checkbox" id="chkAutoSync" checked="">
+          <input type="checkbox" id="chkAutoSync" checked>
           <span>每 15 秒自動同步</span>
         </label>
       </div>
       <div class="sync-meta">
-        <span id="libraryStatsText">共 20 份教材 • 6 個資料夾</span>
+        <span id="libraryStatsText">共 0 份教材</span>
       </div>
     </div>
   </header>
@@ -818,14 +859,14 @@
     <div class="card setup-banner" id="setupCard">
       <div class="card-title">
         <span>🔑 一次性雲端連線設定（電腦與手機填相同資料即實時同步）</span>
-        <button type="button" class="btn btn-outline btn-sm" id="btnCollapseSetup">收起</button>
+        <button type="button" class="btn btn-outline btn-sm hidden" id="btnCollapseSetup">收起</button>
       </div>
       <div class="form-row two-col">
         <div>
           <label for="ghToken">GitHub 授權碼（Personal Access Token）</label>
           <input type="password" id="ghToken" placeholder="貼上 ghp_ 開頭的授權碼...">
           <div class="hint">
-            未有授權碼？<a href="https://github.com/settings/tokens/new?scopes=repo&amp;description=HTML-OneClick-Publisher" target="_blank" rel="noopener" style="color:var(--primary);font-weight:700;">按此直達 GitHub 生成（已預勾 repo）↗</a>
+            未有授權碼？<a href="https://github.com/settings/tokens/new?scopes=repo&description=HTML-OneClick-Publisher" target="_blank" rel="noopener" style="color:var(--primary);font-weight:700;">按此直達 GitHub 生成（已預勾 repo）↗</a>
           </div>
         </div>
         <div>
@@ -838,7 +879,7 @@
         <button type="button" class="btn btn-primary" id="btnConnect">⚡ 一鍵自動連線及設定</button>
         <button type="button" class="btn btn-outline" id="btnImportQuick">📲 貼上跨裝置同步碼</button>
         <button type="button" class="btn btn-outline" id="btnGuideInline">查看設定教學</button>
-        <button type="button" class="btn btn-danger-outline" id="btnDisconnect">清除本機授權碼</button>
+        <button type="button" class="btn btn-danger-outline hidden" id="btnDisconnect">清除本機授權碼</button>
       </div>
     </div>
 
@@ -856,7 +897,7 @@
 
       <div id="srcFileArea">
         <div class="dropzone" id="dropzone">
-          <input type="file" id="fileInput" accept=".html,.htm,text/html" multiple="" class="hidden">
+          <input type="file" id="fileInput" accept=".html,.htm,text/html" multiple class="hidden">
           <div class="dropzone-icon">📄</div>
           <div class="dropzone-title">點擊揀選一個或多個 .html 檔，或直接全部拖放至此</div>
           <div class="dropzone-sub">支援單檔及「一次批量上載多個 .html」，每份均自動套用原本檔名</div>
@@ -884,7 +925,7 @@
         <div>
           <label for="folderSelect">歸類資料夾</label>
           <div class="inline-group">
-            <select id="folderSelect"><option value="中三">📁 中三</option><option value="中四">📁 中四</option><option value="中五">📁 中五</option><option value="中六">📁 中六</option><option value="互動遊戲">📁 互動遊戲</option><option value="未分類">📁 未分類</option></select>
+            <select id="folderSelect"></select>
             <button type="button" class="btn btn-outline btn-sm" id="btnAddFolderQuick" title="新增資料夾">＋</button>
           </div>
         </div>
@@ -894,7 +935,7 @@
         </div>
       </div>
 
-      <div class="url-preview" id="urlPreview" style="margin-bottom:14px;">預計網址：https://s03017664.github.io/teaching-apps/lesson-app.html</div>
+      <div class="url-preview" id="urlPreview" style="margin-bottom:14px;">預計網址：請先完成上方連線設定</div>
 
       <button type="button" class="btn btn-primary btn-lg" id="btnPublish">
         🚀 一鍵發布並同步到所有裝置
@@ -950,13 +991,16 @@
         <span>📚 已發布的互動教材庫</span>
         <div class="action-row">
           <button type="button" class="btn btn-outline btn-sm" id="btnSelectAllVisible">☑️ 全選</button>
+          <button type="button" class="btn btn-outline btn-sm" id="btnExportJson" title="匯出資料夾與清單備份">💾 匯出備份</button>
+          <button type="button" class="btn btn-outline btn-sm" id="btnImportJson" title="匯入備份檔">📥 匯入</button>
+          <input type="file" id="importJsonInput" accept=".json,application/json" class="hidden">
           <button type="button" class="btn btn-outline btn-sm" id="btnNewFolderBar">📁 新增資料夾</button>
           <button type="button" class="btn btn-primary btn-sm" id="btnRefreshList">🔄 立即同步</button>
         </div>
       </div>
 
       <!-- Folder Filter Pills -->
-      <div class="folder-bar" id="folderBar"><button type="button" class="folder-pill active"><span>全部教材</span><span class="folder-count">20</span></button><button type="button" class="folder-pill"><span>📁 中三</span><span class="folder-count">0</span></button><button type="button" class="folder-pill"><span>📁 中四</span><span class="folder-count">0</span></button><button type="button" class="folder-pill"><span>📁 中五</span><span class="folder-count">0</span></button><button type="button" class="folder-pill"><span>📁 中六</span><span class="folder-count">0</span></button><button type="button" class="folder-pill"><span>📁 互動遊戲</span><span class="folder-count">0</span></button><button type="button" class="folder-pill"><span>📁 未分類</span><span class="folder-count">20</span></button></div>
+      <div class="folder-bar" id="folderBar"></div>
 
       <!-- Search & Sort Toolbar -->
       <div class="library-toolbar">
@@ -973,14 +1017,16 @@
       <div class="batch-action-bar" id="batchActionBar">
         <div style="font-weight:800;font-size:0.88rem;color:#1e3a8a;" id="batchSelectedCount">已選取 0 份教材</div>
         <div class="action-row" style="align-items:center;">
-          <select id="batchMoveFolderSelect" style="width:auto;padding:6px 10px;font-size:0.82rem;"><option value="中三">📁 中三</option><option value="中四">📁 中四</option><option value="中五">📁 中五</option><option value="中六">📁 中六</option><option value="互動遊戲">📁 互動遊戲</option><option value="未分類">📁 未分類</option></select>
+          <select id="batchMoveFolderSelect" style="width:auto;padding:6px 10px;font-size:0.82rem;"></select>
           <button type="button" class="btn btn-outline btn-sm" id="btnBatchMove">📁 批量搬移</button>
           <button type="button" class="btn btn-danger-outline btn-sm" id="btnBatchDelete" style="background:var(--danger);color:#fff;border-color:var(--danger);">🗑️ 一次刪除已選</button>
           <button type="button" class="btn btn-outline btn-sm" id="btnClearSelection">取消</button>
         </div>
       </div>
 
-      <div class="history-list" id="historyList"><div class="empty-state">連線 GitHub 後，你從電腦或手機發布的所有互動教材都會自動同步顯示在這裡。</div></div>
+      <div class="history-list" id="historyList">
+        <div class="empty-state">連線 GitHub 後，你從電腦或手機發布的所有互動教材都會自動同步顯示在這裡，並支援資料夾分類與日期／名稱排序。</div>
+      </div>
     </div>
   </div>
 
@@ -1040,7 +1086,7 @@
         <span class="step-num">2</span>
         <div>點擊下方直達按鈕開啟授權碼頁面（已自動勾選 <code>repo</code> 權限）：
           <div style="margin-top:8px;">
-            <a href="https://github.com/settings/tokens/new?scopes=repo&amp;description=HTML-OneClick-Publisher" target="_blank" rel="noopener" class="btn btn-primary btn-sm">🔑 直達 GitHub 生成授權碼 ↗</a>
+            <a href="https://github.com/settings/tokens/new?scopes=repo&description=HTML-OneClick-Publisher" target="_blank" rel="noopener" class="btn btn-primary btn-sm">🔑 直達 GitHub 生成授權碼 ↗</a>
           </div>
         </div>
       </li>
@@ -1082,7 +1128,7 @@
       </li>
     </ol>
     <div class="action-row" style="margin-bottom:12px;">
-      <button type="button" class="btn btn-teal" id="btnSelfPublish" style="flex:1;" disabled="">⏳ 正在發布本工具到 GitHub Pages...</button>
+      <button type="button" class="btn btn-teal" id="btnSelfPublish" style="flex:1;">🚀 一鍵發布本工具上網（免揀檔）</button>
       <button type="button" class="btn btn-primary" id="btnCopySyncCode" style="flex:1;">📋 複製跨裝置同步碼</button>
     </div>
     <div id="selfPublishResult" class="hidden" style="background:var(--success-soft);border:1.5px solid #6ee7b7;border-radius:14px;padding:14px;margin-bottom:14px;text-align:center;">
@@ -1149,7 +1195,7 @@
       </div>
       <div>
         <label for="editFolderSelect">所屬資料夾</label>
-        <select id="editFolderSelect"><option value="中三">📁 中三</option><option value="中四">📁 中四</option><option value="中五">📁 中五</option><option value="中六">📁 中六</option><option value="互動遊戲">📁 互動遊戲</option><option value="未分類">📁 未分類</option></select>
+        <select id="editFolderSelect"></select>
       </div>
     </div>
     <div class="action-row" style="justify-content:flex-end;margin-top:12px;">
@@ -1187,7 +1233,7 @@
   </div>
 </div>
 
-<div class="toast" id="toast">✅ 連線成功！正在同步雲端教材庫</div>
+<div class="toast" id="toast"></div>
 
 <script>
 (function() {
@@ -2615,12 +2661,25 @@
   });
   document.getElementById('btnCloseQr').addEventListener('click', () => document.getElementById('qrModal').classList.remove('show'));
   document.getElementById('btnCloseQrBottom').addEventListener('click', () => document.getElementById('qrModal').classList.remove('show'));
+  function triggerDownloadBase64(filename, mimeType, base64Data) {
+    if (window.AndroidBridge && typeof window.AndroidBridge.saveBase64File === 'function') {
+      window.AndroidBridge.saveBase64File(filename, mimeType, base64Data);
+      return true;
+    }
+    return false;
+  }
+
   document.getElementById('btnDownloadQr').addEventListener('click', () => {
-    const a = document.createElement('a');
-    a.download = (sanitizeSlug(state.lastPublishedTitle) || 'qrcode') + '-qr.png';
-    a.href = document.getElementById('qrCanvas').toDataURL('image/png');
-    a.click();
-    showToast('⬇️ 已下載 QR Code 圖片');
+    const fname = (sanitizeSlug(state.lastPublishedTitle) || 'qrcode') + '-qr.png';
+    const dataUrl = document.getElementById('qrCanvas').toDataURL('image/png');
+    const b64 = dataUrl.split(',')[1] || '';
+    if (!triggerDownloadBase64(fname, 'image/png', b64)) {
+      const a = document.createElement('a');
+      a.download = fname;
+      a.href = dataUrl;
+      a.click();
+    }
+    showToast('⬇️ 已下載 QR Code 圖片：' + fname);
   });
 
   // Delete modal
@@ -2931,18 +2990,106 @@
     if (!document.hidden && state.connected && state.autoSync) syncLibrary(true);
   });
 
+  // Dark Mode Toggle (persisted + system fallback)
+  function applyTheme(isDark) {
+    document.body.classList.toggle('dark', isDark);
+    const btn = document.getElementById('btnToggleTheme');
+    if (btn) btn.textContent = isDark ? '☀️ 淺色' : '🌙 深色';
+  }
+  let savedTheme = '';
+  try { savedTheme = localStorage.getItem('html_pub_theme') || ''; } catch (e) {}
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  applyTheme(savedTheme ? (savedTheme === 'dark') : prefersDark);
+
+  document.getElementById('btnToggleTheme').addEventListener('click', () => {
+    const nextDark = !document.body.classList.contains('dark');
+    applyTheme(nextDark);
+    try { localStorage.setItem('html_pub_theme', nextDark ? 'dark' : 'light'); } catch (e) {}
+  });
+
+  // JSON Backup Export / Import
+  document.getElementById('btnExportJson').addEventListener('click', () => {
+    const backup = {
+      app: 'HTMLOneClickPro',
+      version: '2.0.0',
+      exportedAt: new Date().toISOString(),
+      repo: state.repo,
+      owner: state.owner,
+      folders: state.folders,
+      items: state.items
+    };
+    const jsonStr = JSON.stringify(backup, null, 2);
+    const fname = 'teaching-apps-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+    if (!triggerDownloadBase64(fname, 'application/json', utf8ToBase64(jsonStr))) {
+      const blob = new Blob([jsonStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = fname;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+    }
+    showToast('💾 已匯出教材庫與資料夾備份：' + fname);
+  });
+
+  document.getElementById('btnImportJson').addEventListener('click', () => {
+    document.getElementById('importJsonInput').click();
+  });
+  document.getElementById('importJsonInput').addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result || '{}');
+        if (Array.isArray(data.folders) && data.folders.length) {
+          state.folders = Array.from(new Set([...data.folders, ...state.folders, '未分類']));
+        }
+        if (Array.isArray(data.items)) {
+          const map = {};
+          data.items.forEach(it => { if (it.fileName) map[it.fileName] = it; });
+          state.items.forEach(it => {
+            if (map[it.fileName]) {
+              if (map[it.fileName].displayName) it.displayName = map[it.fileName].displayName;
+              if (map[it.fileName].folder) it.folder = map[it.fileName].folder;
+            }
+          });
+        }
+        saveConfig();
+        renderFolderControls();
+        renderHistoryList();
+        if (state.connected) await saveCatalogToGithub();
+        showToast('📥 已匯入資料夾與教材名稱備份並同步雲端');
+      } catch (err) {
+        showToast('❌ 備份檔格式錯誤，無法匯入');
+      }
+      e.target.value = '';
+    };
+    reader.readAsText(file, 'utf-8');
+  });
+
   // Mode 2: Zero-account ZIP packager
   document.getElementById('btnBuildZip').addEventListener('click', () => {
     const html = state.zipFileContent || document.getElementById('zipCodeInput').value;
     if (!html || !html.trim()) { showToast('⚠️ 請先揀選 .html 檔或貼上 HTML 程式碼'); return; }
     const baseName = sanitizeSlug(state.zipFileName || extractTitle(html) || 'netlify-app');
+    const fname = baseName + '-netlify.zip';
     const blob = buildSingleFileZip('index.html', html);
+    if (window.AndroidBridge && typeof window.AndroidBridge.saveBase64File === 'function') {
+      const fr = new FileReader();
+      fr.onload = () => {
+        const b64 = String(fr.result || '').split(',')[1] || '';
+        triggerDownloadBase64(fname, 'application/zip', b64);
+        showToast('✅ 已儲存 ' + fname + ' 到下載資料夾！');
+      };
+      fr.readAsDataURL(blob);
+      return;
+    }
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = baseName + '-netlify.zip';
+    a.href = url; a.download = fname;
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(url), 5000);
-    showToast('✅ 已下載 ' + baseName + '-netlify.zip！拖到 Netlify Drop 即出網址');
+    showToast('✅ 已下載 ' + fname + '！拖到 Netlify Drop 即出網址');
   });
 
   bindDropzone('dropzone', 'fileInput', false);
@@ -2965,5 +3112,5 @@
   }
 })();
 </script>
-
-</body></html>
+</body>
+</html>
