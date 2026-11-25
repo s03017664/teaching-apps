@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中四化學：平衡化學反應方程式互動平台</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f8fafc;
+        }
+        .atom-badge {
+            transition: all 0.3s ease;
+        }
+        .scale-animation {
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        /* Custom scrollbar for better visual look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <!-- Navigation Bar -->
+    <header class="bg-indigo-600 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row justify-between items-center gap-2">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-flask-vial text-3xl text-amber-300"></i>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight">中四化學：平衡化學反應方程式</h1>
+                    <p class="text-xs text-indigo-200">Interactive Chemical Equation Balancer for Form 4 Chemistry</p>
+                </div>
+            </div>
+            <!-- Mode Switcher Tabs -->
+            <nav class="flex bg-indigo-700/60 p-1 rounded-xl text-sm font-medium">
+                <button id="nav-learn" onclick="switchTab('learn')" class="px-4 py-1.5 rounded-lg bg-white text-indigo-700 shadow font-bold transition">
+                    <i class="fa-solid fa-book-open mr-1"></i> 概念教學
+                </button>
+                <button id="nav-practice" onclick="switchTab('practice')" class="px-4 py-1.5 rounded-lg text-indigo-100 hover:text-white transition">
+                    <i class="fa-solid fa-gamepad mr-1"></i> 互動實驗室
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+
+        <!-- TAB 1: LEARN SECTION -->
+        <section id="tab-learn" class="space-y-6">
+            <!-- Intro Banner -->
+            <div class="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-6 md:p-8 text-white shadow-xl">
+                <div class="max-w-3xl">
+                    <span class="bg-amber-400 text-indigo-950 font-extrabold text-xs px-3 py-1 rounded-full uppercase tracking-wider">中四必學 Core Concept</span>
+                    <h2 class="text-2xl md:text-3xl font-extrabold mt-3 mb-2">什麼是「平衡反應方程式」？</h2>
+                    <p class="text-indigo-100 text-sm md:text-base leading-relaxed">
+                        在化學反應中，原子既不會憑空消失，也不會憑空產生。這稱為 <strong class="text-amber-300 font-bold">質量守恆定律 (Law of Conservation of Mass)</strong>。
+                        因此，反應物（左邊）的各元素原子總數，必須等於生成物（右邊）的各元素原子總數！
+                    </p>
+                </div>
+            </div>
+
+            <!-- Key Concepts Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Card 1 -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 font-bold text-xl mb-4">
+                        1
+                    </div>
+                    <h3 class="font-bold text-lg text-slate-800 mb-2">下標 vs 計量系數</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed mb-3">
+                        <strong class="text-indigo-600">下標 (Subscript)</strong> 表示分子的化學式（不可更改！例如 H<sub>2</sub>O）。<br>
+                        <strong class="text-emerald-600">計量系數 (Coefficient)</strong> 是分子前的大數字，代表分子的數量（我們可以調整這個！例如 2H<sub>2</sub>O）。
+                    </p>
+                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-center font-mono text-sm">
+                        <span class="text-emerald-600 font-bold text-lg">2</span> H <sub class="text-indigo-600 font-bold text-sm">2</sub> O
+                        <div class="text-xs text-slate-500 mt-1">2個水分子，共有 4個H 和 2個O</div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                    <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600 font-bold text-xl mb-4">
+                        2
+                    </div>
+                    <h3 class="font-bold text-lg text-slate-800 mb-2">平衡金律：原子不滅</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed mb-3">
+                        化學反應本質上只是原子的<strong class="text-purple-600">重新排列組合</strong>。左右兩邊的原子種類和數量必須完全相等。
+                    </p>
+                    <div class="bg-purple-50 p-3 rounded-lg border border-purple-100 flex items-center justify-around text-sm font-semibold">
+                        <span class="text-purple-700">左邊原子數</span>
+                        <i class="fa-solid fa-scale-balanced text-purple-600 text-lg"></i>
+                        <span class="text-purple-700">右邊原子數</span>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                    <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center text-amber-600 font-bold text-xl mb-4">
+                        3
+                    </div>
+                    <h3 class="font-bold text-lg text-slate-800 mb-2">中四解題策略技巧</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed mb-2">
+                        按照建議順序配平更容易成功：
+                    </p>
+                    <ol class="list-decimal list-inside text-xs text-slate-700 space-y-1 bg-amber-50 p-3 rounded-lg border border-amber-100">
+                        <li>先平衡最複雜分子中的元素或金屬元素。</li>
+                        <li>再平衡非金屬元素（如 C, N, S）。</li>
+                        <li>最後平衡 <strong class="text-amber-800">氫 (H)</strong> 和 <strong class="text-amber-800">氧 (O)</strong>。</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Call to action button -->
+            <div class="text-center py-4">
+                <button onclick="switchTab('practice')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-lg font-bold px-8 py-3.5 rounded-full shadow-lg hover:shadow-indigo-500/30 transition duration-300 transform hover:-translate-y-0.5">
+                    進入互動實驗室親手試試看！ <i class="fa-solid fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- TAB 2: INTERACTIVE PRACTICE LAB -->
+        <section id="tab-practice" class="hidden space-y-6">
+            
+            <!-- Controls Bar: Difficulty & Equation Selector -->
+            <div class="bg-white rounded-2xl p-4 sm:p-6 border border-slate-200 shadow-sm flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+                
+                <!-- Difficulty Tabs -->
+                <div class="flex flex-wrap gap-2">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block w-full mb-1">選擇難度</span>
+                    <button onclick="setDifficulty('easy')" id="diff-easy" class="diff-btn px-4 py-2 rounded-xl text-sm font-bold border transition bg-emerald-500 text-white border-emerald-500 shadow-sm">
+                        <i class="fa-solid fa-seedling mr-1"></i> 基礎 (Level 1)
+                    </button>
+                    <button onclick="setDifficulty('medium')" id="diff-medium" class="diff-btn px-4 py-2 rounded-xl text-sm font-bold border transition bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200">
+                        <i class="fa-solid fa-fire mr-1"></i> 進階 (Level 2)
+                    </button>
+                    <button onclick="setDifficulty('hard')" id="diff-hard" class="diff-btn px-4 py-2 rounded-xl text-sm font-bold border transition bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200">
+                        <i class="fa-solid fa-brain mr-1"></i> 挑戰 (Level 3)
+                    </button>
+                </div>
+
+                <!-- Equation Selector Dropdown -->
+                <div class="w-full lg:w-72">
+                    <label for="equation-select" class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">選擇方程式範例</label>
+                    <select id="equation-select" onchange="loadSelectedEquation()" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm font-semibold rounded-xl p-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none">
+                        <!-- Options generated dynamically -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- Main Balance Studio Card -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-lg overflow-hidden">
+                
+                <!-- Card Header with Problem Title and Hint Toggle -->
+                <div class="bg-slate-900 text-white p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <div>
+                        <div class="text-xs font-semibold text-indigo-400 uppercase tracking-widest mb-1" id="eq-category">反應類型</div>
+                        <h2 class="text-xl sm:text-2xl font-bold" id="eq-title">水合成反應</h2>
+                        <p class="text-slate-400 text-xs sm:text-sm mt-1" id="eq-desc">調整下方框內的系數，使反應物與生成物的原子總數相等。</p>
+                    </div>
+                    <button onclick="toggleHint()" class="bg-indigo-600/80 hover:bg-indigo-600 text-indigo-100 text-xs font-bold px-3 py-2 rounded-lg border border-indigo-400/30 transition flex items-center space-x-1 shrink-0">
+                        <i class="fa-regular fa-lightbulb text-amber-300 text-sm"></i>
+                        <span>提示說明</span>
+                    </button>
+                </div>
+
+                <!-- Hint Box (Hidden by default) -->
+                <div id="hint-box" class="hidden bg-amber-50 border-b border-amber-200 p-4 text-xs sm:text-sm text-amber-900 leading-relaxed flex items-start space-x-3">
+                    <i class="fa-solid fa-circle-info text-amber-500 text-base mt-0.5"></i>
+                    <div>
+                        <span class="font-bold block mb-1">配平小撇步：</span>
+                        <p id="eq-hint-text">建議從氫原子開始觀察...</p>
+                    </div>
+                </div>
+
+                <!-- Interactive Equation Display & Coefficient Counters -->
+                <div class="p-6 sm:p-10 bg-slate-50/50">
+                    <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xl sm:text-3xl font-extrabold" id="equation-builder-container">
+                        <!-- Dynamic Reactants & Products controls built by JS -->
+                    </div>
+                </div>
+
+                <!-- Atom Count Comparison & Balance Status -->
+                <div class="p-6 border-t border-slate-200">
+                    
+                    <!-- Balance Indicator Status Badge -->
+                    <div class="text-center mb-6">
+                        <div id="balance-status-badge" class="inline-flex items-center space-x-2 px-6 py-2.5 rounded-full text-base font-bold shadow-sm transition-all duration-300 bg-amber-100 text-amber-800 border border-amber-300">
+                            <i id="balance-icon" class="fa-solid fa-scale-unbalanced text-amber-600"></i>
+                            <span id="balance-status-text">方程式尚未平衡，請調整系數</span>
+                        </div>
+                    </div>
+
+                    <!-- Comparison Grid (Reactants vs Products) -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        
+                        <!-- Left: Reactants Atom Summary -->
+                        <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                            <h4 class="text-sm font-bold text-slate-500 mb-3 flex items-center justify-between">
+                                <span><i class="fa-solid fa-arrow-left text-indigo-500 mr-1.5"></i> 反應物 (左側) 原子總數</span>
+                                <span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-semibold" id="total-left-atoms">0 個原子</span>
+                            </h4>
+                            <div class="space-y-2" id="left-atoms-list">
+                                <!-- Generated by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Right: Products Atom Summary -->
+                        <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                            <h4 class="text-sm font-bold text-slate-500 mb-3 flex items-center justify-between">
+                                <span><i class="fa-solid fa-arrow-right text-emerald-500 mr-1.5"></i> 生成物 (右側) 原子總數</span>
+                                <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-semibold" id="total-right-atoms">0 個原子</span>
+                            </h4>
+                            <div class="space-y-2" id="right-atoms-list">
+                                <!-- Generated by JS -->
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Visual Representation: Molecule Box Representation -->
+                    <div class="mt-8">
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 text-center">
+                            <i class="fa-solid fa-cubes text-slate-400 mr-1"></i> 分子模型視覺化 (每張卡片代表 1 個分子)
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-900 rounded-xl p-4 sm:p-6 text-white min-h-[160px] items-center">
+                            <!-- Left visual -->
+                            <div class="flex flex-wrap items-center justify-center gap-3 border-b md:border-b-0 md:border-r border-slate-700 pb-4 md:pb-0 md:pr-4" id="visual-reactants">
+                                <!-- Visual molecules dynamically rendered -->
+                            </div>
+                            <!-- Right visual -->
+                            <div class="flex flex-wrap items-center justify-center gap-3 pt-2 md:pt-0" id="visual-products">
+                                <!-- Visual molecules dynamically rendered -->
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Action Toolbar Footer -->
+                <div class="bg-slate-100 p-4 border-t border-slate-200 flex justify-between items-center">
+                    <button onclick="resetCoefficients()" class="text-slate-600 hover:text-slate-900 text-sm font-semibold px-4 py-2 rounded-lg hover:bg-slate-200 transition">
+                        <i class="fa-solid fa-rotate-left mr-1.5"></i> 重置所有系數
+                    </button>
+                    <button id="next-btn" onclick="loadNextEquation()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow transition items-center space-x-1">
+                        <span>下一個挑戰</span>
+                        <i class="fa-solid fa-chevron-right text-xs ml-1"></i>
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-6 mt-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p>適合中四化學 (HKDSE Chemistry) 課程：化學反應方程式與質量守恆定律</p>
+            <p class="text-slate-600">設計給教師課堂演示與學生自主學習使用的互動學習工具</p>
+        </div>
+    </footer>
+
+    <script>
+        // ==========================================
+        // 1. DATA DEFINITION: Equations by Difficulty
+        // ==========================================
+        const elementColors = {
+            'H': { bg: 'bg-slate-100', text: 'text-slate-800', border: 'border-slate-300', dot: '#e2e8f0', label: '氫 (Hydrogen)' },
+            'O': { bg: 'bg-red-500', text: 'text-white', border: 'border-red-600', dot: '#ef4444', label: '氧 (Oxygen)' },
+            'C': { bg: 'bg-slate-800', text: 'text-white', border: 'border-slate-900', dot: '#1e293b', label: '碳 (Carbon)' },
+            'N': { bg: 'bg-blue-600', text: 'text-white', border: 'border-blue-700', dot: '#2563eb', label: '氮 (Nitrogen)' },
+            'Fe': { bg: 'bg-amber-700', text: 'text-white', border: 'border-amber-800', dot: '#b45309', label: '鐵 (Iron)' },
+            'Mg': { bg: 'bg-emerald-600', text: 'text-white', border: 'border-emerald-700', dot: '#059669', label: '鎂 (Magnesium)' },
+            'Cl': { bg: 'bg-lime-500', text: 'text-slate-900', border: 'border-lime-600', dot: '#84cc16', label: '氯 (Chlorine)' },
+            'Na': { bg: 'bg-purple-600', text: 'text-white', border: 'border-purple-700', dot: '#9333ea', label: '鈉 (Sodium)' }
+        };
+
+        const equationsData = {
+            easy: [
+                {
+                    id: 'water_synth',
+                    title: '1. 水的合成反應',
+                    category: '化合反應 (Combination)',
+                    desc: '氫氣與氧氣燃燒生成水，是最基本的反應之一。',
+                    hint: '先觀察氧原子(O)：右邊的水只有 1 個 O，而左邊有 2 個 O。所以先將 H₂O 系數設為 2！',
+                    reactants: [
+                        { formula: 'H₂', atoms: { 'H': 2 } },
+                        { formula: 'O₂', atoms: { 'O': 2 } }
+                    ],
+                    products: [
+                        { formula: 'H₂O', atoms: { 'H': 2, 'O': 1 } }
+                    ],
+                    targetCoeffs: { reactants: [2, 1], products: [2] }
+                },
+                {
+                    id: 'magnesium_combust',
+                    title: '2. 鎂帶在空氣中燃燒',
+                    category: '氧化反應 (Oxidation)',
+                    desc: '鎂條在空氣中劇烈燃燒發出耀眼白光，生成氧化鎂白色粉末。',
+                    hint: '氧氣是二元分子 O₂。先平衡氧原子，把 MgO 的系數調成 2，再來調整 Mg。',
+                    reactants: [
+                        { formula: 'Mg', atoms: { 'Mg': 1 } },
+                        { formula: 'O₂', atoms: { 'O': 2 } }
+                    ],
+                    products: [
+                        { formula: 'MgO', atoms: { 'Mg': 1, 'O': 1 } }
+                    ],
+                    targetCoeffs: { reactants: [2, 1], products: [2] }
+                },
+                {
+                    id: 'ammonia_synth',
+                    title: '3. 哈柏法合成氨',
+                    category: '工業重要化學反應',
+                    desc: '氮氣與氫氣在高溫高壓及催化劑下生成氨氣。',
+                    hint: '右邊 NH₃ 有 3 個 H，左邊 H₂ 有 2 個 H。找 2 與 3 的最小公倍數 = 6 個 H 原子！',
+                    reactants: [
+                        { formula: 'N₂', atoms: { 'N': 2 } },
+                        { formula: 'H₂', atoms: { 'H': 2 } }
+                    ],
+                    products: [
+                        { formula: 'NH₃', atoms: { 'N': 1, 'H': 3 } }
+                    ],
+                    targetCoeffs: { reactants: [1, 3], products: [2] }
+                }
+            ],
+            medium: [
+                {
+                    id: 'methane_combust',
+                    title: '1. 天然氣 (甲烷 CH₄) 完全燃燒',
+                    category: '燃燒反應 (Combustion)',
+                    desc: '甲烷與氧氣反應生成二氧化碳和水蒸氣。',
+                    hint: '順序：1. 先平衡 C (已經平衡 1:1) -> 2. 平衡 H (左4個，右H₂O調為2) -> 3. 最後計算總氧原子數調整 O₂。',
+                    reactants: [
+                        { formula: 'CH₄', atoms: { 'C': 1, 'H': 4 } },
+                        { formula: 'O₂', atoms: { 'O': 2 } }
+                    ],
+                    products: [
+                        { formula: 'CO₂', atoms: { 'C': 1, 'O': 2 } },
+                        { formula: 'H₂O', atoms: { 'H': 2, 'O': 1 } }
+                    ],
+                    targetCoeffs: { reactants: [1, 2], products: [1, 2] }
+                },
+                {
+                    id: 'acid_metal',
+                    title: '2. 鋅與鹽酸反應製氫',
+                    category: '置換反應 (Displacement)',
+                    desc: '實驗室常用鋅粒與稀鹽酸反應製造氫氣。',
+                    hint: '觀察右邊生成物 ZnCl₂ 需要 2 個 Cl 原子與 2 個 H 原子 (H₂)。因此左邊的 HCl 系數應為 2。',
+                    reactants: [
+                        { formula: 'Zn', atoms: { 'Mg': 1 } }, // Using Mg visual style for Zn
+                        { formula: 'HCl', atoms: { 'H': 1, 'Cl': 1 } }
+                    ],
+                    products: [
+                        { formula: 'ZnCl₂', atoms: { 'Mg': 1, 'Cl': 2 } },
+                        { formula: 'H₂', atoms: { 'H': 2 } }
+                    ],
+                    targetCoeffs: { reactants: [1, 2], products: [1, 1] }
+                },
+                {
+                    id: 'carbonate_acid',
+                    title: '3. 碳酸鈣與鹽酸反應',
+                    category: '酸與碳酸鹽反應',
+                    desc: '大理石或雲石（碳酸鈣 CaCO₃）與稀鹽酸反應產生二氧化碳氣體。',
+                    hint: '觀察右邊的 CaCl₂ 需要 2 個 Cl 原子，因此左邊的 HCl 需要調為 2，其餘元素自動平衡！',
+                    reactants: [
+                        { formula: 'CaCO₃', atoms: { 'Na': 1, 'C': 1, 'O': 3 } }, // Using Na visual style for Ca
+                        { formula: 'HCl', atoms: { 'H': 1, 'Cl': 1 } }
+                    ],
+                    products: [
+                        { formula: 'CaCl₂', atoms: { 'Na': 1, 'Cl': 2 } },
+                        { formula: 'H₂O', atoms: { 'H': 2, 'O': 1 } },
+                        { formula: 'CO₂', atoms: { 'C': 1, 'O': 2 } }
+                    ],
+                    targetCoeffs: { reactants: [1, 2], products: [1, 1, 1] }
+                }
+            ],
+            hard: [
+                {
+                    id: 'propane_combust',
+                    title: '1. 丙烷 (C₃H₈) 瓶裝石油氣燃燒',
+                    category: '有機化學燃燒反應',
+                    desc: '丙烷完全燃燒會釋放大量熱能，適用於郊遊燒烤野餐氣罐。',
+                    hint: '步驟：1. 平衡 3 個 C (3 CO₂) -> 2. 平衡 8 個 H (4 H₂O) -> 3. 右邊共有 (3x2 + 4x1) = 10 個 O，故左邊需 5 O₂。',
+                    reactants: [
+                        { formula: 'C₃H₈', atoms: { 'C': 3, 'H': 8 } },
+                        { formula: 'O₂', atoms: { 'O': 2 } }
+                    ],
+                    products: [
+                        { formula: 'CO₂', atoms: { 'C': 1, 'O': 2 } },
+                        { formula: 'H₂O', atoms: { 'H': 2, 'O': 1 } }
+                    ],
+                    targetCoeffs: { reactants: [1, 5], products: [3, 4] }
+                },
+                {
+                    id: 'iron_rust',
+                    title: '2. 鐵的高溫氧化 (鐵生鏽原理)',
+                    category: '金屬氧化反應',
+                    desc: '鐵與氧氣高溫反應生成三氧化二鐵 (Fe₂O₃)。',
+                    hint: 'Fe₂O₃ 有 3 個 O，O₂ 有 2 個 O。氧原子的最小公倍數是 6 (需 2 個 Fe₂O₃ 和 3 個 O₂)，最後再配平 4 個 Fe！',
+                    reactants: [
+                        { formula: 'Fe', atoms: { 'Fe': 1 } },
+                        { formula: 'O₂', atoms: { 'O': 2 } }
+                    ],
+                    products: [
+                        { formula: 'Fe₂O₃', atoms: { 'Fe': 2, 'O': 3 } }
+                    ],
+                    targetCoeffs: { reactants: [4, 3], products: [2] }
+                },
+                {
+                    id: 'thermite_rxn',
+                    title: '3. 鋁熱劑反應 (Thermite Reaction)',
+                    category: '強烈的單置換反應',
+                    desc: '鋁粉與氧化鐵反應產生極高溫，能熔化鐵並用於焊接鐵路軌道。',
+                    hint: '先觀察氧原子與鐵原子：右邊生成物有 Al₂O₃ (2個Al) 和單質 Fe，因此將左邊 Al 設為 2，右邊 Fe 設為 2。',
+                    reactants: [
+                        { formula: 'Al', atoms: { 'Mg': 1 } }, // Using Mg visual style for Al
+                        { formula: 'Fe₂O₃', atoms: { 'Fe': 2, 'O': 3 } }
+                    ],
+                    products: [
+                        { formula: 'Al₂O₃', atoms: { 'Mg': 2, 'O': 3 } },
+                        { formula: 'Fe', atoms: { 'Fe': 1 } }
+                    ],
+                    targetCoeffs: { reactants: [2, 1], products: [1, 2] }
+                }
+            ]
+        };
+
+        // State variables
+        let currentDifficulty = 'easy';
+        let currentEquationIndex = 0;
+        let currentCoeffs = {
+            reactants: [],
+            products: []
+        };
+
+        // Initialize on DOM Ready
+        document.addEventListener('DOMContentLoaded', () => {
+            setDifficulty('easy');
+        });
+
+        // Tab Switcher between Learning Mode & Practice Lab
+        function switchTab(tabName) {
+            const learnTab = document.getElementById('tab-learn');
+            const practiceTab = document.getElementById('tab-practice');
+            const navLearn = document.getElementById('nav-learn');
+            const navPractice = document.getElementById('nav-practice');
+
+            if (tabName === 'learn') {
+                learnTab.classList.remove('hidden');
+                practiceTab.classList.add('hidden');
+                
+                navLearn.className = "px-4 py-1.5 rounded-lg bg-white text-indigo-700 shadow font-bold transition";
+                navPractice.className = "px-4 py-1.5 rounded-lg text-indigo-100 hover:text-white transition";
+            } else {
+                learnTab.classList.add('hidden');
+                practiceTab.classList.remove('hidden');
+
+                navPractice.className = "px-4 py-1.5 rounded-lg bg-white text-indigo-700 shadow font-bold transition";
+                navLearn.className = "px-4 py-1.5 rounded-lg text-indigo-100 hover:text-white transition";
+            }
+        }
+
+        // Set Difficulty
+        function setDifficulty(level) {
+            currentDifficulty = level;
+            
+            // Update active button styles
+            document.querySelectorAll('.diff-btn').forEach(btn => {
+                btn.className = "diff-btn px-4 py-2 rounded-xl text-sm font-bold border transition bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200";
+            });
+
+            const activeBtn = document.getElementById(`diff-${level}`);
+            if (level === 'easy') {
+                activeBtn.className = "diff-btn px-4 py-2 rounded-xl text-sm font-bold border transition bg-emerald-500 text-white border-emerald-500 shadow-sm";
+            } else if (level === 'medium') {
+                activeBtn.className = "diff-btn px-4 py-2 rounded-xl text-sm font-bold border transition bg-amber-500 text-white border-amber-500 shadow-sm";
+            } else {
+                activeBtn.className = "diff-btn px-4 py-2 rounded-xl text-sm font-bold border transition bg-purple-600 text-white border-purple-600 shadow-sm";
+            }
+
+            // Populate Dropdown
+            populateEquationDropdown();
+            // Load First equation of this level
+            currentEquationIndex = 0;
+            loadEquation(0);
+        }
+
+        // Populate Equation Dropdown
+        function populateEquationDropdown() {
+            const select = document.getElementById('equation-select');
+            select.innerHTML = '';
+            
+            equationsData[currentDifficulty].forEach((eq, idx) => {
+                const opt = document.createElement('option');
+                opt.value = idx;
+                opt.textContent = `${idx + 1}. ${eq.title}`;
+                select.appendChild(opt);
+            });
+        }
+
+        function loadSelectedEquation() {
+            const select = document.getElementById('equation-select');
+            currentEquationIndex = parseInt(select.value, 10);
+            loadEquation(currentEquationIndex);
+        }
+
+        // Load Equation Data into UI
+        function loadEquation(index) {
+            const eqData = equationsData[currentDifficulty][index];
+            if (!eqData) return;
+
+            // Update Titles & Info
+            document.getElementById('eq-category').textContent = eqData.category;
+            document.getElementById('eq-title').textContent = eqData.title;
+            document.getElementById('eq-desc').textContent = eqData.desc;
+            document.getElementById('eq-hint-text').textContent = eqData.hint;
+            document.getElementById('hint-box').classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+
+            // Initialize Coefficients to 1 for all
+            currentCoeffs.reactants = new Array(eqData.reactants.length).fill(1);
+            currentCoeffs.products = new Array(eqData.products.length).fill(1);
+
+            // Build Equation Controls HTML
+            buildEquationControls(eqData);
+
+            // Update Calculations & Visuals
+            updateState();
+        }
+
+        // Build the Interactive Inputs (+ / - / Count)
+        function buildEquationControls(eqData) {
+            const container = document.getElementById('equation-builder-container');
+            container.innerHTML = '';
+
+            // Reactants Controls
+            eqData.reactants.forEach((react, i) => {
+                if (i > 0) {
+                    const plus = document.createElement('span');
+                    plus.className = "text-slate-400 font-bold self-center";
+                    plus.textContent = "+";
+                    container.appendChild(plus);
+                }
+                container.appendChild(createSpeciesControl('reactants', i, react.formula));
+            });
+
+            // Reaction Arrow
+            const arrowContainer = document.createElement('div');
+            arrowContainer.className = "flex items-center px-2 py-1 bg-slate-200 rounded-lg text-slate-700 text-lg self-center";
+            arrowContainer.innerHTML = '<i class="fa-solid fa-arrow-right"></i>';
+            container.appendChild(arrowContainer);
+
+            // Products Controls
+            eqData.products.forEach((prod, i) => {
+                if (i > 0) {
+                    const plus = document.createElement('span');
+                    plus.className = "text-slate-400 font-bold self-center";
+                    plus.textContent = "+";
+                    container.appendChild(plus);
+                }
+                container.appendChild(createSpeciesControl('products', i, prod.formula));
+            });
+        }
+
+        // Helper to generate Coefficient Controller Element
+        function createSpeciesControl(type, index, formula) {
+            const div = document.createElement('div');
+            div.className = "flex items-center space-x-1 sm:space-x-2 bg-white p-2 rounded-2xl border-2 border-slate-200 shadow-sm";
+
+            const decrementBtn = document.createElement('button');
+            decrementBtn.className = "w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center text-sm font-bold transition active:scale-95";
+            decrementBtn.innerHTML = '<i class="fa-solid fa-minus"></i>';
+            decrementBtn.onclick = () => changeCoefficient(type, index, -1);
+
+            const valDisplay = document.createElement('span');
+            valDisplay.id = `coeff-${type}-${index}`;
+            valDisplay.className = "w-8 text-center text-xl sm:text-2xl font-black text-indigo-600 font-mono";
+            valDisplay.textContent = "1";
+
+            const incrementBtn = document.createElement('button');
+            incrementBtn.className = "w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-600 flex items-center justify-center text-sm font-bold transition active:scale-95";
+            incrementBtn.innerHTML = '<i class="fa-solid fa-plus"></i>';
+            incrementBtn.onclick = () => changeCoefficient(type, index, 1);
+
+            const formulaSpan = document.createElement('span');
+            formulaSpan.className = "font-extrabold text-slate-800 text-lg sm:text-2xl ml-1 font-sans";
+            formulaSpan.innerHTML = formatFormulaHTML(formula);
+
+            div.appendChild(decrementBtn);
+            div.appendChild(valDisplay);
+            div.appendChild(incrementBtn);
+            div.appendChild(formulaSpan);
+
+            return div;
+        }
+
+        // Helper for pretty Chemical Formula sub-scripts
+        function formatFormulaHTML(formula) {
+            return formula.replace(/([0-9]+)/g, '<sub class="text-xs sm:text-base text-indigo-900">$1</sub>');
+        }
+
+        // Change Coefficient Value
+        function changeCoefficient(type, index, delta) {
+            const newVal = currentCoeffs[type][index] + delta;
+            if (newVal >= 1 && newVal <= 9) { // keep between 1 and 9
+                currentCoeffs[type][index] = newVal;
+                document.getElementById(`coeff-${type}-${index}`).textContent = newVal;
+                updateState();
+            }
+        }
+
+        function resetCoefficients() {
+            const eqData = equationsData[currentDifficulty][currentEquationIndex];
+            currentCoeffs.reactants = new Array(eqData.reactants.length).fill(1);
+            currentCoeffs.products = new Array(eqData.products.length).fill(1);
+            
+            eqData.reactants.forEach((_, i) => {
+                document.getElementById(`coeff-reactants-${i}`).textContent = 1;
+            });
+            eqData.products.forEach((_, i) => {
+                document.getElementById(`coeff-products-${i}`).textContent = 1;
+            });
+
+            updateState();
+        }
+
+        // Main Update Loop: Re-calculate atom tallies & update visualization
+        function updateState() {
+            const eqData = equationsData[currentDifficulty][currentEquationIndex];
+
+            // 1. Calculate Atoms Count on Left (Reactants)
+            const leftTotals = {};
+            eqData.reactants.forEach((react, idx) => {
+                const mult = currentCoeffs.reactants[idx];
+                for (const [atom, count] of Object.entries(react.atoms)) {
+                    leftTotals[atom] = (leftTotals[atom] || 0) + (count * mult);
+                }
+            });
+
+            // 2. Calculate Atoms Count on Right (Products)
+            const rightTotals = {};
+            eqData.products.forEach((prod, idx) => {
+                const mult = currentCoeffs.products[idx];
+                for (const [atom, count] of Object.entries(prod.atoms)) {
+                    rightTotals[atom] = (rightTotals[atom] || 0) + (count * mult);
+                }
+            });
+
+            // Render Atom Summary Lists
+            renderAtomLists(leftTotals, rightTotals);
+
+            // Render Visual Molecule Cards
+            renderMoleculeVisuals(eqData);
+
+            // Check if Equations are Balanced
+            checkBalance(leftTotals, rightTotals, eqData);
+        }
+
+        // Render left and right atom tallies with visual color feedback
+        function renderAtomLists(leftTotals, rightTotals) {
+            const leftContainer = document.getElementById('left-atoms-list');
+            const rightContainer = document.getElementById('right-atoms-list');
+
+            leftContainer.innerHTML = '';
+            rightContainer.innerHTML = '';
+
+            // Get all unique element keys
+            const allElements = Array.from(new Set([...Object.keys(leftTotals), ...Object.keys(rightTotals)]));
+
+            let totalLeftCount = 0;
+            let totalRightCount = 0;
+
+            allElements.forEach(elem => {
+                const lCount = leftTotals[elem] || 0;
+                const rCount = rightTotals[elem] || 0;
+                totalLeftCount += lCount;
+                totalRightCount += rCount;
+
+                const isBalanced = lCount === rCount;
+
+                // Left Item
+                leftContainer.appendChild(createAtomBadge(elem, lCount, isBalanced));
+                // Right Item
+                rightContainer.appendChild(createAtomBadge(elem, rCount, isBalanced));
+            });
+
+            document.getElementById('total-left-atoms').textContent = `${totalLeftCount} 個原子`;
+            document.getElementById('total-right-atoms').textContent = `${totalRightCount} 個原子`;
+        }
+
+        function createAtomBadge(elementSymbol, count, isBalanced) {
+            const div = document.createElement('div');
+            div.className = `flex items-center justify-between p-2.5 rounded-xl border transition ${
+                isBalanced 
+                ? 'bg-emerald-50/80 border-emerald-200 text-emerald-900' 
+                : 'bg-amber-50/80 border-amber-200 text-amber-900'
+            }`;
+
+            const styleInfo = elementColors[elementSymbol] || { bg: 'bg-indigo-600', text: 'text-white', label: elementSymbol };
+
+            div.innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <span class="w-7 h-7 rounded-lg ${styleInfo.bg} ${styleInfo.text} text-xs font-bold flex items-center justify-center shadow-sm">
+                        ${elementSymbol}
+                    </span>
+                    <span class="text-xs sm:text-sm font-semibold">${styleInfo.label || elementSymbol}</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="font-mono font-bold text-base sm:text-lg">${count}</span>
+                    <i class="fa-solid ${isBalanced ? 'fa-circle-check text-emerald-500' : 'fa-circle-xmark text-amber-500'} text-sm"></i>
+                </div>
+            `;
+            return div;
+        }
+
+        // Render 2D Visual Balls/Cards representing Molecules
+        function renderMoleculeVisuals(eqData) {
+            const leftVisual = document.getElementById('visual-reactants');
+            const rightVisual = document.getElementById('visual-products');
+
+            leftVisual.innerHTML = '';
+            rightVisual.innerHTML = '';
+
+            // Reactants Molecules Rendering
+            eqData.reactants.forEach((react, idx) => {
+                const count = currentCoeffs.reactants[idx];
+                for (let c = 0; c < count; c++) {
+                    leftVisual.appendChild(createMoleculeCard(react.formula, react.atoms));
+                }
+            });
+
+            // Products Molecules Rendering
+            eqData.products.forEach((prod, idx) => {
+                const count = currentCoeffs.products[idx];
+                for (let c = 0; c < count; c++) {
+                    rightVisual.appendChild(createMoleculeCard(prod.formula, prod.atoms));
+                }
+            });
+        }
+
+        // Helper to construct a visual representation card of a molecule
+        function createMoleculeCard(formula, atomsObj) {
+            const card = document.createElement('div');
+            card.className = "bg-slate-800 border border-slate-700 rounded-xl p-2.5 flex flex-col items-center justify-center min-w-[70px] shadow";
+
+            const atomsContainer = document.createElement('div');
+            atomsContainer.className = "flex flex-wrap items-center justify-center gap-1 my-1 max-w-[90px]";
+
+            for (const [symbol, count] of Object.entries(atomsObj)) {
+                const styleInfo = elementColors[symbol] || { bg: 'bg-indigo-500', text: 'text-white' };
+                for (let i = 0; i < count; i++) {
+                    const dot = document.createElement('span');
+                    dot.className = `w-4 h-4 rounded-full ${styleInfo.bg} ${styleInfo.text} text-[9px] font-bold flex items-center justify-center shadow-sm`;
+                    dot.textContent = symbol;
+                    atomsContainer.appendChild(dot);
+                }
+            }
+
+            const label = document.createElement('span');
+            label.className = "text-[10px] font-mono text-slate-400 mt-1";
+            label.innerHTML = formatFormulaHTML(formula);
+
+            card.appendChild(atomsContainer);
+            card.appendChild(label);
+            return card;
+        }
+
+        // Check overall equation status
+        function checkBalance(leftTotals, rightTotals, eqData) {
+            const allElements = Array.from(new Set([...Object.keys(leftTotals), ...Object.keys(rightTotals)]));
+            
+            const isBalanced = allElements.every(elem => leftTotals[elem] === rightTotals[elem]);
+
+            const statusBadge = document.getElementById('balance-status-badge');
+            const statusText = document.getElementById('balance-status-text');
+            const statusIcon = document.getElementById('balance-icon');
+            const nextBtn = document.getElementById('next-btn');
+
+            if (isBalanced) {
+                statusBadge.className = "inline-flex items-center space-x-2 px-6 py-2.5 rounded-full text-base font-bold shadow-lg transition-all duration-300 bg-emerald-500 text-white border border-emerald-400 animate-bounce";
+                statusIcon.className = "fa-solid fa-circle-check text-white";
+                statusText.textContent = "太棒了！方程式已成功平衡！";
+
+                // Show next question button if available
+                if (currentEquationIndex < equationsData[currentDifficulty].length - 1) {
+                    nextBtn.classList.remove('hidden');
+                    nextBtn.classList.add('flex');
+                }
+            } else {
+                statusBadge.className = "inline-flex items-center space-x-2 px-6 py-2.5 rounded-full text-base font-bold shadow-sm transition-all duration-300 bg-amber-100 text-amber-800 border border-amber-300";
+                statusIcon.className = "fa-solid fa-scale-unbalanced text-amber-600";
+                statusText.textContent = "方程式尚未平衡，請繼續調整系數";
+                nextBtn.classList.add('hidden');
+                nextBtn.classList.remove('flex');
+            }
+        }
+
+        // Load Next Equation in same level
+        function loadNextEquation() {
+            if (currentEquationIndex < equationsData[currentDifficulty].length - 1) {
+                currentEquationIndex++;
+                document.getElementById('equation-select').value = currentEquationIndex;
+                loadEquation(currentEquationIndex);
+            }
+        }
+
+        // Toggle Hint Box
+        function toggleHint() {
+            const hintBox = document.getElementById('hint-box');
+            hintBox.classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>
