@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中六化學：色層分析法互動模擬</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f1f5f9; /* slate-100 */
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .canvas-container {
+            aspect-ratio: 3 / 4;
+            width: 100%;
+            max-height: 600px;
+        }
+        /* Custom scrollbar for text area */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-indigo-600 text-white shadow-md py-4 px-6">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <h1 class="text-2xl font-bold flex items-center gap-3">
+                <i class="fa-solid fa-flask"></i>
+                色層分析法微觀與宏觀模擬 (Chromatography Simulation)
+            </h1>
+            <span class="text-sm font-medium bg-indigo-500 py-1 px-3 rounded-full">HKDSE 化學科專用</span>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl mx-auto w-full p-4 md:p-6 flex flex-col gap-6">
+        
+        <!-- Control Panel -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex flex-col md:flex-row flex-wrap gap-6 items-center justify-between transition-all">
+            
+            <!-- Mode Selection -->
+            <div class="flex flex-col gap-2 w-full md:w-auto">
+                <label class="text-sm font-semibold text-slate-500">選擇分析方法：</label>
+                <div class="flex bg-slate-100 p-1 rounded-lg">
+                    <button id="btn-paper" class="flex-1 md:flex-none px-4 py-2 text-sm font-medium rounded-md bg-white shadow-sm text-indigo-600 transition-colors" onclick="setMode('paper')">
+                        <i class="fa-regular fa-file-lines mr-1"></i> 紙色層法
+                    </button>
+                    <button id="btn-column" class="flex-1 md:flex-none px-4 py-2 text-sm font-medium rounded-md text-slate-600 hover:text-indigo-600 transition-colors" onclick="setMode('column')">
+                        <i class="fa-solid fa-vial mr-1"></i> 柱色層法
+                    </button>
+                </div>
+            </div>
+
+            <!-- Solvent Selection -->
+            <div class="flex flex-col gap-2 w-full md:w-auto">
+                <label class="text-sm font-semibold text-slate-500">選擇流動相 (溶劑)：</label>
+                <select id="solvent-select" class="w-full md:w-48 bg-slate-50 border border-slate-300 text-slate-700 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 outline-none transition-all" onchange="setSolvent(this.value)">
+                    <option value="nonpolar">非極性溶劑 (例如: 己烷)</option>
+                    <option value="polar">極性溶劑 (例如: 乙醇/水)</option>
+                </select>
+            </div>
+
+            <!-- Playback Controls -->
+            <div class="flex flex-col gap-2 w-full md:w-auto flex-grow md:flex-grow-0">
+                <label class="text-sm font-semibold text-slate-500">動畫控制與速度：</label>
+                <div class="flex items-center gap-3">
+                    <button id="btn-play" class="w-10 h-10 rounded-full bg-indigo-600 text-white hover:bg-indigo-700 flex items-center justify-center shadow-md transition-transform active:scale-95" onclick="togglePlay()">
+                        <i class="fa-solid fa-play" id="play-icon"></i>
+                    </button>
+                    <button class="w-10 h-10 rounded-full bg-slate-200 text-slate-700 hover:bg-slate-300 flex items-center justify-center shadow-sm transition-transform active:scale-95" onclick="resetSimulation()">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </button>
+                    <input type="range" id="speed-slider" min="0.2" max="3" step="0.1" value="1" class="w-24 md:w-32 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                </div>
+            </div>
+        </div>
+
+        <!-- Visualizers -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Macro View -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-col items-center">
+                <h2 class="text-lg font-bold text-slate-700 mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-eye text-indigo-500"></i> 宏觀視角 (Macroscopic)
+                </h2>
+                <p class="text-xs text-slate-500 mb-4 text-center">觀察混合物樣本在整體的物理分離過程。</p>
+                <div class="canvas-container relative bg-slate-50 rounded-lg border border-slate-200 overflow-hidden">
+                    <canvas id="macroCanvas"></canvas>
+                </div>
+            </div>
+
+            <!-- Micro View -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-col items-center">
+                <h2 class="text-lg font-bold text-slate-700 mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-magnifying-glass text-indigo-500"></i> 微觀視角 (Microscopic)
+                </h2>
+                <p class="text-xs text-slate-500 mb-4 text-center">模擬粒子與固定相(Stationary Phase)之間的分子間作用力。</p>
+                <div class="canvas-container relative bg-slate-900 rounded-lg border border-slate-800 overflow-hidden">
+                    <canvas id="microCanvas"></canvas>
+                    <!-- Legend -->
+                    <div class="absolute top-2 right-2 bg-black/60 p-2 rounded text-xs text-white backdrop-blur-sm border border-white/20">
+                        <div class="flex items-center gap-2 mb-1"><span class="w-3 h-3 rounded-full bg-blue-400"></span> 非極性溶質 (藍)</div>
+                        <div class="flex items-center gap-2 mb-1"><span class="w-3 h-3 rounded-full bg-red-400"></span> 極性溶質 (紅)</div>
+                        <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full border-2 border-slate-400"></span> 固定相粒子</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-time Data Panel (NEW) -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 md:p-5">
+            <h3 class="text-lg font-bold text-slate-700 mb-3 flex items-center gap-2">
+                <i class="fa-solid fa-chart-line text-indigo-500"></i> 實時數據 (Rf 值 / 移動距離)
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 flex flex-col justify-center">
+                    <div class="text-xs text-slate-500 mb-1">溶劑前沿 (Solvent Front) 移動距離</div>
+                    <div id="data-solvent" class="text-xl font-semibold text-slate-700">0.0 mm</div>
+                </div>
+                <div class="p-3 bg-red-50 rounded-lg border border-red-100 flex flex-col justify-center">
+                    <div class="text-xs text-red-500 mb-1">極性溶質 (Polar/Red)</div>
+                    <div id="data-red" class="text-lg font-semibold text-red-700 leading-tight">0.0 mm<br><span class="text-sm">Rf: 0.00</span></div>
+                </div>
+                <div class="p-3 bg-blue-50 rounded-lg border border-blue-100 flex flex-col justify-center">
+                    <div class="text-xs text-blue-500 mb-1">非極性溶質 (Non-polar/Blue)</div>
+                    <div id="data-blue" class="text-lg font-semibold text-blue-700 leading-tight">0.0 mm<br><span class="text-sm">Rf: 0.00</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Educational Text Area -->
+        <div class="bg-indigo-50 rounded-xl shadow-sm border border-indigo-100 p-5 md:p-6">
+            <h3 class="text-lg font-bold text-indigo-800 mb-3 flex items-center gap-2">
+                <i class="fa-solid fa-book-open text-indigo-600"></i> 化學原理分析
+            </h3>
+            <div id="explanation-text" class="text-slate-700 text-sm leading-relaxed space-y-3">
+                <!-- Text will be injected via JS -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-slate-400 text-center py-4 text-xs mt-auto">
+        <p>&copy; 2026 Interactive DSE Chemistry Resources. Designed for collaborative learning.</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- State Management ---
+        const state = {
+            mode: 'paper', // 'paper' or 'column'
+            solvent: 'nonpolar', // 'nonpolar' or 'polar'
+            isPlaying: false,
+            progress: 0, // 0 to 1 representing the solvent front progress
+            speedMultiplier: 1,
+            animationId: null,
+            lastTime: 0
+        };
+
+        // DOM Elements
+        const btnPaper = document.getElementById('btn-paper');
+        const btnColumn = document.getElementById('btn-column');
+        const solventSelect = document.getElementById('solvent-select');
+        const btnPlay = document.getElementById('btn-play');
+        const playIcon = document.getElementById('play-icon');
+        const speedSlider = document.getElementById('speed-slider');
+        const explanationText = document.getElementById('explanation-text');
+        
+        // Data Panel Elements
+        const dataSolvent = document.getElementById('data-solvent');
+        const dataRed = document.getElementById('data-red');
+        const dataBlue = document.getElementById('data-blue');
+
+        // Canvas Setup
+        const canvasMacro = document.getElementById('macroCanvas');
+        const ctxMacro = canvasMacro.getContext('2d');
+        const canvasMicro = document.getElementById('microCanvas');
+        const ctxMicro = canvasMicro.getContext('2d');
+
+        // Resize Canvas to fit container while maintaining crisp rendering
+        function resizeCanvas() {
+            const rectMacro = canvasMacro.parentElement.getBoundingClientRect();
+            canvasMacro.width = rectMacro.width * window.devicePixelRatio;
+            canvasMacro.height = rectMacro.height * window.devicePixelRatio;
+            ctxMacro.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+            const rectMicro = canvasMicro.parentElement.getBoundingClientRect();
+            canvasMicro.width = rectMicro.width * window.devicePixelRatio;
+            canvasMicro.height = rectMicro.height * window.devicePixelRatio;
+            ctxMicro.scale(window.devicePixelRatio, window.devicePixelRatio);
+            
+            drawMacroInitial();
+            if(!state.isPlaying && state.progress === 0) {
+                initMicroParticles();
+                drawMicro(0);
+            }
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        // --- Microscopic Particles Logic ---
+        let microParticles = [];
+        let stationaryPhaseNodes = [];
+        
+        // Shared Rf Values calculation function
+        function getRfValues() {
+            if (state.mode === 'paper') {
+                return {
+                    blue: state.solvent === 'nonpolar' ? 0.85 : 0.90,
+                    red:  state.solvent === 'nonpolar' ? 0.15 : 0.65
+                };
+            } else {
+                return {
+                    blue: state.solvent === 'nonpolar' ? 0.90 : 0.95,
+                    red:  state.solvent === 'nonpolar' ? 0.20 : 0.70
+                };
+            }
+        }
+
+        class Particle {
+            constructor(type, startX, startY) {
+                this.type = type; // 'polar' (red) or 'nonpolar' (blue)
+                this.x = startX;
+                this.y = startY;
+                this.baseX = startX;
+                this.startY = startY;
+                this.baseYOffset = (Math.random() - 0.5) * 15; // Initial vertical spread
+                this.isStuck = false;
+                this.stuckTimer = 0;
+                
+                // Visuals
+                this.color = type === 'polar' ? '#ef4444' : '#60a5fa'; // red-500 : blue-400
+                this.radius = 3;
+            }
+
+            update(dt, h, progress) {
+                const rfs = getRfValues();
+                const myRf = this.type === 'polar' ? rfs.red : rfs.blue;
+                
+                // Flow configuration
+                const flowDirection = state.mode === 'paper' ? -1 : 1;
+                const startY = state.mode === 'paper' ? h - 40 : 40;
+                
+                // Sync micro max travel scale with macro view
+                const maxTravel = h - 40;
+
+                // STRICT SYNC: Calculate exact base Y position based on overall progress and Rf
+                const baseY = startY + (maxTravel * progress * myRf * flowDirection);
+
+                if (this.isStuck) {
+                    this.stuckTimer -= dt;
+                    if (this.stuckTimer <= 0) {
+                        this.isStuck = false;
+                    }
+                    // Jiggle slightly while stuck
+                    this.x = this.baseX + (Math.random() - 0.5) * 2;
+                } else {
+                    // Brownian motion X and Y spread
+                    this.baseX += (Math.random() - 0.5) * 1.5; 
+                    this.baseYOffset += (Math.random() - 0.5) * 1.5;
+                    
+                    // Contain vertical spread so it stays a coherent spot
+                    if (this.baseYOffset > 20) this.baseYOffset = 20;
+                    if (this.baseYOffset < -20) this.baseYOffset = -20;
+
+                    this.x = this.baseX;
+
+                    // Chance to get stuck purely for visual glow/jiggle effect
+                    let stickChance = this.type === 'polar' ? (state.solvent === 'nonpolar' ? 0.05 : 0.01) : 0.005;
+
+                    // Apply randomness to stick
+                    if (Math.random() < stickChance) {
+                        this.isStuck = true;
+                        this.stuckTimer = Math.random() * 0.8 + 0.2; // stuck for 0.2s to 1s
+                    }
+                }
+                
+                // Apply final Y with offset
+                this.y = baseY + this.baseYOffset;
+
+                // STRICT BOUNDARY: Never cross the solvent front or fall behind start line
+                const frontY = state.mode === 'paper' ? h - (h * progress) : h * progress;
+                if (state.mode === 'paper') {
+                    // Flows UP (negative Y). Clamp to ensure it stays below (higher Y value) the front edge
+                    if (this.y - this.radius < frontY) {
+                        this.y = frontY + this.radius;
+                        this.baseYOffset = this.y - baseY; // Adjust offset to prevent physics fighting
+                    }
+                    if (this.y > startY) this.y = startY; 
+                } else {
+                    // Flows DOWN (positive Y). Clamp to stay above the front edge
+                    if (this.y + this.radius > frontY) {
+                        this.y = frontY - this.radius;
+                        this.baseYOffset = this.y - baseY;
+                    }
+                    if (this.y < startY) this.y = startY;
+                }
+            }
+
+            draw(ctx) {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                // Add glow if stuck
+                if(this.isStuck) {
+                    ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            }
+        }
+
+        function initMicroParticles() {
+            microParticles = [];
+            stationaryPhaseNodes = [];
+            const w = canvasMicro.clientWidth;
+            const h = canvasMicro.clientHeight;
+            
+            // Generate Stationary Phase Nodes (Background)
+            for(let i=0; i<80; i++) {
+                stationaryPhaseNodes.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    r: Math.random() * 15 + 10
+                });
+            }
+
+            // Generate Solute Particles at the starting line
+            let startY = state.mode === 'paper' ? h - 40 : 40;
+            let startX = w / 2;
+            
+            // Create a mix of Polar (Red) and Non-polar (Blue) particles
+            for(let i=0; i<150; i++) {
+                // Randomize slightly around the start area
+                let rx = startX + (Math.random() - 0.5) * 40;
+                let ry = startY + (Math.random() - 0.5) * 10;
+                microParticles.push(new Particle(i % 2 === 0 ? 'polar' : 'nonpolar', rx, ry));
+            }
+        }
+
+        function drawMicro(dt) {
+            const w = canvasMicro.clientWidth;
+            const h = canvasMicro.clientHeight;
+            
+            // Clear & Background
+            ctxMicro.fillStyle = '#0f172a'; // slate-900
+            ctxMicro.fillRect(0, 0, w, h);
+
+            // Draw Stationary Phase
+            ctxMicro.strokeStyle = 'rgba(148, 163, 184, 0.2)'; // slate-400 semi-transparent
+            ctxMicro.lineWidth = 2;
+            stationaryPhaseNodes.forEach(node => {
+                ctxMicro.beginPath();
+                ctxMicro.arc(node.x, node.y, node.r, 0, Math.PI*2);
+                ctxMicro.stroke();
+                // small dot in center
+                ctxMicro.fillStyle = 'rgba(148, 163, 184, 0.1)';
+                ctxMicro.fill();
+            });
+
+            // Flow configuration
+            // Paper: flows UP (negative Y direction)
+            // Column: flows DOWN (positive Y direction)
+            const flowDirection = state.mode === 'paper' ? -1 : 1;
+            
+            // Sync Macro speed (0.05 / sec) to Canvas Height flow speed
+            const macroSpeedPerSec = 0.05 * state.speedMultiplier;
+            const flowSpeed = h * macroSpeedPerSec;
+
+            // Micro solvent front calculation
+            const frontY = state.mode === 'paper' ? h - (h * state.progress) : h * state.progress;
+
+            // Update & Draw Particles
+            // Sort to draw moving particles on top
+            microParticles.sort((a,b) => (a.isStuck === b.isStuck)? 0 : a.isStuck ? -1 : 1);
+
+            microParticles.forEach(p => {
+                if(state.isPlaying) {
+                    p.update(dt, h, state.progress);
+                }
+                p.draw(ctxMicro);
+            });
+
+            // Draw Solvent Front (Micro)
+            if(state.progress > 0) {
+                ctxMicro.fillStyle = 'rgba(255, 255, 255, 0.05)';
+                if(state.mode === 'paper') {
+                    // flows up
+                    let frontY = h - (h * state.progress);
+                    ctxMicro.fillRect(0, frontY, w, h - frontY);
+                    
+                    ctxMicro.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                    ctxMicro.beginPath();
+                    ctxMicro.moveTo(0, frontY);
+                    ctxMicro.lineTo(w, frontY);
+                    ctxMicro.stroke();
+                } else {
+                    // flows down
+                    let frontY = h * state.progress;
+                    ctxMicro.fillRect(0, 0, w, frontY);
+
+                    ctxMicro.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                    ctxMicro.beginPath();
+                    ctxMicro.moveTo(0, frontY);
+                    ctxMicro.lineTo(w, frontY);
+                    ctxMicro.stroke();
+                }
+            }
+        }
+
+
+        // --- Macroscopic Visualization Logic ---
+
+        function drawMacroInitial() {
+            const w = canvasMacro.clientWidth;
+            const h = canvasMacro.clientHeight;
+            ctxMacro.clearRect(0, 0, w, h);
+
+            if (state.mode === 'paper') {
+                drawPaperMacro(w, h);
+            } else {
+                drawColumnMacro(w, h);
+            }
+        }
+
+        function drawPaperMacro(w, h) {
+            // Beaker
+            const beakerWidth = w * 0.7;
+            const beakerHeight = h * 0.8;
+            const beakerX = (w - beakerWidth) / 2;
+            const beakerY = h * 0.15;
+
+            // Paper
+            const paperWidth = beakerWidth * 0.4;
+            const paperHeight = beakerHeight * 0.9;
+            const paperX = (w - paperWidth) / 2;
+            const paperY = beakerY + 10;
+            
+            // Draw Paper
+            ctxMacro.fillStyle = '#f8fafc'; // slightly off white
+            ctxMacro.fillRect(paperX, paperY, paperWidth, paperHeight);
+            ctxMacro.strokeStyle = '#cbd5e1';
+            ctxMacro.strokeRect(paperX, paperY, paperWidth, paperHeight);
+
+            // Starting Line (Pencil line)
+            const startLineY = paperY + paperHeight - 40;
+            ctxMacro.beginPath();
+            ctxMacro.moveTo(paperX + 5, startLineY);
+            ctxMacro.lineTo(paperX + paperWidth - 5, startLineY);
+            ctxMacro.strokeStyle = '#94a3b8';
+            ctxMacro.lineWidth = 1;
+            ctxMacro.setLineDash([2, 2]);
+            ctxMacro.stroke();
+            ctxMacro.setLineDash([]);
+
+            // Solvent in beaker
+            const solventLevel = startLineY + 15;
+            ctxMacro.fillStyle = 'rgba(199, 210, 254, 0.4)'; // light indigo
+            ctxMacro.fillRect(beakerX + 5, solventLevel, beakerWidth - 10, beakerY + beakerHeight - solventLevel);
+
+            // Draw Beaker
+            ctxMacro.beginPath();
+            ctxMacro.moveTo(beakerX, beakerY);
+            ctxMacro.lineTo(beakerX, beakerY + beakerHeight);
+            ctxMacro.arcTo(beakerX, beakerY + beakerHeight + 10, beakerX + 10, beakerY + beakerHeight + 10, 10);
+            ctxMacro.lineTo(beakerX + beakerWidth - 10, beakerY + beakerHeight + 10);
+            ctxMacro.arcTo(beakerX + beakerWidth, beakerY + beakerHeight + 10, beakerX + beakerWidth, beakerY + beakerHeight, 10);
+            ctxMacro.lineTo(beakerX + beakerWidth, beakerY);
+            ctxMacro.strokeStyle = '#94a3b8';
+            ctxMacro.lineWidth = 3;
+            ctxMacro.stroke();
+
+            // Solvent Front on Paper
+            const maxTravel = startLineY - (paperY + 20); // padding at top
+            const currentFrontY = startLineY - (maxTravel * state.progress);
+            
+            // Darker wet paper background for better visibility
+            ctxMacro.fillStyle = 'rgba(165, 180, 252, 0.4)'; // darker indigo
+            ctxMacro.fillRect(paperX, currentFrontY, paperWidth, startLineY - currentFrontY);
+
+            // Distinct horizontal line for the exact solvent front
+            if (state.progress > 0) {
+                ctxMacro.beginPath();
+                ctxMacro.moveTo(paperX, currentFrontY);
+                ctxMacro.lineTo(paperX + paperWidth, currentFrontY);
+                ctxMacro.strokeStyle = '#4f46e5'; // Indigo-600
+                ctxMacro.lineWidth = 2;
+                ctxMacro.stroke();
+            }
+
+            // Calculate Rf values dynamically based on solvent
+            const rfs = getRfValues();
+            let rfBlue = rfs.blue;
+            let rfRed  = rfs.red;
+
+            let currentBlueY = startLineY - (maxTravel * state.progress * rfBlue);
+            let currentRedY = startLineY - (maxTravel * state.progress * rfRed);
+
+            // Spot sizes and spread (simulating diffusion)
+            const spread = 1 + (state.progress * 3);
+            const alpha = Math.max(0.4, 1 - (state.progress * 0.5));
+
+            // Strictly enforce solute dots never exceed solvent front visually
+            if (currentRedY - (5 + spread) < currentFrontY) {
+                currentRedY = currentFrontY + (5 + spread);
+            }
+            if (currentBlueY - (5 + spread) < currentFrontY) {
+                currentBlueY = currentFrontY + (5 + spread);
+            }
+
+            // Draw original mixed spot if just starting
+            if (state.progress < 0.05) {
+                ctxMacro.beginPath();
+                ctxMacro.arc(w/2, startLineY, 5, 0, Math.PI*2);
+                ctxMacro.fillStyle = '#4c1d95'; // Purple (Mix of Red and Blue)
+                ctxMacro.fill();
+            }
+
+            // Draw Red Spot
+            if (state.progress > 0.02) {
+                ctxMacro.beginPath();
+                ctxMacro.ellipse(w/2, currentRedY, 5 + spread, 4 + spread*0.8, 0, 0, Math.PI*2);
+                ctxMacro.fillStyle = `rgba(239, 68, 68, ${alpha})`;
+                ctxMacro.fill();
+            }
+
+            // Draw Blue Spot
+            if (state.progress > 0.02) {
+                ctxMacro.beginPath();
+                ctxMacro.ellipse(w/2, currentBlueY, 5 + spread, 4 + spread*0.8, 0, 0, Math.PI*2);
+                ctxMacro.fillStyle = `rgba(96, 165, 250, ${alpha})`;
+                ctxMacro.fill();
+            }
+        }
+
+        function drawColumnMacro(w, h) {
+             // Column parameters
+             const colWidth = 40;
+             const colHeight = h * 0.7;
+             const colX = (w - colWidth) / 2;
+             const colY = h * 0.1;
+
+             // Draw Stand / Clamp (abstract)
+             ctxMacro.fillStyle = '#64748b';
+             ctxMacro.fillRect(colX - 30, colY + colHeight/2, 20, 10);
+             ctxMacro.fillRect(colX - 40, h * 0.1, 10, h * 0.8);
+
+             // Draw Silica Gel (Stationary Phase)
+             const silicaTop = colY + 40;
+             const silicaBottom = colY + colHeight - 30;
+             ctxMacro.fillStyle = '#f1f5f9';
+             ctxMacro.fillRect(colX, silicaTop, colWidth, silicaBottom - silicaTop);
+             
+             // Draw grid/dots to represent silica
+             ctxMacro.fillStyle = '#e2e8f0';
+             for(let y = silicaTop; y < silicaBottom; y+=6) {
+                 for(let x = colX; x < colX + colWidth; x+=6) {
+                     if(Math.random() > 0.3) {
+                         ctxMacro.fillRect(x, y, 2, 2);
+                     }
+                 }
+             }
+
+             // Calculate flow speeds
+             const maxTravel = silicaBottom - silicaTop;
+             
+             // Rf in column correlates to retention (higher Rf = moves faster downwards)
+             const rfs = getRfValues();
+             let rfBlue = rfs.blue;
+             let rfRed  = rfs.red;
+
+             const solventFrontY = silicaTop + (maxTravel * state.progress);
+             
+             // Wet silica background (darker for visibility)
+             ctxMacro.fillStyle = 'rgba(165, 180, 252, 0.3)';
+             ctxMacro.fillRect(colX, silicaTop, colWidth, solventFrontY - silicaTop);
+
+             // Distinct horizontal line for solvent front
+             if (state.progress > 0) {
+                 ctxMacro.beginPath();
+                 ctxMacro.moveTo(colX, solventFrontY);
+                 ctxMacro.lineTo(colX + colWidth, solventFrontY);
+                 ctxMacro.strokeStyle = '#4f46e5';
+                 ctxMacro.lineWidth = 2;
+                 ctxMacro.stroke();
+             }
+
+             // Draw Bands
+             const blueY = silicaTop + (maxTravel * state.progress * rfBlue);
+             const redY = silicaTop + (maxTravel * state.progress * rfRed);
+             const bandHeight = 10 + (state.progress * 15); // Band broadening
+             const alpha = Math.max(0.3, 1 - (state.progress * 0.4));
+
+             // Only draw bands if they haven't eluted completely out (for simplicity, they stop at bottom or we let them clip)
+             
+             // Mixed band at top initially
+             if (state.progress < 0.05) {
+                 ctxMacro.fillStyle = '#4c1d95';
+                 ctxMacro.fillRect(colX, silicaTop, colWidth, 10);
+             }
+
+             // Red Band
+             if(state.progress >= 0.05 && redY < silicaBottom) {
+                 let hRed = Math.min(bandHeight, silicaBottom - redY);
+                 // Enforce boundary so band never passes the solvent front
+                 if (redY + hRed > solventFrontY) hRed = Math.max(0, solventFrontY - redY);
+                 
+                 ctxMacro.fillStyle = `rgba(239, 68, 68, ${alpha})`;
+                 ctxMacro.fillRect(colX, redY, colWidth, hRed);
+             }
+
+             // Blue Band
+             if(state.progress >= 0.05 && blueY < silicaBottom) {
+                 let hBlue = Math.min(bandHeight, silicaBottom - blueY);
+                 // Enforce boundary so band never passes the solvent front
+                 if (blueY + hBlue > solventFrontY) hBlue = Math.max(0, solventFrontY - blueY);
+                 
+                 ctxMacro.fillStyle = `rgba(96, 165, 250, ${alpha})`;
+                 ctxMacro.fillRect(colX, blueY, colWidth, hBlue);
+             }
+
+             // Draw Glass Column (Outline)
+             ctxMacro.beginPath();
+             ctxMacro.moveTo(colX, colY);
+             ctxMacro.lineTo(colX, colY + colHeight);
+             ctxMacro.lineTo(colX + colWidth/2, colY + colHeight + 20); // Funnel tip
+             ctxMacro.lineTo(colX + colWidth, colY + colHeight);
+             ctxMacro.lineTo(colX + colWidth, colY);
+             ctxMacro.strokeStyle = '#94a3b8';
+             ctxMacro.lineWidth = 3;
+             ctxMacro.stroke();
+
+             // Cotton plug at bottom
+             ctxMacro.fillStyle = '#ffffff';
+             ctxMacro.fillRect(colX + 5, silicaBottom, colWidth - 10, 10);
+
+             // Beaker at bottom
+             const bWidth = 50;
+             const bHeight = 40;
+             const bX = (w - bWidth) / 2;
+             const bY = colY + colHeight + 30;
+             
+             ctxMacro.beginPath();
+             ctxMacro.moveTo(bX, bY);
+             ctxMacro.lineTo(bX, bY + bHeight);
+             ctxMacro.lineTo(bX + bWidth, bY + bHeight);
+             ctxMacro.lineTo(bX + bWidth, bY);
+             ctxMacro.strokeStyle = '#94a3b8';
+             ctxMacro.stroke();
+             
+             // Collect liquid if eluted (Blue mostly)
+             if (blueY + bandHeight > silicaBottom) {
+                 const collectAmt = Math.min(1, (blueY + bandHeight - silicaBottom) / 50);
+                 ctxMacro.fillStyle = `rgba(96, 165, 250, ${collectAmt * 0.5})`;
+                 ctxMacro.fillRect(bX + 2, bY + bHeight - (collectAmt * 20), bWidth - 4, collectAmt * 20);
+                 
+                 // Drip
+                 ctxMacro.fillStyle = `rgba(96, 165, 250, 0.6)`;
+                 ctxMacro.beginPath();
+                 ctxMacro.arc(w/2, colY + colHeight + 25 + (Math.sin(Date.now()/100)*5), 2, 0, Math.PI*2);
+                 ctxMacro.fill();
+             }
+        }
+
+        function updateDataPanel() {
+            // Assume the full plate length represents 100mm for simple scaling
+            const solventDist = state.progress * 100; 
+            const rfs = getRfValues();
+            
+            dataSolvent.innerText = solventDist.toFixed(1) + ' mm';
+            
+            if (state.progress > 0.01) {
+                const redDist = solventDist * rfs.red;
+                const blueDist = solventDist * rfs.blue;
+                
+                dataRed.innerHTML = `${redDist.toFixed(1)} mm<br><span class="text-sm font-bold">Rf: ${(redDist/solventDist).toFixed(2)}</span>`;
+                dataBlue.innerHTML = `${blueDist.toFixed(1)} mm<br><span class="text-sm font-bold">Rf: ${(blueDist/solventDist).toFixed(2)}</span>`;
+            } else {
+                dataRed.innerHTML = `0.0 mm<br><span class="text-sm font-bold">Rf: 0.00</span>`;
+                dataBlue.innerHTML = `0.0 mm<br><span class="text-sm font-bold">Rf: 0.00</span>`;
+            }
+        }
+
+        // --- Main Animation Loop ---
+
+        function animate(timestamp) {
+            if (!state.lastTime) state.lastTime = timestamp;
+            const dt = (timestamp - state.lastTime) / 1000; // delta time in seconds
+            state.lastTime = timestamp;
+
+            if (state.isPlaying) {
+                // Update Progress (Solvent front movement)
+                const speed = 0.05 * state.speedMultiplier; 
+                state.progress += speed * dt;
+                
+                if (state.progress >= 1) {
+                    state.progress = 1;
+                    state.isPlaying = false;
+                    updateUI();
+                }
+            }
+
+            drawMacroInitial(); // Redraws macro completely based on progress
+            drawMicro(dt);      // Updates and redraws micro
+            updateDataPanel();  // Update the Rf numbers live
+
+            if (state.isPlaying) {
+                state.animationId = requestAnimationFrame(animate);
+            } else {
+                state.animationId = requestAnimationFrame(animate); // Keep looping to allow micro particles to jiggle/draw
+            }
+        }
+
+        // --- Event Handlers & State Updates ---
+
+        function togglePlay() {
+            state.isPlaying = !state.isPlaying;
+            if (state.progress >= 1 && state.isPlaying) {
+                // Restart if finished
+                resetSimulation();
+                state.isPlaying = true;
+            }
+            updateUI();
+        }
+
+        function resetSimulation() {
+            state.progress = 0;
+            state.isPlaying = false;
+            initMicroParticles();
+            updateUI();
+            updateDataPanel();
+        }
+
+        function setMode(mode) {
+            state.mode = mode;
+            resetSimulation();
+            
+            // Update Buttons UI
+            if(mode === 'paper') {
+                btnPaper.className = "flex-1 md:flex-none px-4 py-2 text-sm font-medium rounded-md bg-white shadow-sm text-indigo-600 transition-colors";
+                btnColumn.className = "flex-1 md:flex-none px-4 py-2 text-sm font-medium rounded-md text-slate-600 hover:text-indigo-600 transition-colors";
+            } else {
+                btnColumn.className = "flex-1 md:flex-none px-4 py-2 text-sm font-medium rounded-md bg-white shadow-sm text-indigo-600 transition-colors";
+                btnPaper.className = "flex-1 md:flex-none px-4 py-2 text-sm font-medium rounded-md text-slate-600 hover:text-indigo-600 transition-colors";
+            }
+            updateExplanation();
+        }
+
+        function setSolvent(solvent) {
+            state.solvent = solvent;
+            resetSimulation();
+            updateExplanation();
+        }
+
+        speedSlider.addEventListener('input', (e) => {
+            state.speedMultiplier = parseFloat(e.target.value);
+        });
+
+        function updateUI() {
+            if (state.isPlaying) {
+                playIcon.className = "fa-solid fa-pause";
+                btnPlay.classList.add('bg-amber-500', 'hover:bg-amber-600');
+                btnPlay.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+            } else {
+                playIcon.className = "fa-solid fa-play";
+                btnPlay.classList.remove('bg-amber-500', 'hover:bg-amber-600');
+                btnPlay.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+            }
+        }
+
+        function updateExplanation() {
+            let html = "";
+            const isPolarSolvent = state.solvent === 'polar';
+            
+            // Base setup facts
+            const stationaryPhase = state.mode === 'paper' ? "濾紙纖維上吸附的水分 (極性 Polar)" : "矽膠或氧化鋁 (極性 Polar)";
+            const principle = state.mode === 'paper' ? "分配作用 (Partition)" : "吸附作用 (Adsorption)";
+            const measure = state.mode === 'paper' ? "比移值 (Rf value)" : "滯留時間 (Retention time)";
+
+            html += `<ul class="list-disc pl-5 space-y-2">`;
+            html += `<li><strong>基本原理：</strong> 利用物質在<strong>固定相 (Stationary Phase)</strong> 和 <strong>流動相 (Mobile Phase)</strong> 之間的${principle}差異進行分離。</li>`;
+            html += `<li><strong>當前固定相：</strong> ${stationaryPhase}。</li>`;
+            
+            html += `<li><strong>微觀作用 (如右圖所示)：</strong>`;
+            html += `<ul class="list-[circle] pl-5 mt-1 text-slate-600">`;
+            html += `<li><span class="font-bold text-red-600">極性溶質 (紅色)：</span> 容易與極性的固定相形成強烈的分子間作用力 (如氫鍵或偶極-偶極作用)。因此，它們在固定相停留的時間較長，移動較慢。</li>`;
+            html += `<li><span class="font-bold text-blue-600">非極性溶質 (藍色)：</span> 與極性固定相的作用力較弱 (主要為微弱的范德華力)。因此，它們較容易跟隨流動相前進，移動較快。</li>`;
+            html += `</ul></li>`;
+
+            if(isPolarSolvent) {
+                html += `<li><strong>流動相改變效應 (極性溶劑)：</strong> 使用極性溶劑時，極性溶劑分子會與極性溶質(紅色)競爭，使極性溶質更容易溶解在流動相中。結果，<strong>紅色溶質的移動速度顯著增加</strong>，其 ${measure} 也會改變。</li>`;
+            } else {
+                html += `<li><strong>流動相改變效應 (非極性溶劑)：</strong> 在非極性溶劑中，極性溶質(紅色)難以溶解，絕大部分時間吸附/分配在固定相中。因此，<strong>紅色溶質幾乎不移動</strong>，與藍色溶質達到極佳的分離效果。</li>`;
+            }
+
+            html += `</ul>`;
+            explanationText.innerHTML = html;
+        }
+
+        // --- Initialization ---
+        window.onload = () => {
+            resizeCanvas();
+            updateExplanation();
+            updateUI();
+            updateDataPanel();
+            state.lastTime = performance.now();
+            requestAnimationFrame(animate);
+        };
+
+    </script>
+</body>
+</html>
