@@ -1,0 +1,2595 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-HK">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>寶可夢親子對戰平台 · Pokémon Battle Arena</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800;900&family=Noto+Sans+TC:wght@500;700;900&display=swap');
+
+    :root {
+      --bg-dark: #0f172a;
+      --card-bg: #1e293b;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at top, #1e293b 0%, #0f172a 60%, #090d16 100%);
+      color: #f8fafc;
+      min-height: 100vh;
+      overflow-x: hidden;
+      margin: 0;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-5px); }
+    }
+
+    @keyframes hitShake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px) rotate(-2deg); }
+      40% { transform: translateX(8px) rotate(2deg); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(6px); }
+    }
+
+    @keyframes attackLungeRight {
+      0% { transform: translateX(0) scale(1); }
+      40% { transform: translateX(18px) scale(1.08); }
+      100% { transform: translateX(0) scale(1); }
+    }
+
+    @keyframes attackLungeLeft {
+      0% { transform: translateX(0) scale(1); }
+      40% { transform: translateX(-18px) scale(1.08); }
+      100% { transform: translateX(0) scale(1); }
+    }
+
+    @keyframes dmgPop {
+      0% { opacity: 0; transform: translate(-50%, 8px) scale(0.7); }
+      20% { opacity: 1; transform: translate(-50%, -14px) scale(1.15); }
+      80% { opacity: 1; transform: translate(-50%, -32px) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -48px) scale(0.9); }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.45); }
+      50% { box-shadow: 0 0 18px 4px rgba(250, 204, 21, 0.7); }
+    }
+
+    .animate-float {
+      animation: floatSlow 2.6s ease-in-out infinite;
+    }
+    .animate-shake {
+      animation: hitShake 0.42s ease-in-out;
+    }
+    .animate-lunge-right {
+      animation: attackLungeRight 0.35s ease-out;
+    }
+    .animate-lunge-left {
+      animation: attackLungeLeft 0.35s ease-out;
+    }
+    .animate-dmg-pop {
+      animation: dmgPop 1.05s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .ult-ready {
+      animation: pulseGlow 1.8s infinite;
+    }
+
+    .hp-fill {
+      transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.3s ease;
+    }
+    .sp-fill {
+      transition: width 0.35s ease;
+    }
+
+    .move-btn {
+      transition: transform 0.12s ease, box-shadow 0.15s ease, opacity 0.2s ease;
+    }
+    .move-btn:active:not(:disabled) {
+      transform: scale(0.96);
+    }
+  </style>
+</head>
+<body class="pb-12">
+  <!-- Top App Bar -->
+  <header class="sticky top-0 z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-700/70">
+    <div class="max-w-xl mx-auto px-3 py-2.5 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-red-500 via-red-600 to-rose-700 border-2 border-white/90 flex items-center justify-center shadow-lg shrink-0 relative overflow-hidden">
+          <div class="absolute bottom-0 inset-x-0 h-1/2 bg-slate-100"></div>
+          <div class="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1 bg-slate-900"></div>
+          <div class="w-3 h-3 rounded-full bg-white border-2 border-slate-900 z-10"></div>
+        </div>
+        <div class="truncate">
+          <h1 class="text-base font-black tracking-tight text-white leading-tight truncate">寶可夢親子對戰</h1>
+          <p class="text-[11px] text-slate-400 leading-tight truncate">爸爸 vs 仔仔 · 招式對決平台</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-1.5 shrink-0">
+        <button id="btnFreeUlt" type="button" title="切換無限絕招模式"
+          class="px-2.5 py-1.5 rounded-full text-xs font-bold border transition flex items-center gap-1 bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700">
+          <span id="freeUltIcon">⚡</span>
+          <span id="freeUltText">儲氣制</span>
+        </button>
+        <button id="btnSound" type="button" title="音效開關"
+          class="w-9 h-9 rounded-full bg-slate-800 border border-slate-600 flex items-center justify-center text-base hover:bg-slate-700 transition">
+          🔊
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Navigation Tabs (4-Tab Mobile Bar) -->
+    <div class="max-w-xl mx-auto px-3 pb-2.5">
+      <div class="grid grid-cols-4 gap-1 bg-slate-800/80 p-1 rounded-xl border border-slate-700/70">
+        <button id="tabBattle" type="button"
+          class="py-2 px-1 rounded-lg text-[11px] sm:text-xs font-black transition flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow">
+          <span class="text-sm">⚔️</span><span>對戰</span>
+        </button>
+        <button id="tabDex" type="button"
+          class="py-2 px-1 rounded-lg text-[11px] sm:text-xs font-bold transition flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1 text-slate-300 hover:text-white">
+          <span class="text-sm">📖</span><span>圖鑑</span>
+        </button>
+        <button id="tabTypeAll" type="button"
+          class="py-2 px-1 rounded-lg text-[11px] sm:text-xs font-bold transition flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1 text-slate-300 hover:text-white">
+          <span class="text-sm">📚</span><span>全招式</span>
+        </button>
+        <button id="tabClassify" type="button"
+          class="py-2 px-1 rounded-lg text-[11px] sm:text-xs font-bold transition flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1 text-slate-300 hover:text-white">
+          <span class="text-sm">🗂️</span><span>分類</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="max-w-xl mx-auto px-3 pt-3">
+    <!-- ==================== BATTLE VIEW ==================== -->
+    <section id="viewBattle" class="space-y-3">
+      <!-- Turn & Score Banner -->
+      <div class="flex items-center justify-between gap-2 bg-slate-800/90 border border-slate-700 rounded-2xl px-3.5 py-2.5 shadow-md">
+        <div class="flex items-center gap-2">
+          <span id="turnDot" class="w-2.5 h-2.5 rounded-full bg-sky-400 animate-ping"></span>
+          <span id="turnBannerText" class="text-sm font-black text-white">輪到 爸爸 (P1) 出招！</span>
+        </div>
+        <div class="flex items-center gap-1.5 text-xs font-bold">
+          <span class="px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 border border-sky-500/30">爸 <span id="scoreP1">0</span></span>
+          <span class="text-slate-500">:</span>
+          <span class="px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/30">仔 <span id="scoreP2">0</span></span>
+        </div>
+      </div>
+
+      <!-- Arena Stage (2 Fighters Side by Side) -->
+      <div class="relative rounded-3xl bg-gradient-to-b from-slate-800/95 via-slate-900 to-slate-950 border border-slate-700/80 p-3 shadow-2xl overflow-hidden">
+        <!-- Decorative Arena Ring -->
+        <div class="pointer-events-none absolute inset-0 opacity-15">
+          <div class="w-56 h-56 rounded-full border-4 border-white/30 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+        </div>
+
+        <!-- Type Advantage Hint -->
+        <div id="matchupHint" class="relative z-10 text-center mb-2.5">
+          <span class="inline-block text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-800/90 border border-slate-600 text-slate-300">
+            屬性對戰準備就緒
+          </span>
+        </div>
+
+        <div class="relative z-10 grid grid-cols-2 gap-2.5 items-stretch">
+          <!-- Player 1 Card -->
+          <div id="cardP1" class="relative rounded-2xl p-2.5 border-2 transition-all bg-slate-800/80 border-sky-400 shadow-lg">
+            <div class="flex items-center justify-between gap-1 mb-1.5">
+              <span class="text-[11px] font-black px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/40">爸爸 P1</span>
+              <button id="btnChangeP1" type="button" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-700 hover:bg-slate-600 text-slate-200 transition">
+                換精靈
+              </button>
+            </div>
+
+            <!-- Avatar & Floating Damage Anchor -->
+            <div class="relative flex flex-col items-center py-1">
+              <div id="dmgAnchorP1" class="pointer-events-none absolute top-1 left-1/2 z-30"></div>
+              <div id="avatarP1" class="w-20 h-20 rounded-2xl flex items-center justify-center shadow-inner animate-float"></div>
+            </div>
+
+            <div class="text-center mt-1">
+              <div id="nameP1" class="text-base font-black text-white leading-tight">噴火龍</div>
+              <div id="typeBadgeP1" class="mt-1 inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full"></div>
+            </div>
+
+            <!-- HP Bar -->
+            <div class="mt-2.5 space-y-1">
+              <div class="flex justify-between text-[11px] font-bold">
+                <span class="text-emerald-300">HP 血量</span>
+                <span id="hpTextP1" class="text-white tabular-nums">260 / 260</span>
+              </div>
+              <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden border border-slate-700">
+                <div id="hpBarP1" class="hp-fill h-full bg-emerald-500 rounded-full" style="width:100%"></div>
+              </div>
+            </div>
+
+            <!-- Energy / SP Bar -->
+            <div class="mt-1.5 space-y-1">
+              <div class="flex justify-between text-[10px] font-bold">
+                <span class="text-amber-300">⚡ 絕招氣力</span>
+                <span id="spTextP1" class="text-amber-200 tabular-nums">50 / 100</span>
+              </div>
+              <div class="w-full h-2 bg-slate-950 rounded-full overflow-hidden border border-slate-700">
+                <div id="spBarP1" class="sp-fill h-full bg-gradient-to-r from-amber-400 to-yellow-300 rounded-full" style="width:50%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Player 2 Card -->
+          <div id="cardP2" class="relative rounded-2xl p-2.5 border-2 transition-all bg-slate-800/80 border-slate-700">
+            <div class="flex items-center justify-between gap-1 mb-1.5">
+              <span class="text-[11px] font-black px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-400/40">仔仔 P2</span>
+              <button id="btnChangeP2" type="button" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-700 hover:bg-slate-600 text-slate-200 transition">
+                換精靈
+              </button>
+            </div>
+
+            <!-- Avatar & Floating Damage Anchor -->
+            <div class="relative flex flex-col items-center py-1">
+              <div id="dmgAnchorP2" class="pointer-events-none absolute top-1 left-1/2 z-30"></div>
+              <div id="avatarP2" class="w-20 h-20 rounded-2xl flex items-center justify-center shadow-inner animate-float"></div>
+            </div>
+
+            <div class="text-center mt-1">
+              <div id="nameP2" class="text-base font-black text-white leading-tight">皮卡丘</div>
+              <div id="typeBadgeP2" class="mt-1 inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full"></div>
+            </div>
+
+            <!-- HP Bar -->
+            <div class="mt-2.5 space-y-1">
+              <div class="flex justify-between text-[11px] font-bold">
+                <span class="text-emerald-300">HP 血量</span>
+                <span id="hpTextP2" class="text-white tabular-nums">230 / 230</span>
+              </div>
+              <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden border border-slate-700">
+                <div id="hpBarP2" class="hp-fill h-full bg-emerald-500 rounded-full" style="width:100%"></div>
+              </div>
+            </div>
+
+            <!-- Energy / SP Bar -->
+            <div class="mt-1.5 space-y-1">
+              <div class="flex justify-between text-[10px] font-bold">
+                <span class="text-amber-300">⚡ 絕招氣力</span>
+                <span id="spTextP2" class="text-amber-200 tabular-nums">50 / 100</span>
+              </div>
+              <div class="w-full h-2 bg-slate-950 rounded-full overflow-hidden border border-slate-700">
+                <div id="spBarP2" class="sp-fill h-full bg-gradient-to-r from-amber-400 to-yellow-300 rounded-full" style="width:50%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Last Action Feed Banner -->
+        <div id="lastActionBanner" class="relative z-10 mt-3 rounded-xl bg-slate-950/85 border border-slate-700/80 px-3 py-2 text-center text-xs font-bold text-slate-200 min-h-[36px] flex items-center justify-center">
+          撳下面嘅招式掣就可以出招！普通招儲氣，儲滿放絕招！
+        </div>
+      </div>
+
+      <!-- Active Player Move Panel -->
+      <div class="rounded-3xl bg-slate-800/90 border border-slate-700 p-3 shadow-xl space-y-3">
+        <div class="flex items-center justify-between gap-2">
+          <div>
+            <h2 id="activeMoveHeader" class="text-sm font-black text-white">爸爸嘅「噴火龍」招式表</h2>
+            <p class="text-[11px] text-slate-400">點選招式直接攻擊對方（可隨時切換玩家）</p>
+          </div>
+          <button id="btnSwitchTurn" type="button"
+            class="px-2.5 py-1.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-xs font-bold text-slate-100 border border-slate-600 shrink-0 transition">
+            🔄 換邊出招
+          </button>
+        </div>
+
+        <!-- Normal Moves Section -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-xs font-black text-sky-300 flex items-center gap-1">
+              <span>⚔️</span><span>普通招式 (出招會回氣)</span>
+            </span>
+            <span class="text-[11px] text-slate-400">4 招可選</span>
+          </div>
+          <div id="normalMovesGrid" class="grid grid-cols-2 gap-2"></div>
+        </div>
+
+        <!-- Ultimate Moves Section -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-xs font-black text-amber-300 flex items-center gap-1">
+              <span>💥</span><span>超級絕招 (超高扣血！)</span>
+            </span>
+            <span id="ultRuleLabel" class="text-[11px] text-amber-200/80">消耗 60 / 100 氣力</span>
+          </div>
+          <div id="ultMovesGrid" class="grid grid-cols-2 gap-2"></div>
+        </div>
+
+        <!-- Quick Battle Utility Bar -->
+        <div class="pt-1 border-t border-slate-700/70 grid grid-cols-3 gap-2">
+          <button id="btnRandomMatch" type="button"
+            class="py-2 rounded-xl bg-slate-700/80 hover:bg-slate-700 text-xs font-bold text-slate-200 border border-slate-600 transition">
+            🎲 隨機對戰
+          </button>
+          <button id="btnHealBoth" type="button"
+            class="py-2 rounded-xl bg-emerald-600/25 hover:bg-emerald-600/35 text-xs font-bold text-emerald-300 border border-emerald-500/40 transition">
+            ❤️ 全部回滿血
+          </button>
+          <button id="btnToggleLog" type="button"
+            class="py-2 rounded-xl bg-slate-700/80 hover:bg-slate-700 text-xs font-bold text-slate-200 border border-slate-600 transition">
+            📜 對戰紀錄
+          </button>
+        </div>
+
+        <!-- Collapsible Battle Log -->
+        <div id="battleLogBox" class="hidden rounded-2xl bg-slate-950/90 border border-slate-700 p-2.5 max-h-40 overflow-y-auto space-y-1 text-xs text-slate-300">
+          <div class="text-slate-500 text-center py-2">暫時未有出招紀錄</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== MOVE DEX VIEW ==================== -->
+    <section id="viewDex" class="hidden space-y-3">
+      <!-- Search & Type Filter -->
+      <div class="rounded-2xl bg-slate-800/90 border border-slate-700 p-3 space-y-2.5">
+        <div class="relative">
+          <input id="dexSearchInput" type="text" placeholder="搜尋寶可夢名或招式名（例如：皮卡丘、十萬伏特、火）"
+            class="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-400" />
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
+        </div>
+
+        <div id="dexTypeFilters" class="flex gap-1.5 overflow-x-auto no-scrollbar pb-0.5"></div>
+      </div>
+
+      <!-- Summary Count -->
+      <div class="flex items-center justify-between px-1 text-xs text-slate-400">
+        <span id="dexCountText">顯示 20 隻寶可夢 · 共 120 個招式</span>
+        <span>點擊招式可讀出招式名 🔊</span>
+      </div>
+
+      <!-- Pokémon Cards List -->
+      <div id="dexList" class="space-y-3"></div>
+    </section>
+
+    <!-- ==================== ALL-TYPE MOVES VIEW (1,025+ POKEMON) ==================== -->
+    <section id="viewTypeAll" class="hidden space-y-3">
+      <!-- Intro & 18-Type Picker -->
+      <div class="rounded-2xl bg-slate-800/90 border border-slate-700 p-3 space-y-2.5">
+        <div class="flex items-start justify-between gap-2">
+          <div>
+            <h2 class="text-sm font-black text-white flex items-center gap-1.5">
+              <span>📚</span><span>全屬性寶可夢招式大全 (1,025+ 隻)</span>
+            </h2>
+            <p class="text-[11px] text-slate-400 mt-0.5">直接揀屬性（唔使揀精靈），即睇該屬性所有普通招、絕招、扣血同所屬寶可夢！</p>
+          </div>
+          <button id="btnReloadTypeApi" type="button" title="重新從網絡同步最新資料"
+            class="shrink-0 px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-700 border border-slate-600 text-[11px] font-bold text-amber-300 transition">
+            🔄 同步
+          </button>
+        </div>
+
+        <!-- 18 Attribute Grid -->
+        <div id="allTypeGrid" class="grid grid-cols-3 sm:grid-cols-6 gap-1.5"></div>
+      </div>
+
+      <!-- Filter & Search Bar inside selected type -->
+      <div class="rounded-2xl bg-slate-800/90 border border-slate-700 p-3 space-y-2">
+        <div class="flex items-center justify-between gap-2">
+          <div id="typeAllStatusBadge" class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-200 border border-emerald-400/40">
+            🌿 草 / 葉屬性 · 載入中...
+          </div>
+          <span id="typeAllStatsText" class="text-[11px] font-bold text-slate-300"></span>
+        </div>
+
+        <div class="relative">
+          <input id="typeAllSearchInput" type="text" placeholder="搜尋招式名或寶可夢名（例如：日光束、妙蛙花、飛葉）"
+            class="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-400" />
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
+        </div>
+
+        <div class="grid grid-cols-4 gap-1.5">
+          <button id="filterAllMoves" type="button" data-kind="all"
+            class="type-kind-btn py-1.5 rounded-lg text-xs font-black bg-amber-400 text-slate-950 border border-amber-300 transition">
+            全部招式
+          </button>
+          <button id="filterUltMoves" type="button" data-kind="ult"
+            class="type-kind-btn py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-amber-300 border border-slate-700 transition">
+            💥 絕招
+          </button>
+          <button id="filterNormalMoves" type="button" data-kind="normal"
+            class="type-kind-btn py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-sky-300 border border-slate-700 transition">
+            ⚔️ 普通招
+          </button>
+          <button id="filterStatusMoves" type="button" data-kind="status"
+            class="type-kind-btn py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-slate-300 border border-slate-700 transition">
+            ✨ 變化招
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading Skeleton -->
+      <div id="typeAllLoading" class="hidden rounded-2xl bg-slate-800/80 border border-slate-700 p-6 text-center space-y-2">
+        <div class="inline-block w-8 h-8 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
+        <div class="text-sm font-bold text-amber-200">正在從全球寶可夢資料庫 (PokéAPI) 載入千幾隻寶可夢招式...</div>
+        <div class="text-xs text-slate-400">首次載入某個屬性需時約 1–3 秒，之後會自動快取即時打開</div>
+      </div>
+
+      <!-- Moves Result List -->
+      <div id="typeAllMovesList" class="space-y-2.5"></div>
+    </section>
+
+    <!-- ==================== POKEMON CLASSIFIER VIEW (MOBILE-FIRST) ==================== -->
+    <section id="viewClassify" class="hidden space-y-3">
+      <!-- Header & Special Group Shortcuts -->
+      <div class="rounded-2xl bg-slate-800/90 border border-slate-700 p-3 space-y-2.5">
+        <div class="flex items-start justify-between gap-2">
+          <div>
+            <h2 class="text-sm font-black text-white flex items-center gap-1.5">
+              <span>🗂️</span><span>寶可夢分類專區 (手機快速搵精靈)</span>
+            </h2>
+            <p class="text-[11px] text-slate-400 mt-0.5">可按 18 種屬性、神獸／御三家，或者分落「爸爸隊 / 仔仔隊」收藏！</p>
+          </div>
+          <button id="btnReloadClassify" type="button" title="重新同步寶可夢名單"
+            class="shrink-0 px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-700 border border-slate-600 text-[11px] font-bold text-amber-300 transition">
+            🔄 同步
+          </button>
+        </div>
+
+        <!-- 4 Special Classification Modes -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+          <button id="clsModeType" type="button" data-clsmode="type"
+            class="cls-mode-btn py-2 px-2 rounded-xl text-xs font-black bg-amber-400 text-slate-950 border border-amber-300 transition">
+            🌈 按屬性分類
+          </button>
+          <button id="clsModeSpecial" type="button" data-clsmode="special"
+            class="cls-mode-btn py-2 px-2 rounded-xl text-xs font-bold bg-slate-900 text-amber-200 border border-slate-700 transition">
+            👑 神獸 &amp; 御三家
+          </button>
+          <button id="clsModeDad" type="button" data-clsmode="dad"
+            class="cls-mode-btn py-2 px-2 rounded-xl text-xs font-bold bg-slate-900 text-sky-300 border border-slate-700 transition">
+            💙 爸爸隊 (<span id="dadTeamCount">0</span>)
+          </button>
+          <button id="clsModeKid" type="button" data-clsmode="kid"
+            class="cls-mode-btn py-2 px-2 rounded-xl text-xs font-bold bg-slate-900 text-rose-300 border border-slate-700 transition">
+            ❤️ 仔仔隊 (<span id="kidTeamCount">0</span>)
+          </button>
+        </div>
+
+        <!-- Sub-selector: 18 Types (shown when mode === 'type') -->
+        <div id="classifyTypeWrap" class="grid grid-cols-3 sm:grid-cols-6 gap-1.5 pt-1"></div>
+
+        <!-- Sub-selector: Special Categories (shown when mode === 'special') -->
+        <div id="classifySpecialWrap" class="hidden grid grid-cols-3 gap-1.5 pt-1">
+          <button type="button" data-spec="starter" class="spec-sub-btn py-2 rounded-xl text-xs font-black bg-emerald-500 text-slate-950 border border-emerald-300 transition">🌱 歷代御三家</button>
+          <button type="button" data-spec="legendary" class="spec-sub-btn py-2 rounded-xl text-xs font-bold bg-slate-900 text-amber-300 border border-slate-700 transition">👑 傳說神獸</button>
+          <button type="button" data-spec="mythical" class="spec-sub-btn py-2 rounded-xl text-xs font-bold bg-slate-900 text-fuchsia-300 border border-slate-700 transition">✨ 幻之寶可夢</button>
+        </div>
+      </div>
+
+      <!-- Search & Stats Bar -->
+      <div class="rounded-2xl bg-slate-800/90 border border-slate-700 p-3 space-y-2">
+        <div class="flex items-center justify-between gap-2">
+          <span id="classifyStatusBadge" class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-200 border border-emerald-400/40">
+            🌿 草 / 葉屬性分類
+          </span>
+          <span id="classifyCountText" class="text-[11px] font-bold text-slate-300"></span>
+        </div>
+        <div class="relative">
+          <input id="classifySearchInput" type="text" placeholder="搜尋寶可夢中文名、英文名或編號（例如：皮卡丘、0025）"
+            class="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-400" />
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
+        </div>
+      </div>
+
+      <!-- Loading Indicator -->
+      <div id="classifyLoading" class="hidden rounded-2xl bg-slate-800/80 border border-slate-700 p-6 text-center space-y-2">
+        <div class="inline-block w-8 h-8 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
+        <div class="text-sm font-bold text-amber-200">正在載入寶可夢分類名單...</div>
+      </div>
+
+      <!-- Classified Pokémon Grid (2 columns on mobile for big thumb targets) -->
+      <div id="classifyGrid" class="grid grid-cols-2 gap-2.5"></div>
+    </section>
+  </main>
+
+  <!-- ==================== POKEMON PICKER MODAL ==================== -->
+  <div id="pickerModal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="w-full max-w-xl bg-slate-900 border-t sm:border border-slate-700 rounded-t-3xl sm:rounded-3xl max-h-[86vh] flex flex-col overflow-hidden shadow-2xl">
+      <div class="p-3.5 border-b border-slate-700 flex items-center justify-between">
+        <div>
+          <h3 id="pickerTitle" class="text-base font-black text-white">幫 爸爸 (P1) 揀選寶可夢</h3>
+          <p class="text-xs text-slate-400">可按屬性篩選，每隻都有 4 個普通招 + 2 個絕招</p>
+        </div>
+        <button id="btnClosePicker" type="button"
+          class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center font-bold">
+          ✕
+        </button>
+      </div>
+
+      <!-- Picker Type Filter -->
+      <div class="px-3.5 pt-2.5 pb-1.5 border-b border-slate-800">
+        <div id="pickerTypeFilters" class="flex gap-1.5 overflow-x-auto no-scrollbar pb-1"></div>
+      </div>
+
+      <!-- Picker Grid -->
+      <div id="pickerGrid" class="p-3.5 overflow-y-auto grid grid-cols-2 gap-2.5"></div>
+    </div>
+  </div>
+
+  <!-- ==================== VICTORY MODAL ==================== -->
+  <div id="victoryModal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="w-full max-w-sm rounded-3xl bg-gradient-to-b from-slate-800 to-slate-900 border-2 border-amber-400/80 p-5 text-center shadow-2xl space-y-4">
+      <div class="text-5xl">🏆</div>
+      <div>
+        <div id="victorySub" class="text-xs font-bold uppercase tracking-wider text-amber-300">對戰結束</div>
+        <h3 id="victoryTitle" class="text-2xl font-black text-white mt-1">仔仔 獲得勝利！</h3>
+        <p id="victoryDesc" class="text-sm text-slate-300 mt-1">皮卡丘使出超強絕招擊敗對手！</p>
+      </div>
+      <div class="grid grid-cols-2 gap-2.5 pt-1">
+        <button id="btnRematch" type="button"
+          class="py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black text-sm shadow-lg active:scale-95 transition">
+          🔁 原班人馬再打
+        </button>
+        <button id="btnVictoryRandom" type="button"
+          class="py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-bold text-sm border border-slate-600 active:scale-95 transition">
+          🎲 換新精靈再打
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="pointer-events-none fixed bottom-5 left-1/2 -translate-x-1/2 z-50 opacity-0 transition-opacity duration-200">
+    <div id="toastText" class="px-4 py-2 rounded-full bg-slate-800/95 border border-slate-600 text-xs font-bold text-white shadow-xl whitespace-nowrap"></div>
+  </div>
+
+  <script>
+    // ==================== TYPE DEFINITIONS & EFFECTIVENESS ====================
+    const TYPES = {
+      fire:     { name: '火',   en: 'Fire',     icon: '🔥', bg: 'from-orange-500 to-red-600',      badge: 'bg-orange-500/25 text-orange-200 border border-orange-400/50', hex: '#f97316' },
+      water:    { name: '水',   en: 'Water',    icon: '💧', bg: 'from-sky-500 to-blue-600',        badge: 'bg-sky-500/25 text-sky-200 border border-sky-400/50',          hex: '#0ea5e9' },
+      grass:    { name: '草',   en: 'Grass',    icon: '🌿', bg: 'from-emerald-500 to-green-600',   badge: 'bg-emerald-500/25 text-emerald-200 border border-emerald-400/50', hex: '#10b981' },
+      electric: { name: '電',   en: 'Electric', icon: '⚡', bg: 'from-yellow-400 to-amber-500',    badge: 'bg-yellow-500/25 text-yellow-200 border border-yellow-400/50', hex: '#eab308' },
+      dragon:   { name: '龍',   en: 'Dragon',   icon: '🐉', bg: 'from-indigo-500 to-violet-700',   badge: 'bg-indigo-500/25 text-indigo-200 border border-indigo-400/50', hex: '#6366f1' },
+      psychic:  { name: '超能力', en: 'Psychic', icon: '🔮', bg: 'from-fuchsia-500 to-pink-600',   badge: 'bg-fuchsia-500/25 text-fuchsia-200 border border-fuchsia-400/50', hex: '#d946ef' },
+      fighting: { name: '格鬥', en: 'Fighting', icon: '🥊', bg: 'from-rose-600 to-red-800',        badge: 'bg-rose-500/25 text-rose-200 border border-rose-400/50',       hex: '#e11d48' },
+      ghost:    { name: '幽靈', en: 'Ghost',    icon: '👻', bg: 'from-purple-600 to-slate-800',    badge: 'bg-purple-500/25 text-purple-200 border border-purple-400/50', hex: '#9333ea' },
+      ice:      { name: '冰',   en: 'Ice',      icon: '❄️', bg: 'from-cyan-400 to-sky-600',        badge: 'bg-cyan-500/25 text-cyan-100 border border-cyan-400/50',       hex: '#22d3ee' },
+      steel:    { name: '鋼',   en: 'Steel',    icon: '⚙️', bg: 'from-slate-400 to-zinc-600',      badge: 'bg-slate-400/25 text-slate-200 border border-slate-400/50',    hex: '#94a3b8' }
+    };
+
+    // Simplified kid-friendly type advantage chart
+    const TYPE_SUPER = {
+      fire:     ['grass', 'ice', 'steel'],
+      water:    ['fire'],
+      grass:    ['water'],
+      electric: ['water'],
+      dragon:   ['dragon'],
+      psychic:  ['fighting'],
+      fighting: ['ice', 'steel'],
+      ghost:    ['psychic', 'ghost'],
+      ice:      ['grass', 'dragon'],
+      steel:    ['ice']
+    };
+
+    const TYPE_RESIST = {
+      fire:     ['water', 'fire', 'dragon'],
+      water:    ['grass', 'water', 'dragon'],
+      grass:    ['fire', 'grass', 'dragon', 'steel'],
+      electric: ['grass', 'electric', 'dragon'],
+      dragon:   ['steel'],
+      psychic:  ['psychic', 'steel'],
+      fighting: ['psychic', 'ghost'],
+      ghost:    ['steel'],
+      ice:      ['fire', 'water', 'ice', 'steel'],
+      steel:    ['fire', 'water', 'electric', 'steel']
+    };
+
+    function getEffectiveness(atkType, defType) {
+      if ((TYPE_SUPER[atkType] || []).includes(defType)) return { mult: 1.4, label: '效果絕佳！' };
+      if ((TYPE_RESIST[atkType] || []).includes(defType)) return { mult: 0.75, label: '效果唔太好...' };
+      return { mult: 1.0, label: '' };
+    }
+
+    // ==================== 20 POKEMON ROSTER (120 MOVES TOTAL) ====================
+    const POKEMON_LIST = [
+      // FIRE
+      {
+        id: 'charizard', name: '噴火龍', en: 'Charizard', type: 'fire', maxHp: 260, emoji: '🐲',
+        moves: [
+          { name: '火花', dmg: 25, kind: 'normal', spGain: 30, desc: '向對手吐出細小火焰攻擊' },
+          { name: '火焰牙', dmg: 35, kind: 'normal', spGain: 25, desc: '用燃燒嘅尖牙咬住對手' },
+          { name: '龍爪', dmg: 40, kind: 'normal', spGain: 25, desc: '用鋒利龍爪用力劈開對手' },
+          { name: '噴射火焰', dmg: 48, kind: 'normal', spGain: 20, desc: '噴出猛烈高溫火焰柱灼燒對手' },
+          { name: '大字爆炎', dmg: 85, kind: 'ult', spCost: 60, desc: '射出巨大嘅「大」字形烈焰炸裂！' },
+          { name: '爆炸烈焰', dmg: 115, kind: 'ult', spCost: 100, desc: '終極火系絕招！用毀滅性火海吞噬對手！' }
+        ]
+      },
+      {
+        id: 'cinderace', name: '閃焰王牌', en: 'Cinderace', type: 'fire', maxHp: 245, emoji: '🐰',
+        moves: [
+          { name: '電光一閃', dmg: 25, kind: 'normal', spGain: 35, desc: '高速衝撞對手搶佔先機' },
+          { name: '蓄能焰襲', dmg: 35, kind: 'normal', spGain: 30, desc: '全身包住火焰高速衝鋒' },
+          { name: '二連踢', dmg: 40, kind: 'normal', spGain: 25, desc: '快速連續踢擊對手兩次' },
+          { name: '火焰踢', dmg: 46, kind: 'normal', spGain: 20, desc: '使出纏繞烈火嘅強勁飛踢' },
+          { name: '閃焰衝鋒', dmg: 85, kind: 'ult', spCost: 60, desc: '化身火球全速撞向對手！' },
+          { name: '火焰球', dmg: 110, kind: 'ult', spCost: 100, desc: '專屬絕招！踢出超高溫巨型火焰足球！' }
+        ]
+      },
+      // WATER
+      {
+        id: 'blastoise', name: '水箭龜', en: 'Blastoise', type: 'water', maxHp: 280, emoji: '🐢',
+        moves: [
+          { name: '水槍', dmg: 25, kind: 'normal', spGain: 30, desc: '猛烈噴射水流攻擊對手' },
+          { name: '泡沫光線', dmg: 34, kind: 'normal', spGain: 30, desc: '發射大量強力泡沫衝擊對手' },
+          { name: '水之波動', dmg: 40, kind: 'normal', spGain: 25, desc: '用強烈水流震盪波攻擊對手' },
+          { name: '水流尾', dmg: 46, kind: 'normal', spGain: 20, desc: '捲起狂暴巨浪般嘅尾巴橫掃' },
+          { name: '水炮', dmg: 85, kind: 'ult', spCost: 60, desc: '背上雙炮噴出超強高壓水柱！' },
+          { name: '加農水炮', dmg: 115, kind: 'ult', spCost: 100, desc: '水系終極絕招！釋放海嘯級巨型水炮！' }
+        ]
+      },
+      {
+        id: 'greninja', name: '甲賀忍蛙', en: 'Greninja', type: 'water', maxHp: 240, emoji: '🐸',
+        moves: [
+          { name: '飛水手裏劍', dmg: 28, kind: 'normal', spGain: 35, desc: '連續投擲水流造成嘅忍者飛鏢' },
+          { name: '燕返', dmg: 35, kind: 'normal', spGain: 25, desc: '以迅雷不及掩耳嘅速度斬擊對手' },
+          { name: '暗襲要害', dmg: 42, kind: 'normal', spGain: 25, desc: '趁對手不備精準斬擊弱點' },
+          { name: '水流裂破', dmg: 48, kind: 'normal', spGain: 20, desc: '用高壓水流利刃劈開對手防禦' },
+          { name: '衝浪巨浪', dmg: 82, kind: 'ult', spCost: 60, desc: '捲起鋪天蓋地嘅巨浪衝擊全場！' },
+          { name: '巨大黃金水手裏劍', dmg: 112, kind: 'ult', spCost: 100, desc: '羈絆絕招！凝聚巨型發光水手裏劍一擊必殺！' }
+        ]
+      },
+      // GRASS
+      {
+        id: 'venusaur', name: '妙蛙花', en: 'Venusaur', type: 'grass', maxHp: 275, emoji: '🌺',
+        moves: [
+          { name: '藤鞭', dmg: 25, kind: 'normal', spGain: 35, desc: '甩出兩條長藤鞭打對手' },
+          { name: '飛葉快刀', dmg: 35, kind: 'normal', spGain: 25, desc: '射出無數鋒利樹葉切割對手' },
+          { name: '種子炸彈', dmg: 42, kind: 'normal', spGain: 25, desc: '從高空擲下硬殼種子爆炸攻擊' },
+          { name: '能量球', dmg: 46, kind: 'normal', spGain: 20, desc: '匯聚大自然力量發射綠色光球' },
+          { name: '日光束', dmg: 88, kind: 'ult', spCost: 60, desc: '吸收陽光射出耀眼嘅超級雷射光束！' },
+          { name: '瘋狂植物', dmg: 115, kind: 'ult', spCost: 100, desc: '草系終極絕招！召喚巨型狂暴樹根貫穿地面！' }
+        ]
+      },
+      {
+        id: 'rillaboom', name: '轟擂金剛猩', en: 'Rillaboom', type: 'grass', maxHp: 270, emoji: '🦍',
+        moves: [
+          { name: '木枝突刺', dmg: 26, kind: 'normal', spGain: 30, desc: '用堅硬鼓棒猛力突刺對手' },
+          { name: '青草滑梯', dmg: 36, kind: 'normal', spGain: 30, desc: '沿住草地高速滑行撞擊對手' },
+          { name: '拍落', dmg: 40, kind: 'normal', spGain: 25, desc: '用巨掌狠狠拍擊對手' },
+          { name: '木槌', dmg: 48, kind: 'normal', spGain: 20, desc: '用粗大樹幹重重敲擊對手' },
+          { name: '鼓擊', dmg: 86, kind: 'ult', spCost: 60, desc: '狂打樹幹巨鼓引發超強草系震波！' },
+          { name: '超極巨狂烈狂打', dmg: 112, kind: 'ult', spCost: 100, desc: '終極絕招！巨型樹根隨鼓聲猛烈轟炸對手！' }
+        ]
+      },
+      // ELECTRIC
+      {
+        id: 'pikachu', name: '皮卡丘', en: 'Pikachu', type: 'electric', maxHp: 230, emoji: '⚡',
+        moves: [
+          { name: '電擊', dmg: 25, kind: 'normal', spGain: 35, desc: '釋放電流電擊對手' },
+          { name: '電球', dmg: 35, kind: 'normal', spGain: 30, desc: '高速擲出閃電凝聚嘅電氣光球' },
+          { name: '鐵尾', dmg: 42, kind: 'normal', spGain: 25, desc: '把尾巴變成鋼鐵般堅硬猛力抽打' },
+          { name: '十萬伏特', dmg: 50, kind: 'normal', spGain: 20, desc: '皮卡丘招牌絕技！釋放十萬伏特強勁電流！' },
+          { name: '打雷', dmg: 88, kind: 'ult', spCost: 60, desc: '召喚從天而降嘅巨型轟雷劈落對手！' },
+          { name: '千萬伏特', dmg: 118, kind: 'ult', spCost: 100, desc: '七彩超級大絕招！釋放千萬伏特雷霆風暴！' }
+        ]
+      },
+      {
+        id: 'zeraora', name: '捷拉奧拉', en: 'Zeraora', type: 'electric', maxHp: 250, emoji: '🐆',
+        moves: [
+          { name: '電光一閃', dmg: 26, kind: 'normal', spGain: 35, desc: '化作閃電殘影極速突襲' },
+          { name: '雷電拳', dmg: 38, kind: 'normal', spGain: 25, desc: '雙拳纏繞高壓電流重擊對手' },
+          { name: '瘋狂伏特', dmg: 44, kind: 'normal', spGain: 25, desc: '全身放電猛烈衝撞對手' },
+          { name: '近身雷爪', dmg: 48, kind: 'normal', spGain: 20, desc: '用帶電利爪連環高速撕裂' },
+          { name: '等離子閃電拳', dmg: 90, kind: 'ult', spCost: 60, desc: '專屬絕招！雙拳釋放等離子電漿轟爆全場！' },
+          { name: '終極伏特狂雷閃', dmg: 115, kind: 'ult', spCost: 100, desc: '化身雷神降下超巨大雷電光柱！' }
+        ]
+      },
+      // DRAGON
+      {
+        id: 'dragonite', name: '快龍', en: 'Dragonite', type: 'dragon', maxHp: 275, emoji: '🐉',
+        moves: [
+          { name: '龍捲風', dmg: 26, kind: 'normal', spGain: 35, desc: '拍動雙翼捲起猛烈龍捲風' },
+          { name: '神速', dmg: 38, kind: 'normal', spGain: 30, desc: '以睇唔見嘅超高速衝撞對手' },
+          { name: '龍之波動', dmg: 44, kind: 'normal', spGain: 25, desc: '張口發射強大嘅龍系衝擊波' },
+          { name: '龍之俯衝', dmg: 50, kind: 'normal', spGain: 20, desc: '裹住驚人龍氣從高空猛力俯衝' },
+          { name: '逆鱗', dmg: 90, kind: 'ult', spCost: 60, desc: '爆發出無盡龍族力量狂暴連擊！' },
+          { name: '流星群', dmg: 118, kind: 'ult', spCost: 100, desc: '龍系最強絕招！從宇宙召喚大量隕石轟炸！' }
+        ]
+      },
+      {
+        id: 'rayquaza', name: '烈空坐', en: 'Rayquaza', type: 'dragon', maxHp: 285, emoji: '🐍',
+        moves: [
+          { name: '空氣斬', dmg: 28, kind: 'normal', spGain: 30, desc: '射出鋒利氣流利刃斬開空氣' },
+          { name: '咬碎', dmg: 36, kind: 'normal', spGain: 30, desc: '用強大顎力咬碎對手防禦' },
+          { name: '龍爪連斬', dmg: 45, kind: 'normal', spGain: 25, desc: '高速揮舞翡翠龍爪猛烈斬擊' },
+          { name: '破壞光線', dmg: 52, kind: 'normal', spGain: 20, desc: '發射超強烈金色能量光線' },
+          { name: '龍星群', dmg: 92, kind: 'ult', spCost: 60, desc: '召喚天空流星雨無差別轟擊對手！' },
+          { name: '畫龍點睛', dmg: 120, kind: 'ult', spCost: 100, desc: '傳說級專屬絕招！從大氣層極速俯衝粉碎一切！' }
+        ]
+      },
+      // PSYCHIC
+      {
+        id: 'mewtwo', name: '超夢', en: 'Mewtwo', type: 'psychic', maxHp: 270, emoji: '🧬',
+        moves: [
+          { name: '念力', dmg: 28, kind: 'normal', spGain: 35, desc: '用強大精神念力震飛對手' },
+          { name: '幻象光線', dmg: 38, kind: 'normal', spGain: 25, desc: '射出不可思議嘅彩虹精神光線' },
+          { name: '波導彈', dmg: 44, kind: 'normal', spGain: 25, desc: '凝聚藍色氣功光彈必中攻擊' },
+          { name: '精神強念', dmg: 50, kind: 'normal', spGain: 20, desc: '釋放超強念動力直接壓制對手' },
+          { name: '精神擊破', dmg: 92, kind: 'ult', spCost: 60, desc: '專屬絕招！把精神念波實體化猛烈爆破！' },
+          { name: '至高精神破壞波', dmg: 120, kind: 'ult', spCost: 100, desc: '超能力終極大絕！引發毀天滅地嘅念力風暴！' }
+        ]
+      },
+      {
+        id: 'gardevoir', name: '沙奈朵', en: 'Gardevoir', type: 'psychic', maxHp: 245, emoji: '💃',
+        moves: [
+          { name: '魔法葉', dmg: 25, kind: 'normal', spGain: 35, desc: '射出會自動追蹤對手嘅發光樹葉' },
+          { name: '吸取之吻', dmg: 34, kind: 'normal', spGain: 30, desc: '用粉紅魔力光波吸取對手體力' },
+          { name: '魔法閃耀', dmg: 42, kind: 'normal', spGain: 25, desc: '釋放耀眼星光衝擊對手' },
+          { name: '精神衝擊', dmg: 48, kind: 'normal', spGain: 20, desc: '射出集中嘅心靈光束擊穿對手' },
+          { name: '月亮之力', dmg: 88, kind: 'ult', spCost: 60, desc: '借用明月力量降下強大月光砲擊！' },
+          { name: '黑洞念力風暴', dmg: 112, kind: 'ult', spCost: 100, desc: '全力守護夥伴！召喚迷你黑洞吞噬對手！' }
+        ]
+      },
+      // FIGHTING
+      {
+        id: 'lucario', name: '路卡利歐', en: 'Lucario', type: 'fighting', maxHp: 255, emoji: '🐺',
+        moves: [
+          { name: '發勁', dmg: 26, kind: 'normal', spGain: 35, desc: '運氣出掌發出強力衝擊波' },
+          { name: '金屬爪', dmg: 36, kind: 'normal', spGain: 25, desc: '用鋼鐵利爪迅速劈向對手' },
+          { name: '骨棒亂打', dmg: 42, kind: 'normal', spGain: 25, desc: '凝聚藍色光棒連續快速敲打' },
+          { name: '波導彈', dmg: 48, kind: 'normal', spGain: 20, desc: '招牌招式！雙手推出巨大波導能量球' },
+          { name: '近身戰', dmg: 88, kind: 'ult', spCost: 60, desc: '貼身發動狂風暴雨般嘅連續拳腳攻擊！' },
+          { name: '超極巨波導爆發', dmg: 115, kind: 'ult', spCost: 100, desc: '終極絕招！釋放全力量超巨型波導光球！' }
+        ]
+      },
+      {
+        id: 'machamp', name: '怪力', en: 'Machamp', type: 'fighting', maxHp: 275, emoji: '💪',
+        moves: [
+          { name: '空手劈', dmg: 28, kind: 'normal', spGain: 30, desc: '用手刀猛力劈向對手' },
+          { name: '踢倒', dmg: 36, kind: 'normal', spGain: 30, desc: '大力掃堂腿將對手踢飛' },
+          { name: '地球上投', dmg: 44, kind: 'normal', spGain: 25, desc: '抱起對手衝上高空旋轉摔落地面' },
+          { name: '十字劈', dmg: 50, kind: 'normal', spGain: 20, desc: '雙手交叉使出超重劈擊' },
+          { name: '爆裂拳', dmg: 90, kind: 'ult', spCost: 60, desc: '凝聚全身怪力轟出震碎大地嘅一拳！' },
+          { name: '全力無雙激烈拳', dmg: 116, kind: 'ult', spCost: 100, desc: '四臂齊發每秒五百拳嘅超級連打絕招！' }
+        ]
+      },
+      // GHOST
+      {
+        id: 'gengar', name: '耿鬼', en: 'Gengar', type: 'ghost', maxHp: 245, emoji: '👻',
+        moves: [
+          { name: '舌舔', dmg: 24, kind: 'normal', spGain: 35, desc: '伸出長舌頭嚇親同攻擊對手' },
+          { name: '暗影拳', dmg: 36, kind: 'normal', spGain: 30, desc: '從黑影中突然伸出拳頭必中攻擊' },
+          { name: '污泥炸彈', dmg: 44, kind: 'normal', spGain: 25, desc: '投擲紫色毒泥炸彈炸向對手' },
+          { name: '暗影球', dmg: 50, kind: 'normal', spGain: 20, desc: '投出漆黑神秘嘅幽靈能量球' },
+          { name: '食夢幽影', dmg: 88, kind: 'ult', spCost: 60, desc: '召喚暗影漩渦吞噬對手嘅體力！' },
+          { name: '無盡暗夜之誘惑', dmg: 114, kind: 'ult', spCost: 100, desc: '幽靈終極絕招！展開異次元黑影空間重擊對手！' }
+        ]
+      },
+      {
+        id: 'dragapult', name: '多龍巴魯托', en: 'Dragapult', type: 'ghost', maxHp: 255, emoji: '✈️',
+        moves: [
+          { name: '驚嚇', dmg: 25, kind: 'normal', spGain: 35, desc: '突然現身大叫嚇對手一跳' },
+          { name: '急速折返', dmg: 36, kind: 'normal', spGain: 30, desc: '超音速撞擊對手後靈活閃開' },
+          { name: '潛靈奇襲', dmg: 45, kind: 'normal', spGain: 25, desc: '消失於影中再從背後突襲' },
+          { name: '龍之箭', dmg: 50, kind: 'normal', spGain: 20, desc: '從雙角高速發射兩隻多龍梅西亞衝擊' },
+          { name: '幽靈飛彈群', dmg: 88, kind: 'ult', spCost: 60, desc: '連環發射超音速幽靈光彈轟炸！' },
+          { name: '究極龍箭風暴', dmg: 115, kind: 'ult', spCost: 100, desc: '專屬絕招！引發紫紅龍影衝擊波貫穿全場！' }
+        ]
+      },
+      // ICE
+      {
+        id: 'lapras', name: '拉普拉斯', en: 'Lapras', type: 'ice', maxHp: 285, emoji: '🦕',
+        moves: [
+          { name: '冰礫', dmg: 25, kind: 'normal', spGain: 35, desc: '快速射出尖銳小冰塊攻擊對手' },
+          { name: '冷凍之風', dmg: 35, kind: 'normal', spGain: 30, desc: '吹出冰冷刺骨嘅寒風凍住對手' },
+          { name: '水流環擊', dmg: 42, kind: 'normal', spGain: 25, desc: '捲起冰涼海浪衝擊對手' },
+          { name: '急凍光線', dmg: 50, kind: 'normal', spGain: 20, desc: '射出極低溫冰凍光束結冰攻擊' },
+          { name: '暴風雪', dmg: 88, kind: 'ult', spCost: 60, desc: '召喚猛烈冰雪風暴席捲整個戰場！' },
+          { name: '絕對零度', dmg: 115, kind: 'ult', spCost: 100, desc: '冰系終極絕招！一瞬間將周圍凍成冰雕！' }
+        ]
+      },
+      {
+        id: 'glaceon', name: '冰伊布', en: 'Glaceon', type: 'ice', maxHp: 245, emoji: '🦊',
+        moves: [
+          { name: '細雪', dmg: 25, kind: 'normal', spGain: 35, desc: '吹出閃亮細雪凍結對手' },
+          { name: '冰凍牙', dmg: 35, kind: 'normal', spGain: 30, desc: '用帶住寒氣嘅尖牙咬住對手' },
+          { name: '鏡面反射', dmg: 42, kind: 'normal', spGain: 25, desc: '用冰晶鏡面折射強光攻擊' },
+          { name: '冷凍乾燥', dmg: 48, kind: 'normal', spGain: 20, desc: '瞬間急凍對手，連水系都頂唔順' },
+          { name: '鑽石星塵', dmg: 86, kind: 'ult', spCost: 60, desc: '降下無數鋒利冰鑽結晶連環打擊！' },
+          { name: '激狂大地萬里冰', dmg: 112, kind: 'ult', spCost: 100, desc: '冰系超大絕！喚出巨型冰山轟然壓落！' }
+        ]
+      },
+      // STEEL
+      {
+        id: 'metagross', name: '巨金怪', en: 'Metagross', type: 'steel', maxHp: 280, emoji: '🤖',
+        moves: [
+          { name: '子彈拳', dmg: 28, kind: 'normal', spGain: 35, desc: '如子彈般極速出拳連擊對手' },
+          { name: '意念頭錘', dmg: 38, kind: 'normal', spGain: 25, desc: '把念力集中喺額頭猛力撞擊' },
+          { name: '加農光炮', dmg: 44, kind: 'normal', spGain: 25, desc: '聚集全身金屬光芒發射銀色雷射' },
+          { name: '彗星拳', dmg: 52, kind: 'normal', spGain: 20, desc: '招牌招式！如彗星墜落般轟出超重鋼鐵拳' },
+          { name: '鐵蹄光線', dmg: 90, kind: 'ult', spCost: 60, desc: '釋放毀滅性銀白鋼鐵能量大砲！' },
+          { name: '超絕螺旋連擊', dmg: 116, kind: 'ult', spCost: 100, desc: '鋼系終極絕招！四臂合體高速鑽擊粉碎對手！' }
+        ]
+      },
+      {
+        id: 'zacian', name: '蒼響', en: 'Zacian', type: 'steel', maxHp: 265, emoji: '⚔️',
+        moves: [
+          { name: '電光斬', dmg: 28, kind: 'normal', spGain: 35, desc: '銜住長劍極速掠過斬擊對手' },
+          { name: '聖劍', dmg: 38, kind: 'normal', spGain: 30, desc: '用神聖劍光無視防禦劈開對手' },
+          { name: '嬉鬧突襲', dmg: 44, kind: 'normal', spGain: 25, desc: '靈活跳躍連環突擊對手' },
+          { name: '鐵頭撞擊', dmg: 50, kind: 'normal', spGain: 20, desc: '用鋼鐵般堅硬嘅力量猛衝' },
+          { name: '王者劍舞斬', dmg: 92, kind: 'ult', spCost: 60, desc: '舞動聖劍斬出交叉金色衝擊波！' },
+          { name: '巨獸斬', dmg: 122, kind: 'ult', spCost: 100, desc: '傳說專屬絕招！長劍化為巨型光刃一刀兩斷！' }
+        ]
+      }
+    ];
+
+    // ==================== STATE ====================
+    const state = {
+      activeTab: 'battle', // 'battle' | 'dex'
+      soundOn: true,
+      freeUltMode: false,  // false = 儲氣制, true = 無限絕招
+      turn: 1,             // 1 (爸爸) or 2 (仔仔)
+      scores: { 1: 0, 2: 0 },
+      isAnimating: false,
+      gameOver: false,
+      pickerTarget: 1,     // 1 or 2
+      pickerFilter: 'all',
+      dexFilter: 'all',
+      dexSearch: '',
+      typeAllSelected: 'grass',
+      typeAllKind: 'all',
+      typeAllSearch: '',
+      typeAllCache: {},
+      typeAllLoading: false,
+      classifyMode: 'type',     // 'type' | 'special' | 'dad' | 'kid'
+      classifyType: 'grass',
+      classifySpecial: 'starter',
+      classifySearch: '',
+      classifyCache: {},
+      dadTeam: [],              // [{id, name, en, types}]
+      kidTeam: [],
+      logOpen: false,
+      logs: [],
+      fighters: {
+        1: createFighterState('charizard'),
+        2: createFighterState('pikachu')
+      }
+    };
+
+    function createFighterState(pokemonId) {
+      const base = POKEMON_LIST.find(p => p.id === pokemonId) || POKEMON_LIST[0];
+      return {
+        id: base.id,
+        hp: base.maxHp,
+        maxHp: base.maxHp,
+        sp: 50
+      };
+    }
+
+    function getPokemon(id) {
+      return POKEMON_LIST.find(p => p.id === id) || POKEMON_LIST[0];
+    }
+
+    // Load saved scores safely
+    try {
+      const saved = JSON.parse(localStorage.getItem('pkmn_parent_kid_scores') || 'null');
+      if (saved && typeof saved[1] === 'number' && typeof saved[2] === 'number') {
+        state.scores = saved;
+      }
+    } catch (e) {}
+
+    function saveScores() {
+      try {
+        localStorage.setItem('pkmn_parent_kid_scores', JSON.stringify(state.scores));
+      } catch (e) {}
+    }
+
+    // ==================== WEB AUDIO SYNTH SOUND EFFECTS ====================
+    let audioCtx = null;
+    function getAudioCtx() {
+      if (!audioCtx) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (AC) audioCtx = new AC();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playSound(kind) {
+      if (!state.soundOn) return;
+      const ctx = getAudioCtx();
+      if (!ctx) return;
+
+      const now = ctx.currentTime;
+      if (kind === 'hit') {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(320, now);
+        osc.frequency.exponentialRampToValueAtTime(90, now + 0.16);
+        gain.gain.setValueAtTime(0.28, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.18);
+      } else if (kind === 'ult') {
+        // Big layered ultimate blast
+        [220, 440, 660].forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = i === 0 ? 'sawtooth' : 'square';
+          osc.frequency.setValueAtTime(freq, now + i * 0.04);
+          osc.frequency.exponentialRampToValueAtTime(freq * 0.35, now + 0.42);
+          gain.gain.setValueAtTime(0.16, now + i * 0.04);
+          gain.gain.exponentialRampToValueAtTime(0.005, now + 0.45);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + i * 0.04);
+          osc.stop(now + 0.46);
+        });
+      } else if (kind === 'win') {
+        const notes = [523.25, 659.25, 783.99, 1046.5];
+        notes.forEach((n, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(n, now + idx * 0.11);
+          gain.gain.setValueAtTime(0.2, now + idx * 0.11);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.11 + 0.25);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + idx * 0.11);
+          osc.stop(now + idx * 0.11 + 0.26);
+        });
+      } else if (kind === 'click') {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(520, now);
+        osc.frequency.exponentialRampToValueAtTime(740, now + 0.06);
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.005, now + 0.07);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.07);
+      }
+    }
+
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) {
+        showToast('此瀏覽器暫不支援語音朗讀');
+        return;
+      }
+      try {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = 'zh-HK';
+        utter.rate = 1.05;
+        window.speechSynthesis.speak(utter);
+      } catch (e) {}
+    }
+
+    // ==================== TOAST HELPER ====================
+    let toastTimer = null;
+    function showToast(msg) {
+      const el = document.getElementById('toast');
+      const txt = document.getElementById('toastText');
+      txt.textContent = msg;
+      el.classList.remove('opacity-0');
+      el.classList.add('opacity-100');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        el.classList.remove('opacity-100');
+        el.classList.add('opacity-0');
+      }, 2000);
+    }
+
+    // ==================== RENDER FUNCTIONS ====================
+    function renderAvatar(pkmn) {
+      const t = TYPES[pkmn.type];
+      return `
+        <div class="w-full h-full rounded-2xl bg-gradient-to-br ${t.bg} flex flex-col items-center justify-center relative overflow-hidden border border-white/25 shadow-lg">
+          <div class="absolute -top-3 -right-3 text-4xl opacity-20 select-none">${t.icon}</div>
+          <span class="text-4xl drop-shadow select-none">${pkmn.emoji}</span>
+        </div>
+      `;
+    }
+
+    function renderBattle() {
+      const f1 = state.fighters[1];
+      const f2 = state.fighters[2];
+      const p1 = getPokemon(f1.id);
+      const p2 = getPokemon(f2.id);
+      const t1 = TYPES[p1.type];
+      const t2 = TYPES[p2.type];
+
+      // Scores
+      document.getElementById('scoreP1').textContent = state.scores[1];
+      document.getElementById('scoreP2').textContent = state.scores[2];
+
+      // Turn Banner
+      const turnDot = document.getElementById('turnDot');
+      const turnText = document.getElementById('turnBannerText');
+      if (state.gameOver) {
+        turnDot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400';
+        turnText.textContent = '對戰結束！撳「原班人馬再打」再玩！';
+      } else if (state.turn === 1) {
+        turnDot.className = 'w-2.5 h-2.5 rounded-full bg-sky-400 animate-ping';
+        turnText.textContent = `輪到 爸爸 (P1) 嘅 ${p1.name} 出招！`;
+      } else {
+        turnDot.className = 'w-2.5 h-2.5 rounded-full bg-rose-400 animate-ping';
+        turnText.textContent = `輪到 仔仔 (P2) 嘅 ${p2.name} 出招！`;
+      }
+
+      // Matchup hint
+      const eff12 = getEffectiveness(p1.type, p2.type);
+      const eff21 = getEffectiveness(p2.type, p1.type);
+      const hintEl = document.getElementById('matchupHint');
+      if (eff12.mult > 1) {
+        hintEl.innerHTML = `<span class="inline-block text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-sky-500/20 border border-sky-400/50 text-sky-200">${t1.icon} ${p1.name} 剋制 ${t2.icon} ${p2.name} (攻擊 ×1.4！)</span>`;
+      } else if (eff21.mult > 1) {
+        hintEl.innerHTML = `<span class="inline-block text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-rose-500/20 border border-rose-400/50 text-rose-200">${t2.icon} ${p2.name} 剋制 ${t1.icon} ${p1.name} (攻擊 ×1.4！)</span>`;
+      } else {
+        hintEl.innerHTML = `<span class="inline-block text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-800/90 border border-slate-600 text-slate-300">${t1.icon} ${t1.name}系 vs ${t2.icon} ${t2.name}系 · 勢均力敵！</span>`;
+      }
+
+      // Update P1 & P2 Cards
+      updateFighterCard(1, f1, p1, t1);
+      updateFighterCard(2, f2, p2, t2);
+
+      // Highlight active fighter border
+      const c1 = document.getElementById('cardP1');
+      const c2 = document.getElementById('cardP2');
+      if (state.turn === 1) {
+        c1.className = 'relative rounded-2xl p-2.5 border-2 transition-all bg-slate-800/90 border-sky-400 shadow-lg shadow-sky-500/15';
+        c2.className = 'relative rounded-2xl p-2.5 border-2 transition-all bg-slate-800/65 border-slate-700 opacity-90';
+      } else {
+        c1.className = 'relative rounded-2xl p-2.5 border-2 transition-all bg-slate-800/65 border-slate-700 opacity-90';
+        c2.className = 'relative rounded-2xl p-2.5 border-2 transition-all bg-slate-800/90 border-rose-400 shadow-lg shadow-rose-500/15';
+      }
+
+      // Render Active Player Moves
+      const activeNum = state.turn;
+      const oppNum = activeNum === 1 ? 2 : 1;
+      const activeF = state.fighters[activeNum];
+      const activeP = getPokemon(activeF.id);
+      const oppP = getPokemon(state.fighters[oppNum].id);
+      const eff = getEffectiveness(activeP.type, oppP.type);
+      const ownerLabel = activeNum === 1 ? '爸爸 (P1)' : '仔仔 (P2)';
+
+      document.getElementById('activeMoveHeader').textContent = `${ownerLabel} 嘅「${activeP.name}」招式表`;
+      document.getElementById('ultRuleLabel').textContent = state.freeUltMode
+        ? '🔥 無限絕招已開啟（免氣力！）'
+        : '消耗 60 / 100 氣力';
+
+      const normalGrid = document.getElementById('normalMovesGrid');
+      const ultGrid = document.getElementById('ultMovesGrid');
+      normalGrid.innerHTML = '';
+      ultGrid.innerHTML = '';
+
+      activeP.moves.forEach((move, idx) => {
+        const finalDmg = Math.round(move.dmg * eff.mult);
+        const effTag = eff.mult > 1
+          ? `<span class="text-[10px] font-black text-emerald-300">剋制!</span>`
+          : (eff.mult < 1 ? `<span class="text-[10px] font-bold text-slate-400">減弱</span>` : '');
+
+        if (move.kind === 'normal') {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.disabled = state.isAnimating || state.gameOver;
+          btn.className = 'move-btn text-left rounded-2xl p-2.5 bg-slate-900/90 hover:bg-slate-900 border border-slate-600/80 hover:border-sky-400/70 flex flex-col justify-between gap-1.5 disabled:opacity-50';
+          btn.innerHTML = `
+            <div class="flex items-start justify-between gap-1">
+              <span class="text-sm font-black text-white leading-tight">${move.name}</span>
+              <span class="shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-sky-500/20 text-sky-300 border border-sky-400/30">普通</span>
+            </div>
+            <p class="text-[11px] text-slate-400 leading-snug line-clamp-2">${move.desc}</p>
+            <div class="flex items-center justify-between pt-1 border-t border-slate-800">
+              <span class="text-xs font-black text-rose-400">扣 ${finalDmg} HP ${effTag}</span>
+              <span class="text-[10px] font-bold text-amber-300">+${move.spGain}氣</span>
+            </div>
+          `;
+          btn.addEventListener('click', () => executeMove(idx));
+          normalGrid.appendChild(btn);
+        } else {
+          const canCast = state.freeUltMode || activeF.sp >= move.spCost;
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.disabled = state.isAnimating || state.gameOver || !canCast;
+          btn.className = `move-btn text-left rounded-2xl p-2.5 flex flex-col justify-between gap-1.5 border-2 transition ${
+            canCast
+              ? 'bg-gradient-to-br from-amber-500/25 via-orange-600/25 to-rose-600/25 border-amber-400/80 ult-ready'
+              : 'bg-slate-900/60 border-slate-700/70 opacity-50 cursor-not-allowed'
+          }`;
+          btn.innerHTML = `
+            <div class="flex items-start justify-between gap-1">
+              <span class="text-sm font-black text-amber-200 leading-tight">${move.name}</span>
+              <span class="shrink-0 text-[10px] font-black px-1.5 py-0.5 rounded-md bg-amber-400 text-slate-950">★ 絕招</span>
+            </div>
+            <p class="text-[11px] text-amber-100/80 leading-snug line-clamp-2">${move.desc}</p>
+            <div class="flex items-center justify-between pt-1 border-t border-amber-500/25">
+              <span class="text-sm font-black text-yellow-300">扣 ${finalDmg} HP ${effTag}</span>
+              <span class="text-[10px] font-bold ${canCast ? 'text-emerald-300' : 'text-slate-400'}">
+                ${state.freeUltMode ? '免氣力' : (canCast ? `耗 ${move.spCost} 氣` : `需 ${move.spCost} 氣`)}
+              </span>
+            </div>
+          `;
+          btn.addEventListener('click', () => executeMove(idx));
+          ultGrid.appendChild(btn);
+        }
+      });
+
+      renderLogs();
+    }
+
+    function updateFighterCard(num, f, pkmn, t) {
+      document.getElementById(`avatarP${num}`).innerHTML = renderAvatar(pkmn);
+      document.getElementById(`nameP${num}`).textContent = pkmn.name;
+      const badge = document.getElementById(`typeBadgeP${num}`);
+      badge.className = `mt-1 inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full ${t.badge}`;
+      badge.textContent = `${t.icon} ${t.name}系`;
+
+      const hpPct = Math.max(0, Math.round((f.hp / f.maxHp) * 100));
+      const hpBar = document.getElementById(`hpBarP${num}`);
+      hpBar.style.width = hpPct + '%';
+      hpBar.className = `hp-fill h-full rounded-full ${
+        hpPct > 50 ? 'bg-emerald-500' : (hpPct > 25 ? 'bg-amber-400' : 'bg-rose-500')
+      }`;
+      document.getElementById(`hpTextP${num}`).textContent = `${f.hp} / ${f.maxHp}`;
+
+      const spPct = Math.min(100, Math.max(0, f.sp));
+      document.getElementById(`spBarP${num}`).style.width = (state.freeUltMode ? 100 : spPct) + '%';
+      document.getElementById(`spTextP${num}`).textContent = state.freeUltMode ? 'MAX ∞' : `${f.sp} / 100`;
+    }
+
+    function showFloatingDamage(targetNum, dmg, isUlt, effLabel) {
+      const anchor = document.getElementById(`dmgAnchorP${targetNum}`);
+      const pop = document.createElement('div');
+      pop.className = `animate-dmg-pop whitespace-nowrap text-center pointer-events-none select-none`;
+      pop.innerHTML = `
+        <div class="${isUlt ? 'text-2xl text-yellow-300' : 'text-xl text-rose-400'} font-black drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]">
+          -${dmg} HP!
+        </div>
+        ${effLabel ? `<div class="text-[11px] font-black text-white bg-slate-900/90 px-2 py-0.5 rounded-full border border-amber-400/60 mt-0.5">${effLabel}</div>` : ''}
+      `;
+      anchor.innerHTML = '';
+      anchor.appendChild(pop);
+    }
+
+    function executeMove(moveIndex) {
+      if (state.isAnimating || state.gameOver) return;
+
+      const atkNum = state.turn;
+      const defNum = atkNum === 1 ? 2 : 1;
+      const atkF = state.fighters[atkNum];
+      const defF = state.fighters[defNum];
+      const atkP = getPokemon(atkF.id);
+      const defP = getPokemon(defF.id);
+      const move = atkP.moves[moveIndex];
+      if (!move) return;
+
+      if (move.kind === 'ult' && !state.freeUltMode && atkF.sp < move.spCost) {
+        showToast(`氣力未夠！需要 ${move.spCost} 氣力先可以出絕招`);
+        return;
+      }
+
+      state.isAnimating = true;
+      const eff = getEffectiveness(atkP.type, defP.type);
+      const dmg = Math.round(move.dmg * eff.mult);
+
+      // Update SP
+      if (move.kind === 'normal') {
+        atkF.sp = Math.min(100, atkF.sp + move.spGain);
+      } else if (!state.freeUltMode) {
+        atkF.sp = Math.max(0, atkF.sp - move.spCost);
+      }
+
+      // Apply Damage
+      defF.hp = Math.max(0, defF.hp - dmg);
+
+      // Sound & Animation
+      playSound(move.kind === 'ult' ? 'ult' : 'hit');
+      const atkCard = document.getElementById(`cardP${atkNum}`);
+      const defCard = document.getElementById(`cardP${defNum}`);
+      atkCard.classList.add(atkNum === 1 ? 'animate-lunge-right' : 'animate-lunge-left');
+      setTimeout(() => {
+        defCard.classList.add('animate-shake');
+        showFloatingDamage(defNum, dmg, move.kind === 'ult', eff.label);
+      }, 120);
+
+      // Banner & Log
+      const atkOwner = atkNum === 1 ? '爸爸' : '仔仔';
+      const defOwner = defNum === 1 ? '爸爸' : '仔仔';
+      const ultPrefix = move.kind === 'ult' ? '💥 絕招！' : '⚔️ ';
+      const effSuffix = eff.label ? `（${eff.label}）` : '';
+      const msg = `${ultPrefix}${atkOwner}嘅${atkP.name}使出「${move.name}」，扣咗${defOwner}嘅${defP.name} ${dmg} HP！${effSuffix}`;
+      document.getElementById('lastActionBanner').textContent = msg;
+      state.logs.unshift(msg);
+      if (state.logs.length > 30) state.logs.pop();
+
+      renderBattle();
+
+      setTimeout(() => {
+        atkCard.classList.remove('animate-lunge-right', 'animate-lunge-left');
+        defCard.classList.remove('animate-shake');
+        state.isAnimating = false;
+
+        if (defF.hp <= 0) {
+          state.gameOver = true;
+          state.scores[atkNum] += 1;
+          saveScores();
+          renderBattle();
+          showVictory(atkOwner, atkP.name, move.name);
+        } else {
+          state.turn = defNum;
+          renderBattle();
+        }
+      }, 520);
+    }
+
+    function showVictory(winnerOwner, pkmnName, moveName) {
+      playSound('win');
+      if (typeof confetti === 'function') {
+        confetti({ particleCount: 90, spread: 70, origin: { y: 0.6 } });
+      }
+      document.getElementById('victoryTitle').textContent = `🎉 ${winnerOwner} 贏咗！`;
+      document.getElementById('victoryDesc').textContent = `${pkmnName} 使出「${moveName}」完美擊敗對手！`;
+      document.getElementById('victoryModal').classList.remove('hidden');
+    }
+
+    function renderLogs() {
+      const box = document.getElementById('battleLogBox');
+      if (state.logs.length === 0) {
+        box.innerHTML = '<div class="text-slate-500 text-center py-2">暫時未有出招紀錄</div>';
+        return;
+      }
+      box.innerHTML = state.logs.map((line, i) => `
+        <div class="py-1 ${i === 0 ? 'text-amber-200 font-bold' : 'text-slate-300'} border-b border-slate-800/80 last:border-0">
+          ${line}
+        </div>
+      `).join('');
+    }
+
+    // ==================== PICKER MODAL ====================
+    function openPicker(playerNum) {
+      playSound('click');
+      state.pickerTarget = playerNum;
+      const label = playerNum === 1 ? '爸爸 (P1)' : '仔仔 (P2)';
+      document.getElementById('pickerTitle').textContent = `幫 ${label} 揀選寶可夢`;
+      renderTypeFilterPills('pickerTypeFilters', state.pickerFilter, (val) => {
+        state.pickerFilter = val;
+        renderPickerGrid();
+      });
+      renderPickerGrid();
+      document.getElementById('pickerModal').classList.remove('hidden');
+    }
+
+    function closePicker() {
+      document.getElementById('pickerModal').classList.add('hidden');
+    }
+
+    function renderPickerGrid() {
+      const grid = document.getElementById('pickerGrid');
+      const list = state.pickerFilter === 'all'
+        ? POKEMON_LIST
+        : POKEMON_LIST.filter(p => p.type === state.pickerFilter);
+      const currentId = state.fighters[state.pickerTarget].id;
+
+      grid.innerHTML = '';
+      list.forEach(pkmn => {
+        const t = TYPES[pkmn.type];
+        const ultMax = Math.max(...pkmn.moves.filter(m => m.kind === 'ult').map(m => m.dmg));
+        const isSelected = pkmn.id === currentId;
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `text-left rounded-2xl p-2.5 border-2 transition flex flex-col gap-1.5 ${
+          isSelected
+            ? 'bg-slate-800 border-amber-400 shadow-lg'
+            : 'bg-slate-800/70 hover:bg-slate-800 border-slate-700'
+        }`;
+        btn.innerHTML = `
+          <div class="flex items-center gap-2">
+            <div class="w-11 h-11 rounded-xl bg-gradient-to-br ${t.bg} flex items-center justify-center text-2xl shrink-0 border border-white/20">
+              ${pkmn.emoji}
+            </div>
+            <div class="min-w-0">
+              <div class="text-sm font-black text-white truncate">${pkmn.name}</div>
+              <span class="inline-block text-[10px] font-bold px-1.5 py-0.5 rounded-full ${t.badge}">${t.icon} ${t.name}</span>
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-[11px] pt-1 border-t border-slate-700/80">
+            <span class="text-emerald-300 font-bold">HP ${pkmn.maxHp}</span>
+            <span class="text-amber-300 font-bold">絕招扣 ${ultMax}</span>
+          </div>
+        `;
+        btn.addEventListener('click', () => {
+          playSound('click');
+          state.fighters[state.pickerTarget] = createFighterState(pkmn.id);
+          state.gameOver = false;
+          document.getElementById('lastActionBanner').textContent =
+            `${state.pickerTarget === 1 ? '爸爸' : '仔仔'} 派出咗「${pkmn.name}」上場！`;
+          closePicker();
+          renderBattle();
+        });
+        grid.appendChild(btn);
+      });
+    }
+
+    // ==================== MOVE DEX VIEW ====================
+    function renderTypeFilterPills(containerId, activeVal, onSelect) {
+      const box = document.getElementById(containerId);
+      box.innerHTML = '';
+
+      const allItems = [{ key: 'all', label: '🌟 全部屬性' }].concat(
+        Object.entries(TYPES).map(([k, v]) => ({ key: k, label: `${v.icon} ${v.name}` }))
+      );
+
+      allItems.forEach(item => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        const isActive = activeVal === item.key;
+        btn.className = `shrink-0 px-3 py-1.5 rounded-full text-xs font-bold border transition ${
+          isActive
+            ? 'bg-amber-400 text-slate-950 border-amber-300 shadow'
+            : 'bg-slate-900 text-slate-300 border-slate-700 hover:bg-slate-800'
+        }`;
+        btn.textContent = item.label;
+        btn.addEventListener('click', () => {
+          playSound('click');
+          onSelect(item.key);
+          renderTypeFilterPills(containerId, item.key, onSelect);
+        });
+        box.appendChild(btn);
+      });
+    }
+
+    function renderDex() {
+      const q = state.dexSearch.trim().toLowerCase();
+      const filtered = POKEMON_LIST.filter(p => {
+        if (state.dexFilter !== 'all' && p.type !== state.dexFilter) return false;
+        if (!q) return true;
+        const typeName = TYPES[p.type].name;
+        const matchPkmn = p.name.toLowerCase().includes(q) || p.en.toLowerCase().includes(q) || typeName.includes(q);
+        const matchMove = p.moves.some(m => m.name.toLowerCase().includes(q) || m.desc.toLowerCase().includes(q));
+        return matchPkmn || matchMove;
+      });
+
+      const totalMoves = filtered.reduce((sum, p) => sum + p.moves.length, 0);
+      document.getElementById('dexCountText').textContent = `顯示 ${filtered.length} 隻寶可夢 · 共 ${totalMoves} 個招式`;
+
+      const listEl = document.getElementById('dexList');
+      listEl.innerHTML = '';
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = `
+          <div class="rounded-2xl bg-slate-800/80 border border-slate-700 p-8 text-center text-sm text-slate-400">
+            搵唔到相關嘅寶可夢或招式，試下清除搜尋字再搵啦！
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(pkmn => {
+        const t = TYPES[pkmn.type];
+        const normalMoves = pkmn.moves.filter(m => m.kind === 'normal');
+        const ultMoves = pkmn.moves.filter(m => m.kind === 'ult');
+
+        const card = document.createElement('div');
+        card.className = 'rounded-3xl bg-slate-800/90 border border-slate-700 overflow-hidden shadow-lg';
+
+        const normalHtml = normalMoves.map(m => `
+          <button type="button" data-speak="${pkmn.name}，普通招式，${m.name}，扣 ${m.dmg} 血"
+            class="speak-move-btn text-left rounded-xl p-2 bg-slate-900/90 hover:bg-slate-900 border border-slate-700/80 transition flex flex-col justify-between gap-1">
+            <div class="flex items-center justify-between gap-1">
+              <span class="text-xs font-black text-white">${m.name}</span>
+              <span class="text-[11px] font-black text-rose-400 shrink-0">扣 ${m.dmg} HP</span>
+            </div>
+            <p class="text-[10px] text-slate-400 leading-snug">${m.desc}</p>
+          </button>
+        `).join('');
+
+        const ultHtml = ultMoves.map(m => `
+          <button type="button" data-speak="${pkmn.name}，超級絕招，${m.name}，扣 ${m.dmg} 血"
+            class="speak-move-btn text-left rounded-xl p-2.5 bg-gradient-to-br from-amber-500/20 to-rose-600/20 hover:from-amber-500/30 hover:to-rose-600/30 border border-amber-400/60 transition flex flex-col justify-between gap-1">
+            <div class="flex items-center justify-between gap-1">
+              <span class="text-xs font-black text-amber-200">★ ${m.name}</span>
+              <span class="text-xs font-black text-yellow-300 shrink-0">扣 ${m.dmg} HP</span>
+            </div>
+            <p class="text-[10px] text-amber-100/80 leading-snug">${m.desc}</p>
+          </button>
+        `).join('');
+
+        card.innerHTML = `
+          <div class="p-3 bg-gradient-to-r ${t.bg} flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5">
+              <div class="w-12 h-12 rounded-2xl bg-slate-950/35 backdrop-blur-sm flex items-center justify-center text-3xl border border-white/25">
+                ${pkmn.emoji}
+              </div>
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <h3 class="text-base font-black text-white">${pkmn.name}</h3>
+                  <span class="text-[11px] font-bold text-white/80">${pkmn.en}</span>
+                </div>
+                <div class="text-xs font-bold text-white/95 mt-0.5">${t.icon} ${t.name}系 · ❤️ HP ${pkmn.maxHp}</div>
+              </div>
+            </div>
+            <div class="flex flex-col gap-1 shrink-0">
+              <button type="button" data-pick-p1="${pkmn.id}" class="pick-dex-btn px-2.5 py-1 rounded-lg bg-slate-950/50 hover:bg-slate-950/70 text-[11px] font-bold text-sky-200 border border-white/20">
+                爸爸用
+              </button>
+              <button type="button" data-pick-p2="${pkmn.id}" class="pick-dex-btn px-2.5 py-1 rounded-lg bg-slate-950/50 hover:bg-slate-950/70 text-[11px] font-bold text-rose-200 border border-white/20">
+                仔仔用
+              </button>
+            </div>
+          </div>
+
+          <div class="p-3 space-y-2.5">
+            <div>
+              <div class="text-[11px] font-black text-sky-300 mb-1.5">⚔️ 普通招式 (4招)</div>
+              <div class="grid grid-cols-2 gap-2">${normalHtml}</div>
+            </div>
+            <div>
+              <div class="text-[11px] font-black text-amber-300 mb-1.5">💥 超級絕招 (2招)</div>
+              <div class="grid grid-cols-2 gap-2">${ultHtml}</div>
+            </div>
+          </div>
+        `;
+
+        card.querySelectorAll('.speak-move-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            playSound('click');
+            const phrase = btn.getAttribute('data-speak');
+            speakText(phrase);
+            showToast('🔊 ' + phrase);
+          });
+        });
+
+        card.querySelectorAll('.pick-dex-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            playSound('click');
+            const p1Id = btn.getAttribute('data-pick-p1');
+            const p2Id = btn.getAttribute('data-pick-p2');
+            if (p1Id) {
+              state.fighters[1] = createFighterState(p1Id);
+              showToast(`已幫爸爸揀選「${pkmn.name}」！`);
+            } else if (p2Id) {
+              state.fighters[2] = createFighterState(p2Id);
+              showToast(`已幫仔仔揀選「${pkmn.name}」！`);
+            }
+            state.gameOver = false;
+            switchTab('battle');
+          });
+        });
+
+        listEl.appendChild(card);
+      });
+    }
+
+    // ==================== TAB & UTILITY CONTROLS ====================
+    function switchTab(tab) {
+      state.activeTab = tab;
+      const vBattle = document.getElementById('viewBattle');
+      const vDex = document.getElementById('viewDex');
+      const vTypeAll = document.getElementById('viewTypeAll');
+      const vClassify = document.getElementById('viewClassify');
+      const tBattle = document.getElementById('tabBattle');
+      const tDex = document.getElementById('tabDex');
+      const tTypeAll = document.getElementById('tabTypeAll');
+      const tClassify = document.getElementById('tabClassify');
+
+      const activeCls = 'py-2 px-1 rounded-lg text-[11px] sm:text-xs font-black transition flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow';
+      const idleCls = 'py-2 px-1 rounded-lg text-[11px] sm:text-xs font-bold transition flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1 text-slate-300 hover:text-white';
+
+      vBattle.classList.toggle('hidden', tab !== 'battle');
+      vDex.classList.toggle('hidden', tab !== 'dex');
+      vTypeAll.classList.toggle('hidden', tab !== 'typeAll');
+      vClassify.classList.toggle('hidden', tab !== 'classify');
+
+      tBattle.className = tab === 'battle' ? activeCls : idleCls;
+      tDex.className = tab === 'dex' ? activeCls : idleCls;
+      tTypeAll.className = tab === 'typeAll' ? activeCls : idleCls;
+      tClassify.className = tab === 'classify' ? activeCls : idleCls;
+
+      if (tab === 'battle') {
+        renderBattle();
+      } else if (tab === 'dex') {
+        renderDex();
+      } else if (tab === 'typeAll') {
+        renderAllTypeButtons();
+        loadTypeAllData(state.typeAllSelected, false);
+      } else {
+        renderClassifyTypeButtons();
+        updateTeamCounts();
+        loadClassifyData(false);
+      }
+    }
+
+    function resetBothHP() {
+      playSound('click');
+      const f1 = state.fighters[1];
+      const f2 = state.fighters[2];
+      f1.hp = f1.maxHp;
+      f1.sp = 50;
+      f2.hp = f2.maxHp;
+      f2.sp = 50;
+      state.gameOver = false;
+      state.isAnimating = false;
+      document.getElementById('victoryModal').classList.add('hidden');
+      document.getElementById('lastActionBanner').textContent = '兩邊寶可夢已經回滿血！準備新一輪對戰！';
+      renderBattle();
+    }
+
+    function randomMatch() {
+      playSound('click');
+      const idx1 = Math.floor(Math.random() * POKEMON_LIST.length);
+      let idx2 = Math.floor(Math.random() * POKEMON_LIST.length);
+      if (idx2 === idx1) idx2 = (idx1 + 1) % POKEMON_LIST.length;
+      state.fighters[1] = createFighterState(POKEMON_LIST[idx1].id);
+      state.fighters[2] = createFighterState(POKEMON_LIST[idx2].id);
+      state.turn = 1;
+      state.gameOver = false;
+      state.isAnimating = false;
+      document.getElementById('victoryModal').classList.add('hidden');
+      document.getElementById('lastActionBanner').textContent =
+        `🎲 隨機配對：爸爸嘅「${POKEMON_LIST[idx1].name}」對決仔仔嘅「${POKEMON_LIST[idx2].name}」！`;
+      renderBattle();
+    }
+
+    // ==================== EVENT WIRING ====================
+    document.getElementById('tabBattle').addEventListener('click', () => { playSound('click'); switchTab('battle'); });
+    document.getElementById('tabDex').addEventListener('click', () => { playSound('click'); switchTab('dex'); });
+
+    document.getElementById('btnSound').addEventListener('click', () => {
+      state.soundOn = !state.soundOn;
+      document.getElementById('btnSound').textContent = state.soundOn ? '🔊' : '🔇';
+      showToast(state.soundOn ? '已開啟對戰音效' : '已靜音');
+    });
+
+    document.getElementById('btnFreeUlt').addEventListener('click', () => {
+      playSound('click');
+      state.freeUltMode = !state.freeUltMode;
+      const btn = document.getElementById('btnFreeUlt');
+      const icon = document.getElementById('freeUltIcon');
+      const text = document.getElementById('freeUltText');
+      if (state.freeUltMode) {
+        btn.className = 'px-2.5 py-1.5 rounded-full text-xs font-black border transition flex items-center gap-1 bg-amber-400 border-amber-300 text-slate-950 shadow';
+        icon.textContent = '🔥';
+        text.textContent = '無限絕招';
+        showToast('🔥 已開啟無限絕招！隨時可以出大絕！');
+      } else {
+        btn.className = 'px-2.5 py-1.5 rounded-full text-xs font-bold border transition flex items-center gap-1 bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700';
+        icon.textContent = '⚡';
+        text.textContent = '儲氣制';
+        showToast('⚡ 已切換回儲氣對戰模式');
+      }
+      renderBattle();
+    });
+
+    document.getElementById('btnChangeP1').addEventListener('click', () => openPicker(1));
+    document.getElementById('btnChangeP2').addEventListener('click', () => openPicker(2));
+    document.getElementById('btnClosePicker').addEventListener('click', closePicker);
+    document.getElementById('pickerModal').addEventListener('click', (e) => {
+      if (e.target.id === 'pickerModal') closePicker();
+    });
+
+    document.getElementById('btnSwitchTurn').addEventListener('click', () => {
+      if (state.isAnimating || state.gameOver) return;
+      playSound('click');
+      state.turn = state.turn === 1 ? 2 : 1;
+      renderBattle();
+    });
+
+    document.getElementById('btnRandomMatch').addEventListener('click', randomMatch);
+    document.getElementById('btnHealBoth').addEventListener('click', resetBothHP);
+    document.getElementById('btnToggleLog').addEventListener('click', () => {
+      playSound('click');
+      state.logOpen = !state.logOpen;
+      document.getElementById('battleLogBox').classList.toggle('hidden', !state.logOpen);
+    });
+
+    document.getElementById('btnRematch').addEventListener('click', resetBothHP);
+    document.getElementById('btnVictoryRandom').addEventListener('click', randomMatch);
+
+    document.getElementById('dexSearchInput').addEventListener('input', (e) => {
+      state.dexSearch = e.target.value;
+      renderDex();
+    });
+
+    // ==================== ALL 18 TYPES FULL MOVE ARCHIVE (1,025+ POKEMON) ====================
+    const ALL_18_TYPES = [
+      { key: 'grass',    name: '草 / 葉', icon: '🌿', grad: 'from-emerald-500 to-green-600' },
+      { key: 'fire',     name: '火',     icon: '🔥', grad: 'from-orange-500 to-red-600' },
+      { key: 'water',    name: '水',     icon: '💧', grad: 'from-sky-500 to-blue-600' },
+      { key: 'electric', name: '電',     icon: '⚡', grad: 'from-yellow-400 to-amber-500' },
+      { key: 'dragon',   name: '龍',     icon: '🐉', grad: 'from-indigo-500 to-violet-700' },
+      { key: 'psychic',  name: '超能力', icon: '🔮', grad: 'from-fuchsia-500 to-pink-600' },
+      { key: 'fighting', name: '格鬥',   icon: '🥊', grad: 'from-rose-600 to-red-800' },
+      { key: 'ghost',    name: '幽靈',   icon: '👻', grad: 'from-purple-600 to-slate-800' },
+      { key: 'ice',      name: '冰',     icon: '❄️', grad: 'from-cyan-400 to-sky-600' },
+      { key: 'steel',    name: '鋼',     icon: '⚙️', grad: 'from-slate-400 to-zinc-600' },
+      { key: 'fairy',    name: '妖精',   icon: '✨', grad: 'from-pink-400 to-rose-500' },
+      { key: 'dark',     name: '惡',     icon: '🌙', grad: 'from-zinc-700 to-slate-900' },
+      { key: 'ground',   name: '地面',   icon: '🏜️', grad: 'from-amber-600 to-yellow-800' },
+      { key: 'rock',     name: '岩石',   icon: '🪨', grad: 'from-stone-500 to-amber-800' },
+      { key: 'flying',   name: '飛行',   icon: '🕊️', grad: 'from-sky-400 to-indigo-500' },
+      { key: 'bug',      name: '蟲',     icon: '🐛', grad: 'from-lime-500 to-green-700' },
+      { key: 'poison',   name: '毒',     icon: '☠️', grad: 'from-purple-500 to-fuchsia-800' },
+      { key: 'normal',   name: '一般',   icon: '⭐', grad: 'from-slate-500 to-slate-700' }
+    ];
+
+    // Offline instant fallback curated dataset for all 18 types (in case network/API is unavailable)
+    const FALLBACK_TYPE_MOVES = {
+      grass: [
+        { name: '瘋狂植物', power: 150, kind: 'ult', desc: '草系終極大絕！用巨大樹根猛烈敲打對手。', pokemon: ['妙蛙花', '大竺葵', '蜥蜴王', '土台龜', '君主蛇', '布里卡隆', '狙射樹梟', '轟擂金剛猩', '魔幻假面喵'] },
+        { name: '飛葉風暴', power: 130, kind: 'ult', desc: '刮起狂暴尖銳葉片風暴橫掃對手。', pokemon: ['妙蛙花', '蜥蜴王', '羅絲雷朵', '君主蛇', '魔幻假面喵', '謝米', '紙御劍'] },
+        { name: '日光束', power: 120, kind: 'ult', desc: '收集滿滿陽光發射超強雷射光束。', pokemon: ['妙蛙花', '椰蛋樹', '霸王花', '葉伊布', '轟擂金剛猩', '厄鬼椪'] },
+        { name: '強力鞭打', power: 120, kind: 'ult', desc: '激烈揮舞粗壯藤蔓重擊對手。', pokemon: ['妙蛙花', '大食花', '巨蔓藤', '堅果啞鈴', '轟擂金剛猩'] },
+        { name: '棘藤棒', power: 100, kind: 'ult', desc: '厄鬼椪專屬絕招！揮舞纏繞藤蔓嘅木棒重擊。', pokemon: ['厄鬼椪'] },
+        { name: '千變萬花', power: 70, kind: 'ult', desc: '魔幻假面喵專屬絕招！必中且必定擊中要害嘅花彈。', pokemon: ['魔幻假面喵'] },
+        { name: '鼓擊', power: 80, kind: 'ult', desc: '轟擂金剛猩專屬絕招！狂打巨鼓引發樹根震擊。', pokemon: ['轟擂金剛猩'] },
+        { name: '葉刃', power: 90, kind: 'ult', desc: '像刀劍般操縱鋒利樹葉劈開對手。', pokemon: ['蜥蜴王', '葉伊布', '狙射樹梟', '紙御劍', '蘭螳花'] },
+        { name: '能量球', power: 90, kind: 'ult', desc: '從大自然吸收生命力發射光球。', pokemon: ['妙蛙花', '霸王花', '羅絲雷朵', '時拉比', '謝米'] },
+        { name: '種子炸彈', power: 80, kind: 'ult', desc: '從頭頂砸下硬殼種子引發爆炸。', pokemon: ['妙蛙花', '椰蛋樹', '斗笠菇', '土台龜', '奧利瓦'] },
+        { name: '終極吸取', power: 75, kind: 'normal', desc: '吸取對手養分回復自己一半血量。', pokemon: ['妙蛙花', '霸王花', '蜥蜴王', '羅絲雷朵', '甜冷美后'] },
+        { name: '青草滑梯', power: 55, kind: 'normal', desc: '喺草地上高速滑行突襲對手。', pokemon: ['轟擂金剛猩', '妙蛙花', '蜥蜴王', '葉伊布', '厄鬼椪'] },
+        { name: '飛葉快刀', power: 55, kind: 'normal', desc: '飛出大量鋒利葉片切向對手。', pokemon: ['妙蛙種子', '菊草葉', '草苗龜', '葉伊布', '木木梟'] },
+        { name: '藤鞭', power: 45, kind: 'normal', desc: '用細長藤蔓像鞭子般抽打對手。', pokemon: ['妙蛙種子', '妙蛙花', '喇叭芽', '蔓藤怪', '藤藤蛇'] },
+        { name: '樹葉', power: 40, kind: 'normal', desc: '將樹葉撒向對手進行攻擊。', pokemon: ['木木梟', '狙射樹梟', '新葉喵', '魔幻假面喵', '迷你芙'] },
+        { name: '寄生種子', power: 0, kind: 'status', desc: '種下種子每回合吸取對手體力。', pokemon: ['妙蛙種子', '妙蛙花', '毽子棉', '堅果啞鈴', '風妖精'] }
+      ],
+      fire: [
+        { name: '爆炸烈焰', power: 150, kind: 'ult', desc: '火系終極大絕！用毀滅烈焰吞噬對手。', pokemon: ['噴火龍', '火爆獸', '火焰雞', '烈焰猴', '炎武王', '妖火紅狐', '熾焰咆哮虎', '閃焰王牌', '骨紋巨聲鱷'] },
+        { name: 'Ｖ熱焰', power: 180, kind: 'ult', desc: '比克提尼專屬絕招！額頭燃起V字烈火猛撞！', pokemon: ['比克提尼'] },
+        { name: '火焰球', power: 120, kind: 'ult', desc: '閃焰王牌專屬絕招！踢出超高溫燃燒足球。', pokemon: ['閃焰王牌'] },
+        { name: '大字爆炎', power: 110, kind: 'ult', desc: '用「大」字形猛烈火焰燒盡對手。', pokemon: ['噴火龍', '九尾', '風速狗', '火焰鳥', '鳳王'] },
+        { name: '噴射火焰', power: 90, kind: 'ult', desc: '向對手發射強烈火焰柱。', pokemon: ['噴火龍', '火伊布', '火焰雞', '烈焰猴', '骨紋巨聲鱷'] },
+        { name: '閃焰衝鋒', power: 120, kind: 'ult', desc: '全身包覆火焰猛烈衝撞。', pokemon: ['噴火龍', '風速狗', '火焰雞', '熾焰咆哮虎', '紅蓮鎧騎'] },
+        { name: '火焰牙', power: 65, kind: 'normal', desc: '用纏繞火焰嘅尖牙咬住對手。', pokemon: ['噴火龍', '風速狗', '炎帝', '黑魯加', '呆火鱷'] },
+        { name: '火花', power: 40, kind: 'normal', desc: '向對手吐出細小火焰攻擊。', pokemon: ['小火龍', '火球鼠', '火稚雞', '炎兔兒', '呆火鱷'] }
+      ],
+      water: [
+        { name: '加農水炮', power: 150, kind: 'ult', desc: '水系終極大絕！發射超巨型高壓水砲。', pokemon: ['水箭龜', '大力鱷', '巨沼怪', '帝王拿波', '大劍鬼', '甲賀忍蛙', '西獅海壬', '千面避役', '狂歡浪舞鴨'] },
+        { name: '噴水', power: 150, kind: 'ult', desc: '體力越滿威力越大嘅海嘯噴射！', pokemon: ['蓋歐卡', '吼鯨王', '水箭龜'] },
+        { name: '水炮', power: 110, kind: 'ult', desc: '猛烈噴射超高壓水柱轟擊對手。', pokemon: ['水箭龜', '暴鯉龍', '水伊布', '甲賀忍蛙', '帕路奇亞'] },
+        { name: '衝浪', power: 90, kind: 'ult', desc: '捲起巨浪衝擊全場對手。', pokemon: ['水箭龜', '拉普拉斯', '水君', '巨沼怪', '美納斯'] },
+        { name: '水流裂破', power: 85, kind: 'ult', desc: '用高速水流力量撞擊對手。', pokemon: ['水箭龜', '暴鯉龍', '甲賀忍蛙', '狂歡浪舞鴨', '武道熊師'] },
+        { name: '水之波動', power: 60, kind: 'normal', desc: '用水流震動波攻擊對手。', pokemon: ['傑尼龜', '水箭龜', '水伊布', '拉普拉斯', '波加曼'] },
+        { name: '水槍', power: 40, kind: 'normal', desc: '向對手猛烈噴水攻擊。', pokemon: ['傑尼龜', '小鋸鱷', '水躍魚', '呱呱泡蛙', '潤水鴨'] }
+      ],
+      electric: [
+        { name: '伏特攻擊', power: 120, kind: 'ult', desc: '皮卡丘家族專屬絕招！纏繞超強電流猛撞。', pokemon: ['皮卡丘', '雷丘', '皮丘'] },
+        { name: '打雷', power: 110, kind: 'ult', desc: '向對手劈下猛烈雷電。', pokemon: ['皮卡丘', '雷伊布', '閃電鳥', '雷公', '捷克羅姆'] },
+        { name: '等離子閃電拳', power: 100, kind: 'ult', desc: '捷拉奧拉專屬絕招！電漿拳轟爆對手。', pokemon: ['捷拉奧拉'] },
+        { name: '十萬伏特', power: 90, kind: 'ult', desc: '向對手發出強力十萬伏特電流。', pokemon: ['皮卡丘', '雷丘', '雷伊布', '電龍', '倫琴貓', '密勒頓'] },
+        { name: '閃電猛衝', power: 100, kind: 'ult', desc: '密勒頓專屬絕招！化身雷電猛衝！', pokemon: ['密勒頓'] },
+        { name: '雷電拳', power: 75, kind: 'normal', desc: '用充滿電流嘅拳頭重擊。', pokemon: ['電擊魔獸', '雷丘', '捷拉奧拉', '巴布土撥'] },
+        { name: '電擊', power: 40, kind: 'normal', desc: '發出電流電擊對手。', pokemon: ['皮卡丘', '小磁怪', '咩利羊', '小貓怪', '布撥'] }
+      ],
+      dragon: [
+        { name: '流星群', power: 130, kind: 'ult', desc: '從天而降大量隕石轟炸對手！', pokemon: ['快龍', '暴飛龍', '烈咬陸鯊', '烈空坐', '三首惡龍', '多龍巴魯托', '故勒頓', '密勒頓'] },
+        { name: '逆鱗', power: 120, kind: 'ult', desc: '爆發龍族怒氣連續猛攻。', pokemon: ['快龍', '烈咬陸鯊', '雙斧戰龍', '烈空坐', '戟脊龍'] },
+        { name: '亞空裂斬', power: 100, kind: 'ult', desc: '帕路奇亞專屬絕招！撕裂空間斬擊對手。', pokemon: ['帕路奇亞'] },
+        { name: '時光咆哮', power: 150, kind: 'ult', desc: '帝牙盧卡專屬絕招！扭曲時間嘅終極砲擊。', pokemon: ['帝牙盧卡'] },
+        { name: '龍之波動', power: 85, kind: 'ult', desc: '張大嘴巴發射強烈衝擊波。', pokemon: ['快龍', '拉帝歐斯', '三首惡龍', '黏美龍', '鋁鋼橋龍'] },
+        { name: '龍爪', power: 80, kind: 'ult', desc: '用尖銳巨爪劈開對手。', pokemon: ['快龍', '暴飛龍', '烈咬陸鯊', '烈空坐', '戟脊龍'] },
+        { name: '龍之箭', power: 50, kind: 'normal', desc: '多龍巴魯托專屬絕招！連續發射兩次龍箭。', pokemon: ['多龍巴魯托'] },
+        { name: '龍捲風', power: 40, kind: 'normal', desc: '捲起龍捲風吹向對手。', pokemon: ['迷你龍', '快龍', '刺龍王', '烈空坐'] }
+      ],
+      psychic: [
+        { name: '精神擊破', power: 100, kind: 'ult', desc: '超夢專屬絕招！把神奇念波實體化爆破。', pokemon: ['超夢'] },
+        { name: '預知未來', power: 120, kind: 'ult', desc: '凝聚超強念力喺稍後轟擊對手。', pokemon: ['胡地', '太陽伊布', '呆呆王', '沙奈朵', '布莉姆溫'] },
+        { name: '精神強念', power: 90, kind: 'ult', desc: '發射強大念動力攻擊對手。', pokemon: ['超夢', '夢幻', '胡地', '太陽伊布', '沙奈朵', '巨金怪'] },
+        { name: '意念頭錘', power: 80, kind: 'ult', desc: '將念力集中喺額頭猛力撞擊。', pokemon: ['巨金怪', '艾路雷朵', '恰雷姆', '呆殼獸'] },
+        { name: '幻象光線', power: 65, kind: 'normal', desc: '射出神奇光線攻擊對手。', pokemon: ['勇基拉', '胡地', '太陽伊布', '沙奈朵', '超夢'] },
+        { name: '念力', power: 50, kind: 'normal', desc: '用微弱念力攻擊對手。', pokemon: ['凱西', '拉魯拉絲', '呆呆獸', '太陽伊布'] }
+      ],
+      fighting: [
+        { name: '近身戰', power: 120, kind: 'ult', desc: '衝入懷中發動狂暴連續格鬥技！', pokemon: ['路卡利歐', '怪力', '烈焰猴', '艾路雷朵', '武道熊師', '故勒頓'] },
+        { name: '真氣彈', power: 120, kind: 'ult', desc: '凝聚全身氣力發射超強能量彈。', pokemon: ['怪力', '路卡利歐', '火焰雞', '烈焰猴', '鐵臂膀'] },
+        { name: '波導彈', power: 80, kind: 'ult', desc: '放出必中嘅波導能量球。', pokemon: ['路卡利歐', '波克基斯', '師父鼬', '超夢'] },
+        { name: '全開猛撞', power: 100, kind: 'ult', desc: '故勒頓專屬絕招！從高空全力猛撞！', pokemon: ['故勒頓'] },
+        { name: '吸取拳', power: 75, kind: 'normal', desc: '從拳頭吸取對手體力回復自己。', pokemon: ['怪力', '鐵臂膀', '路卡利歐', '棄世猴'] },
+        { name: '發勁', power: 60, kind: 'normal', desc: '出掌發出衝擊波攻擊對手。', pokemon: ['利歐路', '路卡利歐', '幕下力士', '師父鼬'] },
+        { name: '空手劈', power: 50, kind: 'normal', desc: '用手刀猛力劈向對手。', pokemon: ['腕力', '怪力', '猴怪', '摔角鷹人'] }
+      ],
+      ghost: [
+        { name: '暗影球', power: 80, kind: 'ult', desc: '投出一團黑影球攻擊對手。', pokemon: ['耿鬼', '夢妖魔', '水晶燈火靈', '謎擬Ｑ', '多龍巴魯托', '賽富豪', '振翼髮'] },
+        { name: '暗影潛襲', power: 120, kind: 'ult', desc: '騎拉帝納專屬絕招！消失於異次元再突襲。', pokemon: ['騎拉帝納'] },
+        { name: '靈騷', power: 110, kind: 'ult', desc: '操縱對手持有物進行超強幽靈猛攻。', pokemon: ['耿鬼', '夜黑魔人', '水晶燈火靈', '蒼炎刃鬼'] },
+        { name: '暗影爪', power: 70, kind: 'normal', desc: '用影子化成嘅銳利巨爪劈開對手。', pokemon: ['耿鬼', '謎擬Ｑ', '蒼炎刃鬼', '棄世猴'] },
+        { name: '暗影拳', power: 60, kind: 'normal', desc: '從影中出拳必定命中對手。', pokemon: ['耿鬼', '夜黑魔人', '泥偶巨人'] },
+        { name: '驚嚇', power: 30, kind: 'normal', desc: '大叫嚇對手一跳。', pokemon: ['鬼斯', '謎擬Ｑ', '多龍梅西亞', '墓仔狗'] }
+      ],
+      ice: [
+        { name: '暴風雪', power: 110, kind: 'ult', desc: '刮起猛烈冰雪風暴吹向對手！', pokemon: ['拉普拉斯', '急凍鳥', '冰伊布', '象牙豬', '九尾(阿羅拉)', '戟脊龍'] },
+        { name: '急凍光線', power: 90, kind: 'ult', desc: '發射極凍光束攻擊對手。', pokemon: ['拉普拉斯', '急凍鳥', '冰伊布', '瑪狃拉', '酋雷姆'] },
+        { name: '冰柱墜擊', power: 85, kind: 'ult', desc: '將大冰柱用力砸向對手。', pokemon: ['象牙豬', '瑪狃拉', '戟脊龍', '古劍豹'] },
+        { name: '冷凍乾燥', power: 70, kind: 'normal', desc: '急速冷凍對手，對水系效果絕佳！', pokemon: ['拉普拉斯', '冰伊布', '鐵包袱', '九尾(阿羅拉)'] },
+        { name: '冰礫', power: 40, kind: 'normal', desc: '迅速製出冰塊先制擲向對手。', pokemon: ['小山豬', '象牙豬', '瑪狃拉', '冰伊布', '拉普拉斯'] }
+      ],
+      steel: [
+        { name: '鐵蹄光線', power: 140, kind: 'ult', desc: '鋼系終極大絕！集中全身金屬發射毀滅光線！', pokemon: ['巨金怪', '鋁鋼橋龍', '賽富豪', '巨鍛匠', '帝王拿波'] },
+        { name: '巨獸斬', power: 100, kind: 'ult', desc: '蒼響專屬絕招！長劍化作巨刃劈開對手！', pokemon: ['蒼響'] },
+        { name: '巨力錘', power: 160, kind: 'ult', desc: '巨鍛匠專屬絕招！揮動巨錘全力猛砸！', pokemon: ['巨鍛匠'] },
+        { name: '淘金潮', power: 120, kind: 'ult', desc: '賽富豪專屬絕招！灑出大量金幣轟炸對手！', pokemon: ['賽富豪'] },
+        { name: '彗星拳', power: 90, kind: 'ult', desc: '如彗星般轟出超重鋼鐵拳。', pokemon: ['巨金怪', '基拉祈', '路卡利歐'] },
+        { name: '加農光炮', power: 80, kind: 'ult', desc: '聚集銀色光芒發射鋼鐵雷射。', pokemon: ['自爆磁怪', '巨金怪', '帝牙盧卡', '賽富豪', '鋁鋼橋龍'] },
+        { name: '子彈拳', power: 40, kind: 'normal', desc: '如子彈般高速先制出拳。', pokemon: ['巨鉗螳螂', '巨金怪', '路卡利歐'] }
+      ],
+      fairy: [
+        { name: '破滅之光', power: 140, kind: 'ult', desc: '放出耀眼粉紅光芒大爆炸！', pokemon: ['花葉蒂(永恆之花)'] },
+        { name: '月亮之力', power: 95, kind: 'ult', desc: '借用明月力量發射超強月光砲。', pokemon: ['沙奈朵', '仙子伊布', '西獅海壬', '哲爾尼亞斯', '振翼髮', '鐵武者'] },
+        { name: '嬉鬧', power: 90, kind: 'ult', desc: '一邊嬉鬧一邊猛烈撞擊對手。', pokemon: ['謎擬Ｑ', '瑪力露麗', '蒼響', '巨鍛匠', '魔幻假面喵'] },
+        { name: '魔法閃耀', power: 80, kind: 'ult', desc: '釋放強烈星光傷害對手。', pokemon: ['沙奈朵', '皮可西', '波克基斯', '仙子伊布', '布莉姆溫'] },
+        { name: '吸取之吻', power: 50, kind: 'normal', desc: '用魔法之吻吸取對手體力。', pokemon: ['沙奈朵', '仙子伊布', '波克基斯', '花療環環'] },
+        { name: '妖精之風', power: 40, kind: 'normal', desc: '刮起閃亮妖精之風吹向對手。', pokemon: ['仙子伊布', '風妖精', '波克基古'] }
+      ],
+      dark: [
+        { name: '惡之波動', power: 80, kind: 'ult', desc: '從身體發出充滿惡意嘅恐怖波動。', pokemon: ['月亮伊布', '黑魯加', '三首惡龍', '達克萊伊', '伊裴爾塔爾', '古玉魚'] },
+        { name: '暗冥強擊', power: 75, kind: 'ult', desc: '武道熊師(一擊流)專屬絕招！必定擊中要害！', pokemon: ['武道熊師'] },
+        { name: '咬碎', power: 80, kind: 'ult', desc: '用尖利牙齒狠狠咬碎對手。', pokemon: ['班基拉斯', '黑魯加', '流氓鱷', '熾焰咆哮虎', '轟鳴月'] },
+        { name: '突襲', power: 70, kind: 'normal', desc: '比對手更快一步發動奇襲。', pokemon: ['仆斬將軍', '長毛巨魔', '瑪狃拉', '阿勃梭魯'] },
+        { name: '咬住', power: 60, kind: 'normal', desc: '用尖銳牙齒咬住對手。', pokemon: ['月亮伊布', '戴魯比', '班基拉斯', '土狼犬'] }
+      ],
+      ground: [
+        { name: '斷崖之劍', power: 120, kind: 'ult', desc: '固拉多專屬絕招！令大地裂開召喚石刃突刺！', pokemon: ['固拉多'] },
+        { name: '地震', power: 100, kind: 'ult', desc: '引發強烈地震震撼整個戰場！', pokemon: ['固拉多', '烈咬陸鯊', '班基拉斯', '巨沼怪', '河馬獸', '土台龜', '月月熊'] },
+        { name: '大地之力', power: 90, kind: 'ult', desc: '從對手腳底噴出大地能量柱。', pokemon: ['固拉多', '土地雲', '尼多王', '沙漠蜻蜓', '古鼎鹿'] },
+        { name: '十萬馬力', power: 95, kind: 'ult', desc: '使出全身力量猛烈撞向對手。', pokemon: ['象牙豬', '重泥挽馬', '龍頭地鼠', '雄偉牙'] },
+        { name: '重踏', power: 60, kind: 'normal', desc: '用力踩踏地面產生衝擊波。', pokemon: ['地鼠', '穿山王', '隆隆岩', '土台龜', '土王'] },
+        { name: '擲泥', power: 20, kind: 'normal', desc: '向對手丟泥巴攻擊。', pokemon: ['地鼠', '烏波', '小山豬', '大顎蟻'] }
+      ],
+      rock: [
+        { name: '岩石炮', power: 150, kind: 'ult', desc: '超甲狂犀招牌絕招！發射巨型岩石炸裂！', pokemon: ['超甲狂犀', '班基拉斯', '龐岩怪', '巨石丁'] },
+        { name: '尖石攻擊', power: 100, kind: 'ult', desc: '用尖銳巨岩由下而上刺向對手！', pokemon: ['班基拉斯', '超甲狂犀', '化石翼龍', '鬃岩狼人', '代拉基翁'] },
+        { name: '雙刃頭錘', power: 150, kind: 'ult', desc: '使出渾身力量用堅硬頭顱猛撞！', pokemon: ['戰槌龍', '波士可多拉', '怪顎龍', '晶光花'] },
+        { name: '岩崩', power: 75, kind: 'normal', desc: '將大岩石猛力砸向對手。', pokemon: ['大岩蛇', '班基拉斯', '隆隆岩', '龐岩怪', '鹽石巨靈'] },
+        { name: '落石', power: 50, kind: 'normal', desc: '向對手投擲小岩石。', pokemon: ['小拳石', '大岩蛇', '幼基拉斯', '鹽石寶'] }
+      ],
+      flying: [
+        { name: '畫龍點睛', power: 120, kind: 'ult', desc: '烈空坐專屬絕招！從天際極速俯衝轟炸！', pokemon: ['烈空坐'] },
+        { name: '勇鳥猛攻', power: 120, kind: 'ult', desc: '收起翅膀低空高速猛撞對手！', pokemon: ['烈箭鷹', '姆克鷹', '鋼鎧鴉', '鳳王', '火焰鳥', '大比鳥'] },
+        { name: '暴風', power: 110, kind: 'ult', desc: '用強烈暴風捲起並吹飛對手！', pokemon: ['大比鳥', '洛奇亞', '龍捲雲', '快龍', '閃電鳥'] },
+        { name: '空氣斬', power: 75, kind: 'normal', desc: '用連天空都能劈開嘅空氣刃斬擊。', pokemon: ['波克基斯', '烈空坐', '噴火龍', '洛奇亞', '大電海燕'] },
+        { name: '燕返', power: 60, kind: 'normal', desc: '以敏捷速度必定命中斬擊對手。', pokemon: ['大比鳥', '姆克鷹', '烈箭鷹', '鋼鎧鴉', '摔角鷹人'] },
+        { name: '起風', power: 40, kind: 'normal', desc: '拍動翅膀掀起強風攻擊。', pokemon: ['波波', '巴大蝶', '姆克兒', '稚山雀'] }
+      ],
+      bug: [
+        { name: '超級角擊', power: 120, kind: 'ult', desc: '用堅硬大角猛烈頂撞對手！', pokemon: ['赫拉克羅斯', '鐵甲貝', '騎士蝸牛', '巨鍛匠'] },
+        { name: '蟲鳴', power: 90, kind: 'ult', desc: '振動翅膀發出強大音波震傷對手。', pokemon: ['火神蛾', '巴大蝶', '梅卡陽瑪', '鍬農炮蟲', '弗圖'] },
+        { name: '十字剪', power: 80, kind: 'ult', desc: '交叉雙鐮刀像剪刀般劈開對手。', pokemon: ['巨鉗螳螂', '飛天螳螂', '赫拉克羅斯', '具甲武者', '劈斧螳螂'] },
+        { name: '迎頭一擊', power: 90, kind: 'ult', desc: '出場第一回合才能使出嘅超強先制重擊！', pokemon: ['具甲武者', '烈腿蝗', '爬地翅'] },
+        { name: '急速折返', power: 70, kind: 'normal', desc: '高速撞擊後迅速後退。', pokemon: ['巨鉗螳螂', '火神蛾', '巴大蝶', '鍬農炮蟲'] },
+        { name: '連斬', power: 40, kind: 'normal', desc: '用鐮刀連續劈砍對手。', pokemon: ['飛天螳螂', '巨鉗螳螂', '赫拉克羅斯'] }
+      ],
+      poison: [
+        { name: '垃圾射擊', power: 120, kind: 'ult', desc: '將超強毒液垃圾砸向對手！', pokemon: ['臭臭泥', '灰塵山', '超壞星', '土王', '桃歹郎'] },
+        { name: '污泥波', power: 95, kind: 'ult', desc: '用劇毒污泥巨浪衝擊全場！', pokemon: ['耿鬼', '尼多王', '臭臭泥', '晶光花', '無極汰那'] },
+        { name: '污泥炸彈', power: 90, kind: 'ult', desc: '投擲紫色毒泥炸彈攻擊對手。', pokemon: ['妙蛙花', '耿鬼', '叉字蝠', '羅絲雷朵', '雙彈瓦斯', '無極汰那'] },
+        { name: '毒擊', power: 80, kind: 'ult', desc: '用充滿毒液嘅手臂刺擊對手。', pokemon: ['毒骷蛙', '尼多王', '蜈蚣王', '大狃拉', '土王'] },
+        { name: '溶解液', power: 40, kind: 'normal', desc: '噴出強酸溶解液攻擊對手。', pokemon: ['阿柏蛇', '大食花', '毒刺水母', '晶光花'] }
+      ],
+      normal: [
+        { name: '破壞光線', power: 150, kind: 'ult', desc: '經典超級大絕！發射毀滅性超強光線！', pokemon: ['卡比獸', '請假王', '多邊獸Ｚ', '阿爾宙斯', '肯泰羅', '月月熊'] },
+        { name: '終極衝擊', power: 150, kind: 'ult', desc: '使出全身所有力量猛烈衝撞對手！', pokemon: ['卡比獸', '請假王', '雷吉奇卡斯', '阿爾宙斯', '月月熊'] },
+        { name: '爆音波', power: 140, kind: 'ult', desc: '發出震耳欲聾嘅超強音波震飛對手！', pokemon: ['爆音怪', '音波龍', '顫弦蠑螈'] },
+        { name: '神速', power: 80, kind: 'ult', desc: '以迅雷不及掩耳嘅超高速先制衝撞！', pokemon: ['阿爾宙斯', '快龍', '風速狗', '雷公', '路卡利歐'] },
+        { name: '泰山壓頂', power: 85, kind: 'ult', desc: '用龐大身軀壓向對手！', pokemon: ['卡比獸', '袋獸', '月月熊', '請假王'] },
+        { name: '電光一閃', power: 40, kind: 'normal', desc: '以看不見嘅高速先制撞擊對手。', pokemon: ['伊布', '皮卡丘', '大比鳥', '直衝熊'] },
+        { name: '撞擊', power: 40, kind: 'normal', desc: '用整個身體撞向對手。', pokemon: ['伊布', '卡比獸', '小拉達', '貪心栗鼠'] }
+      ]
+    };
+
+    function renderAllTypeButtons() {
+      const grid = document.getElementById('allTypeGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      ALL_18_TYPES.forEach(t => {
+        const isActive = state.typeAllSelected === t.key;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `py-2 px-1.5 rounded-xl text-xs font-black border transition flex items-center justify-center gap-1 ${
+          isActive
+            ? `bg-gradient-to-r ${t.grad} text-white border-white/80 shadow-lg scale-[1.02]`
+            : 'bg-slate-900/90 text-slate-300 border-slate-700 hover:bg-slate-800'
+        }`;
+        btn.innerHTML = `<span>${t.icon}</span><span class="truncate">${t.name}</span>`;
+        btn.addEventListener('click', () => {
+          playSound('click');
+          state.typeAllSelected = t.key;
+          renderAllTypeButtons();
+          loadTypeAllData(t.key, false);
+        });
+        grid.appendChild(btn);
+      });
+    }
+
+    function pickZhName(namesArr, fallback) {
+      if (!Array.isArray(namesArr) || namesArr.length === 0) return fallback;
+      const zhHant = namesArr.find(n => n.language_id === 4);
+      if (zhHant && zhHant.name) return zhHant.name;
+      const zhHans = namesArr.find(n => n.language_id === 12);
+      if (zhHans && zhHans.name) return zhHans.name;
+      const en = namesArr.find(n => n.language_id === 9);
+      return (en && en.name) ? en.name : fallback;
+    }
+
+    async function loadTypeAllData(typeKey, forceRefresh) {
+      const typeInfo = ALL_18_TYPES.find(t => t.key === typeKey) || ALL_18_TYPES[0];
+      const badgeEl = document.getElementById('typeAllStatusBadge');
+      const loadingEl = document.getElementById('typeAllLoading');
+      const listEl = document.getElementById('typeAllMovesList');
+
+      // 1. In-memory cache
+      if (!forceRefresh && state.typeAllCache[typeKey]) {
+        loadingEl.classList.add('hidden');
+        renderTypeAllMoves();
+        return;
+      }
+
+      // 2. LocalStorage cache (v1)
+      const lsKey = 'pkmn_type_moves_v1_' + typeKey;
+      if (!forceRefresh) {
+        try {
+          const cached = JSON.parse(localStorage.getItem(lsKey) || 'null');
+          if (cached && Array.isArray(cached.moves) && cached.moves.length > 0) {
+            state.typeAllCache[typeKey] = cached;
+            loadingEl.classList.add('hidden');
+            renderTypeAllMoves();
+            return;
+          }
+        } catch (e) {}
+      }
+
+      // 3. Live fetch from PokéAPI GraphQL v1beta2 (covers all 1,025+ Pokémon & all moves in Traditional Chinese)
+      state.typeAllLoading = true;
+      badgeEl.textContent = `${typeInfo.icon} ${typeInfo.name}屬性 · 正在從網絡載入全世代資料...`;
+      loadingEl.classList.remove('hidden');
+      listEl.innerHTML = '';
+
+      const gqlQuery = `
+        query GetTypeAllMoves($typeName: String!) {
+          pokemon(
+            where: {
+              is_default: { _eq: true }
+              pokemontypes: { type: { name: { _eq: $typeName } } }
+            }
+            order_by: { id: asc }
+          ) {
+            id
+            name
+            pokemonspecy {
+              pokemonspeciesnames(where: { language_id: { _in: [4, 12, 9] } }) {
+                name
+                language_id
+              }
+            }
+          }
+          move(
+            where: { type: { name: { _eq: $typeName } } }
+            order_by: [{ power: desc_nulls_last }, { id: asc }]
+          ) {
+            id
+            name
+            power
+            movenames(where: { language_id: { _in: [4, 12, 9] } }) {
+              name
+              language_id
+            }
+            moveflavortexts(
+              where: { language_id: { _in: [4, 12] } }
+              limit: 1
+              order_by: { version_group_id: desc }
+            ) {
+              flavor_text
+            }
+            pokemonmoves(
+              distinct_on: pokemon_id
+              where: {
+                pokemon: {
+                  is_default: { _eq: true }
+                  pokemontypes: { type: { name: { _eq: $typeName } } }
+                }
+              }
+              order_by: { pokemon_id: asc }
+            ) {
+              pokemon_id
+            }
+          }
+        }
+      `;
+
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 12000);
+        const resp = await fetch('https://graphql.pokeapi.co/v1beta2', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ query: gqlQuery, variables: { typeName: typeKey } }),
+          signal: controller.signal
+        });
+        clearTimeout(timer);
+
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const json = await resp.json();
+        if (json.errors || !json.data || !Array.isArray(json.data.move)) {
+          throw new Error('GraphQL error');
+        }
+
+        const pkmnMap = {};
+        const totalTypePkmn = (json.data.pokemon || []).length;
+        (json.data.pokemon || []).forEach(p => {
+          const zhName = pickZhName(p.pokemonspecy && p.pokemonspecy.pokemonspeciesnames, p.name);
+          pkmnMap[p.id] = zhName;
+        });
+
+        const moves = json.data.move
+          .map(m => {
+            const zhName = pickZhName(m.movenames, m.name);
+            const power = typeof m.power === 'number' ? m.power : 0;
+            const rawDesc = (m.moveflavortexts && m.moveflavortexts[0] && m.moveflavortexts[0].flavor_text) || '';
+            const desc = rawDesc.replace(/\s+/g, ' ').trim() || (power > 0 ? `${typeInfo.name}屬性攻擊招式` : `${typeInfo.name}屬性變化／輔助招式`);
+            const learners = [];
+            const seen = new Set();
+            (m.pokemonmoves || []).forEach(pm => {
+              const nm = pkmnMap[pm.pokemon_id];
+              if (nm && !seen.has(nm)) {
+                seen.add(nm);
+                learners.push(nm);
+              }
+            });
+            const kind = power === 0 ? 'status' : (power >= 80 || (learners.length > 0 && learners.length <= 2 && power >= 60) ? 'ult' : 'normal');
+            return {
+              name: zhName,
+              en: m.name,
+              power,
+              kind,
+              isSignature: learners.length > 0 && learners.length <= 3 && power >= 60,
+              desc,
+              pokemon: learners
+            };
+          })
+          .filter(m => m.name);
+
+        const payload = {
+          source: 'live',
+          totalTypePkmn,
+          moves
+        };
+        state.typeAllCache[typeKey] = payload;
+        try {
+          localStorage.setItem(lsKey, JSON.stringify(payload));
+        } catch (e) {}
+      } catch (err) {
+        // Graceful offline fallback
+        const fb = (FALLBACK_TYPE_MOVES[typeKey] || []).map(m => ({
+          ...m,
+          isSignature: m.pokemon.length <= 2 && m.power >= 60
+        }));
+        state.typeAllCache[typeKey] = {
+          source: 'fallback',
+          totalTypePkmn: new Set(fb.flatMap(m => m.pokemon)).size,
+          moves: fb
+        };
+        showToast('網絡暫時未能連接 PokéAPI，已切換至離線精選招式庫');
+      } finally {
+        state.typeAllLoading = false;
+        loadingEl.classList.add('hidden');
+        if (state.typeAllSelected === typeKey) {
+          renderTypeAllMoves();
+        }
+      }
+    }
+
+    function renderTypeAllMoves() {
+      const typeKey = state.typeAllSelected;
+      const typeInfo = ALL_18_TYPES.find(t => t.key === typeKey) || ALL_18_TYPES[0];
+      const data = state.typeAllCache[typeKey];
+      const badgeEl = document.getElementById('typeAllStatusBadge');
+      const statsEl = document.getElementById('typeAllStatsText');
+      const listEl = document.getElementById('typeAllMovesList');
+
+      if (!data) return;
+
+      const sourceLabel = data.source === 'live' ? '全世代全球圖鑑 (已連線)' : '離線精選招式庫';
+      badgeEl.textContent = `${typeInfo.icon} ${typeInfo.name}屬性 · ${sourceLabel}`;
+
+      const q = state.typeAllSearch.trim().toLowerCase();
+      const filtered = data.moves.filter(m => {
+        if (state.typeAllKind !== 'all' && m.kind !== state.typeAllKind) return false;
+        if (!q) return true;
+        const matchMove = m.name.toLowerCase().includes(q) || (m.en && m.en.toLowerCase().includes(q)) || (m.desc && m.desc.toLowerCase().includes(q));
+        const matchPkmn = m.pokemon.some(p => p.toLowerCase().includes(q));
+        return matchMove || matchPkmn;
+      });
+
+      statsEl.textContent = `共 ${filtered.length} 招 · 收錄 ${data.totalTypePkmn} 隻${typeInfo.name}系寶可夢`;
+      listEl.innerHTML = '';
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = `
+          <div class="rounded-2xl bg-slate-800/80 border border-slate-700 p-6 text-center text-sm text-slate-400">
+            喺「${typeInfo.name}屬性」入面搵唔到符合條件嘅招式，試下切換分類或清除搜尋字！
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach((m, idx) => {
+        const isUlt = m.kind === 'ult';
+        const isStatus = m.kind === 'status';
+        const card = document.createElement('div');
+        card.className = `rounded-2xl p-3 border transition ${
+          isUlt
+            ? 'bg-gradient-to-br from-amber-500/15 via-slate-800/95 to-rose-600/15 border-amber-400/60 shadow-md'
+            : 'bg-slate-800/90 border-slate-700'
+        }`;
+
+        const badgeHtml = isUlt
+          ? (m.isSignature
+              ? `<span class="text-[10px] font-black px-2 py-0.5 rounded-md bg-gradient-to-r from-amber-400 to-rose-400 text-slate-950">🌟 專屬絕招</span>`
+              : `<span class="text-[10px] font-black px-2 py-0.5 rounded-md bg-amber-400 text-slate-950">💥 絕招</span>`)
+          : (isStatus
+              ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-700 text-slate-200">✨ 變化招</span>`
+              : `<span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 border border-sky-400/30">⚔️ 普通招</span>`);
+
+        const dmgHtml = isStatus
+          ? `<span class="text-xs font-bold text-slate-400">輔助 / 狀態招</span>`
+          : `<span class="text-sm font-black ${isUlt ? 'text-yellow-300' : 'text-rose-400'}">扣 ${m.power} HP</span>`;
+
+        const previewCount = 8;
+        const hasMore = m.pokemon.length > previewCount;
+        const previewList = m.pokemon.slice(0, previewCount);
+        const restList = m.pokemon.slice(previewCount);
+
+        const pkmnChipsHtml = m.pokemon.length > 0
+          ? previewList.map(nm => `<span class="inline-block px-2 py-0.5 rounded-full bg-slate-950/80 border border-slate-600/80 text-[11px] font-bold text-slate-200">${nm}</span>`).join('')
+          : `<span class="text-[11px] text-slate-500">特殊 / 傳說或跨屬性習得招式</span>`;
+
+        const moreHtml = hasMore
+          ? `<button type="button" data-expand-idx="${idx}" class="expand-pkmn-btn px-2 py-0.5 rounded-full bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/50 text-[11px] font-black text-amber-200 transition">
+              + 展開其餘 ${restList.length} 隻
+            </button>
+            <span class="hidden rest-pkmn-wrap inline-flex flex-wrap gap-1">${restList.map(nm => `<span class="inline-block px-2 py-0.5 rounded-full bg-slate-950/80 border border-slate-600/80 text-[11px] font-bold text-slate-200">${nm}</span>`).join('')}</span>`
+          : '';
+
+        const speakPhrase = isStatus
+          ? `${typeInfo.name}屬性變化招，${m.name}`
+          : `${typeInfo.name}屬性${isUlt ? '絕招' : '普通招'}，${m.name}，扣 ${m.power} 血`;
+
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-2">
+            <div class="flex items-center flex-wrap gap-1.5 min-w-0">
+              <span class="text-base font-black ${isUlt ? 'text-amber-200' : 'text-white'}">${m.name}</span>
+              ${badgeHtml}
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              ${dmgHtml}
+              <button type="button" class="speak-type-move w-7 h-7 rounded-full bg-slate-900/90 hover:bg-slate-700 border border-slate-600 flex items-center justify-center text-xs transition" title="讀出招式名">
+                🔊
+              </button>
+            </div>
+          </div>
+          <p class="text-xs text-slate-300/90 mt-1 leading-relaxed">${m.desc}</p>
+          <div class="mt-2 pt-2 border-t border-slate-700/70">
+            <div class="text-[11px] font-bold text-slate-400 mb-1.5">所屬${typeInfo.name}屬性寶可夢（共 ${m.pokemon.length} 隻）：</div>
+            <div class="flex flex-wrap gap-1 items-center">
+              ${pkmnChipsHtml}
+              ${moreHtml}
+            </div>
+          </div>
+        `;
+
+        const speakBtn = card.querySelector('.speak-type-move');
+        speakBtn.addEventListener('click', () => {
+          playSound('click');
+          speakText(speakPhrase);
+          showToast('🔊 ' + speakPhrase);
+        });
+
+        const expandBtn = card.querySelector('.expand-pkmn-btn');
+        if (expandBtn) {
+          expandBtn.addEventListener('click', () => {
+            playSound('click');
+            const restWrap = card.querySelector('.rest-pkmn-wrap');
+            const isHidden = restWrap.classList.contains('hidden');
+            restWrap.classList.toggle('hidden', !isHidden);
+            expandBtn.textContent = isHidden ? '收起名單' : `+ 展開其餘 ${restList.length} 隻`;
+          });
+        }
+
+        listEl.appendChild(card);
+      });
+    }
+
+    document.getElementById('tabTypeAll').addEventListener('click', () => { playSound('click'); switchTab('typeAll'); });
+    document.getElementById('btnReloadTypeApi').addEventListener('click', () => {
+      playSound('click');
+      loadTypeAllData(state.typeAllSelected, true);
+    });
+    document.getElementById('typeAllSearchInput').addEventListener('input', (e) => {
+      state.typeAllSearch = e.target.value;
+      renderTypeAllMoves();
+    });
+    document.querySelectorAll('.type-kind-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        playSound('click');
+        state.typeAllKind = btn.getAttribute('data-kind');
+        document.querySelectorAll('.type-kind-btn').forEach(b => {
+          const active = b.getAttribute('data-kind') === state.typeAllKind;
+          b.className = active
+            ? 'type-kind-btn py-1.5 rounded-lg text-xs font-black bg-amber-400 text-slate-950 border border-amber-300 transition'
+            : 'type-kind-btn py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-slate-300 border border-slate-700 transition';
+        });
+        renderTypeAllMoves();
+      });
+    });
+
+    // ==================== POKEMON CLASSIFIER PAGE LOGIC ====================
+    try {
+      const savedTeams = JSON.parse(localStorage.getItem('pkmn_parent_kid_teams_v1') || 'null');
+      if (savedTeams) {
+        if (Array.isArray(savedTeams.dad)) state.dadTeam = savedTeams.dad;
+        if (Array.isArray(savedTeams.kid)) state.kidTeam = savedTeams.kid;
+      }
+    } catch (e) {}
+
+    function saveTeams() {
+      try {
+        localStorage.setItem('pkmn_parent_kid_teams_v1', JSON.stringify({
+          dad: state.dadTeam,
+          kid: state.kidTeam
+        }));
+      } catch (e) {}
+    }
+
+    function updateTeamCounts() {
+      const dEl = document.getElementById('dadTeamCount');
+      const kEl = document.getElementById('kidTeamCount');
+      if (dEl) dEl.textContent = state.dadTeam.length;
+      if (kEl) kEl.textContent = state.kidTeam.length;
+    }
+
+    const STARTER_IDS = [1,2,3,4,5,6,7,8,9, 152,153,154,155,156,157,158,159,160, 252,253,254,255,256,257,258,259,260, 387,388,389,390,391,392,393,394,395, 495,496,497,498,499,500,501,502,503, 650,651,652,653,654,655,656,657,658, 722,723,724,725,726,727,728,729,730, 810,811,812,813,814,815,816,817,818, 906,907,908,909,910,911,912,913,914];
+
+    const FALLBACK_CLASSIFY = {
+      starter: [
+        { id: 1, name: '妙蛙種子', en: 'bulbasaur', types: ['grass', 'poison'] },
+        { id: 3, name: '妙蛙花', en: 'venusaur', types: ['grass', 'poison'] },
+        { id: 4, name: '小火龍', en: 'charmander', types: ['fire'] },
+        { id: 6, name: '噴火龍', en: 'charizard', types: ['fire', 'flying'] },
+        { id: 7, name: '傑尼龜', en: 'squirtle', types: ['water'] },
+        { id: 9, name: '水箭龜', en: 'blastoise', types: ['water'] },
+        { id: 254, name: '蜥蜴王', en: 'sceptile', types: ['grass'] },
+        { id: 257, name: '火焰雞', en: 'blaziken', types: ['fire', 'fighting'] },
+        { id: 260, name: '巨沼怪', en: 'swampert', types: ['water', 'ground'] },
+        { id: 658, name: '甲賀忍蛙', en: 'greninja', types: ['water', 'dark'] },
+        { id: 812, name: '轟擂金剛猩', en: 'rillaboom', types: ['grass'] },
+        { id: 815, name: '閃焰王牌', en: 'cinderace', types: ['fire'] },
+        { id: 908, name: '魔幻假面喵', en: 'meowscarada', types: ['grass', 'dark'] },
+        { id: 911, name: '骨紋巨聲鱷', en: 'skeledirge', types: ['fire', 'ghost'] },
+        { id: 914, name: '狂歡浪舞鴨', en: 'quaquaval', types: ['water', 'fighting'] }
+      ],
+      legendary: [
+        { id: 144, name: '急凍鳥', en: 'articuno', types: ['ice', 'flying'] },
+        { id: 145, name: '閃電鳥', en: 'zapdos', types: ['electric', 'flying'] },
+        { id: 146, name: '火焰鳥', en: 'moltres', types: ['fire', 'flying'] },
+        { id: 150, name: '超夢', en: 'mewtwo', types: ['psychic'] },
+        { id: 249, name: '洛奇亞', en: 'lugia', types: ['psychic', 'flying'] },
+        { id: 250, name: '鳳王', en: 'ho-oh', types: ['fire', 'flying'] },
+        { id: 382, name: '蓋歐卡', en: 'kyogre', types: ['water'] },
+        { id: 383, name: '固拉多', en: 'groudon', types: ['ground'] },
+        { id: 384, name: '烈空坐', en: 'rayquaza', types: ['dragon', 'flying'] },
+        { id: 483, name: '帝牙盧卡', en: 'dialga', types: ['steel', 'dragon'] },
+        { id: 484, name: '帕路奇亞', en: 'palkia', types: ['water', 'dragon'] },
+        { id: 888, name: '蒼響', en: 'zacian', types: ['fairy', 'steel'] },
+        { id: 1007, name: '故勒頓', en: 'koraidon', types: ['fighting', 'dragon'] },
+        { id: 1008, name: '密勒頓', en: 'miraidon', types: ['electric', 'dragon'] }
+      ],
+      mythical: [
+        { id: 151, name: '夢幻', en: 'mew', types: ['psychic'] },
+        { id: 251, name: '時拉比', en: 'celebi', types: ['psychic', 'grass'] },
+        { id: 385, name: '基拉祈', en: 'jirachi', types: ['steel', 'psychic'] },
+        { id: 493, name: '阿爾宙斯', en: 'arceus', types: ['normal'] },
+        { id: 494, name: '比克提尼', en: 'victini', types: ['psychic', 'fire'] },
+        { id: 807, name: '捷拉奧拉', en: 'zeraora', types: ['electric'] }
+      ]
+    };
+
+    function renderClassifyTypeButtons() {
+      const box = document.getElementById('classifyTypeWrap');
+      if (!box) return;
+      box.innerHTML = '';
+      ALL_18_TYPES.forEach(t => {
+        const isActive = state.classifyType === t.key;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `py-2 px-1.5 rounded-xl text-xs font-black border transition flex items-center justify-center gap-1 ${
+          isActive
+            ? `bg-gradient-to-r ${t.grad} text-white border-white/80 shadow-lg scale-[1.02]`
+            : 'bg-slate-900/90 text-slate-300 border-slate-700 hover:bg-slate-800'
+        }`;
+        btn.innerHTML = `<span>${t.icon}</span><span class="truncate">${t.name}</span>`;
+        btn.addEventListener('click', () => {
+          playSound('click');
+          state.classifyType = t.key;
+          renderClassifyTypeButtons();
+          loadClassifyData(false);
+        });
+        box.appendChild(btn);
+      });
+    }
+
+    function getTypeMeta(typeKey) {
+      return ALL_18_TYPES.find(t => t.key === typeKey) || { key: typeKey, name: typeKey, icon: '⭐', grad: 'from-slate-500 to-slate-700' };
+    }
+
+    async function loadClassifyData(forceRefresh) {
+      const loadingEl = document.getElementById('classifyLoading');
+      const gridEl = document.getElementById('classifyGrid');
+      const mode = state.classifyMode;
+
+      // Personal team modes don't need API
+      if (mode === 'dad' || mode === 'kid') {
+        loadingEl.classList.add('hidden');
+        renderClassifyGrid();
+        return;
+      }
+
+      const cacheKey = mode === 'type' ? `type_${state.classifyType}` : `spec_${state.classifySpecial}`;
+      if (!forceRefresh && state.classifyCache[cacheKey]) {
+        loadingEl.classList.add('hidden');
+        renderClassifyGrid();
+        return;
+      }
+
+      const lsKey = 'pkmn_classify_v1_' + cacheKey;
+      if (!forceRefresh) {
+        try {
+          const cached = JSON.parse(localStorage.getItem(lsKey) || 'null');
+          if (cached && Array.isArray(cached.items) && cached.items.length > 0) {
+            state.classifyCache[cacheKey] = cached;
+            loadingEl.classList.add('hidden');
+            renderClassifyGrid();
+            return;
+          }
+        } catch (e) {}
+      }
+
+      loadingEl.classList.remove('hidden');
+      gridEl.innerHTML = '';
+
+      let gqlQuery = '';
+      let variables = {};
+
+      if (mode === 'type') {
+        gqlQuery = `
+          query GetPkmnByType($typeName: String!) {
+            pokemon(
+              where: {
+                is_default: { _eq: true }
+                pokemontypes: { type: { name: { _eq: $typeName } } }
+              }
+              order_by: { id: asc }
+            ) {
+              id
+              name
+              pokemontypes(order_by: { slot: asc }) {
+                type { name }
+              }
+              pokemonspecy {
+                is_legendary
+                is_mythical
+                pokemonspeciesnames(where: { language_id: { _in: [4, 12, 9] } }) {
+                  name
+                  language_id
+                }
+              }
+            }
+          }
+        `;
+        variables = { typeName: state.classifyType };
+      } else if (state.classifySpecial === 'starter') {
+        gqlQuery = `
+          query GetStarters($ids: [Int!]!) {
+            pokemon(
+              where: { is_default: { _eq: true }, id: { _in: $ids } }
+              order_by: { id: asc }
+            ) {
+              id
+              name
+              pokemontypes(order_by: { slot: asc }) { type { name } }
+              pokemonspecy {
+                pokemonspeciesnames(where: { language_id: { _in: [4, 12, 9] } }) { name language_id }
+              }
+            }
+          }
+        `;
+        variables = { ids: STARTER_IDS };
+      } else {
+        const flagField = state.classifySpecial === 'legendary' ? 'is_legendary' : 'is_mythical';
+        gqlQuery = `
+          query GetSpecialPkmn {
+            pokemon(
+              where: {
+                is_default: { _eq: true }
+                pokemonspecy: { ${flagField}: { _eq: true } }
+              }
+              order_by: { id: asc }
+            ) {
+              id
+              name
+              pokemontypes(order_by: { slot: asc }) { type { name } }
+              pokemonspecy {
+                pokemonspeciesnames(where: { language_id: { _in: [4, 12, 9] } }) { name language_id }
+              }
+            }
+          }
+        `;
+      }
+
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 12000);
+        const resp = await fetch('https://graphql.pokeapi.co/v1beta2', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ query: gqlQuery, variables }),
+          signal: controller.signal
+        });
+        clearTimeout(timer);
+
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const json = await resp.json();
+        if (json.errors || !json.data || !Array.isArray(json.data.pokemon)) throw new Error('GraphQL error');
+
+        const items = json.data.pokemon.map(p => ({
+          id: p.id,
+          name: pickZhName(p.pokemonspecy && p.pokemonspecy.pokemonspeciesnames, p.name),
+          en: p.name,
+          types: (p.pokemontypes || []).map(pt => pt.type && pt.type.name).filter(Boolean)
+        }));
+
+        const payload = { source: 'live', items };
+        state.classifyCache[cacheKey] = payload;
+        try { localStorage.setItem(lsKey, JSON.stringify(payload)); } catch (e) {}
+      } catch (err) {
+        let fallbackItems = [];
+        if (mode === 'special') {
+          fallbackItems = FALLBACK_CLASSIFY[state.classifySpecial] || [];
+        } else {
+          // Build fallback from local roster + fallback type moves
+          const seen = new Set();
+          POKEMON_LIST.filter(p => p.type === state.classifyType).forEach((p, i) => {
+            seen.add(p.name);
+            fallbackItems.push({ id: 9000 + i, name: p.name, en: p.en, types: [p.type], emoji: p.emoji });
+          });
+          (FALLBACK_TYPE_MOVES[state.classifyType] || []).forEach(m => {
+            m.pokemon.forEach(nm => {
+              if (!seen.has(nm)) {
+                seen.add(nm);
+                fallbackItems.push({ id: 0, name: nm, en: '', types: [state.classifyType] });
+              }
+            });
+          });
+        }
+        state.classifyCache[cacheKey] = { source: 'fallback', items: fallbackItems };
+        showToast('網絡暫時未能連接，已顯示離線精選分類');
+      } finally {
+        loadingEl.classList.add('hidden');
+        renderClassifyGrid();
+      }
+    }
+
+    function toggleTeamMember(teamKey, item) {
+      playSound('click');
+      const arr = teamKey === 'dad' ? state.dadTeam : state.kidTeam;
+      const idx = arr.findIndex(x => x.name === item.name);
+      if (idx >= 0) {
+        arr.splice(idx, 1);
+        showToast(`已從${teamKey === 'dad' ? '爸爸隊' : '仔仔隊'}移除「${item.name}」`);
+      } else {
+        arr.push({ id: item.id, name: item.name, en: item.en || '', types: item.types || [] });
+        showToast(`已將「${item.name}」加入${teamKey === 'dad' ? '爸爸隊 💙' : '仔仔隊 ❤️'}`);
+      }
+      saveTeams();
+      updateTeamCounts();
+      renderClassifyGrid();
+    }
+
+    function renderClassifyGrid() {
+      const mode = state.classifyMode;
+      const badgeEl = document.getElementById('classifyStatusBadge');
+      const countEl = document.getElementById('classifyCountText');
+      const gridEl = document.getElementById('classifyGrid');
+
+      let rawItems = [];
+      let label = '';
+      if (mode === 'dad') {
+        rawItems = state.dadTeam;
+        label = '💙 爸爸精靈隊收藏';
+      } else if (mode === 'kid') {
+        rawItems = state.kidTeam;
+        label = '❤️ 仔仔精靈隊收藏';
+      } else {
+        const cacheKey = mode === 'type' ? `type_${state.classifyType}` : `spec_${state.classifySpecial}`;
+        const data = state.classifyCache[cacheKey];
+        if (!data) return;
+        rawItems = data.items || [];
+        if (mode === 'type') {
+          const t = getTypeMeta(state.classifyType);
+          label = `${t.icon} ${t.name}屬性寶可夢 · ${data.source === 'live' ? '全世代圖鑑' : '離線精選'}`;
+        } else {
+          const specNames = { starter: '🌱 歷代御三家', legendary: '👑 傳說神獸', mythical: '✨ 幻之寶可夢' };
+          label = `${specNames[state.classifySpecial]} · ${data.source === 'live' ? '全世代圖鑑' : '離線精選'}`;
+        }
+      }
+
+      badgeEl.textContent = label;
+
+      const q = state.classifySearch.trim().toLowerCase();
+      const filtered = rawItems.filter(p => {
+        if (!q) return true;
+        const idStr = p.id ? String(p.id).padStart(4, '0') : '';
+        return p.name.toLowerCase().includes(q) || (p.en && p.en.toLowerCase().includes(q)) || idStr.includes(q);
+      });
+
+      countEl.textContent = `共 ${filtered.length} 隻`;
+      gridEl.innerHTML = '';
+
+      if (filtered.length === 0) {
+        gridEl.innerHTML = `
+          <div class="col-span-2 rounded-2xl bg-slate-800/80 border border-slate-700 p-6 text-center text-sm text-slate-400">
+            ${mode === 'dad' || mode === 'kid'
+              ? '暫時未有精靈加入呢一隊！去「按屬性分類」撳「+爸」或「+仔」就可以收藏啦！'
+              : '搵唔到符合搜尋條件嘅寶可夢，試下清除搜尋字！'}
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(item => {
+        const primaryType = (item.types && item.types[0]) || state.classifyType || 'normal';
+        const tMeta = getTypeMeta(primaryType);
+        const inDad = state.dadTeam.some(x => x.name === item.name);
+        const inKid = state.kidTeam.some(x => x.name === item.name);
+        const hasValidSprite = item.id && item.id > 0 && item.id < 5000;
+        const spriteUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${item.id}.png`;
+
+        const typeBadges = (item.types || [primaryType]).map(tk => {
+          const m = getTypeMeta(tk);
+          return `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-slate-950/75 text-slate-200 border border-slate-600/80">${m.icon} ${m.name}</span>`;
+        }).join('');
+
+        const card = document.createElement('div');
+        card.className = 'rounded-2xl bg-slate-800/90 border border-slate-700 overflow-hidden shadow flex flex-col justify-between';
+        card.innerHTML = `
+          <div class="p-2.5 bg-gradient-to-br ${tMeta.grad} relative flex flex-col items-center">
+            <span class="absolute top-1.5 left-2 text-[10px] font-black text-white/85 bg-slate-950/40 px-1.5 py-0.5 rounded-md">
+              ${hasValidSprite ? '#' + String(item.id).padStart(4, '0') : tMeta.icon}
+            </span>
+            <button type="button" class="cls-speak-btn absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-slate-950/45 hover:bg-slate-950/70 text-xs flex items-center justify-center border border-white/20" title="讀出名字">
+              🔊
+            </button>
+            <div class="w-16 h-16 flex items-center justify-center mt-2">
+              ${hasValidSprite
+                ? `<img src="${spriteUrl}" alt="${item.name}" loading="lazy" class="w-16 h-16 object-contain drop-shadow-[0_3px_4px_rgba(0,0,0,0.45)]" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" /><span style="display:none" class="text-4xl">${tMeta.icon}</span>`
+                : `<span class="text-4xl">${item.emoji || tMeta.icon}</span>`}
+            </div>
+            <div class="text-sm font-black text-white text-center leading-tight mt-0.5">${item.name}</div>
+          </div>
+          <div class="p-2 space-y-2 bg-slate-900/80">
+            <div class="flex flex-wrap justify-center gap-1">${typeBadges}</div>
+            <div class="grid grid-cols-2 gap-1">
+              <button type="button" class="cls-dad-btn py-1.5 rounded-lg text-[11px] font-black border transition ${
+                inDad
+                  ? 'bg-sky-500 text-slate-950 border-sky-300'
+                  : 'bg-slate-800 hover:bg-slate-700 text-sky-300 border-slate-700'
+              }">
+                ${inDad ? '✓ 爸爸隊' : '+ 爸爸隊'}
+              </button>
+              <button type="button" class="cls-kid-btn py-1.5 rounded-lg text-[11px] font-black border transition ${
+                inKid
+                  ? 'bg-rose-500 text-white border-rose-300'
+                  : 'bg-slate-800 hover:bg-slate-700 text-rose-300 border-slate-700'
+              }">
+                ${inKid ? '✓ 仔仔隊' : '+ 仔仔隊'}
+              </button>
+            </div>
+            <button type="button" class="cls-see-moves-btn w-full py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/50 text-[11px] font-black text-amber-200 transition">
+              📚 睇佢嘅招式
+            </button>
+          </div>
+        `;
+
+        card.querySelector('.cls-speak-btn').addEventListener('click', () => {
+          playSound('click');
+          speakText(item.name);
+          showToast('🔊 ' + item.name);
+        });
+        card.querySelector('.cls-dad-btn').addEventListener('click', () => toggleTeamMember('dad', item));
+        card.querySelector('.cls-kid-btn').addEventListener('click', () => toggleTeamMember('kid', item));
+        card.querySelector('.cls-see-moves-btn').addEventListener('click', () => {
+          playSound('click');
+          state.typeAllSelected = primaryType;
+          state.typeAllSearch = item.name;
+          state.typeAllKind = 'all';
+          document.getElementById('typeAllSearchInput').value = item.name;
+          switchTab('typeAll');
+        });
+
+        gridEl.appendChild(card);
+      });
+    }
+
+    document.getElementById('tabClassify').addEventListener('click', () => { playSound('click'); switchTab('classify'); });
+    document.getElementById('btnReloadClassify').addEventListener('click', () => {
+      playSound('click');
+      loadClassifyData(true);
+    });
+    document.getElementById('classifySearchInput').addEventListener('input', (e) => {
+      state.classifySearch = e.target.value;
+      renderClassifyGrid();
+    });
+
+    document.querySelectorAll('.cls-mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        playSound('click');
+        state.classifyMode = btn.getAttribute('data-clsmode');
+        document.querySelectorAll('.cls-mode-btn').forEach(b => {
+          const active = b.getAttribute('data-clsmode') === state.classifyMode;
+          b.className = active
+            ? 'cls-mode-btn py-2 px-2 rounded-xl text-xs font-black bg-amber-400 text-slate-950 border border-amber-300 transition'
+            : 'cls-mode-btn py-2 px-2 rounded-xl text-xs font-bold bg-slate-900 text-slate-300 border border-slate-700 transition';
+        });
+        document.getElementById('classifyTypeWrap').classList.toggle('hidden', state.classifyMode !== 'type');
+        document.getElementById('classifySpecialWrap').classList.toggle('hidden', state.classifyMode !== 'special');
+        loadClassifyData(false);
+      });
+    });
+
+    document.querySelectorAll('.spec-sub-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        playSound('click');
+        state.classifySpecial = btn.getAttribute('data-spec');
+        document.querySelectorAll('.spec-sub-btn').forEach(b => {
+          const active = b.getAttribute('data-spec') === state.classifySpecial;
+          b.className = active
+            ? 'spec-sub-btn py-2 rounded-xl text-xs font-black bg-emerald-500 text-slate-950 border border-emerald-300 transition'
+            : 'spec-sub-btn py-2 rounded-xl text-xs font-bold bg-slate-900 text-slate-300 border border-slate-700 transition';
+        });
+        loadClassifyData(false);
+      });
+    });
+
+    // ==================== INIT ====================
+    renderTypeFilterPills('dexTypeFilters', state.dexFilter, (val) => {
+      state.dexFilter = val;
+      renderDex();
+    });
+    renderBattle();
+    renderDex();
+  </script>
+</body>
+</html>
