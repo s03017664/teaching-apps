@@ -1,0 +1,2133 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>速率方程與對數圖解法 (Rate Law & Kinetic Visualizer)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+HK:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans HK"', 'Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        chem: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                            800: '#0c4a6e',
+                            900: '#0a3854',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .math-variable {
+            font-family: 'Times New Roman', Times, serif;
+            font-style: italic;
+        }
+        input[type=range] {
+            accent-color: #0284c7;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col">
+
+    <!-- Header Navigation -->
+    <header class="bg-slate-800/80 backdrop-blur border-b border-slate-700 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="p-2 bg-chem-600/30 text-chem-500 rounded-xl border border-chem-500/30">
+                    <i class="fa-solid fa-flask-vial text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-white tracking-wide">速率方程與動力學圖解法</h1>
+                    <p class="text-xs text-slate-400">HKDSE Chemistry - Rate Law, Log Plot & Reaction Kinetics</p>
+                </div>
+            </div>
+            
+            <!-- Navigation Tabs -->
+            <div class="flex flex-wrap justify-center bg-slate-900/80 p-1 rounded-xl border border-slate-700/60 text-xs sm:text-sm">
+                <button id="tab-demo" onclick="switchTab('demo')" class="px-3 sm:px-4 py-1.5 rounded-lg font-medium transition-all duration-200 bg-chem-600 text-white shadow">
+                    <i class="fa-solid fa-sliders mr-1.5"></i>對數圖探索
+                </button>
+                <button id="tab-arrhenius" onclick="switchTab('arrhenius')" class="px-3 sm:px-4 py-1.5 rounded-lg font-medium transition-all duration-200 text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-fire-flame-curved mr-1.5"></i>阿列紐斯方程
+                </button>
+                <button id="tab-timecourse" onclick="switchTab('timecourse')" class="px-3 sm:px-4 py-1.5 rounded-lg font-medium transition-all duration-200 text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-clock-rotate-left mr-1.5"></i>時間關係圖
+                </button>
+                <button id="tab-realrxn" onclick="switchTab('realrxn')" class="px-3 sm:px-4 py-1.5 rounded-lg font-medium transition-all duration-200 text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-vial-circle-check mr-1.5"></i>真實反應案例
+                </button>
+                <button id="tab-derivation" onclick="switchTab('derivation')" class="px-3 sm:px-4 py-1.5 rounded-lg font-medium transition-all duration-200 text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-square-root-variable mr-1.5"></i>公式推導
+                </button>
+                <button id="tab-quiz" onclick="switchTab('quiz')" class="px-3 sm:px-4 py-1.5 rounded-lg font-medium transition-all duration-200 text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-graduation-cap mr-1.5"></i>測驗挑戰
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6 sm:px-6 lg:px-8">
+        
+        <!-- Global Control Panel (Visible in Demo & Timecourse) -->
+        <div id="global-control-panel" class="bg-slate-800/90 rounded-2xl p-5 border border-slate-700/80 shadow-xl mb-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-700/60 pb-4 mb-5 gap-2">
+                <div>
+                    <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-gears text-chem-500"></i> 動力學控制面板（調整單一反應物參數）
+                    </h2>
+                    <p class="text-xs text-slate-400">拖動下面 Slider，即時觀察速率方程、對數圖、數據計算以及時間關係圖的變化！</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="resetParameters()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-200 px-3 py-1.5 rounded-lg transition border border-slate-600">
+                        <i class="fa-solid fa-rotate-left mr-1"></i>重設參數
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- Parameter 1: Reaction Order (n) -->
+                <div class="bg-slate-900/70 p-4 rounded-xl border border-amber-500/30">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="text-sm font-medium text-amber-300 flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span>
+                            反應級數 (Order) <span class="math-variable text-lg font-bold">n</span>
+                        </label>
+                        <span id="val-order" class="text-lg font-extrabold text-amber-400 bg-amber-950/60 px-2.5 py-0.5 rounded border border-amber-500/40">1.0</span>
+                    </div>
+                    <input id="slider-order" type="range" min="0" max="3" step="0.1" value="1" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                    <div class="flex justify-between text-[11px] text-slate-400 mt-2 font-mono">
+                        <button onclick="setOrder(0)" class="hover:text-amber-300">0級</button>
+                        <button onclick="setOrder(1)" class="hover:text-amber-300">1級</button>
+                        <button onclick="setOrder(2)" class="hover:text-amber-300">2級</button>
+                        <button onclick="setOrder(3)" class="hover:text-amber-300">3級</button>
+                    </div>
+                </div>
+
+                <!-- Parameter 2: Rate Constant (k) -->
+                <div class="bg-slate-900/70 p-4 rounded-xl border border-cyan-500/30">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="text-sm font-medium text-cyan-300 flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 inline-block"></span>
+                            速率常數 (Rate Constant) <span class="math-variable text-lg font-bold">k</span>
+                        </label>
+                        <span id="val-k" class="text-lg font-extrabold text-cyan-400 bg-cyan-950/60 px-2.5 py-0.5 rounded border border-cyan-500/40">2.50</span>
+                    </div>
+                    <input id="slider-k" type="range" min="0.1" max="10" step="0.1" value="2.5" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                    <div class="flex justify-between text-[11px] text-slate-400 mt-2 font-mono">
+                        <span>0.1</span>
+                        <span>2.5</span>
+                        <span>5.0</span>
+                        <span>7.5</span>
+                        <span>10.0</span>
+                    </div>
+                </div>
+
+                <!-- Parameter 3: Max Concentration Range / Initial [A]0 -->
+                <div class="bg-slate-900/70 p-4 rounded-xl border border-emerald-500/30">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="text-sm font-medium text-emerald-300 flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block"></span>
+                            初始濃度 <span class="math-variable font-bold">[A]<sub>0</sub></span> (M)
+                        </label>
+                        <span id="val-conc" class="text-lg font-extrabold text-emerald-400 bg-emerald-950/60 px-2.5 py-0.5 rounded border border-emerald-500/40">2.0</span>
+                    </div>
+                    <input id="slider-conc" type="range" min="0.5" max="5.0" step="0.1" value="2.0" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                    <div class="flex justify-between text-[11px] text-slate-400 mt-2 font-mono">
+                        <span>0.5 M</span>
+                        <span>2.0 M</span>
+                        <span>3.5 M</span>
+                        <span>5.0 M</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ==================== TAB 1: DEMO / INTERACTIVE ==================== -->
+        <div id="view-demo" class="space-y-6">
+            
+            <!-- Live Equation Banner -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                
+                <!-- Original Equation Card -->
+                <div class="bg-slate-800/90 rounded-xl p-4 border border-slate-700 flex flex-col justify-center items-center text-center">
+                    <div class="text-xs font-semibold uppercase text-slate-400 mb-1 tracking-wider">原始速率方程 (Rate Law)</div>
+                    <div class="text-xl sm:text-2xl font-bold font-mono text-white tracking-wide">
+                        <span class="text-rose-400">Rate</span> = 
+                        <span id="eq-k" class="text-cyan-400">2.50</span> × 
+                        [<span class="text-emerald-400">A</span>]<sup id="eq-n" class="text-amber-400 text-xl font-bold">1.0</sup>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-2">非線性曲線（除非 $n=1$ 時係過原點直線）</p>
+                </div>
+
+                <!-- Log Transformed Equation Card -->
+                <div class="bg-gradient-to-r from-chem-900/60 to-slate-800/90 rounded-xl p-4 border border-chem-500/40 flex flex-col justify-center items-center text-center shadow-lg">
+                    <div class="text-xs font-semibold uppercase text-chem-300 mb-1 tracking-wider">對數直線方程 (<span class="math-variable">y = mx + c</span>)</div>
+                    <div class="text-xl sm:text-2xl font-bold font-mono text-white tracking-wide">
+                        <span class="text-rose-400">log<sub>10</sub>(Rate)</span> = 
+                        <span id="eq-log-m" class="text-amber-400 font-extrabold underline underline-offset-4 decoration-amber-500/50">1.00</span> × <span class="text-emerald-400">log<sub>10</sub>([A])</span> 
+                        <span id="eq-log-sign" class="text-slate-300">+</span> 
+                        <span id="eq-log-c" class="text-cyan-400 font-extrabold underline underline-offset-4 decoration-cyan-500/50">0.398</span>
+                    </div>
+                    <div class="flex gap-4 text-xs mt-2 font-sans">
+                        <span class="text-amber-300"><i class="fa-solid fa-chart-line mr-1"></i>斜率 (m) = <b id="stat-slope">1.00</b> (反應級數 n)</span>
+                        <span class="text-cyan-300"><i class="fa-solid fa-arrows-up-down mr-1"></i>y-截距 (c) = <b id="stat-intercept">0.398</b> (= log<sub>10</sub> k)</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Graphs Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- Graph 1: Rate vs [A] & Calculation Card -->
+                <div class="bg-slate-800/90 p-5 rounded-2xl border border-slate-700 shadow-xl flex flex-col justify-between space-y-4">
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <div>
+                                <h3 class="font-bold text-white text-base flex items-center gap-2">
+                                    <i class="fa-solid fa-chart-area text-emerald-400"></i> 圖 (一)：速率與濃度關係圖
+                                </h3>
+                                <p class="text-xs text-slate-400">Rate vs [A]</p>
+                            </div>
+                            <span class="text-xs bg-emerald-950/80 text-emerald-300 border border-emerald-600/40 px-2 py-1 rounded-md font-mono">
+                                y = k · x<sup>n</sup>
+                            </span>
+                        </div>
+                        <div class="relative min-h-[250px] sm:min-h-[280px]">
+                            <canvas id="chart-rate"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- RATE GRAPH INTERCEPT & RATE CONSTANT CALCULATION CARD -->
+                    <div class="bg-slate-950 p-4 rounded-xl border border-emerald-500/40 shadow-inner space-y-3 font-mono">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                            <span class="text-xs font-bold text-emerald-400 flex items-center gap-1.5 font-sans">
+                                <i class="fa-solid fa-calculator"></i> 速率圖與 y-截距 / 速率常數 (k) 計算
+                            </span>
+                            <span class="text-[11px] text-slate-400 font-sans">當 [A] = 1.0 M 時的特殊性</span>
+                        </div>
+
+                        <!-- Live Data at [A] = 1.0 M -->
+                        <div class="bg-slate-900/90 p-3 rounded border border-slate-800 text-xs space-y-2">
+                            <div class="text-slate-300 flex items-center justify-between">
+                                <span>📍 當濃度 <span class="text-emerald-400 font-bold">[A] = 1.0 M</span> 時：</span>
+                                <span class="text-rose-400 font-bold">Rate = <span id="calc-rate-at-1">2.500</span> mol dm⁻³ s⁻¹</span>
+                            </div>
+
+                            <div class="text-slate-300 pt-2 border-t border-slate-800/80 space-y-1">
+                                <p class="text-[11px] text-slate-400 font-sans">推導公式：<span class="font-mono text-cyan-300">Rate = k · [A]ⁿ ➔ Rate = k · (1.0)ⁿ ➔ Rate = k</span></p>
+                                <div class="flex items-center gap-2 text-xs">
+                                    <span>代入計算：</span>
+                                    <span class="font-bold text-cyan-400">
+                                        k = Rate / [1.0]<sup><span id="calc-k-n-exp">1.0</span></sup> = <span id="calc-k-result">2.50</span> <span id="calc-k-unit" class="text-xs text-amber-300 font-normal">s⁻¹</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Result Box for k -->
+                        <div class="p-2.5 bg-gradient-to-r from-emerald-950/60 to-slate-900 rounded-lg border border-emerald-500/50 flex items-center justify-between font-sans">
+                            <span class="text-xs text-slate-200">
+                                <i class="fa-solid fa-arrow-right-long text-emerald-400 mr-1.5"></i>從 [A] = 1M 的數據點求得：
+                            </span>
+                            <span class="text-sm font-extrabold text-cyan-400 bg-cyan-950 px-3 py-1 rounded border border-cyan-400/40">
+                                k = <span id="calc-final-k">2.50</span> <span id="calc-final-k-unit" class="text-xs text-amber-300 font-normal">s⁻¹</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Graph 2: log(Rate) vs log([A]) & Slope Breakdown & Intercept Breakdown -->
+                <div class="bg-slate-800/90 p-5 rounded-2xl border border-slate-700 shadow-xl flex flex-col justify-between space-y-4">
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <div>
+                                <h3 class="font-bold text-white text-base flex items-center gap-2">
+                                    <i class="fa-solid fa-chart-line text-amber-400"></i> 圖 (二)：對數直線圖與即時數據
+                                </h3>
+                                <p class="text-xs text-slate-400">log<sub>10</sub>(Rate) vs log<sub>10</sub>([A])</p>
+                            </div>
+                            <span class="text-xs bg-amber-950/80 text-amber-300 border border-amber-600/40 px-2 py-1 rounded-md font-mono">
+                                y = m · x + c
+                            </span>
+                        </div>
+                        <div class="relative min-h-[250px] sm:min-h-[280px]">
+                            <canvas id="chart-log"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- REAL-TIME SLOPE & REACTION ORDER CALCULATION CARD -->
+                    <div class="bg-slate-950 p-4 rounded-xl border border-amber-500/40 shadow-inner space-y-3 font-mono">
+                        
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                            <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5 font-sans">
+                                <i class="fa-solid fa-calculator"></i> 對數圖即時斜率與級數計算
+                            </span>
+                            <span class="text-[11px] text-slate-400 font-sans">取圖中兩點計算 Slope</span>
+                        </div>
+
+                        <!-- Data Points Display -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                            <div class="p-2 bg-slate-900/80 rounded border border-rose-500/30">
+                                <span class="text-rose-400 font-bold block mb-0.5">🔴 點 A (Point 1):</span>
+                                <span class="text-slate-300 text-[11px]">x₁ = log₁₀([A]₁) = <b id="p1-x" class="text-emerald-300">-0.699</b></span><br>
+                                <span class="text-slate-300 text-[11px]">y₁ = log₁₀(Rate₁) = <b id="p1-y" class="text-rose-300">-0.301</b></span>
+                            </div>
+                            <div class="p-2 bg-slate-900/80 rounded border border-blue-500/30">
+                                <span class="text-blue-400 font-bold block mb-0.5">🔵 點 B (Point 2):</span>
+                                <span class="text-slate-300 text-[11px]">x₂ = log₁₀([A]₂) = <b id="p2-x" class="text-emerald-300">0.301</b></span><br>
+                                <span class="text-slate-300 text-[11px]">y₂ = log₁₀(Rate₂) = <b id="p2-y" class="text-rose-300">0.699</b></span>
+                            </div>
+                        </div>
+
+                        <!-- Step-by-Step Calculation -->
+                        <div class="bg-slate-900/90 p-3 rounded border border-slate-800 text-xs space-y-2">
+                            <div class="text-slate-300 flex flex-wrap items-center gap-1 sm:gap-2">
+                                <span class="font-bold text-amber-300">斜率 Slope (m)</span>
+                                <span>=</span>
+                                <span><span class="text-rose-400">Δy</span> / <span class="text-emerald-400">Δx</span></span>
+                                <span>=</span>
+                                <span class="bg-slate-950 px-2 py-1 rounded text-amber-200 border border-slate-700">
+                                    (<span id="calc-y2">0.699</span> - <span id="calc-y1">-0.301</span>) / (<span id="calc-x2">0.301</span> - <span id="calc-x1">-0.699</span>)
+                                </span>
+                            </div>
+
+                            <div class="flex items-center gap-2 pt-1 border-t border-slate-800/80 text-xs">
+                                <span>計算數值:</span>
+                                <span class="font-bold text-amber-400 text-sm">
+                                    <span id="calc-dy">1.000</span> / <span id="calc-dx">1.000</span> = <span id="calc-slope-result">1.00</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Result Display: Directly mapping Slope to Reaction Order -->
+                        <div class="p-2.5 bg-gradient-to-r from-amber-950/60 to-slate-900 rounded-lg border border-amber-500/50 flex items-center justify-between font-sans">
+                            <span class="text-xs text-slate-200">
+                                <i class="fa-solid fa-arrow-right-long text-amber-400 mr-1.5"></i>對數圖斜率 (Slope) 直接等於：
+                            </span>
+                            <span class="text-sm font-extrabold text-amber-400 bg-amber-950 px-3 py-1 rounded border border-amber-400/40">
+                                反應級數 n = <span id="calc-final-n">1.0</span>
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <!-- REAL-TIME Y-INTERCEPT (0, y) & RATE CONSTANT (k) CALCULATION CARD -->
+                    <div class="bg-slate-950 p-4 rounded-xl border border-cyan-500/40 shadow-inner space-y-3 font-mono">
+                        
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                            <span class="text-xs font-bold text-cyan-400 flex items-center gap-1.5 font-sans">
+                                <i class="fa-solid fa-crosshairs"></i> 對數圖即時 y-截距 (0, y) 坐標與 k 計算
+                            </span>
+                            <span class="text-[11px] text-cyan-300 bg-cyan-950 px-2 py-0.5 rounded border border-cyan-800 font-sans">
+                                青色標記點 (0, c)
+                            </span>
+                        </div>
+
+                        <!-- Intercept Coordinate Box -->
+                        <div class="p-2.5 bg-cyan-950/40 rounded-lg border border-cyan-500/30 flex items-center justify-between text-xs font-sans">
+                            <span class="text-slate-300">📍 y-截距坐標 <span class="font-mono text-slate-400">(x=0 時)</span>：</span>
+                            <span class="font-mono text-cyan-300 font-bold text-sm bg-slate-900 px-3 py-1 rounded border border-cyan-500/40">
+                                (0, <span id="intercept-coord-y">0.398</span>)
+                            </span>
+                        </div>
+
+                        <!-- Step-by-Step Intercept Calculation -->
+                        <div class="bg-slate-900/90 p-3 rounded border border-slate-800 text-xs space-y-2 font-sans">
+                            <!-- Step 1 -->
+                            <div class="text-slate-300 text-xs flex items-center justify-between">
+                                <span><b>步驟 1：</b> 讀取 y-截距數值 <span class="math-variable text-cyan-300">c</span> (即坐標的 y 值)</span>
+                                <span class="font-mono text-cyan-300 font-bold bg-slate-950 px-2 py-0.5 rounded border border-slate-800">
+                                    c = log₁₀(k) = <span id="log-calc-c-val">0.398</span>
+                                </span>
+                            </div>
+
+                            <!-- Step 2 -->
+                            <div class="text-slate-300 text-xs border-t border-slate-800/80 pt-2 flex flex-wrap items-center gap-1.5 font-mono">
+                                <span class="font-sans"><b>步驟 2：</b> 計算反對數 (Antilog) 求 <span class="math-variable text-cyan-300">k</span>：</span>
+                                <span class="text-cyan-400 font-bold bg-slate-950 px-2 py-0.5 rounded border border-slate-800">
+                                    k = 10<sup>c</sup> = 10<sup><span id="log-calc-c-exp">0.398</span></sup> = <span id="log-calc-k-val">2.50</span>
+                                </span>
+                            </div>
+
+                            <!-- Step 3 -->
+                            <div class="text-slate-300 text-xs border-t border-slate-800/80 pt-2 flex items-center justify-between">
+                                <span><b>步驟 3：</b> 代入反應級數 <span class="font-mono text-amber-300">n = <span id="log-calc-n-val">1.0</span></span> 的化學單位：</span>
+                                <span id="log-calc-k-unit" class="font-mono text-amber-300 font-bold bg-slate-950 px-2 py-0.5 rounded border border-slate-800">
+                                    s⁻¹
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Result Display for k from Log Intercept -->
+                        <div class="p-2.5 bg-gradient-to-r from-cyan-950/60 to-slate-900 rounded-lg border border-cyan-500/50 flex items-center justify-between font-sans">
+                            <span class="text-xs text-slate-200">
+                                <i class="fa-solid fa-arrow-right-long text-cyan-400 mr-1.5"></i>從 y-截距 (0, c) 計算得出：
+                            </span>
+                            <span class="text-sm font-extrabold text-cyan-400 bg-cyan-950 px-3 py-1 rounded border border-cyan-400/40">
+                                k = <span id="log-calc-final-k">2.50</span> <span id="log-calc-final-k-unit" class="text-xs text-amber-300 font-normal">s⁻¹</span>
+                            </span>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Data Table Section -->
+            <div class="bg-slate-800/90 rounded-2xl p-5 border border-slate-700 shadow-xl">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+                    <div>
+                        <h3 class="font-bold text-white text-base flex items-center gap-2">
+                            <i class="fa-solid fa-table-cells text-chem-400"></i> 模擬實驗數據表 (Generated Experimental Data)
+                        </h3>
+                        <p class="text-xs text-slate-400">這是在考卷或實驗中收集到的數據轉換過程：</p>
+                    </div>
+                    <button onclick="copyTableData()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-200 px-3 py-1.5 rounded-lg transition border border-slate-600 flex items-center gap-1.5">
+                        <i class="fa-regular fa-copy"></i> 複製表格數據
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs sm:text-sm text-slate-300">
+                        <thead class="bg-slate-900/90 text-slate-400 uppercase font-mono border-b border-slate-700">
+                            <tr>
+                                <th class="py-3 px-4">試驗 (Exp)</th>
+                                <th class="py-3 px-4 text-emerald-400">[A] (mol dm⁻³)</th>
+                                <th class="py-3 px-4 text-rose-400">Rate (mol dm⁻³ s⁻¹)</th>
+                                <th class="py-3 px-4 text-emerald-300">log₁₀([A])</th>
+                                <th class="py-3 px-4 text-rose-300">log₁₀(Rate)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body" class="divide-y divide-slate-700/50 font-mono">
+                            <!-- Dynamic rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ==================== NEW TAB: ARRHENIUS EQUATION (log10 version) ==================== -->
+        <div id="view-arrhenius" class="hidden space-y-6">
+            
+            <!-- Arrhenius Controls -->
+            <div class="bg-slate-800/90 rounded-2xl p-5 border border-slate-700/80 shadow-xl">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-700/60 pb-4 mb-5 gap-2">
+                    <div>
+                        <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-fire-flame-curved text-rose-500"></i> 阿列紐斯方程參數控制 (Arrhenius Parameters)
+                        </h2>
+                        <p class="text-xs text-slate-400">調節活化能 (Ea) 與指前因子 (A)，觀察 log₁₀(k) vs 1/T 直線圖的變化與數據計算！</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    
+                    <!-- Ea Slider -->
+                    <div class="bg-slate-900/70 p-4 rounded-xl border border-rose-500/30">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="text-sm font-medium text-rose-300 flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span>
+                                活化能 <span class="math-variable font-bold">E<sub>a</sub></span> (kJ mol⁻¹)
+                            </label>
+                            <span id="val-arr-ea" class="text-lg font-extrabold text-rose-400 bg-rose-950/60 px-2.5 py-0.5 rounded border border-rose-500/40">50</span>
+                        </div>
+                        <input id="slider-arr-ea" type="range" min="10" max="120" step="1" value="50" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                        <div class="flex justify-between text-[11px] text-slate-400 mt-2 font-mono">
+                            <span>10 kJ</span>
+                            <span>50 kJ</span>
+                            <span>80 kJ</span>
+                            <span>120 kJ</span>
+                        </div>
+                    </div>
+
+                    <!-- Frequency Factor A Slider -->
+                    <div class="bg-slate-900/70 p-4 rounded-xl border border-amber-500/30">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="text-sm font-medium text-amber-300 flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span>
+                                指前因子 <span class="math-variable font-bold">A</span> (s⁻¹)
+                            </label>
+                            <span id="val-arr-a" class="text-lg font-extrabold text-amber-400 bg-amber-950/60 px-2.5 py-0.5 rounded border border-amber-500/40">1.0 × 10⁸</span>
+                        </div>
+                        <input id="slider-arr-a" type="range" min="5" max="12" step="0.1" value="8" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                        <div class="flex justify-between text-[11px] text-slate-400 mt-2 font-mono">
+                            <span>10⁵</span>
+                            <span>10⁸</span>
+                            <span>10¹⁰</span>
+                            <span>10¹²</span>
+                        </div>
+                    </div>
+
+                    <!-- Temp Range Slider -->
+                    <div class="bg-slate-900/70 p-4 rounded-xl border border-emerald-500/30">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="text-sm font-medium text-emerald-300 flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block"></span>
+                                觀察溫度上限 <span class="math-variable font-bold">T<sub>max</sub></span> (K)
+                            </label>
+                            <span id="val-arr-t" class="text-lg font-extrabold text-emerald-400 bg-emerald-950/60 px-2.5 py-0.5 rounded border border-emerald-500/40">350 K</span>
+                        </div>
+                        <input id="slider-arr-t" type="range" min="300" max="500" step="5" value="350" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                        <div class="flex justify-between text-[11px] text-slate-400 mt-2 font-mono">
+                            <span>300 K (27°C)</span>
+                            <span>400 K (127°C)</span>
+                            <span>500 K (227°C)</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Arrhenius Banner Cards -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div class="bg-slate-800/90 rounded-xl p-4 border border-slate-700 flex flex-col justify-center items-center text-center">
+                    <div class="text-xs font-semibold uppercase text-slate-400 mb-1 tracking-wider">阿列紐斯方程 (Arrhenius Exponential)</div>
+                    <div class="text-xl sm:text-2xl font-bold font-mono text-white tracking-wide">
+                        <span class="text-cyan-400">k</span> = 
+                        <span class="text-amber-400">A</span> · e<sup class="text-rose-400 font-bold">-Ea / (R·T)</sup>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-2">氣體常數 $R = 8.314 \text{ J mol}^{-1} \text{K}^{-1}$</p>
+                </div>
+
+                <div class="bg-gradient-to-r from-chem-900/60 to-slate-800/90 rounded-xl p-4 border border-chem-500/40 flex flex-col justify-center items-center text-center shadow-lg">
+                    <div class="text-xs font-semibold uppercase text-chem-300 mb-1 tracking-wider">阿列紐斯對數直線方程 (<span class="math-variable">y = mx + c</span>)</div>
+                    <div class="text-xl sm:text-2xl font-bold font-mono text-white tracking-wide">
+                        <span class="text-cyan-400">log<sub>10</sub>(k)</span> = 
+                        <span class="text-rose-400 font-extrabold" id="arr-eq-m">-2611.4</span> × <span class="text-emerald-400">(1/T)</span> + 
+                        <span class="text-amber-400 font-extrabold" id="arr-eq-c">8.000</span>
+                    </div>
+                    <div class="flex gap-4 text-xs mt-2 font-sans">
+                        <span class="text-rose-300"><i class="fa-solid fa-chart-line mr-1"></i>斜率 (m) = -E<sub>a</sub> / (2.303·R)</span>
+                        <span class="text-amber-300"><i class="fa-solid fa-arrows-up-down mr-1"></i>y-截距 (c) = log<sub>10</sub>(A)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Arrhenius Graph & Calculation Breakdown -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- Graph view -->
+                <div class="bg-slate-800/90 p-5 rounded-2xl border border-slate-700 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <div>
+                                <h3 class="font-bold text-white text-base flex items-center gap-2">
+                                    <i class="fa-solid fa-chart-line text-rose-400"></i> 阿列紐斯直線圖 (log₁₀ k vs 1/T)
+                                </h3>
+                                <p class="text-xs text-slate-400">y = log₁₀(k) , x = 1/T (K⁻¹)</p>
+                            </div>
+                            <span class="text-xs bg-rose-950/80 text-rose-300 border border-rose-600/40 px-2 py-1 rounded-md font-mono">
+                                y = m·x + c
+                            </span>
+                        </div>
+                        <div class="relative min-h-[300px] sm:min-h-[350px]">
+                            <canvas id="chart-arrhenius"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 p-3 bg-slate-900/80 rounded-xl border border-slate-700/50 text-xs text-slate-300 space-y-1">
+                        <strong class="text-rose-400">【阿列紐斯對數圖特徵】</strong>
+                        <ul class="list-disc list-inside space-y-1 text-[11px] text-slate-300">
+                            <li>直線**斜率必為負數**，斜率越負代表活化能 $E_a$ 越高。</li>
+                            <li>當 $1/T \to 0$（溫度趨近無限大）時，直線與 $y$-軸相交於 $(0, \log_{10} A)$。</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Real-time Calculation Breakdown Card for Ea only -->
+                <div class="space-y-4 flex flex-col justify-center">
+                    
+                    <!-- Slope & Ea calculation -->
+                    <div class="bg-slate-950 p-5 rounded-xl border border-rose-500/40 shadow-inner space-y-4 font-mono">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                            <span class="text-sm font-bold text-rose-400 flex items-center gap-2 font-sans">
+                                <i class="fa-solid fa-calculator"></i> 從斜率 (Slope) 計算活化能 (Ea) 步驟
+                            </span>
+                            <span class="text-xs text-slate-400 font-sans">取圖中 P₁ 與 P₂ 兩點</span>
+                        </div>
+
+                        <!-- Data Points -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                            <div class="p-3 bg-slate-900/80 rounded-lg border border-rose-500/30 space-y-1">
+                                <span class="text-rose-400 font-bold block">🔴 點 P₁ (低溫 298K):</span>
+                                <span class="text-slate-300">x₁ = 1/T₁ = <b id="arr-p1-x" class="text-emerald-300">0.00336</b> K⁻¹</span><br>
+                                <span class="text-slate-300">y₁ = log₁₀(k₁) = <b id="arr-p1-y" class="text-rose-300">-0.777</b></span>
+                            </div>
+                            <div class="p-3 bg-slate-900/80 rounded-lg border border-blue-500/30 space-y-1">
+                                <span class="text-blue-400 font-bold block">🔵 點 P₂ (高溫 Tmax):</span>
+                                <span class="text-slate-300">x₂ = 1/T₂ = <b id="arr-p2-x" class="text-emerald-300">0.00286</b> K⁻¹</span><br>
+                                <span class="text-slate-300">y₂ = log₁₀(k₂) = <b id="arr-p2-y" class="text-rose-300">0.531</b></span>
+                            </div>
+                        </div>
+
+                        <!-- Slope Calculation -->
+                        <div class="bg-slate-900/90 p-4 rounded-lg border border-slate-800 text-xs space-y-3 font-sans">
+                            <div class="text-slate-300 flex flex-wrap items-center gap-1 sm:gap-2">
+                                <span class="font-bold text-amber-300">步驟 1：求斜率 m：</span>
+                                <span class="font-mono text-rose-300">m = Δy / Δx = <span id="arr-calc-m">-2611.4</span></span>
+                            </div>
+                            <div class="text-slate-300 border-t border-slate-800/80 pt-2.5 flex flex-wrap items-center gap-1 sm:gap-2">
+                                <span class="font-bold text-amber-300">步驟 2：代入 DSE 活化能公式：</span>
+                                <span class="font-mono text-rose-300">m = -E<sub>a</sub> / (2.303·R)</span>
+                            </div>
+                            <div class="text-slate-300 font-mono text-xs bg-slate-950 p-3 rounded-lg border border-slate-800 space-y-1">
+                                <p>E<sub>a</sub> = - m × 2.303 × R</p>
+                                <p>E<sub>a</sub> = - (<span id="arr-calc-m-sub">-2611.4</span>) × 2.303 × 8.314 J mol⁻¹ K⁻¹</p>
+                                <p>= <span id="arr-calc-ea-j" class="text-amber-300 font-bold">50000</span> J mol⁻¹</p>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-gradient-to-r from-rose-950/80 to-slate-900 rounded-lg border border-rose-500/60 flex items-center justify-between font-sans">
+                            <span class="text-xs sm:text-sm text-slate-200">
+                                <i class="fa-solid fa-arrow-right-long text-rose-400 mr-2"></i>計算所得活化能 Ea：
+                            </span>
+                            <span class="text-base font-extrabold text-rose-400 bg-rose-950 px-3.5 py-1 rounded-lg border border-rose-400/50 font-mono">
+                                E<sub>a</sub> = <span id="arr-final-ea">50.0</span> kJ mol⁻¹
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ==================== TAB 2: TIME COURSE DYNAMICS ==================== -->
+        <div id="view-timecourse" class="hidden space-y-6">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- Graph 3: Concentration [A] vs Time -->
+                <div class="bg-slate-800/90 p-5 rounded-2xl border border-slate-700 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <div>
+                                <h3 class="font-bold text-white text-base flex items-center gap-2">
+                                    <i class="fa-solid fa-wave-square text-emerald-400"></i> 濃度對時間圖 ([A] vs Time)
+                                </h3>
+                                <p class="text-xs text-slate-400">觀察反應物濃度隨時間衰減的形狀</p>
+                            </div>
+                            <span id="badge-conc-time" class="text-xs bg-emerald-950/80 text-emerald-300 border border-emerald-600/40 px-2 py-1 rounded-md font-mono">
+                                1級反應：指數衰減
+                            </span>
+                        </div>
+                        <div class="relative min-h-[280px]">
+                            <canvas id="chart-conc-time"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 p-3 bg-slate-900/80 rounded-xl border border-slate-700/50 text-xs text-slate-300 space-y-1">
+                        <strong class="text-emerald-400">【[A] vs Time 特徵提示】</strong>
+                        <ul class="list-disc list-inside space-y-1 text-[11px] text-slate-300">
+                            <li><b class="text-amber-300">0級 (n=0)：</b> 直線下降，斜率固定為 $-k$。</li>
+                            <li><b class="text-amber-300">1級 (n=1)：</b> 指數衰減，具備<b>固定半衰期 ($t_{1/2}$)</b>。</li>
+                            <li><b class="text-amber-300">2級 (n=2)：</b> 初期急速下降，後期平緩，半衰期會隨濃度降低而加倍延長。</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Graph 4: Rate vs Concentration [A] -->
+                <div class="bg-slate-800/90 p-5 rounded-2xl border border-slate-700 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <div>
+                                <h3 class="font-bold text-white text-base flex items-center gap-2">
+                                    <i class="fa-solid fa-chart-line text-rose-400"></i> 速率對濃度圖 (Rate vs [A])
+                                </h3>
+                                <p class="text-xs text-slate-400">觀察反應過程中的即時速率與濃度關係</p>
+                            </div>
+                            <span id="badge-rate-conc" class="text-xs bg-rose-950/80 text-rose-300 border border-rose-600/40 px-2 py-1 rounded-md font-mono">
+                                Rate = k[A]ⁿ
+                            </span>
+                        </div>
+                        <div class="relative min-h-[280px]">
+                            <canvas id="chart-rate-conc-time"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 p-3 bg-slate-900/80 rounded-xl border border-slate-700/50 text-xs text-slate-300 space-y-1">
+                        <strong class="text-rose-400">【Rate vs [A] 特徵提示】</strong>
+                        <ul class="list-disc list-inside space-y-1 text-[11px] text-slate-300">
+                            <li><b class="text-amber-300">0級 (n=0)：</b> 速率為水平線，不隨濃度改變而變化（$Rate = k$）。</li>
+                            <li><b class="text-amber-300">1級 (n=1)：</b> 速率與濃度成正比，為過原點的斜直線（斜率 $= k$）。</li>
+                            <li><b class="text-amber-300">2級 (n=2)：</b> 速率隨濃度呈拋物線（二次曲線）遞增。</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Timecourse Kinetics Analysis Card -->
+            <div class="bg-slate-800/90 rounded-2xl p-5 border border-slate-700 shadow-xl space-y-3 font-sans">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-atom text-cyan-400"></i> 動力學半衰期 (Half-life, t₁/₂) 分析
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                    <div class="p-3 bg-slate-900/90 rounded-xl border border-slate-700/70">
+                        <span class="text-slate-400 font-semibold block mb-1">當前反應級數：</span>
+                        <span id="time-order-desc" class="text-amber-400 text-sm font-bold font-mono">1 級反應 (n = 1.0)</span>
+                    </div>
+
+                    <div class="p-3 bg-slate-900/90 rounded-xl border border-slate-700/70">
+                        <span class="text-slate-400 font-semibold block mb-1">半衰期計算公式：</span>
+                        <span id="time-t12-formula" class="text-cyan-300 text-sm font-mono">t₁/₂ = ln(2) / k</span>
+                    </div>
+
+                    <div class="p-3 bg-slate-900/90 rounded-xl border border-slate-700/70">
+                        <span class="text-slate-400 font-semibold block mb-1">估算半衰期數值：</span>
+                        <span id="time-t12-val" class="text-emerald-400 text-sm font-bold font-mono">0.277 秒</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ==================== TAB 3: REAL CHEMICAL REACTIONS ==================== -->
+        <div id="view-realrxn" class="hidden space-y-6">
+            
+            <div class="bg-slate-800/90 rounded-2xl p-6 border border-slate-700 shadow-xl space-y-6">
+                
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-700 pb-4 gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-vial-circle-check text-emerald-400"></i> 真實化學反應案例 (Real Chemical Reactions)
+                        </h2>
+                        <p class="text-xs text-slate-400">選擇 HKDSE/高考常見化學反應，體驗多種反應物（包含 0級、1級、2級）的即時動力學圖表變化！</p>
+                    </div>
+
+                    <!-- Preset Selector -->
+                    <div class="w-full md:w-auto">
+                        <label class="text-xs text-slate-400 block mb-1 font-medium">選擇真實化學反應：</label>
+                        <select id="select-preset-rxn" onchange="loadPresetReaction()" class="bg-slate-900 text-cyan-300 font-medium text-xs rounded-xl px-4 py-2 border border-cyan-500/50 focus:outline-none focus:border-cyan-400 w-full md:w-72 shadow-lg">
+                            <option value="propanone_i2">1. 丙酮碘化反應 (I2 為 0 級)</option>
+                            <option value="ester_saponification">2. 乙酸乙酯鹼性水解 (雙 1 級 = 總 2 級)</option>
+                            <option value="h2o2_decomp">3. 雙氧水催化分解 (單一 1 級)</option>
+                            <option value="persulfate_iodide">4. 過硫酸根與碘離子反應 (雙 1 級)</option>
+                            <option value="no2_co">5. NO2 與 CO 低溫反應 (CO 為 0 級, NO2 為 2 級)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Chemical Reaction Info Header -->
+                <div class="bg-slate-900/90 p-4 rounded-xl border border-chem-500/30 grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="md:col-span-2 space-y-1">
+                        <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider block">化學方程式 Chemical Equation</span>
+                        <div id="rxn-eq-text" class="text-base sm:text-lg font-mono font-bold text-amber-300">
+                            CH₃COCH₃ + I₂ + H⁺ ➔ CH₃COCH₂I + HI + H⁺
+                        </div>
+                        <p id="rxn-notes" class="text-xs text-slate-300 pt-1">
+                            說明：酸催化下，反應對 [I₂] 是 0 級！即使改變 I₂ 濃度，反應速率亦不會改變。
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 flex flex-col justify-center items-center text-center space-y-1">
+                        <span class="text-[11px] text-slate-400">速率方程 Rate Law</span>
+                        <div id="rxn-rate-law" class="text-sm sm:text-base font-mono font-bold text-rose-400">
+                            Rate = k [CH₃COCH₃]¹ [H⁺]¹ [I₂]⁰
+                        </div>
+                        <div class="text-[11px] text-cyan-300">
+                            總反應級數 (Overall Order) = <b id="rxn-total-order">2</b>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Sliders for Real Reaction -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-900/60 p-4 rounded-xl border border-slate-700/80">
+                    
+                    <!-- Reactant A Slider -->
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between items-center text-xs">
+                            <label id="lbl-rxn-a" class="font-medium text-emerald-300">反應物 A 初始濃度 [A]₀</label>
+                            <span id="val-rxn-a" class="font-mono text-emerald-400 font-bold">1.0 M</span>
+                        </div>
+                        <input id="slider-rxn-a" type="range" min="0.2" max="3.0" step="0.1" value="1.0" class="w-full h-1.5 bg-slate-700 rounded appearance-none cursor-pointer">
+                        <div id="sub-rxn-a" class="text-[11px] text-amber-400 font-mono">級數: 1 級</div>
+                    </div>
+
+                    <!-- Reactant B Slider -->
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between items-center text-xs">
+                            <label id="lbl-rxn-b" class="font-medium text-blue-300">反應物 B 初始濃度 [B]₀</label>
+                            <span id="val-rxn-b" class="font-mono text-blue-400 font-bold">1.0 M</span>
+                        </div>
+                        <input id="slider-rxn-b" type="range" min="0.2" max="3.0" step="0.1" value="1.0" class="w-full h-1.5 bg-slate-700 rounded appearance-none cursor-pointer">
+                        <div id="sub-rxn-b" class="text-[11px] text-amber-400 font-mono">級數: 0 級</div>
+                    </div>
+
+                    <!-- Rate Constant Slider -->
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between items-center text-xs">
+                            <label class="font-medium text-cyan-300">速率常數 k</label>
+                            <span id="val-rxn-k" class="font-mono text-cyan-400 font-bold">1.50</span>
+                        </div>
+                        <input id="slider-rxn-k" type="range" min="0.1" max="5.0" step="0.1" value="1.5" class="w-full h-1.5 bg-slate-700 rounded appearance-none cursor-pointer">
+                        <div id="sub-rxn-k-unit" class="text-[11px] text-slate-400 font-mono">單位: dm³ mol⁻¹ s⁻¹</div>
+                    </div>
+
+                </div>
+
+                <!-- Graphs for Real Reaction -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    
+                    <!-- Graph: [A] and [B] vs Time -->
+                    <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-700">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="font-bold text-white text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-chart-line text-emerald-400"></i> 濃度對時間圖 ([A] & [B] vs Time)
+                            </h3>
+                            <span class="text-[11px] text-slate-400">消耗曲線</span>
+                        </div>
+                        <div class="relative h-[280px]">
+                            <canvas id="chart-real-conc-time"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Graph: Rate vs Concentration of A -->
+                    <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-700">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 id="title-real-rate-conc" class="font-bold text-white text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-chart-area text-rose-400"></i> 速率對濃度圖 (Rate vs [A])
+                            </h3>
+                            <span class="text-[11px] text-slate-400">即時速率規律</span>
+                        </div>
+                        <div class="relative h-[280px]">
+                            <canvas id="chart-real-rate-conc"></canvas>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ==================== TAB 4: DERIVATION ==================== -->
+        <div id="view-derivation" class="hidden space-y-6">
+            
+            <div class="bg-slate-800/90 rounded-2xl p-6 border border-slate-700 shadow-xl space-y-6">
+                
+                <div class="border-b border-slate-700 pb-4">
+                    <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-square-root-variable text-chem-400"></i> 完整數學推導過程 (Mathematical Derivation)
+                    </h2>
+                    <p class="text-sm text-slate-400">點解可以將一條複雜嘅曲線方程變做簡單嘅直線方程？以下係逐步推導：</p>
+                </div>
+
+                <!-- Step 1 -->
+                <div class="bg-slate-900/80 p-5 rounded-xl border-l-4 border-emerald-500 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs uppercase tracking-wider font-bold text-emerald-400">步驟 一 (Step 1)</span>
+                        <span class="text-xs text-slate-400">基本速率方程</span>
+                    </div>
+                    <p class="text-sm text-slate-300">寫出反應物 A 的速率方程 (Rate Equation)：</p>
+                    <div class="text-lg font-mono font-bold text-white bg-slate-950 p-3 rounded-lg border border-slate-800 text-center">
+                        Rate = k · [A]<sup>n</sup>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="bg-slate-900/80 p-5 rounded-xl border-l-4 border-cyan-500 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs uppercase tracking-wider font-bold text-cyan-400">步驟 二 (Step 2)</span>
+                        <span class="text-xs text-slate-400">取對數 (Taking log₁₀)</span>
+                    </div>
+                    <p class="text-sm text-slate-300">喺等式兩邊同時取以 10 為底嘅對數 ($\log_{10}$)：</p>
+                    <div class="text-lg font-mono font-bold text-white bg-slate-950 p-3 rounded-lg border border-slate-800 text-center">
+                        log<sub>10</sub>(Rate) = log<sub>10</sub>( k · [A]<sup>n</sup> )
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="bg-slate-900/80 p-5 rounded-xl border-l-4 border-purple-500 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs uppercase tracking-wider font-bold text-purple-400">步驟 三 (Step 3)</span>
+                        <span class="text-xs text-slate-400">應用對數法則 (Log Law for Multiplication)</span>
+                    </div>
+                    <p class="text-sm text-slate-300">利用對數乘法法則：$\log(ab) = \log(a) + \log(b)$ 將右邊拆開：</p>
+                    <div class="text-lg font-mono font-bold text-white bg-slate-950 p-3 rounded-lg border border-slate-800 text-center">
+                        log<sub>10</sub>(Rate) = log<sub>10</sub>(k) + log<sub>10</sub>( [A]<sup>n</sup> )
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="bg-slate-900/80 p-5 rounded-xl border-l-4 border-amber-500 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs uppercase tracking-wider font-bold text-amber-400">步驟 四 (Step 4)</span>
+                        <span class="text-xs text-slate-400">應用次方法則 (Power Law)</span>
+                    </div>
+                    <p class="text-sm text-slate-300">利用對數次方法則：$\log(x^n) = n \cdot \log(x)$ 將指數 $n$ 拉到前面：</p>
+                    <div class="text-lg font-mono font-bold text-white bg-slate-950 p-3 rounded-lg border border-slate-800 text-center">
+                        log<sub>10</sub>(Rate) = log<sub>10</sub>(k) + <span class="text-amber-400">n</span> · log<sub>10</sub>([A])
+                    </div>
+                </div>
+
+                <!-- Step 5 (Final Mapping) -->
+                <div class="bg-slate-900/80 p-5 rounded-xl border-l-4 border-rose-500 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs uppercase tracking-wider font-bold text-rose-400">步驟 五 (Step 5)</span>
+                        <span class="text-xs text-slate-400">對比直線方程 y = mx + c</span>
+                    </div>
+                    <p class="text-sm text-slate-300">重新排列項目，對比標準直線方程 $y = mx + c$：</p>
+                    
+                    <div class="bg-slate-950 p-4 rounded-lg border border-slate-800 space-y-3 font-mono">
+                        <div class="grid grid-cols-4 text-center font-bold text-base sm:text-lg">
+                            <span class="text-rose-400">y</span>
+                            <span class="text-slate-500">=</span>
+                            <span class="text-amber-400">m · x</span>
+                            <span class="text-cyan-400">+ c</span>
+                        </div>
+                        <div class="grid grid-cols-4 text-center text-xs sm:text-sm text-slate-300 border-t border-slate-800 pt-3">
+                            <span class="text-rose-300">log<sub>10</sub>(Rate)</span>
+                            <span class="text-slate-500">=</span>
+                            <span><span class="text-amber-300">n</span> · <span class="text-emerald-300">log<sub>10</sub>([A])</span></span>
+                            <span class="text-cyan-300">+ log<sub>10</sub>(k)</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                        <div class="p-3 bg-amber-950/40 rounded-lg border border-amber-500/30 text-xs">
+                            <strong class="text-amber-400 block mb-1">如何求得反應級數 (Order n)？</strong>
+                            計算對數圖直線嘅**斜率 (Slope m)**，斜率的數值直接等於反應級數 $n$：
+                            <br><span class="font-mono text-amber-200">n = Slope = Δy / Δx</span>
+                        </div>
+                        <div class="p-3 bg-cyan-950/40 rounded-lg border border-cyan-500/30 text-xs">
+                            <strong class="text-cyan-400 block mb-1">如何求得速率常數 (Rate Constant k)？</strong>
+                            找出直線嘅 **y-截距 (Intercept c)**，取反對數 (10<sup>c</sup>) 即可求出 $k$：
+                            <br><span class="font-mono text-cyan-200">k = 10<sup>y-intercept</sup></span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ==================== TAB 5: QUIZ ==================== -->
+        <div id="view-quiz" class="hidden space-y-6">
+            
+            <div class="bg-slate-800/90 rounded-2xl p-6 border border-slate-700 shadow-xl space-y-6">
+                
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-700 pb-4 gap-2">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-graduation-cap text-amber-400"></i> 小測驗：猜猜反應級數與速率常數
+                        </h2>
+                        <p class="text-xs text-slate-400">系統隨機生成咗未知嘅 $n$ 同 $k$，請根據下圖嘅對數直線計算出答案！</p>
+                    </div>
+                    <button onclick="generateQuiz()" class="bg-chem-600 hover:bg-chem-500 text-white font-medium text-xs px-4 py-2 rounded-xl transition shadow flex items-center gap-1.5">
+                        <i class="fa-solid fa-dice"></i> 生成新題目
+                    </button>
+                </div>
+
+                <!-- Quiz Canvas & Inputs -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    
+                    <!-- Graph View for Quiz -->
+                    <div class="lg:col-span-7 bg-slate-900/90 p-4 rounded-xl border border-slate-700 flex flex-col justify-center">
+                        <div class="text-xs text-slate-400 mb-2 flex justify-between items-center">
+                            <span>已知對數圖直線數據：</span>
+                            <span id="quiz-points-label" class="text-amber-400 font-mono"></span>
+                        </div>
+                        <div class="h-[280px]">
+                            <canvas id="chart-quiz"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Input Controls & Solution -->
+                    <div class="lg:col-span-5 bg-slate-900/70 p-5 rounded-xl border border-slate-700/80 flex flex-col justify-between space-y-4">
+                        
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-200 mb-3 border-b border-slate-700 pb-2">請回答以下問題：</h3>
+
+                            <!-- Input 1: Order n -->
+                            <div class="mb-4 space-y-1">
+                                <label class="text-xs font-medium text-amber-300">1. 反應級數 (Reaction Order, n) 是多少？</label>
+                                <input id="quiz-input-n" type="number" step="1" placeholder="例如: 0, 1, 2, 3" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono focus:outline-none focus:border-amber-500 text-sm">
+                            </div>
+
+                            <!-- Input 2: Rate Constant k -->
+                            <div class="mb-4 space-y-1">
+                                <label class="text-xs font-medium text-cyan-300">2. 速率常數 (Rate Constant, k) 大約是多少？</label>
+                                <input id="quiz-input-k" type="number" step="0.01" placeholder="例如: 2.5" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono focus:outline-none focus:border-cyan-500 text-sm">
+                            </div>
+
+                            <button onclick="checkQuizAnswer()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl transition shadow flex items-center justify-center gap-2 text-sm">
+                                <i class="fa-solid fa-check"></i> 提交答案
+                            </button>
+                        </div>
+
+                        <!-- Feedback Message Box -->
+                        <div id="quiz-feedback" class="hidden p-4 rounded-xl border text-xs font-sans space-y-2">
+                            <!-- Dynamic solution text -->
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-800 py-4 text-center text-xs text-slate-500">
+        HKDSE 化學科教學輔助工具 • 速率方程、對數圖與動力學 (Rate Law & Kinetics Lab)
+    </footer>
+
+    <script>
+        // Global variables for parameters
+        let orderN = 1.0;
+        let rateK = 2.50;
+        let maxConc = 2.0;
+
+        // Arrhenius Variables
+        let arrEa = 50.0; // kJ/mol
+        let arrExpA = 8.0; // 10^8
+        let arrTMax = 350.0; // K
+        const R_GAS = 8.314; // J/(mol·K)
+        const LOG10_E = 2.302585092994046; // ln(10) factor for log10 conversions
+
+        // Custom plugin for drawing prominent x=0 and y=0 axes lines, dashed intercept lines, and coordinate labels
+        const interceptLinesPlugin = {
+            id: 'interceptLines',
+            beforeDraw: (chart) => {
+                // Draw prominent X-axis (y=0) and Y-axis (x=0) solid lines
+                if (chart.canvas.id === 'chart-log' || chart.canvas.id === 'chart-arrhenius') {
+                    const { ctx, scales: { x, y } } = chart;
+                    ctx.save();
+
+                    const xZeroPixel = x.getPixelForValue(0);
+                    const yZeroPixel = y.getPixelForValue(0);
+
+                    // Draw Y-axis line (x = 0)
+                    if (xZeroPixel >= x.left && xZeroPixel <= x.right) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)'; // Prominent white/grey axis line
+                        ctx.lineWidth = 2;
+                        ctx.moveTo(xZeroPixel, y.top);
+                        ctx.lineTo(xZeroPixel, y.bottom);
+                        ctx.stroke();
+
+                        // Label for y-axis
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+                        ctx.font = 'bold 10px sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.fillText('x = 0', xZeroPixel, y.top + 12);
+                    }
+
+                    // Draw X-axis line (y = 0)
+                    if (yZeroPixel >= y.top && yZeroPixel <= y.bottom) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)'; // Prominent white/grey axis line
+                        ctx.lineWidth = 2;
+                        ctx.moveTo(x.left, yZeroPixel);
+                        ctx.lineTo(x.right, yZeroPixel);
+                        ctx.stroke();
+
+                        // Label for x-axis
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+                        ctx.font = 'bold 10px sans-serif';
+                        ctx.textAlign = 'right';
+                        ctx.fillText('y = 0 ', x.right - 5, yZeroPixel - 5);
+                    }
+
+                    ctx.restore();
+                }
+            },
+            afterDraw: (chart) => {
+                if (chart.canvas.id === 'chart-log') {
+                    const { ctx, scales: { x, y } } = chart;
+                    const logKVal = Math.log10(rateK);
+                    const xZeroPixel = x.getPixelForValue(0);
+                    const yLogKPixel = y.getPixelForValue(logKVal);
+
+                    if (xZeroPixel >= x.left && xZeroPixel <= x.right) {
+                        ctx.save();
+                        ctx.beginPath();
+                        ctx.setLineDash([4, 4]);
+                        ctx.strokeStyle = '#06b6d4';
+                        ctx.lineWidth = 1.5;
+                        ctx.moveTo(x.left, yLogKPixel);
+                        ctx.lineTo(xZeroPixel, yLogKPixel);
+                        ctx.lineTo(xZeroPixel, y.bottom);
+                        ctx.stroke();
+
+                        ctx.fillStyle = '#06b6d4';
+                        ctx.font = 'bold 11px sans-serif';
+                        ctx.textAlign = 'left';
+                        ctx.fillText(` y-截距 (0, ${logKVal.toFixed(3)})`, xZeroPixel + 8, yLogKPixel - 8);
+                        ctx.restore();
+                    }
+                } else if (chart.canvas.id === 'chart-arrhenius') {
+                    const { ctx, scales: { x, y } } = chart;
+                    const log10AVal = arrExpA; // log10(10^arrExpA) = arrExpA
+
+                    const xZeroPixel = x.getPixelForValue(0);
+                    const yLog10APixel = y.getPixelForValue(log10AVal);
+
+                    if (xZeroPixel >= x.left && xZeroPixel <= x.right) {
+                        ctx.save();
+                        ctx.beginPath();
+                        ctx.setLineDash([4, 4]);
+                        ctx.strokeStyle = '#f59e0b';
+                        ctx.lineWidth = 1.5;
+                        ctx.moveTo(x.left, yLog10APixel);
+                        ctx.lineTo(xZeroPixel, yLog10APixel);
+                        ctx.lineTo(xZeroPixel, y.bottom);
+                        ctx.stroke();
+
+                        ctx.fillStyle = '#f59e0b';
+                        ctx.font = 'bold 11px sans-serif';
+                        ctx.textAlign = 'left';
+                        ctx.fillText(` y-截距 (0, ${log10AVal.toFixed(3)})`, xZeroPixel + 8, yLog10APixel - 8);
+                        ctx.restore();
+                    }
+                }
+            }
+        };
+
+        Chart.register(interceptLinesPlugin);
+
+        // Preset Real Reactions Database
+        const PRESET_REACTIONS = {
+            propanone_i2: {
+                name: "丙酮碘化反應",
+                eq: "CH₃COCH₃ + I₂ + H⁺ ➔ CH₃COCH₂I + HI + H⁺",
+                rateLawText: "Rate = k [CH₃COCH₃]¹ [H⁺]¹ [I₂]⁰",
+                notes: "酸催化下，對 [I₂] 為 0 級反應！改變 [I₂] 濃度不會影響速率，但改變 [CH₃COCH₃] 會成正比改變。",
+                aName: "[CH₃COCH₃]",
+                aOrder: 1,
+                aDefault: 1.0,
+                bName: "[I₂]",
+                bOrder: 0,
+                bDefault: 1.0,
+                kDefault: 1.2,
+                totalOrder: 2
+            },
+            ester_saponification: {
+                name: "乙酸乙酯鹼性水解",
+                eq: "CH₃COOCH₂CH₃ + OH⁻ ➔ CH₃COO⁻ + CH₃CH₂OH",
+                rateLawText: "Rate = k [CH₃COOCH₂CH₃]¹ [OH⁻]¹",
+                notes: "典型雙分子反應，對酯類及鹼 hydroxide 離子各為 1 級反應，總反應級數為 2 級。",
+                aName: "[Ester]",
+                aOrder: 1,
+                aDefault: 1.0,
+                bName: "[OH⁻]",
+                bOrder: 1,
+                bDefault: 1.0,
+                kDefault: 1.5,
+                totalOrder: 2
+            },
+            h2o2_decomp: {
+                name: "雙氧水催化分解",
+                eq: "2 H₂O₂ ➔ 2 H₂O + O₂  (MnO₂ 催化)",
+                rateLawText: "Rate = k [H₂O₂]¹",
+                notes: "催化分解反應，對雙氧水 [H₂O₂] 為一級反應，具備恒定半衰期。",
+                aName: "[H₂O₂]",
+                aOrder: 1,
+                aDefault: 2.0,
+                bName: "[MnO₂]",
+                bOrder: 0,
+                bDefault: 1.0,
+                kDefault: 0.8,
+                totalOrder: 1
+            },
+            persulfate_iodide: {
+                name: "過硫酸根與碘離子反應",
+                eq: "S₂O₈²⁻ + 2 I⁻ ➔ 2 SO₄²⁻ + I₂",
+                rateLawText: "Rate = k [S₂O₈²⁻]¹ [I⁻]¹",
+                notes: "DSE 鐘擺實驗常見反應，對過硫酸根與碘離子濃度均為 1 級反應。",
+                aName: "[S₂O₈²⁻]",
+                aOrder: 1,
+                aDefault: 1.0,
+                bName: "[I⁻]",
+                bOrder: 1,
+                bDefault: 1.0,
+                kDefault: 2.0,
+                totalOrder: 2
+            },
+            no2_co: {
+                name: "NO₂ 與 CO 低溫反應",
+                eq: "NO₂ + CO ➔ NO + CO₂ (T < 500 K)",
+                rateLawText: "Rate = k [NO₂]² [CO]⁰",
+                notes: "低溫決速步為 2分子 NO₂ 碰撞，因此對 [NO₂] 為 2 級，對 [CO] 為 0 級！",
+                aName: "[NO₂]",
+                aOrder: 2,
+                aDefault: 1.5,
+                bName: "[CO]",
+                bOrder: 0,
+                bDefault: 1.0,
+                kDefault: 1.0,
+                totalOrder: 2
+            }
+        };
+
+        let currentPresetKey = 'propanone_i2';
+        let realAConc = 1.0;
+        let realBConc = 1.0;
+        let realKVal = 1.5;
+
+        // Chart instances
+        let rateChart = null;
+        let logChart = null;
+        let arrheniusChart = null;
+        let concTimeChart = null;
+        let rateConcTimeChart = null;
+        let quizChart = null;
+
+        let realConcTimeChart = null;
+        let realRateConcChart = null;
+
+        // Quiz secret variables
+        let secretN = 2;
+        let secretK = 1.5;
+
+        // On DOM Loaded
+        window.onload = function() {
+            initSliders();
+            createCharts();
+            updateAllViews();
+            loadPresetReaction();
+            generateQuiz();
+        };
+
+        // Switch Tabs
+        function switchTab(tab) {
+            document.getElementById('view-demo').classList.add('hidden');
+            document.getElementById('view-arrhenius').classList.add('hidden');
+            document.getElementById('view-timecourse').classList.add('hidden');
+            document.getElementById('view-realrxn').classList.add('hidden');
+            document.getElementById('view-derivation').classList.add('hidden');
+            document.getElementById('view-quiz').classList.add('hidden');
+
+            const globalCtrl = document.getElementById('global-control-panel');
+            if (tab === 'demo' || tab === 'timecourse') {
+                globalCtrl.classList.remove('hidden');
+            } else {
+                globalCtrl.classList.add('hidden');
+            }
+
+            document.getElementById('tab-demo').className = 'px-3 sm:px-4 py-1.5 rounded-lg font-medium transition-all duration-200 text-slate-400 hover:text-white';
+            document.getElementById('tab-arrhenius').className = 'px-3 sm:px-4 py-1.5 rounded-lg font-medium transition-all duration-200 text-slate-400 hover:text-white';
+            document.getElementById('tab-timecourse').className = 'px-3 sm:px-4 py-1.5 rounded-lg font-medium transition-all duration-200 text-slate-400 hover:text-white';
+            document.getElementById('tab-realrxn').className = 'px-3 sm:px-4 py-1.5 rounded-lg font-medium transition-all duration-200 text-slate-400 hover:text-white';
+            document.getElementById('tab-derivation').className = 'px-3 sm:px-4 py-1.5 rounded-lg font-medium transition-all duration-200 text-slate-400 hover:text-white';
+            document.getElementById('tab-quiz').className = 'px-3 sm:px-4 py-1.5 rounded-lg font-medium transition-all duration-200 text-slate-400 hover:text-white';
+
+            document.getElementById(`view-${tab}`).classList.remove('hidden');
+            document.getElementById(`tab-${tab}`).className = 'px-3 sm:px-4 py-1.5 rounded-lg font-medium transition-all duration-200 bg-chem-600 text-white shadow';
+
+            if (tab === 'demo') {
+                if (rateChart) rateChart.update();
+                if (logChart) logChart.update();
+            } else if (tab === 'arrhenius') {
+                if (arrheniusChart) arrheniusChart.update();
+            } else if (tab === 'timecourse') {
+                if (concTimeChart) concTimeChart.update();
+                if (rateConcTimeChart) rateConcTimeChart.update();
+            } else if (tab === 'realrxn') {
+                if (realConcTimeChart) realConcTimeChart.update();
+                if (realRateConcChart) realRateConcChart.update();
+            } else if (tab === 'quiz') {
+                if (quizChart) quizChart.update();
+            }
+        }
+
+        // Initialize Slider Events
+        function initSliders() {
+            const sliderOrder = document.getElementById('slider-order');
+            const sliderK = document.getElementById('slider-k');
+            const sliderConc = document.getElementById('slider-conc');
+
+            sliderOrder.addEventListener('input', (e) => {
+                orderN = parseFloat(e.target.value);
+                updateAllViews();
+            });
+
+            sliderK.addEventListener('input', (e) => {
+                rateK = parseFloat(e.target.value);
+                updateAllViews();
+            });
+
+            sliderConc.addEventListener('input', (e) => {
+                maxConc = parseFloat(e.target.value);
+                updateAllViews();
+            });
+
+            // Arrhenius Sliders
+            document.getElementById('slider-arr-ea').addEventListener('input', (e) => {
+                arrEa = parseFloat(e.target.value);
+                updateArrheniusView();
+            });
+            document.getElementById('slider-arr-a').addEventListener('input', (e) => {
+                arrExpA = parseFloat(e.target.value);
+                updateArrheniusView();
+            });
+            document.getElementById('slider-arr-t').addEventListener('input', (e) => {
+                arrTMax = parseFloat(e.target.value);
+                updateArrheniusView();
+            });
+
+            // Real Reaction Sliders
+            document.getElementById('slider-rxn-a').addEventListener('input', (e) => {
+                realAConc = parseFloat(e.target.value);
+                updateRealRxnViews();
+            });
+            document.getElementById('slider-rxn-b').addEventListener('input', (e) => {
+                realBConc = parseFloat(e.target.value);
+                updateRealRxnViews();
+            });
+            document.getElementById('slider-rxn-k').addEventListener('input', (e) => {
+                realKVal = parseFloat(e.target.value);
+                updateRealRxnViews();
+            });
+        }
+
+        function setOrder(val) {
+            orderN = val;
+            document.getElementById('slider-order').value = val;
+            updateAllViews();
+        }
+
+        function resetParameters() {
+            orderN = 1.0;
+            rateK = 2.50;
+            maxConc = 2.0;
+
+            document.getElementById('slider-order').value = 1.0;
+            document.getElementById('slider-k').value = 2.50;
+            document.getElementById('slider-conc').value = 2.0;
+
+            updateAllViews();
+        }
+
+        function getUnitForK(n) {
+            if (Math.abs(n - 0) < 0.05) return "mol dm⁻³ s⁻¹";
+            if (Math.abs(n - 1) < 0.05) return "s⁻¹";
+            if (Math.abs(n - 2) < 0.05) return "dm³ mol⁻¹ s⁻¹";
+            if (Math.abs(n - 3) < 0.05) return "dm⁶ mol⁻² s⁻¹";
+            return `M¹⁻ⁿ s⁻¹`;
+        }
+
+        function updateAllViews() {
+            document.getElementById('val-order').innerText = orderN.toFixed(1);
+            document.getElementById('val-k').innerText = rateK.toFixed(2);
+            document.getElementById('val-conc').innerText = maxConc.toFixed(1);
+
+            document.getElementById('eq-k').innerText = rateK.toFixed(2);
+            document.getElementById('eq-n').innerText = orderN.toFixed(1);
+
+            const logK = Math.log10(rateK);
+            document.getElementById('eq-log-m').innerText = orderN.toFixed(2);
+            document.getElementById('eq-log-sign').innerText = logK >= 0 ? '+' : '-';
+            document.getElementById('eq-log-c').innerText = Math.abs(logK).toFixed(3);
+
+            document.getElementById('stat-slope').innerText = orderN.toFixed(2);
+            document.getElementById('stat-intercept').innerText = logK.toFixed(3);
+
+            updateCharts();
+            updateArrheniusView();
+            updateTable();
+        }
+
+        function createCharts() {
+            // Chart 1: Rate vs [A]
+            const ctxRate = document.getElementById('chart-rate').getContext('2d');
+            rateChart = new Chart(ctxRate, {
+                type: 'line',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Rate (mol dm⁻³ s⁻¹)',
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.3,
+                            pointRadius: 3,
+                            pointBackgroundColor: '#10b981'
+                        },
+                        {
+                            label: '數據點 [A] = 1.0 M',
+                            data: [],
+                            borderColor: 'transparent',
+                            pointBackgroundColor: '#06b6d4',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 7,
+                            showLine: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            title: { display: true, text: '濃度 [A] (mol dm⁻³)', color: '#94a3b8' },
+                            grid: { color: 'rgba(51, 65, 85, 0.5)' },
+                            ticks: { color: '#cbd5e1' }
+                        },
+                        y: {
+                            title: { display: true, text: '反應速率 Rate (mol dm⁻³ s⁻¹)', color: '#94a3b8' },
+                            grid: { color: 'rgba(51, 65, 85, 0.5)' },
+                            ticks: { color: '#cbd5e1' }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // Chart 2: log(Rate) vs log([A])
+            const ctxLog = document.getElementById('chart-log').getContext('2d');
+            logChart = new Chart(ctxLog, {
+                type: 'line',
+                data: {
+                    datasets: [
+                        {
+                            label: 'log₁₀(Rate)',
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.15)',
+                            borderWidth: 3,
+                            pointRadius: 3,
+                            pointBackgroundColor: '#fbbf24',
+                        },
+                        {
+                            label: '斜率標示點 A & B',
+                            data: [],
+                            borderColor: 'transparent',
+                            pointBackgroundColor: ['#f43f5e', '#3b82f6'],
+                            pointBorderColor: ['#ffffff', '#ffffff'],
+                            pointBorderWidth: 2,
+                            pointRadius: 8,
+                            showLine: false
+                        },
+                        {
+                            label: 'y-截距標記點 (0, c)',
+                            data: [],
+                            borderColor: 'transparent',
+                            pointBackgroundColor: '#06b6d4',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2.5,
+                            pointRadius: 9,
+                            showLine: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            title: { display: true, text: 'log₁₀([A])', color: '#94a3b8' },
+                            grid: { color: 'rgba(51, 65, 85, 0.5)' },
+                            ticks: { color: '#cbd5e1' }
+                        },
+                        y: {
+                            title: { display: true, text: 'log₁₀(Rate)', color: '#94a3b8' },
+                            grid: { color: 'rgba(51, 65, 85, 0.5)' },
+                            ticks: { color: '#cbd5e1' }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // Chart: Arrhenius Plot (log10 k vs 1/T)
+            const ctxArrhenius = document.getElementById('chart-arrhenius').getContext('2d');
+            arrheniusChart = new Chart(ctxArrhenius, {
+                type: 'line',
+                data: {
+                    datasets: [
+                        {
+                            label: 'log₁₀(k)',
+                            borderColor: '#f43f5e',
+                            backgroundColor: 'rgba(244, 63, 94, 0.15)',
+                            borderWidth: 3,
+                            pointRadius: 3,
+                            pointBackgroundColor: '#fb7185'
+                        },
+                        {
+                            label: '標記點 P1 & P2',
+                            data: [],
+                            borderColor: 'transparent',
+                            pointBackgroundColor: ['#f43f5e', '#3b82f6'],
+                            pointBorderColor: ['#ffffff', '#ffffff'],
+                            pointBorderWidth: 2,
+                            pointRadius: 8,
+                            showLine: false
+                        },
+                        {
+                            label: 'y-截距標記點 (0, log₁₀ A)',
+                            data: [],
+                            borderColor: 'transparent',
+                            pointBackgroundColor: '#f59e0b',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2.5,
+                            pointRadius: 9,
+                            showLine: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            title: { display: true, text: '1 / T (K⁻¹)', color: '#94a3b8' },
+                            grid: { color: 'rgba(51, 65, 85, 0.5)' },
+                            ticks: { color: '#cbd5e1' }
+                        },
+                        y: {
+                            title: { display: true, text: 'log₁₀(k)', color: '#94a3b8' },
+                            grid: { color: 'rgba(51, 65, 85, 0.5)' },
+                            ticks: { color: '#cbd5e1' }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // Chart 3: Concentration vs Time
+            const ctxConcTime = document.getElementById('chart-conc-time').getContext('2d');
+            concTimeChart = new Chart(ctxConcTime, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: '濃度 [A] (M)',
+                        borderColor: '#34d399',
+                        backgroundColor: 'rgba(52, 211, 153, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.2,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            title: { display: true, text: '時間 Time (s)', color: '#94a3b8' },
+                            grid: { color: 'rgba(51, 65, 85, 0.5)' },
+                            ticks: { color: '#cbd5e1' }
+                        },
+                        y: {
+                            title: { display: true, text: '濃度 [A] (mol dm⁻³)', color: '#94a3b8' },
+                            grid: { color: 'rgba(51, 65, 85, 0.5)' },
+                            ticks: { color: '#cbd5e1' },
+                            min: 0
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // Chart 4: Rate vs Concentration [A]
+            const ctxRateConcTime = document.getElementById('chart-rate-conc-time').getContext('2d');
+            rateConcTimeChart = new Chart(ctxRateConcTime, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: '速率 Rate (M/s)',
+                        borderColor: '#fb7185',
+                        backgroundColor: 'rgba(251, 113, 133, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.2,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            title: { display: true, text: '濃度 [A] (mol dm⁻³)', color: '#94a3b8' },
+                            grid: { color: 'rgba(51, 65, 85, 0.5)' },
+                            ticks: { color: '#cbd5e1' }
+                        },
+                        y: {
+                            title: { display: true, text: '反應速率 Rate (mol dm⁻³ s⁻¹)', color: '#94a3b8' },
+                            grid: { color: 'rgba(51, 65, 85, 0.5)' },
+                            ticks: { color: '#cbd5e1' },
+                            min: 0
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // Real Reaction Chart 1: [A] & [B] vs Time
+            const ctxRealConc = document.getElementById('chart-real-conc-time').getContext('2d');
+            realConcTimeChart = new Chart(ctxRealConc, {
+                type: 'line',
+                data: {
+                    datasets: [
+                        {
+                            label: '反應物 A 濃度',
+                            borderColor: '#34d399',
+                            borderWidth: 2.5,
+                            fill: false,
+                            tension: 0.2,
+                            pointRadius: 0
+                        },
+                        {
+                            label: '反應物 B 濃度',
+                            borderColor: '#60a5fa',
+                            borderWidth: 2.5,
+                            fill: false,
+                            tension: 0.2,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            title: { display: true, text: '時間 Time (s)', color: '#94a3b8' },
+                            grid: { color: 'rgba(51, 65, 85, 0.5)' },
+                            ticks: { color: '#cbd5e1' }
+                        },
+                        y: {
+                            title: { display: true, text: '濃度 (mol dm⁻³)', color: '#94a3b8' },
+                            grid: { color: 'rgba(51, 65, 85, 0.5)' },
+                            ticks: { color: '#cbd5e1' },
+                            min: 0
+                        }
+                    },
+                    plugins: {
+                        legend: { display: true, labels: { color: '#cbd5e1', font: { size: 11 } } }
+                    }
+                }
+            });
+
+            // Real Reaction Chart 2: Rate vs [A]
+            const ctxRealRate = document.getElementById('chart-real-rate-conc').getContext('2d');
+            realRateConcChart = new Chart(ctxRealRate, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: '速率 Rate',
+                        borderColor: '#f43f5e',
+                        backgroundColor: 'rgba(244, 63, 94, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.2,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            title: { display: true, text: '反應物 A 濃度 (mol dm⁻³)', color: '#94a3b8' },
+                            grid: { color: 'rgba(51, 65, 85, 0.5)' },
+                            ticks: { color: '#cbd5e1' }
+                        },
+                        y: {
+                            title: { display: true, text: '反應速率 Rate (mol dm⁻³ s⁻¹)', color: '#94a3b8' },
+                            grid: { color: 'rgba(51, 65, 85, 0.5)' },
+                            ticks: { color: '#cbd5e1' },
+                            min: 0
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        function updateCharts() {
+            if (!rateChart || !logChart || !concTimeChart || !rateConcTimeChart) return;
+
+            const steps = 25;
+            const dataRate = [];
+            const dataLog = [];
+
+            const minConc = 0.2;
+            const stepSize = (maxConc - minConc) / (steps - 1);
+
+            for (let i = 0; i < steps; i++) {
+                const conc = minConc + i * stepSize;
+                const rate = rateK * Math.pow(conc, orderN);
+
+                dataRate.push({ x: conc, y: rate });
+
+                const logConc = Math.log10(conc);
+                const logRate = Math.log10(rate);
+                dataLog.push({ x: logConc, y: logRate });
+            }
+
+            const rateAt1 = rateK * Math.pow(1.0, orderN);
+            const pAt1 = { x: 1.0, y: rateAt1 };
+
+            rateChart.data.datasets[0].data = dataRate;
+            rateChart.data.datasets[1].data = (maxConc >= 1.0) ? [pAt1] : [];
+            rateChart.update();
+
+            const minLogX = Math.min(-0.8, Math.log10(minConc));
+            const maxLogX = Math.max(0.2, Math.log10(maxConc));
+
+            logChart.options.scales.x.min = minLogX;
+            logChart.options.scales.x.max = maxLogX;
+
+            const concA = minConc;
+            const rateA = rateK * Math.pow(concA, orderN);
+            const p1 = { x: Math.log10(concA), y: Math.log10(rateA) };
+
+            const concB = maxConc;
+            const rateB = rateK * Math.pow(concB, orderN);
+            const p2 = { x: Math.log10(concB), y: Math.log10(rateB) };
+
+            const logK = Math.log10(rateK);
+            const pIntercept = { x: 0, y: logK };
+
+            logChart.data.datasets[0].data = dataLog;
+            logChart.data.datasets[1].data = [p1, p2];
+            logChart.data.datasets[2].data = [pIntercept];
+            logChart.update();
+
+            document.getElementById('calc-rate-at-1').innerText = rateAt1.toFixed(3);
+            document.getElementById('calc-k-n-exp').innerText = orderN.toFixed(1);
+            document.getElementById('calc-k-result').innerText = rateK.toFixed(2);
+            document.getElementById('calc-final-k').innerText = rateK.toFixed(2);
+            
+            const unitK = getUnitForK(orderN);
+            document.getElementById('calc-k-unit').innerText = unitK;
+            document.getElementById('calc-final-k-unit').innerText = unitK;
+
+            const dx = p2.x - p1.x;
+            const dy = p2.y - p1.y;
+            const calculatedSlope = dx !== 0 ? (dy / dx) : orderN;
+
+            document.getElementById('p1-x').innerText = p1.x.toFixed(3);
+            document.getElementById('p1-y').innerText = p1.y.toFixed(3);
+            document.getElementById('p2-x').innerText = p2.x.toFixed(3);
+            document.getElementById('p2-y').innerText = p2.y.toFixed(3);
+
+            document.getElementById('calc-y2').innerText = p2.y.toFixed(3);
+            document.getElementById('calc-y1').innerText = p1.y < 0 ? `(${p1.y.toFixed(3)})` : p1.y.toFixed(3);
+            document.getElementById('calc-x2').innerText = p2.x.toFixed(3);
+            document.getElementById('calc-x1').innerText = p1.x < 0 ? `(${p1.x.toFixed(3)})` : p1.x.toFixed(3);
+
+            document.getElementById('calc-dy').innerText = dy.toFixed(3);
+            document.getElementById('calc-dx').innerText = dx.toFixed(3);
+            document.getElementById('calc-slope-result').innerText = calculatedSlope.toFixed(2);
+            document.getElementById('calc-final-n').innerText = orderN.toFixed(1);
+
+            document.getElementById('intercept-coord-y').innerText = logK.toFixed(3);
+            document.getElementById('log-calc-c-val').innerText = logK.toFixed(3);
+            document.getElementById('log-calc-c-exp').innerText = logK.toFixed(3);
+            document.getElementById('log-calc-k-val').innerText = rateK.toFixed(2);
+            document.getElementById('log-calc-n-val').innerText = orderN.toFixed(1);
+            document.getElementById('log-calc-k-unit').innerText = unitK;
+            document.getElementById('log-calc-final-k').innerText = rateK.toFixed(2);
+            document.getElementById('log-calc-final-k-unit').innerText = unitK;
+
+            updateTimeCourseCharts();
+        }
+
+        // Arrhenius View Update (Log10 Version - DSE Ea Focused)
+        function updateArrheniusView() {
+            document.getElementById('val-arr-ea').innerText = arrEa.toFixed(0);
+            
+            const valA = Math.pow(10, arrExpA);
+            const expAFormatted = arrExpA >= 6 ? `1.0 × 10<sup>${arrExpA.toFixed(1)}</sup>` : valA.toFixed(0);
+            document.getElementById('val-arr-a').innerHTML = expAFormatted;
+            document.getElementById('val-arr-t').innerText = `${arrTMax.toFixed(0)} K`;
+
+            // Slope m for log10(k) vs 1/T: m = -Ea / (2.303 * R)
+            const slopeM = -(arrEa * 1000) / (LOG10_E * R_GAS); // -Ea / (2.303 * 8.314)
+            const log10A = arrExpA; // log10(10^arrExpA) = arrExpA
+
+            document.getElementById('arr-eq-m').innerText = slopeM.toFixed(1);
+            document.getElementById('arr-eq-c').innerText = log10A.toFixed(3);
+
+            if (!arrheniusChart) return;
+
+            // Generate Arrhenius dataset
+            const steps = 30;
+            const tMin = 273.15; // 0°C
+            const tMax = arrTMax;
+
+            const invTMin = 1 / tMax;
+            const invTMax = 1 / tMin;
+            const stepInvT = (invTMax - invTMin) / (steps - 1);
+
+            const dataArr = [];
+            for (let i = 0; i < steps; i++) {
+                const invT = invTMin + i * stepInvT;
+                const log10K = slopeM * invT + log10A;
+                dataArr.push({ x: invT, y: log10K });
+            }
+
+            // Points P1 and P2 for slope calculation
+            const t1 = 298.15; // 25°C
+            const invT1 = 1 / t1;
+            const log10K1 = slopeM * invT1 + log10A;
+
+            const t2 = arrTMax;
+            const invT2 = 1 / t2;
+            const log10K2 = slopeM * invT2 + log10A;
+
+            const p1 = { x: invT1, y: log10K1 };
+            const p2 = { x: invT2, y: log10K2 };
+            const pIntercept = { x: 0, y: log10A };
+
+            // Set chart x axis to start from 0
+            arrheniusChart.options.scales.x.min = 0;
+            arrheniusChart.options.scales.x.max = invTMax * 1.1;
+
+            arrheniusChart.data.datasets[0].data = dataArr;
+            arrheniusChart.data.datasets[1].data = [p1, p2];
+            arrheniusChart.data.datasets[2].data = [pIntercept];
+            arrheniusChart.update();
+
+            // Update calculations card for Arrhenius (Ea focused)
+            document.getElementById('arr-p1-x').innerText = invT1.toFixed(5);
+            document.getElementById('arr-p1-y').innerText = log10K1.toFixed(3);
+            document.getElementById('arr-p2-x').innerText = invT2.toFixed(5);
+            document.getElementById('arr-p2-y').innerText = log10K2.toFixed(3);
+
+            document.getElementById('arr-calc-m').innerText = slopeM.toFixed(1);
+            document.getElementById('arr-calc-m-sub').innerText = slopeM.toFixed(1);
+            document.getElementById('arr-calc-ea-j').innerText = (arrEa * 1000).toFixed(0);
+            document.getElementById('arr-final-ea').innerText = arrEa.toFixed(1);
+        }
+
+        function updateTimeCourseCharts() {
+            const timeSteps = 50;
+            const maxTime = 3.0;
+            const dt = maxTime / timeSteps;
+
+            const dataConcTime = [];
+            const dataRateConc = [];
+
+            for (let i = 0; i <= timeSteps; i++) {
+                const t = i * dt;
+                let c = 0;
+
+                if (Math.abs(orderN - 0) < 0.05) { // 0-Order
+                    c = Math.max(0, maxConc - rateK * t);
+                } else if (Math.abs(orderN - 1) < 0.05) { // 1-Order
+                    c = maxConc * Math.exp(-rateK * t);
+                } else if (Math.abs(orderN - 2) < 0.05) { // 2-Order
+                    c = maxConc / (1 + rateK * maxConc * t);
+                } else { // General numerical integration
+                    c = maxConc * Math.pow(1 + (orderN - 1) * Math.pow(maxConc, orderN - 1) * rateK * t, -1 / (orderN - 1));
+                    if (isNaN(c) || c < 0) c = 0;
+                }
+
+                dataConcTime.push({ x: t, y: c });
+            }
+
+            const rateSteps = 30;
+            for (let i = 0; i <= rateSteps; i++) {
+                const conc = (maxConc * i) / rateSteps;
+                const r = rateK * Math.pow(conc, orderN);
+                dataRateConc.push({ x: conc, y: r });
+            }
+
+            concTimeChart.data.datasets[0].data = dataConcTime;
+            concTimeChart.update();
+
+            rateConcTimeChart.data.datasets[0].data = dataRateConc;
+            rateConcTimeChart.update();
+
+            const desc = document.getElementById('time-order-desc');
+            const badgeConc = document.getElementById('badge-conc-time');
+            const badgeRateConc = document.getElementById('badge-rate-conc');
+            const formula = document.getElementById('time-t12-formula');
+            const val = document.getElementById('time-t12-val');
+
+            if (Math.abs(orderN - 0) < 0.05) {
+                desc.innerText = "0 級反應 (n = 0)";
+                badgeConc.innerText = "0級反應：直線下降";
+                badgeRateConc.innerText = "0級反應：Rate 為水平線 (固定不變)";
+                formula.innerText = "t₁/₂ = [A]₀ / (2k)";
+                const t12 = maxConc / (2 * rateK);
+                val.innerText = `${t12.toFixed(3)} 秒`;
+            } else if (Math.abs(orderN - 1) < 0.05) {
+                desc.innerText = "1 級反應 (n = 1.0)";
+                badgeConc.innerText = "1級反應：固定半衰期衰減";
+                badgeRateConc.innerText = "1級反應：Rate 與 [A] 成正比 (斜直線)";
+                formula.innerText = "t₁/₂ = ln(2) / k";
+                const t12 = Math.LN2 / rateK;
+                val.innerText = `${t12.toFixed(3)} 秒`;
+            } else if (Math.abs(orderN - 2) < 0.05) {
+                desc.innerText = "2 級反應 (n = 2.0)";
+                badgeConc.innerText = "2級反應：半衰期隨濃度加倍延長";
+                badgeRateConc.innerText = "2級反應：Rate 隨 [A] 呈二次曲線上升";
+                formula.innerText = "t₁/₂ = 1 / (k · [A]₀)";
+                const t12 = 1 / (rateK * maxConc);
+                val.innerText = `${t12.toFixed(3)} 秒`;
+            } else {
+                desc.innerText = `${orderN.toFixed(1)} 級反應 (n = ${orderN.toFixed(1)})`;
+                badgeConc.innerText = `${orderN.toFixed(1)} 級反應`;
+                badgeRateConc.innerText = `${orderN.toFixed(1)} 級反應`;
+                formula.innerText = "t₁/₂ 依反應級數改變";
+                val.innerText = "N/A";
+            }
+        }
+
+        function loadPresetReaction() {
+            const select = document.getElementById('select-preset-rxn');
+            currentPresetKey = select.value;
+            const rxn = PRESET_REACTIONS[currentPresetKey];
+
+            document.getElementById('rxn-eq-text').innerText = rxn.eq;
+            document.getElementById('rxn-rate-law').innerText = rxn.rateLawText;
+            document.getElementById('rxn-notes').innerText = "說明：" + rxn.notes;
+            document.getElementById('rxn-total-order').innerText = rxn.totalOrder;
+
+            document.getElementById('lbl-rxn-a').innerText = `${rxn.aName} 初始濃度`;
+            document.getElementById('lbl-rxn-b').innerText = `${rxn.bName} 初始濃度`;
+
+            document.getElementById('sub-rxn-a').innerText = `級數: ${rxn.aOrder} 級`;
+            document.getElementById('sub-rxn-b').innerText = `級數: ${rxn.bOrder} 級`;
+
+            realAConc = rxn.aDefault;
+            realBConc = rxn.bDefault;
+            realKVal = rxn.kDefault;
+
+            document.getElementById('slider-rxn-a').value = realAConc;
+            document.getElementById('slider-rxn-b').value = realBConc;
+            document.getElementById('slider-rxn-k').value = realKVal;
+
+            document.getElementById('sub-rxn-k-unit').innerText = "單位: " + getUnitForK(rxn.totalOrder);
+
+            document.getElementById('title-real-rate-conc').innerHTML = 
+                `<i class="fa-solid fa-chart-area text-rose-400"></i> 速率對 ${rxn.aName} 濃度圖`;
+
+            updateRealRxnViews();
+        }
+
+        function updateRealRxnViews() {
+            const rxn = PRESET_REACTIONS[currentPresetKey];
+
+            document.getElementById('val-rxn-a').innerText = realAConc.toFixed(1) + " M";
+            document.getElementById('val-rxn-b').innerText = realBConc.toFixed(1) + " M";
+            document.getElementById('val-rxn-k').innerText = realKVal.toFixed(2);
+
+            if (!realConcTimeChart || !realRateConcChart) return;
+
+            const steps = 40;
+            const maxT = 3.0;
+            const dt = maxT / steps;
+
+            const dataA = [];
+            const dataB = [];
+
+            let ca = realAConc;
+            let cb = realBConc;
+
+            for (let i = 0; i <= steps; i++) {
+                const t = i * dt;
+                dataA.push({ x: t, y: Math.max(0, ca) });
+                dataB.push({ x: t, y: Math.max(0, cb) });
+
+                const rate = realKVal * Math.pow(Math.max(0, ca), rxn.aOrder) * Math.pow(Math.max(0, cb), rxn.bOrder);
+                ca -= rate * dt;
+                cb -= rate * dt;
+            }
+
+            realConcTimeChart.data.datasets[0].label = `${rxn.aName} (級數: ${rxn.aOrder})`;
+            realConcTimeChart.data.datasets[0].data = dataA;
+
+            realConcTimeChart.data.datasets[1].label = `${rxn.bName} (級數: ${rxn.bOrder})`;
+            realConcTimeChart.data.datasets[1].data = dataB;
+            realConcTimeChart.update();
+
+            const dataRateVsA = [];
+            const aSteps = 30;
+            for (let i = 0; i <= aSteps; i++) {
+                const concA = (realAConc * i) / aSteps;
+                const r = realKVal * Math.pow(concA, rxn.aOrder) * Math.pow(realBConc, rxn.bOrder);
+                dataRateVsA.push({ x: concA, y: r });
+            }
+
+            realRateConcChart.data.datasets[0].data = dataRateVsA;
+            realRateConcChart.options.scales.x.title.text = `${rxn.aName} 濃度 (mol dm⁻³)`;
+            realRateConcChart.update();
+        }
+
+        function updateTable() {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+
+            const sampleConcs = [0.2, 0.5, 0.8, 1.2, 1.8];
+            
+            sampleConcs.forEach((conc, idx) => {
+                if (conc <= maxConc) {
+                    const rate = rateK * Math.pow(conc, orderN);
+                    const logConc = Math.log10(conc);
+                    const logRate = Math.log10(rate);
+
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-800/60 transition";
+                    tr.innerHTML = `
+                        <td class="py-2.5 px-4 font-bold text-slate-400">#${idx + 1}</td>
+                        <td class="py-2.5 px-4 text-emerald-400">${conc.toFixed(2)}</td>
+                        <td class="py-2.5 px-4 text-rose-400">${rate.toFixed(3)}</td>
+                        <td class="py-2.5 px-4 text-emerald-300">${logConc.toFixed(3)}</td>
+                        <td class="py-2.5 px-4 text-rose-300">${logRate.toFixed(3)}</td>
+                    `;
+                    tbody.appendChild(tr);
+                }
+            });
+        }
+
+        function copyTableData() {
+            let text = "Exp\t[A](M)\tRate(M/s)\tlog10([A])\tlog10(Rate)\n";
+            const sampleConcs = [0.2, 0.5, 0.8, 1.2, 1.8];
+            sampleConcs.forEach((conc, idx) => {
+                if (conc <= maxConc) {
+                    const rate = rateK * Math.pow(conc, orderN);
+                    text += `${idx + 1}\t${conc.toFixed(2)}\t${rate.toFixed(3)}\t${Math.log10(conc).toFixed(3)}\t${Math.log10(rate).toFixed(3)}\n`;
+                }
+            });
+            
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+
+            alert("已成功複製實驗數據到剪貼簿！");
+        }
+
+        function generateQuiz() {
+            const possibleOrders = [0, 1, 2, 3];
+            secretN = possibleOrders[Math.floor(Math.random() * possibleOrders.length)];
+            secretK = Math.floor((Math.random() * 4 + 1) * 10) / 10;
+
+            document.getElementById('quiz-input-n').value = '';
+            document.getElementById('quiz-input-k').value = '';
+            document.getElementById('quiz-feedback').classList.add('hidden');
+
+            const concs = [0.2, 0.5, 1.0, 1.5, 2.0];
+            const quizPoints = concs.map(c => {
+                const r = secretK * Math.pow(c, secretN);
+                return { x: Math.log10(c), y: Math.log10(r) };
+            });
+
+            const p1 = quizPoints[0];
+            const p2 = quizPoints[quizPoints.length - 1];
+            document.getElementById('quiz-points-label').innerText = 
+                `點 A(${p1.x.toFixed(2)}, ${p1.y.toFixed(2)}) , 點 B(${p2.x.toFixed(2)}, ${p2.y.toFixed(2)})`;
+
+            if (quizChart) {
+                quizChart.data.datasets[0].data = quizPoints;
+                quizChart.update();
+            } else {
+                const ctxQuiz = document.getElementById('chart-quiz').getContext('2d');
+                quizChart = new Chart(ctxQuiz, {
+                    type: 'line',
+                    data: {
+                        datasets: [{
+                            label: '神秘反應對數圖',
+                            borderColor: '#38bdf8',
+                            backgroundColor: 'rgba(56, 189, 248, 0.2)',
+                            borderWidth: 3,
+                            data: quizPoints,
+                            pointRadius: 6,
+                            pointBackgroundColor: '#0284c7'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                type: 'linear',
+                                title: { display: true, text: 'log₁₀([A])', color: '#94a3b8' },
+                                grid: { color: 'rgba(51, 65, 85, 0.5)' },
+                                ticks: { color: '#cbd5e1' }
+                            },
+                            y: {
+                                title: { display: true, text: 'log₁₀(Rate)', color: '#94a3b8' },
+                                grid: { color: 'rgba(51, 65, 85, 0.5)' },
+                                ticks: { color: '#cbd5e1' }
+                            }
+                        },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+        }
+
+        function checkQuizAnswer() {
+            const userN = parseFloat(document.getElementById('quiz-input-n').value);
+            const userK = parseFloat(document.getElementById('quiz-input-k').value);
+
+            const feedback = document.getElementById('quiz-feedback');
+            feedback.classList.remove('hidden');
+
+            if (isNaN(userN) || isNaN(userK)) {
+                feedback.className = "p-4 rounded-xl bg-rose-950/80 border border-rose-500 text-rose-200 text-xs";
+                feedback.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1"></i> 請填寫兩個問題嘅答案！';
+                return;
+            }
+
+            const isNCorrect = Math.abs(userN - secretN) < 0.1;
+            const isKCorrect = Math.abs(userK - secretK) < 0.2;
+
+            const logK = Math.log10(secretK);
+
+            if (isNCorrect && isKCorrect) {
+                feedback.className = "p-4 rounded-xl bg-emerald-950/80 border border-emerald-500 text-emerald-200 text-xs space-y-1.5";
+                feedback.innerHTML = `
+                    <div class="font-bold text-sm text-emerald-300"><i class="fa-solid fa-circle-check mr-1.5"></i> 恭喜你！完全答對！</div>
+                    <p>• <strong>反應級數 n：</strong> ${secretN}</p>
+                    <p>• <strong>速率常數 k：</strong> ${secretK.toFixed(2)} (因為 y-截距 log₁₀(k) = ${logK.toFixed(3)}, 所以 k = 10<sup>${logK.toFixed(3)}</sup> = ${secretK.toFixed(2)})</p>
+                `;
+            } else {
+                feedback.className = "p-4 rounded-xl bg-amber-950/80 border border-amber-500 text-amber-200 text-xs space-y-1.5";
+                feedback.innerHTML = `
+                    <div class="font-bold text-sm text-amber-300"><i class="fa-solid fa-circle-xmark mr-1.5"></i> 答錯咗少少，再試吓！</div>
+                    <p><strong>正確答案解說：</strong></p>
+                    <p>1. <strong>斜率 (Slope) = ${secretN}</strong> ➔ 反應級數 n = <b>${secretN}</b></p>
+                    <p>2. <strong>y-截距 (Intercept) = ${logK.toFixed(3)}</strong> ➔ 速率常數 k = 10<sup>${logK.toFixed(3)}</sup> = <b>${secretK.toFixed(2)}</b></p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
