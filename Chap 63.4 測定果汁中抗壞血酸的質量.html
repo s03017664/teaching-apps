@@ -1,0 +1,3183 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>反滴定：測定果汁中抗壞血酸的質量 | SKHLKYSS Chemistry</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & Noto Sans TC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans TC', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+          },
+          colors: {
+            skhNavy: '#0f294a',
+            skhNavyLight: '#1b3f6e',
+            skhBlue: '#255BA6',
+            skhGold: '#FFD400',
+            skhRed: '#D31118'
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', 'Noto Sans TC', system-ui, sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+    }
+    /* Custom range slider */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 7px;
+      border-radius: 9999px;
+      background: #cbd5e1;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 18px;
+      width: 18px;
+      border-radius: 9999px;
+      background: #059669;
+      border: 2.5px solid #ffffff;
+      box-shadow: 0 2px 6px rgba(5, 150, 105, 0.45);
+      margin-top: -5.5px;
+      transition: transform 0.12s ease;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+    /* Hide spin buttons slightly for cleaner look while keeping keyboard arrows */
+    input[type="number"]::-webkit-inner-spin-button {
+      opacity: 0.65;
+    }
+    @keyframes softPulseRing {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(37, 91, 166, 0.45); }
+      50% { box-shadow: 0 0 0 6px rgba(37, 91, 166, 0); }
+    }
+    .concept-highlight-ring {
+      animation: softPulseRing 1.4s infinite;
+    }
+    @keyframes starchGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.6); }
+      50% { box-shadow: 0 0 0 10px rgba(234, 179, 8, 0); }
+    }
+    .starch-alert-glow {
+      animation: starchGlow 1.5s infinite;
+    }
+    @keyframes fieldRipple {
+      0% { background-color: #fef08a; box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.65); }
+      100% { background-color: #ffffff; box-shadow: 0 0 0 0 rgba(234, 179, 8, 0); }
+    }
+    .field-updated-flash {
+      animation: fieldRipple 0.95s ease-out;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-amber-200 selection:text-slate-900">
+
+  <!-- ==================== 1. HEADER & ACCURATE SKHLKYSS CREST ==================== -->
+  <header class="bg-skhNavy text-white shadow-lg border-b-4 border-skhGold sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2 flex flex-wrap items-center justify-between gap-3">
+      <!-- Left: Accurate SKHLKYSS Vector Crest + Title + Credit -->
+      <div class="flex items-center gap-3 sm:gap-4 min-w-0">
+        <!-- High-Resolution Inline SVG Vector Crest of SKHLKYSS -->
+        <div class="shrink-0 bg-white/95 p-1 rounded-xl shadow-md border border-white/80">
+          <svg width="56" height="62" viewBox="0 0 140 154" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="SKHLKYSS School Crest">
+            <defs>
+              <clipPath id="skhShieldClip">
+                <path d="M24 10 H116 V72 C116 102 95 117 70 120 C45 117 24 102 24 72 Z" />
+              </clipPath>
+              <path id="mottoCurve" d="M26 126 Q70 148 114 126" />
+            </defs>
+
+            <!-- Shield Interior with Radiating Sun Rays in all 4 Quadrants -->
+            <g clip-path="url(#skhShieldClip)">
+              <rect x="20" y="6" width="100" height="120" fill="#255BA6" />
+              <!-- Top-Left Quadrant -->
+              <polygon points="70,48 20,25 20,40" fill="#FFD400" />
+              <polygon points="70,48 20,6 42,6 20,25" fill="#FFFFFF" />
+              <polygon points="70,48 42,6 54,6" fill="#FFD400" />
+              <!-- Top-Right Quadrant -->
+              <polygon points="70,48 120,25 120,40" fill="#FFD400" />
+              <polygon points="70,48 120,6 98,6 120,25" fill="#FFFFFF" />
+              <polygon points="70,48 98,6 86,6" fill="#FFD400" />
+              <!-- Bottom-Left Quadrant -->
+              <polygon points="70,48 20,76 20,92" fill="#FFD400" />
+              <polygon points="70,48 20,92 20,122 40,122" fill="#FFFFFF" />
+              <polygon points="70,48 40,122 52,122" fill="#FFD400" />
+              <!-- Bottom-Right Quadrant -->
+              <polygon points="70,48 120,76 120,92" fill="#FFD400" />
+              <polygon points="70,48 120,92 120,122 100,122" fill="#FFFFFF" />
+              <polygon points="70,48 100,122 88,122" fill="#FFD400" />
+
+              <!-- Central Cross Bold Bright Yellow/Gold Border -->
+              <rect x="56.5" y="10" width="27" height="112" fill="#FFD400" />
+              <rect x="24" y="36" width="92" height="24" fill="#FFD400" />
+              <!-- Central White Cross Interior -->
+              <rect x="60.5" y="13" width="19" height="104" fill="#FFFFFF" />
+              <rect x="27" y="40" width="86" height="16" fill="#FFFFFF" />
+
+              <!-- Bold Red Uppercase Letters inside the Cross -->
+              <g fill="#D31118" font-family="Inter, Arial, sans-serif" font-weight="900" text-anchor="middle">
+                <text x="70" y="33" font-size="16">L</text>
+                <text x="44" y="53.5" font-size="15.5">S</text>
+                <text x="70" y="53.5" font-size="15.5">K</text>
+                <text x="96" y="53.5" font-size="15.5">H</text>
+                <text x="70" y="72.5" font-size="15">Y</text>
+                <text x="70" y="89.5" font-size="15">S</text>
+                <text x="70" y="106.5" font-size="15">S</text>
+              </g>
+            </g>
+
+            <!-- Shield Outer Border -->
+            <path d="M24 10 H116 V72 C116 102 95 117 70 120 C45 117 24 102 24 72 Z" fill="none" stroke="#FFFFFF" stroke-width="3.5" />
+            <path d="M24 10 H116 V72 C116 102 95 117 70 120 C45 117 24 102 24 72 Z" fill="none" stroke="#e2e8f0" stroke-width="1" />
+
+            <!-- Bottom Curved Yellow/Gold Motto Ribbon -->
+            <path d="M12 104 L28 114 L23 128 L7 119 L14 113 Z" fill="#EAB308" stroke="#FFFFFF" stroke-width="1.2" />
+            <path d="M128 104 L112 114 L117 128 L133 119 L126 113 Z" fill="#EAB308" stroke="#FFFFFF" stroke-width="1.2" />
+            <path d="M24 114 Q70 137 116 114 L112 134 Q70 156 28 134 Z" fill="#FFD400" stroke="#FFFFFF" stroke-width="1.5" />
+            <text fill="#D31118" font-family="Inter, Arial, sans-serif" font-weight="900" font-size="8.6" letter-spacing="0.4">
+              <textPath href="#mottoCurve" startOffset="50%" text-anchor="middle">THE LORD IS MY LIGHT</textPath>
+            </text>
+          </svg>
+        </div>
+
+        <!-- School Name & Topic Title -->
+        <div class="min-w-0">
+          <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs sm:text-sm font-bold text-skhGold tracking-wide">
+            <span data-i18n="schoolDept">聖公會梁季彜中學｜化學科</span>
+            <span class="hidden sm:inline text-white/40">•</span>
+            <span class="px-2 py-0.5 rounded-full bg-white/15 text-amber-100 text-[11px] font-bold" data-i18n="topicTag">HKDSE 課題 XV 分析化學</span>
+          </div>
+          <h1 class="text-sm sm:text-lg md:text-xl font-extrabold text-white leading-tight" data-i18n="mainTitle">
+            反滴定：測定果汁中抗壞血酸的質量
+          </h1>
+          <p class="text-[11px] sm:text-xs text-slate-300 mt-0.5" data-i18n="designerCredit">
+            由吳柏霖老師設計 ｜ HKDSE 課本例題 63.4 互動模擬
+          </p>
+        </div>
+      </div>
+
+      <!-- Right: Bilingual Toggle -->
+      <div class="flex items-center gap-2 shrink-0 ml-auto">
+        <button id="langToggleBtn" type="button" class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-skhGold hover:bg-amber-300 text-skhNavy font-extrabold text-xs sm:text-sm shadow-md transition active:scale-95 cursor-pointer" title="Switch Language / 切換語言">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+          </svg>
+          <span id="langToggleLabel">English</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN WORKSPACE ==================== -->
+  <main class="max-w-7xl w-full mx-auto px-3 sm:px-6 py-4 space-y-4 flex-1">
+
+    <!-- ==================== 2. INTERACTIVE REAGENT PARAMETER PANEL (n, M, V) ==================== -->
+    <section class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      <!-- Top Bar: Title, Quick Presets, Collapse Toggle -->
+      <div class="px-4 py-3 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2.5">
+        <div class="flex items-center gap-2.5">
+          <span class="w-7 h-7 rounded-lg bg-skhNavy text-skhGold flex items-center justify-center font-black text-xs shadow-sm">nMV</span>
+          <div>
+            <h2 class="text-sm sm:text-base font-extrabold text-skhNavy leading-tight" data-i18n="paramPanelTitle">
+              自訂實驗參數 (n, M, V)
+            </h2>
+            <p class="text-[11px] text-slate-500 font-medium" data-i18n="paramPanelSub">
+              修改任何一項數值，系統會根據 n = M × V / 1000 及反滴定比例即時聯動更新
+            </p>
+          </div>
+        </div>
+
+        <!-- Quick Presets + Toggle -->
+        <div class="flex flex-wrap items-center gap-1.5">
+          <button type="button" data-preset="ex634" class="preset-btn px-2.5 py-1.5 rounded-xl text-xs font-bold border transition cursor-pointer" data-i18n="presetEx634">例題 63.4</button>
+          <button type="button" data-preset="low" class="preset-btn px-2.5 py-1.5 rounded-xl text-xs font-bold border transition cursor-pointer" data-i18n="presetLow">低維他命C</button>
+          <button type="button" data-preset="high" class="preset-btn px-2.5 py-1.5 rounded-xl text-xs font-bold border transition cursor-pointer" data-i18n="presetHigh">高維他命C</button>
+          <button type="button" data-preset="blank" class="preset-btn px-2.5 py-1.5 rounded-xl text-xs font-bold border transition cursor-pointer" data-i18n="presetWater">純水對照</button>
+          <button id="toggleParamsBtn" type="button" class="ml-1 px-2.5 py-1.5 rounded-xl text-xs font-bold bg-slate-200 hover:bg-slate-300 text-slate-700 transition cursor-pointer">
+            <span id="toggleParamsLabel" data-i18n="btnCollapseParams">收起面板 ▲</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Collapsible Body -->
+      <div id="paramPanelBody" class="p-3.5 sm:p-4 space-y-3">
+        <!-- Live Ripple Feedback & Validation Warnings -->
+        <div id="rippleInfoBanner" class="hidden rounded-xl px-3 py-2 bg-amber-50 border border-amber-300 text-amber-950 text-xs font-bold flex items-center gap-2">
+          <span>⚡</span>
+          <span id="rippleInfoText"></span>
+        </div>
+
+        <div id="stoichWarningBanner" class="hidden rounded-xl px-3.5 py-2.5 bg-rose-50 border-2 border-rose-400 text-rose-900 text-xs sm:text-sm font-extrabold flex items-start gap-2.5 shadow-sm">
+          <span class="text-base leading-none mt-0.5">⚠️</span>
+          <span id="stoichWarningText" class="leading-snug"></span>
+        </div>
+
+        <!-- 3 Reagent Parameter Cards -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+
+          <!-- CARD 1: VITAMIN C (Green Accent) -->
+          <div class="rounded-2xl border-2 border-emerald-300 bg-emerald-50/50 p-3.5 space-y-2.5 flex flex-col justify-between">
+            <div class="space-y-2.5">
+              <div class="flex items-start justify-between gap-2">
+                <div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-3 h-3 rounded-sm bg-emerald-500 rotate-45 inline-block"></span>
+                    <h3 class="text-xs sm:text-sm font-extrabold text-emerald-950" data-i18n="cardVitCTitle">抗壞血酸 Vitamin C (C<sub>6</sub>H<sub>8</sub>O<sub>6</sub>)</h3>
+                  </div>
+                  <div class="mt-1 flex flex-wrap items-center gap-1.5 font-mono text-[11px]">
+                    <span id="vitCSciBadge" class="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-900 font-extrabold border border-emerald-300">9.00 × 10⁻⁵ mol</span>
+                    <span id="vitCMassBadge" class="px-2 py-0.5 rounded-md bg-white text-emerald-800 font-bold border border-emerald-200">15.8 mg</span>
+                  </div>
+                </div>
+                <span class="text-[10px] font-bold text-emerald-700 bg-white px-2 py-0.5 rounded-full border border-emerald-200">176.0 g mol<sup>−1</sup></span>
+              </div>
+
+              <!-- Inputs Grid: n, M, V -->
+              <div class="grid grid-cols-3 gap-2">
+                <div>
+                  <label for="inputVitCN" class="block text-[11px] font-bold text-emerald-900 mb-1" data-i18n="lblMoles">摩爾數 n (mol)</label>
+                  <input id="inputVitCN" type="number" step="0.00001" min="0" value="0.000090" class="w-full px-2 py-1.5 rounded-lg border border-emerald-300 bg-white font-mono text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                </div>
+                <div>
+                  <label for="inputVitCM" class="block text-[11px] font-bold text-emerald-900 mb-1" data-i18n="lblMolarity">濃度 M (M)</label>
+                  <input id="inputVitCM" type="number" step="0.0002" min="0" value="0.00360" class="w-full px-2 py-1.5 rounded-lg border border-emerald-300 bg-white font-mono text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                </div>
+                <div>
+                  <label for="inputVitCV" class="block text-[11px] font-bold text-emerald-900 mb-1" data-i18n="lblVolume">體積 V (cm³)</label>
+                  <input id="inputVitCV" type="number" step="1" min="0.1" value="25.0" class="w-full px-2 py-1.5 rounded-lg border border-emerald-300 bg-white font-mono text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Slider synced with Vitamin C n -->
+            <div class="pt-1 border-t border-emerald-200/70">
+              <div class="flex items-center justify-between text-[10px] font-bold text-emerald-800 mb-0.5">
+                <span data-i18n="vitCSliderQuick">快速拖動調校 Vit C 份量：</span>
+                <span id="vitCSliderPct" class="font-mono">12% of Total I₂</span>
+              </div>
+              <input id="vitCSlider" type="range" min="0" max="110" step="1" value="12" class="w-full" />
+            </div>
+          </div>
+
+          <!-- CARD 2: TOTAL EXCESS I₂ (Amber/Purple Accent) -->
+          <div class="rounded-2xl border-2 border-amber-300 bg-amber-50/50 p-3.5 space-y-2.5 flex flex-col justify-between">
+            <div class="space-y-2.5">
+              <div class="flex items-start justify-between gap-2">
+                <div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="inline-flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-amber-700"></span><span class="w-2.5 h-2.5 -ml-1 rounded-full bg-amber-700"></span></span>
+                    <h3 class="text-xs sm:text-sm font-extrabold text-amber-950" data-i18n="cardI2Title">過量碘溶液 Total I<sub>2</sub></h3>
+                  </div>
+                  <div class="mt-1 flex flex-wrap items-center gap-1.5 font-mono text-[11px]">
+                    <span id="i2SciBadge" class="px-2 py-0.5 rounded-md bg-amber-100 text-amber-950 font-extrabold border border-amber-300">7.50 × 10⁻⁴ mol</span>
+                    <span id="i2ExcessBadge" class="px-2 py-0.5 rounded-md bg-purple-100 text-purple-900 font-bold border border-purple-200">剩餘 6.60 × 10⁻⁴</span>
+                  </div>
+                </div>
+                <span class="text-[10px] font-bold text-amber-800 bg-white px-2 py-0.5 rounded-full border border-amber-200" data-i18n="tagKnownTotal">已知總量</span>
+              </div>
+
+              <!-- Inputs Grid: n, M, V -->
+              <div class="grid grid-cols-3 gap-2">
+                <div>
+                  <label for="inputI2N" class="block text-[11px] font-bold text-amber-950 mb-1" data-i18n="lblMoles">摩爾數 n (mol)</label>
+                  <input id="inputI2N" type="number" step="0.00005" min="0.00001" value="0.000750" class="w-full px-2 py-1.5 rounded-lg border border-amber-300 bg-white font-mono text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                </div>
+                <div>
+                  <label for="inputI2M" class="block text-[11px] font-bold text-amber-950 mb-1" data-i18n="lblEquivM">等效 M (M)</label>
+                  <input id="inputI2M" type="number" step="0.01" min="0.001" value="0.150" class="w-full px-2 py-1.5 rounded-lg border border-amber-300 bg-white font-mono text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                </div>
+                <div>
+                  <label for="inputI2V" class="block text-[11px] font-bold text-amber-950 mb-1" data-i18n="lblVolume">體積 V (cm³)</label>
+                  <input id="inputI2V" type="number" step="0.5" min="0.1" value="5.0" class="w-full px-2 py-1.5 rounded-lg border border-amber-300 bg-white font-mono text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-1.5 border-t border-amber-200/70 text-[11px] text-amber-900 font-medium leading-snug" data-i18n="cardI2Note">
+              例題 63.4：5.0 cm³ 0.050 M KIO<sub>3</sub> → 3 × 2.50 × 10<sup>−4</sup> = 7.50 × 10<sup>−4</sup> mol I<sub>2</sub>
+            </div>
+          </div>
+
+          <!-- CARD 3: SODIUM THIOSULPHATE TITRANT S₂O₃²⁻ (Blue Accent) -->
+          <div class="rounded-2xl border-2 border-blue-300 bg-blue-50/50 p-3.5 space-y-2.5 flex flex-col justify-between">
+            <div class="space-y-2.5">
+              <div class="flex items-start justify-between gap-2">
+                <div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-3 h-3 rounded-full bg-blue-600 inline-block"></span>
+                    <h3 class="text-xs sm:text-sm font-extrabold text-blue-950" data-i18n="cardThioTitle">硫代硫酸鈉 S<sub>2</sub>O<sub>3</sub><sup>2−</sup> (滴定劑)</h3>
+                  </div>
+                  <div class="mt-1 flex flex-wrap items-center gap-1.5 font-mono text-[11px]">
+                    <span id="thioSciBadge" class="px-2 py-0.5 rounded-md bg-blue-100 text-blue-950 font-extrabold border border-blue-300">1.32 × 10⁻³ mol</span>
+                    <span id="thioRatioBadge" class="px-2 py-0.5 rounded-md bg-white text-blue-800 font-bold border border-blue-200">2 : 1 (I₂)</span>
+                  </div>
+                </div>
+                <span class="text-[10px] font-bold text-blue-800 bg-white px-2 py-0.5 rounded-full border border-blue-200" data-i18n="tagBackCalc">改 V/n 可倒推 Vit C</span>
+              </div>
+
+              <!-- Inputs Grid: M, V (Endpoint), n (Endpoint) -->
+              <div class="grid grid-cols-3 gap-2">
+                <div>
+                  <label for="inputThioM" class="block text-[11px] font-bold text-blue-950 mb-1" data-i18n="lblMolarity">濃度 M (M)</label>
+                  <input id="inputThioM" type="number" step="0.01" min="0.001" value="0.100" class="w-full px-2 py-1.5 rounded-lg border border-blue-300 bg-white font-mono text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+                <div>
+                  <label for="inputThioV" class="block text-[11px] font-bold text-blue-950 mb-1" data-i18n="lblEndpointV">終點 V (cm³)</label>
+                  <input id="inputThioV" type="number" step="0.1" min="0" value="13.20" class="w-full px-2 py-1.5 rounded-lg border border-blue-300 bg-white font-mono text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+                <div>
+                  <label for="inputThioN" class="block text-[11px] font-bold text-blue-950 mb-1" data-i18n="lblEndpointN">終點 n (mol)</label>
+                  <input id="inputThioN" type="number" step="0.00005" min="0" value="0.001320" class="w-full px-2 py-1.5 rounded-lg border border-blue-300 bg-white font-mono text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-1.5 border-t border-blue-200/70 text-[11px] text-blue-900 font-medium leading-snug" data-i18n="cardThioNote">
+              改 <strong>M</strong> 會調整終點體積 V；改 <strong>V 或 n</strong> 會即時反推果汁中 Vit C 份量！
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 3. 5-STAGE STEPPER, PLAYBACK & MANUAL TITRANT CONTROLS ==================== -->
+    <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-3.5 sm:p-4 space-y-3">
+      <!-- 5-Stage Interactive Navigation Bar -->
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-2" id="stageBar">
+        <button type="button" data-stage="1" class="stage-btn text-left p-2.5 rounded-xl border-2 transition cursor-pointer">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-extrabold uppercase tracking-wider opacity-75">Stage 1</span>
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-600"></span>
+          </div>
+          <div class="text-xs sm:text-sm font-bold mt-0.5 leading-snug" data-i18n="stage1Title">生成過量 I₂</div>
+        </button>
+
+        <button type="button" data-stage="2" class="stage-btn text-left p-2.5 rounded-xl border-2 transition cursor-pointer">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-extrabold uppercase tracking-wider opacity-75">Stage 2</span>
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+          </div>
+          <div class="text-xs sm:text-sm font-bold mt-0.5 leading-snug" data-i18n="stage2Title">抗壞血酸反應</div>
+        </button>
+
+        <button type="button" data-stage="3" class="stage-btn text-left p-2.5 rounded-xl border-2 transition cursor-pointer">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-extrabold uppercase tracking-wider opacity-75">Stage 3</span>
+            <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+          </div>
+          <div class="text-xs sm:text-sm font-bold mt-0.5 leading-snug" data-i18n="stage3Title">滴定至淺黃＋暫停</div>
+        </button>
+
+        <button type="button" data-stage="4" class="stage-btn text-left p-2.5 rounded-xl border-2 transition cursor-pointer">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-extrabold uppercase tracking-wider opacity-75">Stage 4</span>
+            <span class="w-2.5 h-2.5 rounded-full bg-blue-700"></span>
+          </div>
+          <div class="text-xs sm:text-sm font-bold mt-0.5 leading-snug" data-i18n="stage4Title">加澱粉＋無色終點</div>
+        </button>
+
+        <button type="button" data-stage="5" class="stage-btn col-span-2 sm:col-span-1 text-left p-2.5 rounded-xl border-2 transition cursor-pointer">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-extrabold uppercase tracking-wider opacity-75">Stage 5</span>
+            <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
+          </div>
+          <div class="text-xs sm:text-sm font-bold mt-0.5 leading-snug" data-i18n="stage5Title">反滴定減法計算</div>
+        </button>
+      </div>
+
+      <!-- Playback Row + Speed Selector -->
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="prevStepBtn" type="button" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm transition active:scale-95 cursor-pointer" data-i18n="btnPrev">
+            ◀ 上一階段
+          </button>
+          <button id="playPauseBtn" type="button" class="px-4 py-2 rounded-xl bg-skhNavy hover:bg-skhNavyLight text-white font-bold text-xs sm:text-sm shadow-sm transition active:scale-95 flex items-center gap-1.5 cursor-pointer">
+            <span id="playPauseIcon">▶</span>
+            <span id="playPauseText" data-i18n="btnPlay">自動播放</span>
+          </button>
+          <button id="nextStepBtn" type="button" class="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-sm transition active:scale-95 cursor-pointer" data-i18n="btnNext">
+            下一階段 ▶
+          </button>
+          <button id="resetBtn" type="button" class="px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs sm:text-sm transition active:scale-95 cursor-pointer" data-i18n="btnReset">
+            ↺ 重設實驗
+          </button>
+        </div>
+
+        <!-- Speed Selector -->
+        <div class="flex items-center bg-slate-100 rounded-xl p-1 border border-slate-200">
+          <span class="text-[11px] font-bold text-slate-500 px-2" data-i18n="speedLabel">速度</span>
+          <button type="button" data-speed="0.25" class="speed-btn px-2 py-1 rounded-lg text-xs font-bold text-slate-600 hover:bg-white transition cursor-pointer">0.25x</button>
+          <button type="button" data-speed="0.5" class="speed-btn px-2 py-1 rounded-lg text-xs font-bold text-slate-600 hover:bg-white transition cursor-pointer">0.5x</button>
+          <button type="button" data-speed="1" class="speed-btn px-2 py-1 rounded-lg text-xs font-bold bg-white text-skhNavy shadow-sm transition cursor-pointer">1x</button>
+          <button type="button" data-speed="2" class="speed-btn px-2 py-1 rounded-lg text-xs font-bold text-slate-600 hover:bg-white transition cursor-pointer">2x</button>
+        </div>
+      </div>
+
+      <!-- Pedagogical Stage Guide Banner -->
+      <div class="bg-slate-50 rounded-xl border border-slate-200 p-3 flex items-start gap-2.5">
+        <span id="stageBadge" class="shrink-0 mt-0.5 px-2.5 py-1 rounded-lg bg-skhNavy text-white font-extrabold text-xs">Stage 1</span>
+        <p id="stageDescription" class="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed"></p>
+      </div>
+
+      <!-- MANUAL TITRANT ADDITION BAR (Visible in Stages 3 & 4) -->
+      <div id="manualTitrationPanel" class="hidden rounded-2xl border-2 border-blue-200 bg-blue-50/70 p-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-xs sm:text-sm font-extrabold text-blue-950 flex items-center gap-1.5">
+            <span>🧪</span>
+            <span data-i18n="manualTitrantTitle">手動加入滴定劑 Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub>(aq)：</span>
+          </span>
+          <span id="manualVolReadout" class="font-mono text-sm font-black text-blue-800 bg-white px-2.5 py-1 rounded-xl border border-blue-300 shadow-sm min-w-[84px] text-center">0.00 cm³</span>
+          <span class="text-[11px] font-semibold text-blue-800 hidden sm:inline" data-i18n="stopcockTip">(亦可直接點擊或長按左圖滴定管活栓)</span>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="addCoarseBtn" type="button" class="px-3 py-2 rounded-xl bg-skhBlue hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
+            +2.00 cm³
+          </button>
+          <button id="addMedBtn" type="button" class="px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
+            +0.60 cm³
+          </button>
+          <button id="addFineBtn" type="button" class="px-3 py-2 rounded-xl bg-white hover:bg-sky-100 text-sky-900 border border-sky-300 font-bold text-xs shadow-sm transition active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
+            +0.10 cm³
+          </button>
+          <button id="resetTitrationBtn" type="button" class="px-2.5 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs transition cursor-pointer" data-i18n="btnResetTitration">
+            重滴
+          </button>
+        </div>
+      </div>
+
+      <!-- CRITICAL PAUSE BEFORE STARCH INDICATOR PROMPT PANEL -->
+      <div id="starchPromptPanel" class="hidden starch-alert-glow rounded-2xl border-2 border-amber-400 bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-50 p-3.5 sm:p-4 space-y-2.5">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div class="space-y-1">
+            <div class="text-sm sm:text-base font-black text-amber-950 flex items-center gap-2">
+              <span data-i18n="starchPauseTitle">⏸ 溶液已變為淺黃色！請手動點擊加入澱粉指示劑 (Starch Solution)</span>
+            </div>
+            <p class="text-xs sm:text-sm text-amber-900 leading-relaxed" data-i18n="starchPauseExamNote">
+              <strong>HKDSE 必考原因：</strong>若在 I<sub>2</sub> 濃度高（深棕色）時過早加入澱粉，會形成難以解離的深藍色絡合物，令終點模糊。等到淺黃色（僅剩少量 I<sub>2</sub>）才加入澱粉，可得出極敏銳的「深藍色 → 無色」終點！
+            </p>
+          </div>
+          <button id="addStarchBtn" type="button" class="shrink-0 px-4 py-3 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white font-extrabold text-xs sm:text-sm shadow-lg transition active:scale-95 flex items-center justify-center gap-2 cursor-pointer" data-i18n="btnAddStarch">
+            💧 手動加入澱粉指示劑 (Add Starch Indicator)
+          </button>
+        </div>
+      </div>
+
+      <!-- END-POINT REACHED CELEBRATION BANNER -->
+      <div id="endpointBanner" class="hidden rounded-2xl border-2 border-emerald-500 bg-emerald-50 p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5">
+          <span class="w-9 h-9 rounded-full bg-emerald-600 text-white flex items-center justify-center font-black text-lg shrink-0">✓</span>
+          <div>
+            <div id="endpointBannerTitle" class="text-sm sm:text-base font-black text-emerald-950">到達滴定終點！溶液由深藍色變為無色</div>
+            <div id="endpointBannerSub" class="text-xs sm:text-sm font-bold text-emerald-800"></div>
+          </div>
+        </div>
+        <button id="goToCalcBtn" type="button" class="shrink-0 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs sm:text-sm shadow-sm transition active:scale-95 cursor-pointer" data-i18n="btnGoToStage5">
+          進入 Stage 5：反滴定相減計算 ▶
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== 4. SYNCHRONIZED DUAL-VIEW WORKSPACE ==================== -->
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <!-- LEFT PANEL: MACROSCOPIC LAB VIEW -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+        <div class="px-4 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-skhBlue"></span>
+            <h2 class="font-extrabold text-sm sm:text-base text-slate-800" data-i18n="macroTitle">宏觀實驗室視角 (Macroscopic View)</h2>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="flaskColorBadge" class="px-2.5 py-1 rounded-full text-xs font-bold border bg-amber-50 text-amber-900 border-amber-200">
+              深棕色
+            </span>
+            <button id="macroZoomBtn" type="button" class="px-2.5 py-1 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs flex items-center gap-1 transition cursor-pointer">
+              <span>🔍</span>
+              <span data-i18n="zoomToggle">放大檢視</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="relative w-full h-[380px] sm:h-[430px] bg-gradient-to-b from-slate-50 to-slate-100 select-none">
+          <canvas id="macroCanvas" class="cursor-pointer"></canvas>
+        </div>
+
+        <!-- Digital Readout Cards below Macro Canvas -->
+        <div class="grid grid-cols-3 gap-2 p-2.5 bg-slate-900 text-white border-t border-slate-700">
+          <div class="bg-slate-800/90 rounded-xl px-2.5 py-1.5 border border-sky-500/40 text-center">
+            <div class="text-[10px] text-sky-300 font-bold" data-i18n="readoutAddedV">已加滴定劑體積</div>
+            <div id="readoutAddedVVal" class="font-mono text-sm sm:text-base font-extrabold text-white">0.00 cm³</div>
+          </div>
+          <div class="bg-slate-800/90 rounded-xl px-2.5 py-1.5 border border-emerald-500/40 text-center">
+            <div class="text-[10px] text-emerald-300 font-bold" data-i18n="readoutEndV">預期終點體積</div>
+            <div id="readoutEndVVal" class="font-mono text-sm sm:text-base font-extrabold text-emerald-300">13.20 cm³</div>
+          </div>
+          <div class="bg-slate-800/90 rounded-xl px-2.5 py-1.5 border border-amber-500/40 text-center">
+            <div class="text-[10px] text-amber-300 font-bold" data-i18n="readoutRemI2">瓶內剩餘 n(I<sub>2</sub>)</div>
+            <div id="readoutRemI2Val" class="font-mono text-xs sm:text-sm font-extrabold text-amber-200 mt-0.5">7.50 × 10⁻⁴ mol</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT PANEL: MICROSCOPIC PARTICLE VIEW -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+        <div class="px-4 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-amber-600"></span>
+            <h2 class="font-extrabold text-sm sm:text-base text-slate-800" data-i18n="microTitle">微觀粒子視角 (Microscopic View)</h2>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="liveScaleBadge" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-900 border border-amber-200 font-mono">
+              1 粒 = 3.00 × 10⁻⁵ mol
+            </span>
+            <button id="microZoomBtn" type="button" class="px-2.5 py-1 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs flex items-center gap-1 transition cursor-pointer">
+              <span>🔬</span>
+              <span data-i18n="zoomToggle">放大檢視</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Real-Time Micro Particle Counter HUD ("邊度多咗、邊度少咗") -->
+        <div class="grid grid-cols-4 gap-1.5 px-3 py-2 bg-slate-900 text-white border-b border-slate-700">
+          <div class="bg-slate-800/90 rounded-xl px-2 py-1.5 border border-emerald-500/40 flex items-center justify-between">
+            <div>
+              <div class="text-[10px] text-emerald-300 font-bold" data-i18n="hudVitC">Vit C 剩餘</div>
+              <div class="text-base font-extrabold font-mono text-white leading-tight" id="hudVitCCount">3</div>
+            </div>
+            <span id="hudVitCDelta" class="text-xs font-extrabold text-emerald-400"></span>
+          </div>
+
+          <div class="bg-slate-800/90 rounded-xl px-2 py-1.5 border border-amber-500/50 flex items-center justify-between">
+            <div>
+              <div class="text-[10px] text-amber-300 font-bold" data-i18n="hudI2">剩餘 I<sub>2</sub></div>
+              <div class="text-base font-extrabold font-mono text-white leading-tight" id="hudI2Count">0</div>
+            </div>
+            <span id="hudI2Delta" class="text-xs font-extrabold text-amber-400"></span>
+          </div>
+
+          <div class="bg-slate-800/90 rounded-xl px-2 py-1.5 border border-cyan-500/40 flex items-center justify-between">
+            <div>
+              <div class="text-[10px] text-cyan-300 font-bold" data-i18n="hudThio">已加 S<sub>2</sub>O<sub>3</sub><sup>2−</sup></div>
+              <div class="text-base font-extrabold font-mono text-white leading-tight" id="hudThioCount">0</div>
+            </div>
+            <span id="hudThioDelta" class="text-xs font-extrabold text-cyan-400"></span>
+          </div>
+
+          <div class="bg-slate-800/90 rounded-xl px-2 py-1.5 border border-purple-400/40 flex items-center justify-between">
+            <div>
+              <div class="text-[10px] text-purple-300 font-bold" data-i18n="hudProducts">生成 I<sup>−</sup></div>
+              <div class="text-base font-extrabold font-mono text-white leading-tight" id="hudIodideCount">0</div>
+            </div>
+            <span id="hudIodideDelta" class="text-xs font-extrabold text-purple-300"></span>
+          </div>
+        </div>
+
+        <div class="relative w-full h-[335px] sm:h-[385px] bg-[#0d1829]">
+          <canvas id="microCanvas"></canvas>
+        </div>
+
+        <!-- Micro Particle Legend -->
+        <div class="px-3 py-2 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-center gap-x-3.5 gap-y-1 text-[11px] font-semibold text-slate-700">
+          <span class="flex items-center gap-1.5">
+            <span class="w-3.5 h-3.5 rounded-sm bg-emerald-500 border border-emerald-700 inline-block rotate-45"></span>
+            <span data-i18n="legendVitC">Vit C (C<sub>6</sub>H<sub>8</sub>O<sub>6</sub>)</span>
+          </span>
+          <span class="flex items-center gap-1.5">
+            <span class="inline-flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-amber-700 border border-amber-900"></span><span class="w-2.5 h-2.5 -ml-1 rounded-full bg-amber-700 border border-amber-900"></span></span>
+            <span data-i18n="legendI2">碘分子 (I<sub>2</sub>)</span>
+          </span>
+          <span class="flex items-center gap-1.5">
+            <span class="inline-flex items-center ring-2 ring-blue-500 rounded-full p-0.5"><span class="w-2 h-2 rounded-full bg-indigo-900"></span><span class="w-2 h-2 -ml-0.5 rounded-full bg-indigo-900"></span></span>
+            <span data-i18n="legendStarchI2">澱粉-I<sub>2</sub> 藍黑絡合物</span>
+          </span>
+          <span class="flex items-center gap-1.5">
+            <span class="w-3 h-3 rounded-full bg-blue-500 border border-blue-700 inline-block"></span>
+            <span>S<sub>2</sub>O<sub>3</sub><sup>2−</sup></span>
+          </span>
+          <span class="flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-slate-300 border border-slate-400 inline-block"></span>
+            <span>I<sup>−</sup></span>
+          </span>
+          <span class="flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-cyan-300 border border-cyan-500 inline-block"></span>
+            <span>S<sub>4</sub>O<sub>6</sub><sup>2−</sup></span>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 5. VISUAL I₂ DISTRIBUTION BAR & LINKED 4-STEP CALCULATION PANEL ==================== -->
+    <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-5 space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+        <div>
+          <h2 class="text-base sm:text-lg font-extrabold text-skhNavy flex items-center gap-2">
+            <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-amber-100 text-amber-800 text-sm font-black">I<sub>2</sub></span>
+            <span data-i18n="partitionSectionTitle">核心概念：I<sub>2</sub> 數量分佈條與運算式互動連結</span>
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-500 mt-0.5" data-i18n="partitionSectionSub">
+            點擊或懸停下方任何概念標籤，同步亮起分佈條、微觀粒子與對應算式！
+          </p>
+        </div>
+
+        <!-- 4 Interactive Concept Cross-Highlight Pills -->
+        <div class="flex flex-wrap items-center gap-1.5">
+          <button type="button" data-concept="total" class="concept-pill px-3 py-1.5 rounded-xl text-xs font-extrabold bg-amber-100 text-amber-900 border-2 border-amber-400 hover:bg-amber-200 transition cursor-pointer" data-i18n="pillTotal">
+            總 I<sub>2</sub>
+          </button>
+          <button type="button" data-concept="excess" class="concept-pill px-3 py-1.5 rounded-xl text-xs font-extrabold bg-blue-100 text-blue-900 border-2 border-blue-400 hover:bg-blue-200 transition cursor-pointer" data-i18n="pillExcess">
+            剩餘 I<sub>2</sub> (滴定)
+          </button>
+          <button type="button" data-concept="reacted" class="concept-pill px-3 py-1.5 rounded-xl text-xs font-extrabold bg-emerald-100 text-emerald-900 border-2 border-emerald-500 hover:bg-emerald-200 transition cursor-pointer" data-i18n="pillReacted">
+            已反應 I<sub>2</sub> (Vit C)
+          </button>
+          <button type="button" data-concept="subtraction" class="concept-pill px-3 py-1.5 rounded-xl text-xs font-extrabold bg-indigo-100 text-indigo-900 border-2 border-indigo-400 hover:bg-indigo-200 transition cursor-pointer" data-i18n="pillSubtraction">
+            相減原理
+          </button>
+        </div>
+      </div>
+
+      <!-- Dynamic Concept Callout Banner -->
+      <div id="conceptCallout" class="rounded-xl p-3 border-l-4 bg-amber-50 border-amber-500 text-amber-950 text-xs sm:text-sm font-medium flex items-start gap-2.5 transition-all">
+        <span class="text-lg leading-none mt-0.5">💡</span>
+        <div id="conceptCalloutText" class="leading-relaxed"></div>
+      </div>
+
+      <!-- VISUAL HORIZONTAL STACKED I₂ DISTRIBUTION BAR -->
+      <div class="bg-slate-50 rounded-2xl p-3.5 sm:p-4 border border-slate-200 space-y-3">
+        <!-- Bar 1: Total Generated I₂ -->
+        <div>
+          <div class="flex items-center justify-between text-xs font-bold mb-1.5">
+            <span class="text-amber-900 flex items-center gap-1.5">
+              <span class="w-3 h-3 rounded bg-amber-600 inline-block"></span>
+              <span data-i18n="barTotalLabel">總生成 I<sub>2</sub>（Stage 1 加入的已知過量）</span>
+            </span>
+            <span class="font-mono text-amber-900" id="barTotalValue">7.50 × 10⁻⁴ mol</span>
+          </div>
+          <div id="barTotalContainer" data-concept="total" class="concept-target h-9 sm:h-10 w-full rounded-xl bg-amber-100 border-2 border-amber-500/70 p-1 flex gap-0.5 transition-all cursor-pointer"></div>
+        </div>
+
+        <!-- Bar 2: Stacked Reacted (Green) + Excess (Blue with live titrated progress) -->
+        <div>
+          <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-bold mb-1.5">
+            <span class="text-emerald-800 flex items-center gap-1.5">
+              <span class="w-3 h-3 rounded bg-emerald-500 inline-block"></span>
+              <span data-i18n="barReactedLabel">已與抗壞血酸反應的 I<sub>2</sub></span>
+              <span class="font-mono bg-emerald-100 px-1.5 py-0.5 rounded text-emerald-900" id="barReactedValue">9.00 × 10⁻⁵ mol</span>
+            </span>
+            <span class="text-blue-800 flex items-center gap-1.5">
+              <span class="w-3 h-3 rounded bg-blue-600 inline-block"></span>
+              <span data-i18n="barExcessLabel">滴定測出的剩餘 I<sub>2</sub></span>
+              <span class="font-mono bg-blue-100 px-1.5 py-0.5 rounded text-blue-900" id="barExcessValue">6.60 × 10⁻⁴ mol</span>
+            </span>
+          </div>
+          <div class="h-11 sm:h-12 w-full rounded-xl bg-slate-200/70 p-1 flex gap-1 overflow-hidden">
+            <div id="barReactedSegment" data-concept="reacted" class="concept-target h-full rounded-lg bg-emerald-500 border-2 border-emerald-600 flex items-center justify-center text-white font-extrabold text-xs transition-all duration-300 overflow-hidden cursor-pointer whitespace-nowrap px-1"></div>
+            <div id="barExcessSegment" data-concept="excess" class="concept-target h-full rounded-lg bg-blue-600 border-2 border-blue-700 flex items-center justify-center text-white font-extrabold text-xs transition-all duration-300 overflow-hidden cursor-pointer whitespace-nowrap px-1 relative">
+              <div id="barTitratedOverlay" class="absolute inset-y-0 right-0 bg-cyan-400/40 border-l-2 border-dashed border-white/90 transition-all duration-150 pointer-events-none" style="width: 0%"></div>
+              <span id="barExcessText" class="relative z-10"></span>
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-[11px] text-slate-500 mt-1 px-1">
+            <span data-i18n="barHintLeft">← 被抗壞血酸消耗的 I<sub>2</sub>（相減求得）</span>
+            <span id="barTitratedStatus" class="font-semibold text-blue-700"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4-STEP LIVE INTERACTIVE CALCULATION CARDS -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <!-- Step 1: Total I₂ -->
+        <div data-concept="total" class="concept-card rounded-2xl border-2 border-amber-300 bg-amber-50/60 p-3.5 transition-all cursor-pointer hover:shadow-md">
+          <div class="flex items-center justify-between gap-2 mb-1.5">
+            <span class="px-2.5 py-0.5 rounded-lg bg-amber-600 text-white font-extrabold text-xs" data-i18n="calcStep1Badge">步驟 1｜總生成 I<sub>2</sub> 的摩爾數</span>
+            <span class="text-[11px] font-bold text-amber-800" data-i18n="calcStep1Tip">來自 Card 2 參數</span>
+          </div>
+          <div class="font-mono text-xs sm:text-sm font-bold text-slate-800 space-y-1">
+            <div id="calcTotalI2Formula"></div>
+            <div class="text-amber-900 bg-amber-100/90 px-2.5 py-1.5 rounded-lg border border-amber-300">
+              n(I<sub>2</sub>)<sub>total</sub> = <span id="calcTotalI2Val" class="text-base font-black"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Excess I₂ -->
+        <div data-concept="excess" class="concept-card rounded-2xl border-2 border-blue-300 bg-blue-50/60 p-3.5 transition-all cursor-pointer hover:shadow-md">
+          <div class="flex items-center justify-between gap-2 mb-1.5">
+            <span class="px-2.5 py-0.5 rounded-lg bg-blue-600 text-white font-extrabold text-xs" data-i18n="calcStep2Badge">步驟 2｜滴定測出的剩餘 I<sub>2</sub> 摩爾數</span>
+            <span class="text-[11px] font-bold text-blue-800" data-i18n="calcStep2Tip">來自 Card 3 滴定結果</span>
+          </div>
+          <div class="font-mono text-xs sm:text-sm font-bold text-slate-800 space-y-1">
+            <div id="calcThioLine"></div>
+            <div class="text-blue-900 bg-blue-100/90 px-2.5 py-1.5 rounded-lg border border-blue-300">
+              n(I<sub>2</sub>)<sub>excess</sub> = ½ × n(S<sub>2</sub>O<sub>3</sub><sup>2−</sup>) = <span id="calcExcessI2Val" class="text-base font-black"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Subtraction -->
+        <div data-concept="subtraction" class="concept-card rounded-2xl border-2 border-indigo-400 bg-indigo-50/60 p-3.5 shadow-sm transition-all cursor-pointer hover:shadow-md">
+          <div class="flex items-center justify-between gap-2 mb-1.5">
+            <span class="px-2.5 py-0.5 rounded-lg bg-indigo-600 text-white font-extrabold text-xs" data-i18n="calcStep3Badge">步驟 3｜相減：與抗壞血酸反應的 I<sub>2</sub></span>
+            <span class="text-[11px] font-bold text-indigo-800" data-i18n="calcStep3Tip">反滴定核心</span>
+          </div>
+          <div class="font-mono text-xs sm:text-sm font-bold text-slate-800 space-y-1.5">
+            <div class="bg-white px-2.5 py-2 rounded-xl border border-indigo-300 text-indigo-950">
+              n(I<sub>2</sub>)<sub>reacted</sub> = <span class="text-amber-700">n(I<sub>2</sub>)<sub>total</sub></span> − <span class="text-blue-700">n(I<sub>2</sub>)<sub>excess</sub></span><br />
+              <span id="calcSubEquation" class="text-sm sm:text-base font-black text-emerald-700"></span>
+            </div>
+            <p class="font-sans text-xs font-bold text-indigo-900 leading-snug" data-i18n="calcStep3Plain">
+              💬 總生成 I<sub>2</sub> 減去滴定測出的剩餘 I<sub>2</sub>，就是被抗壞血酸消耗的份量！
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 4: Mass & Molarity of Ascorbic Acid -->
+        <div data-concept="reacted" class="concept-card rounded-2xl border-2 border-emerald-400 bg-emerald-50/60 p-3.5 transition-all cursor-pointer hover:shadow-md">
+          <div class="flex items-center justify-between gap-2 mb-1.5">
+            <span class="px-2.5 py-0.5 rounded-lg bg-emerald-600 text-white font-extrabold text-xs" data-i18n="calcStep4Badge">步驟 4｜抗壞血酸的質量與摩爾濃度</span>
+            <span class="text-[11px] font-bold text-emerald-800" data-i18n="calcStep4Tip">1 : 1 摩爾比 (176.0 g mol<sup>−1</sup>)</span>
+          </div>
+          <div class="font-mono text-xs sm:text-sm font-bold text-slate-800 space-y-1.5">
+            <div id="calcVitCMolLine"></div>
+            <div class="bg-white px-2.5 py-2 rounded-xl border border-emerald-300 text-emerald-950 space-y-1">
+              <div class="flex flex-wrap items-baseline justify-between gap-1">
+                <span id="calcMassFormula"></span>
+                <span id="calcMassResult" class="text-sm sm:text-base font-black text-emerald-700"></span>
+              </div>
+              <div id="calcVitCMolarityLine" class="text-xs text-teal-800 border-t border-emerald-100 pt-1"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 6. CHEMICAL EQUATIONS & HKDSE EXAM NOTES ==================== -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+      <!-- 3 Balanced Ionic / Chemical Equations -->
+      <div class="lg:col-span-6 bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-3">
+        <h3 class="text-sm sm:text-base font-extrabold text-skhNavy flex items-center gap-2">
+          <span>⚗️</span>
+          <span data-i18n="eqSectionTitle">三個關鍵平衡方程式（隨階段自動亮起）</span>
+        </h3>
+
+        <div class="space-y-2.5">
+          <div id="eqBox1" class="p-3 rounded-xl border-2 border-slate-200 bg-slate-50 transition-all">
+            <div class="text-[11px] font-extrabold text-amber-800 uppercase mb-1" data-i18n="eq1Label">
+              Stage 1｜生成已知過量的碘 (I<sub>2</sub>)
+            </div>
+            <div class="font-mono text-xs sm:text-sm font-bold text-slate-900">
+              IO<sub>3</sub><sup>−</sup>(aq) + 5I<sup>−</sup>(aq) + 6H<sup>+</sup>(aq) → <span class="text-amber-700 font-black">3I<sub>2</sub>(aq)</span> + 3H<sub>2</sub>O(l)
+            </div>
+          </div>
+
+          <div id="eqBox2" class="p-3 rounded-xl border-2 border-slate-200 bg-slate-50 transition-all">
+            <div class="text-[11px] font-extrabold text-emerald-800 uppercase mb-1" data-i18n="eq2Label">
+              Stage 2｜抗壞血酸把部分 I<sub>2</sub> 還原為無色 I<sup>−</sup> (1 : 1)
+            </div>
+            <div class="font-mono text-xs sm:text-sm font-bold text-slate-900">
+              C<sub>6</sub>H<sub>8</sub>O<sub>6</sub>(aq) + <span class="text-emerald-700 font-black">I<sub>2</sub>(aq)</span> → C<sub>6</sub>H<sub>6</sub>O<sub>6</sub>(aq) + 2H<sup>+</sup>(aq) + 2I<sup>−</sup>(aq)
+            </div>
+          </div>
+
+          <div id="eqBox3" class="p-3 rounded-xl border-2 border-slate-200 bg-slate-50 transition-all">
+            <div class="text-[11px] font-extrabold text-blue-800 uppercase mb-1" data-i18n="eq3Label">
+              Stage 3 &amp; 4｜用標準 Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub>(aq) 滴定剩餘的 I<sub>2</sub> (1 : 2)
+            </div>
+            <div class="font-mono text-xs sm:text-sm font-bold text-slate-900">
+              <span class="text-blue-700 font-black">I<sub>2</sub>(aq)</span> + 2S<sub>2</sub>O<sub>3</sub><sup>2−</sup>(aq) → 2I<sup>−</sup>(aq) + S<sub>4</sub>O<sub>6</sub><sup>2−</sup>(aq)
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HKDSE Exam Notes -->
+      <div class="lg:col-span-6 bg-white rounded-2xl shadow-sm border border-slate-200 p-4 flex flex-col">
+        <div class="flex items-center justify-between gap-2 mb-3">
+          <h3 class="text-sm sm:text-base font-extrabold text-skhNavy flex items-center gap-2">
+            <span>📝</span>
+            <span data-i18n="examSectionTitle">HKDSE 必考要點與常見問題</span>
+          </h3>
+          <span class="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 font-extrabold text-[11px]">DSE Tips</span>
+        </div>
+
+        <div class="flex flex-wrap gap-1.5 mb-3">
+          <button type="button" data-tab="0" class="exam-tab px-3 py-1.5 rounded-xl text-xs font-bold bg-skhNavy text-white transition cursor-pointer" data-i18n="tab1Title">
+            為何淺黃色才加澱粉？
+          </button>
+          <button type="button" data-tab="1" class="exam-tab px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition cursor-pointer" data-i18n="tab2Title">
+            為何要用反滴定？
+          </button>
+          <button type="button" data-tab="2" class="exam-tab px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition cursor-pointer" data-i18n="tab3Title">
+            實驗假設與誤差
+          </button>
+        </div>
+
+        <div id="examTabContent" class="flex-1 bg-slate-50 rounded-xl border border-slate-200 p-3.5 text-xs sm:text-sm text-slate-700 leading-relaxed space-y-2"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-slate-900 text-slate-400 text-xs py-3 px-4 text-center mt-6">
+    <span data-i18n="footerText">聖公會梁季彜中學化學科｜HKDSE 課題 XV 反滴定互動教學平台｜由吳柏霖老師設計</span>
+  </footer>
+
+  <!-- ==================== JAVASCRIPT SIMULATION ENGINE ==================== -->
+  <script>
+    (() => {
+      'use strict';
+
+      /* =====================================================================
+         1. CONSTANTS & PRESETS (HKDSE Example 63.4)
+         ===================================================================== */
+      const MOLAR_MASS_VITC = 176.0; // g mol⁻¹
+
+      const PRESETS = {
+        ex634: { nVitC: 0.000090, vVitC: 25.0, nI2: 0.000750, vI2: 5.0, mThio: 0.100 },
+        low:   { nVitC: 0.000030, vVitC: 25.0, nI2: 0.000750, vI2: 5.0, mThio: 0.100 },
+        high:  { nVitC: 0.000300, vVitC: 25.0, nI2: 0.000750, vI2: 5.0, mThio: 0.100 },
+        blank: { nVitC: 0.000000, vVitC: 25.0, nI2: 0.000750, vI2: 5.0, mThio: 0.100 }
+      };
+
+      /* =====================================================================
+         2. BILINGUAL DICTIONARY (繁體中文 / English)
+         ===================================================================== */
+      const I18N = {
+        zh: {
+          schoolDept: '聖公會梁季彜中學｜化學科',
+          topicTag: 'HKDSE 課題 XV 分析化學',
+          mainTitle: '反滴定：測定果汁中抗壞血酸的質量',
+          designerCredit: '由吳柏霖老師設計 ｜ HKDSE 課本例題 63.4 互動模擬',
+          langBtn: 'English',
+          paramPanelTitle: '自訂實驗參數 (n, M, V)',
+          paramPanelSub: '修改任何一項數值，系統會根據 n = M × V / 1000 及反滴定比例即時聯動更新',
+          presetEx634: '例題 63.4',
+          presetLow: '低維他命C',
+          presetHigh: '高維他命C',
+          presetWater: '純水對照',
+          btnCollapseParams: '收起面板 ▲',
+          btnExpandParams: '展開自訂參數 ▼',
+          cardVitCTitle: '抗壞血酸 Vitamin C (C<sub>6</sub>H<sub>8</sub>O<sub>6</sub>)',
+          cardI2Title: '過量碘溶液 Total I<sub>2</sub>',
+          cardThioTitle: '硫代硫酸鈉 S<sub>2</sub>O<sub>3</sub><sup>2−</sup> (滴定劑)',
+          lblMoles: '摩爾數 n (mol)',
+          lblMolarity: '濃度 M (M)',
+          lblEquivM: '等效 M (M)',
+          lblVolume: '體積 V (cm³)',
+          lblEndpointV: '終點 V (cm³)',
+          lblEndpointN: '終點 n (mol)',
+          vitCSliderQuick: '快速拖動調校 Vit C 份量：',
+          tagKnownTotal: '已知總量',
+          tagBackCalc: '改 V/n 可倒推 Vit C',
+          cardI2Note: '例題 63.4：5.0 cm³ 0.050 M KIO<sub>3</sub> → 3 × 2.50 × 10<sup>−4</sup> = 7.50 × 10<sup>−4</sup> mol I<sub>2</sub>',
+          cardThioNote: '改 <strong>M</strong> 會調整終點體積 V；改 <strong>V 或 n</strong> 會即時反推果汁中 Vit C 份量！',
+          warnNotExcess: '碘 (I₂) 不足（非過量）！反滴定必須加入過量 I₂，否則抗壞血酸會耗盡所有 I₂，無法進行反滴定。',
+          warnExcessTooHigh: '滴定測出的剩餘 I₂ 不能大於總生成 I₂！系統已將抗壞血酸設為 0 mol，請減小 S₂O₃²⁻ 的體積或摩爾數，或增加總 I₂。',
+          rippleFromVitC: '已根據抗壞血酸 (Vit C) 更新：同步重算剩餘 I₂ 及所需 S₂O₃²⁻ 終點體積與摩爾數。',
+          rippleFromI2: '已根據總生成 I₂ 更新：同步重算剩餘 I₂ 及所需 S₂O₃²⁻ 終點體積與摩爾數。',
+          rippleFromThioM: '已根據滴定劑濃度 M(S₂O₃²⁻) 更新：保持摩爾數不變，重算終點滴定體積 V。',
+          rippleFromThioBack: '已根據滴定結果 (S₂O₃²⁻) 反推計算：由總 I₂ 減去剩餘 I₂，同步更新 Vit C 摩爾數與濃度！',
+          stage1Title: '生成過量 I₂',
+          stage2Title: '抗壞血酸反應',
+          stage3Title: '滴定至淺黃＋暫停',
+          stage4Title: '加澱粉＋無色終點',
+          stage5Title: '反滴定減法計算',
+          btnPrev: '◀ 上一階段',
+          btnPlay: '自動播放',
+          btnPause: '暫停動畫',
+          btnNext: '下一階段 ▶',
+          btnReset: '↺ 重設實驗',
+          speedLabel: '速度',
+          manualTitrantTitle: '手動加入滴定劑 Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub>(aq)：',
+          stopcockTip: '(亦可直接點擊或長按左圖滴定管活栓)',
+          btnResetTitration: '重滴',
+          starchPauseTitle: '⏸ 溶液已變為淺黃色！請手動點擊加入澱粉指示劑 (Starch Solution)',
+          starchPauseExamNote: '<strong>HKDSE 必考原因：</strong>若在 I<sub>2</sub> 濃度高（深棕色）時過早加入澱粉，會形成難以解離的深藍色絡合物，令終點模糊。等到淺黃色（僅剩少量 I<sub>2</sub>）才加入澱粉，可得出極敏銳的「深藍色 → 無色」終點！',
+          btnAddStarch: '💧 手動加入澱粉指示劑 (Add Starch Indicator)',
+          btnGoToStage5: '進入 Stage 5：反滴定相減計算 ▶',
+          macroTitle: '宏觀實驗室視角 (Macroscopic View)',
+          microTitle: '微觀粒子視角 (Microscopic View)',
+          zoomToggle: '放大檢視',
+          zoomActive: '關閉放大',
+          readoutAddedV: '已加滴定劑體積',
+          readoutEndV: '預期終點體積',
+          readoutRemI2: '瓶內剩餘 n(I<sub>2</sub>)',
+          hudVitC: 'Vit C 剩餘',
+          hudI2: '剩餘 I<sub>2</sub>',
+          hudThio: '已加 S<sub>2</sub>O<sub>3</sub><sup>2−</sup>',
+          hudProducts: '生成 I<sup>−</sup>',
+          legendVitC: 'Vit C (C<sub>6</sub>H<sub>8</sub>O<sub>6</sub>)',
+          legendI2: '碘分子 (I<sub>2</sub>)',
+          legendStarchI2: '澱粉-I<sub>2</sub> 藍黑絡合物',
+          partitionSectionTitle: '核心概念：I<sub>2</sub> 數量分佈條與運算式互動連結',
+          partitionSectionSub: '點擊或懸停下方任何概念標籤，同步亮起分佈條、微觀粒子與對應算式！',
+          pillTotal: '總 I<sub>2</sub>',
+          pillExcess: '剩餘 I<sub>2</sub> (滴定)',
+          pillReacted: '已反應 I<sub>2</sub> (Vit C)',
+          pillSubtraction: '相減原理',
+          barTotalLabel: '總生成 I<sub>2</sub>（Stage 1 加入的已知過量）',
+          barReactedLabel: '已與抗壞血酸反應的 I<sub>2</sub>',
+          barExcessLabel: '滴定測出的剩餘 I<sub>2</sub>',
+          barHintLeft: '← 被抗壞血酸消耗的 I<sub>2</sub>（相減求得）',
+          calcStep1Badge: '步驟 1｜總生成 I<sub>2</sub> 的摩爾數',
+          calcStep1Tip: '來自 Card 2 參數',
+          calcStep2Badge: '步驟 2｜滴定測出的剩餘 I<sub>2</sub> 摩爾數',
+          calcStep2Tip: '來自 Card 3 滴定結果',
+          calcStep3Badge: '步驟 3｜相減：與抗壞血酸反應的 I<sub>2</sub>',
+          calcStep3Tip: '反滴定核心',
+          calcStep3Plain: '💬 總生成 I<sub>2</sub> 減去滴定測出的剩餘 I<sub>2</sub>，就是被抗壞血酸消耗的份量！',
+          calcStep4Badge: '步驟 4｜抗壞血酸的質量與摩爾濃度',
+          calcStep4Tip: '1 : 1 摩爾比 (176.0 g mol<sup>−1</sup>)',
+          eqSectionTitle: '三個關鍵平衡方程式（隨階段自動亮起）',
+          eq1Label: 'Stage 1｜生成已知過量的碘 (I<sub>2</sub>)',
+          eq2Label: 'Stage 2｜抗壞血酸把部分 I<sub>2</sub> 還原為無色 I<sup>−</sup> (1 : 1)',
+          eq3Label: 'Stage 3 &amp; 4｜用標準 Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub>(aq) 滴定剩餘的 I<sub>2</sub> (1 : 2)',
+          examSectionTitle: 'HKDSE 必考要點與常見問題',
+          tab1Title: '為何淺黃色才加澱粉？',
+          tab2Title: '為何要用反滴定？',
+          tab3Title: '實驗假設與誤差',
+          footerText: '聖公會梁季彜中學化學科｜HKDSE 課題 XV 反滴定互動教學平台｜由吳柏霖老師設計',
+          scalePrefix: '1 粒微觀粒子 = ',
+          excessPrefix: '剩餘 ',
+          massPrefix: '質量 =',
+          molarityPrefix: '摩爾濃度 M(C₆H₈O₆) = ',
+          titratedProgressPrefix: '滴定進度：',
+          coarseLabel: '快速',
+          medLabel: '中步',
+          fineLabel: '逐滴',
+          endpointTitle: '到達滴定終點！溶液由深藍色變為無色',
+          endpointSub: (vol, excessStr) => `終點讀數 = ${vol.toFixed(2)} cm³，推算出剩餘 n(I₂) = ${excessStr} mol`,
+          colorDarkBrown: '深棕色（過量 I₂）',
+          colorBrown: '棕色（仍有剩餘 I₂）',
+          colorAmber: '琥珀棕色',
+          colorPaleYellow: '淺黃色（暫停：請加澱粉！）',
+          colorDeepBlue: '深藍色（澱粉-I₂ 絡合物）',
+          colorColourless: '無色（到達終點！）',
+          colorNoExcess: '無色（I₂ 已耗盡，無剩餘）',
+          colorJuice: '淺淡果汁色',
+          stageDescs: {
+            1: (p) => `Stage 1：把已知過量的 ${p.totalI2Str} mol I₂ 加入 ${p.vVitC.toFixed(1)} cm³ 果汁樣本（共 ${p.totalP} 粒微觀 I₂），溶液立即變成深棕色！`,
+            2: (p) => p.notExcess
+              ? `Stage 2（I₂ 不足警告）：抗壞血酸把所有 ${p.totalI2Str} mol I₂ 耗盡，瓶內仍有未反應的綠色 Vit C 分子剩餘，無法進行反滴定！`
+              : (p.nVitC === 0
+                ? `Stage 2（純水對照組）：樣本不含抗壞血酸，消耗了 0 mol I₂，全部 ${p.totalI2Str} mol I₂ 均剩餘在瓶內！`
+                : `Stage 2：果汁中的綠色抗壞血酸 (${p.vitCStr} mol) 與部分 I₂ 以 1:1 反應還原成無色 I⁻，瓶內仍剩餘 ${p.excessStr} mol 過量 I₂！`),
+            3: (p) => p.notExcess
+              ? 'Stage 3：由於瓶內已沒有剩餘 I₂，無法使用 Na₂S₂O₃(aq) 進行反滴定。請在上方增加總 I₂ 或減少 Vit C。'
+              : `Stage 3：手動或自動滴加 ${p.mThio.toFixed(3)} M Na₂S₂O₃(aq)。當剩餘 I₂ 降至淺黃色（約 12% 總量）時，系統會自動暫停，等你手動加入澱粉指示劑！`,
+            4: (p) => p.notExcess
+              ? 'Stage 4：瓶內沒有剩餘 I₂，無需滴定。'
+              : `Stage 4：已加入澱粉指示劑，剩餘 I₂ 形成深藍色澱粉-I₂ 絡合物！請繼續手動逐滴加入 Na₂S₂O₃(aq)，直至在 ${p.vEnd.toFixed(2)} cm³ 由深藍色突然變為「無色」即達終點！`,
+            5: () => 'Stage 5：反滴定減法計算！點擊下方概念標籤，同步對照「總生成 I₂」、「滴定測出剩餘 I₂」與「相減求得抗壞血酸消耗的 I₂」，清晰掌握運算式！'
+          },
+          conceptCallouts: {
+            total: '【總生成 I₂】在 Stage 1 加入的已知過量 I₂（由 Card 2 的 n = M × V / 1000 決定），用來確保果汁中所有抗壞血酸都能完全反應。',
+            excess: '【滴定測出剩餘 I₂】抗壞血酸反應完之後瓶內剩餘的 I₂。在 Stage 3 至 4 用標準 Na₂S₂O₃(aq) 滴定至無色終點，按 1:2 比例計出 n(I₂) = ½ × n(S₂O₃²⁻)。',
+            reacted: '【已反應 I₂ = 抗壞血酸摩爾數】由於 C₆H₈O₆ 與 I₂ 以 1:1 反應，被抗壞血酸消耗的 I₂ 摩爾數即等於樣本中抗壞血酸的摩爾數，乘以 176.0 g mol⁻¹ 即得質量！',
+            subtraction: '【反滴定相減原理】n(I₂)reacted = n(I₂)total − n(I₂)excess。因為無法直接量度已反應的 I₂，我們先給過量總數，再用滴定測出剩餘數量，兩者相減即得答案！'
+          },
+          examTabs: [
+            `<p class="font-bold text-skhNavy">📌 題目：為何要在溶液變為「淺黃色」時才加入澱粉指示劑，而非一開始就加入？</p>
+             <p>• 若在 I<sub>2</sub> 濃度很高（深棕色）時就加入澱粉，過多 I<sub>2</sub> 會與澱粉形成<strong>極難解離的深藍色絡合物</strong>，導致 I<sub>2</sub> 不易釋出與 S<sub>2</sub>O<sub>3</sub><sup>2−</sup> 反應。</p>
+             <p>• 這會令滴定終點變得模糊並產生誤差。等到淺黃色（I<sub>2</sub> 濃度很低）才加入澱粉，終點顏色由<strong>深藍色變無色</strong>會非常敏銳清晰！</p>`,
+            `<p class="font-bold text-skhNavy">📌 題目：為何不直接用標準 I<sub>2</sub>(aq) 溶液滴定果汁，而要用「反滴定」？</p>
+             <p>• <strong>碘 (I<sub>2</sub>) 易揮發</strong>且微溶於水，標準 I<sub>2</sub>(aq) 溶液的濃度容易改變，難以準確配製及保存。</p>
+             <p>• <strong>碘酸鉀 (KIO<sub>3</sub>)</strong> 是優良的一級標準物質（純度高、穩定），在酸性下與過量 KI 即時原位生成準確已知份量的過量 I<sub>2</sub>，確保所有抗壞血酸完全反應。</p>`,
+            `<p class="font-bold text-skhNavy">📌 題目：寫出此實驗的一項重要假設及操作注意事項。</p>
+             <p>• <strong>關鍵假設</strong>：假設抗壞血酸（維他命 C）是果汁中<strong>唯一</strong>能與碘 (I<sub>2</sub>) 反應的還原劑。</p>
+             <p>• <strong>白瓷磚</strong>：放在錐形瓶下提供純白背景，方便觀察「深藍色 → 無色」的終點變化。</p>
+             <p>• <strong>防止氧化</strong>：果汁開封後應盡快進行實驗，避免抗壞血酸被空氣中氧氣氧化而令結果偏低。</p>`
+          ],
+          canvasLabels: {
+            whiteTile: '白瓷磚',
+            reagents: 'KIO₃ + KI + H₂SO₄',
+            clickStopcock: '點擊滴加',
+            clickDropper: '點我加澱粉！',
+            zoomMeniscus: '放大：滴定管彎液面',
+            zoomColor: '放大：瓶內顏色對比',
+            zoomMicroTitle: '微觀放大鏡 (2× 反應區)',
+            zoomMicroBond: '2e⁻ 轉移：I₂ → 2I⁻',
+            zoomMicroStarch: '澱粉螺旋 + I₂ (深藍色)',
+            endpointReached: '✓ 到達無色終點！'
+          }
+        },
+        en: {
+          schoolDept: 'SKH Leung Kwai Yee Secondary School | Chemistry',
+          topicTag: 'HKDSE Topic XV Analytical Chemistry',
+          mainTitle: 'Back Titration: Determining Ascorbic Acid in Fruit Juice',
+          designerCredit: 'Designed by Mr. Ng Pak Lam | Interactive Simulation for Example 63.4',
+          langBtn: '繁體中文',
+          paramPanelTitle: 'Custom Parameters (n, M, V)',
+          paramPanelSub: 'Edit any value to see real-time recalculation via n = M × V / 1000 and back-titration stoichiometry',
+          presetEx634: 'Example 63.4',
+          presetLow: 'Low Vit C',
+          presetHigh: 'High Vit C',
+          presetWater: 'Pure Water',
+          btnCollapseParams: 'Hide Panel ▲',
+          btnExpandParams: 'Show Parameters ▼',
+          cardVitCTitle: 'Ascorbic Acid / Vitamin C (C<sub>6</sub>H<sub>8</sub>O<sub>6</sub>)',
+          cardI2Title: 'Excess Iodine Solution (Total I<sub>2</sub>)',
+          cardThioTitle: 'Sodium Thiosulphate S<sub>2</sub>O<sub>3</sub><sup>2−</sup> (Titrant)',
+          lblMoles: 'Moles n (mol)',
+          lblMolarity: 'Molarity M (M)',
+          lblEquivM: 'Equiv. M (M)',
+          lblVolume: 'Volume V (cm³)',
+          lblEndpointV: 'End-Point V (cm³)',
+          lblEndpointN: 'End-Point n (mol)',
+          vitCSliderQuick: 'Quick Slider for Vit C Amount:',
+          tagKnownTotal: 'Known Total',
+          tagBackCalc: 'Edit V/n to Back-Calc Vit C',
+          cardI2Note: 'Example 63.4: 5.0 cm³ of 0.050 M KIO<sub>3</sub> → 3 × 2.50 × 10<sup>−4</sup> = 7.50 × 10<sup>−4</sup> mol I<sub>2</sub>',
+          cardThioNote: 'Editing <strong>M</strong> updates endpoint V; editing <strong>V or n</strong> back-calculates Vit C in the juice!',
+          warnNotExcess: 'I₂ is NOT in excess! Back titration requires excess I₂ so unreacted I₂ remains for titration.',
+          warnExcessTooHigh: 'Excess I₂ from titration cannot exceed Total I₂! Vitamin C has been clamped to 0 mol. Decrease S₂O₃²⁻ or increase Total I₂.',
+          rippleFromVitC: 'Updated from Vitamin C: recalculated remaining excess I₂ and required S₂O₃²⁻ endpoint V & n.',
+          rippleFromI2: 'Updated from Total I₂: recalculated remaining excess I₂ and required S₂O₃²⁻ endpoint V & n.',
+          rippleFromThioM: 'Updated from titrant M(S₂O₃²⁻): kept moles constant and recalculated endpoint volume V.',
+          rippleFromThioBack: 'Back-calculated from S₂O₃²⁻ titration result: subtracted excess I₂ from Total I₂ to update Vit C moles & molarity!',
+          stage1Title: 'Generate Excess I₂',
+          stage2Title: 'Vit C Reaction',
+          stage3Title: 'Titrate & Pause',
+          stage4Title: 'Starch & End-Point',
+          stage5Title: 'Subtraction Calc',
+          btnPrev: '◀ Prev Stage',
+          btnPlay: 'Auto-Play',
+          btnPause: 'Pause',
+          btnNext: 'Next Stage ▶',
+          btnReset: '↺ Reset Lab',
+          speedLabel: 'Speed',
+          manualTitrantTitle: 'Manual Titrant Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub>(aq):',
+          stopcockTip: '(Or click/hold the burette stopcock on the canvas)',
+          btnResetTitration: 'Restart Titration',
+          starchPauseTitle: '⏸ Solution is Pale Yellow! Click to Manually Add Starch Indicator',
+          starchPauseExamNote: '<strong>HKDSE Exam Note:</strong> Adding starch too early at high [I<sub>2</sub>] (dark brown) forms a tight, insoluble starch-iodine complex that gives an inaccurate end-point. Waiting until pale yellow ensures a sharp <strong>deep blue-black → colourless</strong> end-point!',
+          btnAddStarch: '💧 Add Starch Indicator Manually',
+          btnGoToStage5: 'Proceed to Stage 5: Back-Titration Calculation ▶',
+          macroTitle: 'Macroscopic Lab View',
+          microTitle: 'Microscopic Particle View',
+          zoomToggle: 'Magnify',
+          zoomActive: 'Exit Zoom',
+          readoutAddedV: 'Burette Volume Added',
+          readoutEndV: 'Expected End-Point',
+          readoutRemI2: 'Remaining n(I<sub>2</sub>)',
+          hudVitC: 'Vit C Left',
+          hudI2: 'Excess I<sub>2</sub>',
+          hudThio: 'S<sub>2</sub>O<sub>3</sub><sup>2−</sup> Added',
+          hudProducts: 'I<sup>−</sup> Formed',
+          legendVitC: 'Vit C (C<sub>6</sub>H<sub>8</sub>O<sub>6</sub>)',
+          legendI2: 'Iodine (I<sub>2</sub>)',
+          legendStarchI2: 'Starch-I<sub>2</sub> Complex',
+          partitionSectionTitle: 'Core Concept: Visual I<sub>2</sub> Distribution Bar & Formula Linker',
+          partitionSectionSub: 'Click or hover any concept pill below to highlight the bar, micro particles, and linked formula simultaneously!',
+          pillTotal: 'Total I<sub>2</sub>',
+          pillExcess: 'Excess I<sub>2</sub> (Titrated)',
+          pillReacted: 'Reacted I<sub>2</sub> (Vit C)',
+          pillSubtraction: 'Subtraction',
+          barTotalLabel: 'Total I<sub>2</sub> Generated (Known excess added in Stage 1)',
+          barReactedLabel: 'I<sub>2</sub> Reacted with Vitamin C',
+          barExcessLabel: 'Excess I<sub>2</sub> Found by Titration',
+          barHintLeft: '← I<sub>2</sub> consumed by Vitamin C (found by subtraction)',
+          calcStep1Badge: 'Step 1 | Total I<sub>2</sub> Generated',
+          calcStep1Tip: 'From Card 2 parameters',
+          calcStep2Badge: 'Step 2 | Excess I<sub>2</sub> from Titration',
+          calcStep2Tip: 'From Card 3 titration data',
+          calcStep3Badge: 'Step 3 | Subtraction: I<sub>2</sub> Reacted with Vit C',
+          calcStep3Tip: 'Core of Back Titration',
+          calcStep3Plain: '💬 Subtracting the titrated excess I<sub>2</sub> from total I<sub>2</sub> gives the exact I<sub>2</sub> consumed by Vitamin C!',
+          calcStep4Badge: 'Step 4 | Mass & Molarity of Ascorbic Acid',
+          calcStep4Tip: '1 : 1 mole ratio (176.0 g mol<sup>−1</sup>)',
+          eqSectionTitle: 'Three Balanced Equations (Auto-highlighted by Stage)',
+          eq1Label: 'Stage 1 | Generate Known Excess Iodine (I<sub>2</sub>)',
+          eq2Label: 'Stage 2 | Vitamin C Reduces Part of I<sub>2</sub> to Colourless I<sup>−</sup> (1 : 1)',
+          eq3Label: 'Stages 3 &amp; 4 | Titrate Excess I<sub>2</sub> with Standard Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub>(aq) (1 : 2)',
+          examSectionTitle: 'HKDSE Exam Notes & Key Questions',
+          tab1Title: 'Why add starch at pale yellow?',
+          tab2Title: 'Why use back titration?',
+          tab3Title: 'Assumptions & Errors',
+          footerText: 'SKHLKYSS Chemistry | HKDSE Topic XV Back Titration Interactive Platform | Designed by Mr. Ng Pak Lam',
+          scalePrefix: '1 particle = ',
+          excessPrefix: 'Excess ',
+          massPrefix: 'Mass =',
+          molarityPrefix: 'Molarity M(C₆H₈O₆) = ',
+          titratedProgressPrefix: 'Titration Progress: ',
+          coarseLabel: 'Coarse',
+          medLabel: 'Med',
+          fineLabel: 'Drop',
+          endpointTitle: 'End-Point Reached! Deep Blue-Black → Colourless',
+          endpointSub: (vol, excessStr) => `End-Point Reading = ${vol.toFixed(2)} cm³ → Excess n(I₂) = ${excessStr} mol`,
+          colorDarkBrown: 'Dark Brown (Excess I₂)',
+          colorBrown: 'Brown (Excess I₂ remains)',
+          colorAmber: 'Amber Brown',
+          colorPaleYellow: 'Pale Yellow (Paused: Add Starch!)',
+          colorDeepBlue: 'Deep Blue-Black (Starch-I₂)',
+          colorColourless: 'Colourless (End-Point!)',
+          colorNoExcess: 'Colourless (No Excess I₂ Left)',
+          colorJuice: 'Pale Juice Colour',
+          stageDescs: {
+            1: (p) => `Stage 1: Add a known excess of ${p.totalI2Str} mol I₂ (${p.totalP} micro particles) to ${p.vVitC.toFixed(1)} cm³ fruit juice. The mixture turns dark brown!`,
+            2: (p) => p.notExcess
+              ? `Stage 2 (I₂ Not in Excess!): Vitamin C consumes all ${p.totalI2Str} mol I₂, leaving unreacted green Vit C molecules behind. Back titration cannot proceed!`
+              : (p.nVitC === 0
+                ? `Stage 2 (Pure Water Blank): Pure water contains 0 mol Vitamin C, so 0 mol I₂ is consumed and all ${p.totalI2Str} mol I₂ remains.`
+                : `Stage 2: Green Vitamin C (${p.vitCStr} mol) reacts 1:1 with part of the I₂, reducing it to colourless I⁻ while ${p.excessStr} mol excess I₂ remains.`),
+            3: (p) => p.notExcess
+              ? 'Stage 3: No excess I₂ remains in the flask to titrate. Please increase Total I₂ or decrease Vitamin C above.'
+              : `Stage 3: Manually drip (or Auto-Play) ${p.mThio.toFixed(3)} M Na₂S₂O₃(aq). When remaining I₂ drops to pale yellow (~12% of total), the simulation pauses automatically so you can manually add starch indicator!`,
+            4: (p) => p.notExcess
+              ? 'Stage 4: No excess I₂ remains for titration.'
+              : `Stage 4: Starch indicator has been added, turning remaining I₂ into deep blue-black starch-I₂ complexes! Continue dripping Na₂S₂O₃(aq) until the sharp colourless end-point at ${p.vEnd.toFixed(2)} cm³!`,
+            5: () => 'Stage 5: Back-Titration Subtraction! Click any concept pill below to link Total I₂, Titrated Excess I₂, and Subtracted Reacted I₂ across the bar, particles, and formulas.'
+          },
+          conceptCallouts: {
+            total: '[Total I₂] Known excess I₂ added in Stage 1 (from Card 2: n = M × V / 1000) to guarantee complete oxidation of all Vitamin C in the juice.',
+            excess: '[Excess I₂ from Titration] Unreacted I₂ left in the flask after Stage 2. Measured in Stages 3 to 4 by titrating with standard Na₂S₂O₃(aq): n(I₂)excess = ½ × n(S₂O₃²⁻).',
+            reacted: '[Reacted I₂ = Moles of Vit C] Since C₆H₈O₆ reacts 1:1 with I₂, the moles of I₂ consumed equals the moles of Vitamin C. Multiply by 176.0 g mol⁻¹ to get mass!',
+            subtraction: '[Back-Titration Subtraction] n(I₂)reacted = n(I₂)total − n(I₂)excess. Because we cannot directly measure how much I₂ reacted, we subtract the titrated leftover from the known total!'
+          },
+          examTabs: [
+            `<p class="font-bold text-skhNavy">📌 Q: Why must starch indicator be added only when the solution turns pale yellow?</p>
+             <p>• Adding starch at high I<sub>2</sub> concentration (dark brown) forms an <strong>insoluble, tight starch-I<sub>2</sub> complex</strong> that releases I<sub>2</sub> very slowly during titration.</p>
+             <p>• Waiting until pale yellow (low [I<sub>2</sub>]) guarantees a sharp, accurate <strong>deep blue-black → colourless</strong> end-point!</p>`,
+            `<p class="font-bold text-skhNavy">📌 Q: Why use back titration instead of direct titration with standard I<sub>2</sub>(aq)?</p>
+             <p>• <strong>Iodine (I<sub>2</sub>) is volatile</strong> and sparingly soluble in water, so standard I<sub>2</sub>(aq) changes concentration over time.</p>
+             <p>• <strong>Potassium iodate (KIO<sub>3</sub>)</strong> is a stable primary standard that generates an exact excess of I<sub>2</sub> in situ with excess acidified KI, ensuring complete oxidation of Vitamin C.</p>`,
+            `<p class="font-bold text-skhNavy">📌 Q: State one key assumption and important lab precautions.</p>
+             <p>• <strong>Key Assumption</strong>: Ascorbic acid (Vitamin C) is the <strong>only</strong> substance in the fruit juice that reacts with I<sub>2</sub>(aq).</p>
+             <p>• <strong>White Tile</strong>: Provides a crisp white background to spot the deep blue-black to colourless end-point.</p>
+             <p>• <strong>Air Oxidation</strong>: Titrate promptly with freshly opened juice so atmospheric O<sub>2</sub> does not oxidise Vitamin C.</p>`
+          ],
+          canvasLabels: {
+            whiteTile: 'White Tile',
+            reagents: 'KIO₃ + KI + H₂SO₄',
+            clickStopcock: 'Click to Drip',
+            clickDropper: 'Click to Add Starch!',
+            zoomMeniscus: 'Zoom: Burette Meniscus',
+            zoomColor: 'Zoom: Flask Colour',
+            zoomMicroTitle: 'Micro Magnifier (2× Zone)',
+            zoomMicroBond: '2e⁻ Transfer: I₂ → 2I⁻',
+            zoomMicroStarch: 'Starch Helix + I₂ (Blue)',
+            endpointReached: '✓ Colourless End-Point!'
+          }
+        }
+      };
+
+      /* =====================================================================
+         3. APPLICATION STATE (DYNAMIC n, M, V PARAMETERS)
+         ===================================================================== */
+      const state = {
+        lang: 'zh',
+        paramsExpanded: true,
+
+        // Core chemical parameters (initialized to HKDSE Example 63.4)
+        nVitC: 0.000090,
+        mVitC: 0.00360,
+        vVitC: 25.0,
+
+        nI2Total: 0.000750,
+        mI2Total: 0.150,
+        vI2Total: 5.0,
+
+        mThio: 0.100,
+        vThioEnd: 13.20,
+        nThioEnd: 0.001320,
+
+        // Validation & Ripple Feedback
+        warningKey: null,       // null | 'warnNotExcess' | 'warnExcessTooHigh'
+        rippleKey: null,
+        rippleTimer: null,
+
+        // Dynamic Microscopic Particle Scaling
+        totalI2Particles: 25,
+        molPerParticle: 3.0e-5,
+
+        // Simulation Timeline State
+        stage: 1,               // 1..5
+        stageProgress: 1.0,     // 0..1 for Stages 1 & 2
+        buretteVol: 0.0,        // Current cm³ added in Stages 3 & 4
+        starchAdded: false,
+        waitingForStarch: false,
+        starchDropAnim: 0,
+        endpointReached: false,
+
+        isPlaying: false,
+        speed: 1,
+        stopcockHeld: false,
+        dripPulseTimer: 0,
+        macroZoom: false,
+        microZoom: false,
+        activeConcept: 'total', // 'total' | 'excess' | 'reacted' | 'subtraction'
+        activeExamTab: 0,
+        lastTimestamp: 0,
+
+        stopcockHit: { x: 0, y: 0, r: 22 },
+        dropperHit: { x: 0, y: 0, w: 60, h: 80, active: false },
+
+        particles: [],
+        flashes: [],
+        lastCounts: { vitC: 3, i2: 25, thio: 0, iodide: 0 }
+      };
+
+      /* =====================================================================
+         4. DOM REFERENCES
+         ===================================================================== */
+      const macroCanvas = document.getElementById('macroCanvas');
+      const microCanvas = document.getElementById('microCanvas');
+      const macroCtx = macroCanvas.getContext('2d');
+      const microCtx = microCanvas.getContext('2d');
+
+      const langToggleBtn = document.getElementById('langToggleBtn');
+      const langToggleLabel = document.getElementById('langToggleLabel');
+
+      // Parameter Panel DOM
+      const toggleParamsBtn = document.getElementById('toggleParamsBtn');
+      const toggleParamsLabel = document.getElementById('toggleParamsLabel');
+      const paramPanelBody = document.getElementById('paramPanelBody');
+      const rippleInfoBanner = document.getElementById('rippleInfoBanner');
+      const rippleInfoText = document.getElementById('rippleInfoText');
+      const stoichWarningBanner = document.getElementById('stoichWarningBanner');
+      const stoichWarningText = document.getElementById('stoichWarningText');
+
+      const inputVitCN = document.getElementById('inputVitCN');
+      const inputVitCM = document.getElementById('inputVitCM');
+      const inputVitCV = document.getElementById('inputVitCV');
+      const vitCSlider = document.getElementById('vitCSlider');
+      const vitCSliderPct = document.getElementById('vitCSliderPct');
+      const vitCSciBadge = document.getElementById('vitCSciBadge');
+      const vitCMassBadge = document.getElementById('vitCMassBadge');
+
+      const inputI2N = document.getElementById('inputI2N');
+      const inputI2M = document.getElementById('inputI2M');
+      const inputI2V = document.getElementById('inputI2V');
+      const i2SciBadge = document.getElementById('i2SciBadge');
+      const i2ExcessBadge = document.getElementById('i2ExcessBadge');
+
+      const inputThioM = document.getElementById('inputThioM');
+      const inputThioV = document.getElementById('inputThioV');
+      const inputThioN = document.getElementById('inputThioN');
+      const thioSciBadge = document.getElementById('thioSciBadge');
+
+      // Controls & Stages
+      const playPauseBtn = document.getElementById('playPauseBtn');
+      const playPauseIcon = document.getElementById('playPauseIcon');
+      const playPauseText = document.getElementById('playPauseText');
+      const prevStepBtn = document.getElementById('prevStepBtn');
+      const nextStepBtn = document.getElementById('nextStepBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const macroZoomBtn = document.getElementById('macroZoomBtn');
+      const microZoomBtn = document.getElementById('microZoomBtn');
+
+      const stageBadge = document.getElementById('stageBadge');
+      const stageDescription = document.getElementById('stageDescription');
+      const flaskColorBadge = document.getElementById('flaskColorBadge');
+
+      const manualTitrationPanel = document.getElementById('manualTitrationPanel');
+      const manualVolReadout = document.getElementById('manualVolReadout');
+      const addCoarseBtn = document.getElementById('addCoarseBtn');
+      const addMedBtn = document.getElementById('addMedBtn');
+      const addFineBtn = document.getElementById('addFineBtn');
+      const resetTitrationBtn = document.getElementById('resetTitrationBtn');
+
+      const starchPromptPanel = document.getElementById('starchPromptPanel');
+      const addStarchBtn = document.getElementById('addStarchBtn');
+
+      const endpointBanner = document.getElementById('endpointBanner');
+      const endpointBannerTitle = document.getElementById('endpointBannerTitle');
+      const endpointBannerSub = document.getElementById('endpointBannerSub');
+      const goToCalcBtn = document.getElementById('goToCalcBtn');
+
+      // Macro Digital Readouts
+      const readoutAddedVVal = document.getElementById('readoutAddedVVal');
+      const readoutEndVVal = document.getElementById('readoutEndVVal');
+      const readoutRemI2Val = document.getElementById('readoutRemI2Val');
+
+      // Micro HUD
+      const liveScaleBadge = document.getElementById('liveScaleBadge');
+      const hudVitCCount = document.getElementById('hudVitCCount');
+      const hudI2Count = document.getElementById('hudI2Count');
+      const hudThioCount = document.getElementById('hudThioCount');
+      const hudIodideCount = document.getElementById('hudIodideCount');
+      const hudVitCDelta = document.getElementById('hudVitCDelta');
+      const hudI2Delta = document.getElementById('hudI2Delta');
+      const hudThioDelta = document.getElementById('hudThioDelta');
+      const hudIodideDelta = document.getElementById('hudIodideDelta');
+
+      // Distribution Bar & Calculations
+      const barTotalContainer = document.getElementById('barTotalContainer');
+      const barReactedSegment = document.getElementById('barReactedSegment');
+      const barExcessSegment = document.getElementById('barExcessSegment');
+      const barExcessText = document.getElementById('barExcessText');
+      const barTitratedOverlay = document.getElementById('barTitratedOverlay');
+      const barReactedValue = document.getElementById('barReactedValue');
+      const barExcessValue = document.getElementById('barExcessValue');
+      const barTotalValue = document.getElementById('barTotalValue');
+      const barTitratedStatus = document.getElementById('barTitratedStatus');
+
+      const conceptCallout = document.getElementById('conceptCallout');
+      const conceptCalloutText = document.getElementById('conceptCalloutText');
+
+      const calcTotalI2Formula = document.getElementById('calcTotalI2Formula');
+      const calcTotalI2Val = document.getElementById('calcTotalI2Val');
+      const calcThioLine = document.getElementById('calcThioLine');
+      const calcExcessI2Val = document.getElementById('calcExcessI2Val');
+      const calcSubEquation = document.getElementById('calcSubEquation');
+      const calcVitCMolLine = document.getElementById('calcVitCMolLine');
+      const calcMassFormula = document.getElementById('calcMassFormula');
+      const calcMassResult = document.getElementById('calcMassResult');
+      const calcVitCMolarityLine = document.getElementById('calcVitCMolarityLine');
+
+      const examTabContent = document.getElementById('examTabContent');
+
+      /* =====================================================================
+         5. STOICHIOMETRY, FORMATTING & DYNAMIC PARTICLE SCALING
+         ===================================================================== */
+      function getExcessI2Mol() {
+        return Math.max(0, state.nI2Total - state.nVitC);
+      }
+      function getReactedI2Mol() {
+        return Math.min(state.nVitC, state.nI2Total);
+      }
+      function isNotInExcess() {
+        return state.nI2Total > 0 && state.nVitC >= state.nI2Total - 1e-12;
+      }
+      function getStarchPauseVol() {
+        const excess = getExcessI2Mol();
+        if (excess <= 1e-12 || state.vThioEnd <= 1e-9) return 0;
+        // Pale yellow threshold: ~12% of total I2 (exact 3 particles = 9.0e-5 mol for Ex 63.4 -> 11.40 cm³)
+        const paleThresholdI2 = state.nI2Total * 0.12;
+        if (excess <= paleThresholdI2) return 0; // Already pale yellow before dripping!
+        const i2ToTitrateBeforeStarch = excess - paleThresholdI2;
+        const nThioBeforeStarch = i2ToTitrateBeforeStarch * 2;
+        return state.mThio > 0 ? (nThioBeforeStarch / state.mThio) * 1000 : 0;
+      }
+      function getBuretteMaxVol() {
+        const v = state.vThioEnd;
+        if (v <= 15.0) return 15.0;
+        if (v <= 25.0) return 25.0;
+        if (v <= 50.0) return 50.0;
+        return Math.ceil(v / 10) * 10;
+      }
+      function getAdaptiveSteps() {
+        const v = state.vThioEnd;
+        if (v <= 0.05) return { coarse: 0.50, med: 0.20, fine: 0.05 };
+        // Nice rounded steps (~15%, ~5%, fine drop)
+        const rawCoarse = Math.max(0.20, v * 0.15);
+        const coarse = Math.round(rawCoarse * 5) / 5; // Nearest 0.20
+        const rawMed = Math.max(0.10, v * 0.05);
+        const med = Math.round(rawMed * 10) / 10;     // Nearest 0.10
+        const fine = v < 3.0 ? 0.05 : 0.10;
+        return { coarse: Math.max(0.20, coarse), med: Math.max(0.10, med), fine };
+      }
+
+      function computeDynamicParticleScale() {
+        if (state.nI2Total <= 0) {
+          state.totalI2Particles = 25;
+          state.molPerParticle = 3.0e-5;
+          return;
+        }
+        // Keep exact 25 particles for Example 63.4 and clean multiples
+        const ratio = Math.min(1, state.nVitC / state.nI2Total);
+        if (Math.abs(state.nI2Total - 0.000750) < 1e-9 || ratio === 0 || ratio >= 1) {
+          state.totalI2Particles = 25;
+        } else {
+          // Search integer N in [16..32] that best matches the Vit C / Total I2 ratio (prefer 25 on ties)
+          let bestN = 25;
+          let bestErr = Math.abs(Math.round(25 * ratio) / 25 - ratio);
+          for (let n = 16; n <= 32; n++) {
+            const err = Math.abs(Math.round(n * ratio) / n - ratio);
+            if (err + 1e-6 < bestErr) {
+              bestErr = err;
+              bestN = n;
+            }
+          }
+          state.totalI2Particles = bestN;
+        }
+        state.molPerParticle = state.nI2Total / state.totalI2Particles;
+      }
+
+      function formatSciHTML(val) {
+        if (!isFinite(val) || Math.abs(val) < 1e-12) return '0';
+        const exp = Math.floor(Math.log10(Math.abs(val)));
+        const mantissa = (val / Math.pow(10, exp)).toFixed(2);
+        return `${mantissa} × 10<sup>${exp}</sup>`;
+      }
+      function formatSciPlain(val) {
+        if (!isFinite(val) || Math.abs(val) < 1e-12) return '0';
+        const exp = Math.floor(Math.log10(Math.abs(val)));
+        const mantissa = (val / Math.pow(10, exp)).toFixed(2);
+        const supMap = { '-': '⁻', '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
+        const expStr = String(exp).split('').map(c => supMap[c] || c).join('');
+        return `${mantissa} × 10${expStr}`;
+      }
+      function formatInputNum(val, decimals) {
+        if (!isFinite(val) || val < 0) return (0).toFixed(decimals);
+        return Number(val.toFixed(decimals)).toString() === '0' ? (0).toFixed(decimals) : val.toFixed(decimals);
+      }
+      function lerp(a, b, t) {
+        return a + (b - a) * Math.max(0, Math.min(1, t));
+      }
+      function lerpColor(c1, c2, t) {
+        const k = Math.max(0, Math.min(1, t));
+        return [
+          Math.round(lerp(c1[0], c2[0], k)),
+          Math.round(lerp(c1[1], c2[1], k)),
+          Math.round(lerp(c1[2], c2[2], k))
+        ];
+      }
+      function rgbStr(c, a = 1) {
+        return `rgba(${c[0]}, ${c[1]}, ${c[2]}, ${a})`;
+      }
+
+      /* =====================================================================
+         6. SMART BACK-TITRATION STOICHIOMETRIC COUPLING & FLASH FEEDBACK
+         ===================================================================== */
+      function flashInputs(elements, rippleKey) {
+        elements.forEach(el => {
+          if (!el) return;
+          el.classList.remove('field-updated-flash');
+          void el.offsetWidth; // Force reflow
+          el.classList.add('field-updated-flash');
+        });
+        if (rippleKey) {
+          state.rippleKey = rippleKey;
+          rippleInfoText.textContent = I18N[state.lang][rippleKey];
+          rippleInfoBanner.classList.remove('hidden');
+          if (state.rippleTimer) clearTimeout(state.rippleTimer);
+          state.rippleTimer = setTimeout(() => {
+            rippleInfoBanner.classList.add('hidden');
+            state.rippleKey = null;
+          }, 4200);
+        }
+      }
+
+      function syncInputsFromState(skipEl = null) {
+        if (skipEl !== inputVitCN) inputVitCN.value = formatInputNum(state.nVitC, 6);
+        if (skipEl !== inputVitCM) inputVitCM.value = formatInputNum(state.mVitC, 5);
+        if (skipEl !== inputVitCV) inputVitCV.value = formatInputNum(state.vVitC, 1);
+
+        if (skipEl !== inputI2N) inputI2N.value = formatInputNum(state.nI2Total, 6);
+        if (skipEl !== inputI2M) inputI2M.value = formatInputNum(state.mI2Total, 4);
+        if (skipEl !== inputI2V) inputI2V.value = formatInputNum(state.vI2Total, 1);
+
+        if (skipEl !== inputThioM) inputThioM.value = formatInputNum(state.mThio, 3);
+        if (skipEl !== inputThioV) inputThioV.value = formatInputNum(state.vThioEnd, 2);
+        if (skipEl !== inputThioN) inputThioN.value = formatInputNum(state.nThioEnd, 6);
+
+        const pct = state.nI2Total > 0 ? Math.min(110, Math.round((state.nVitC / state.nI2Total) * 100)) : 0;
+        vitCSlider.value = String(pct);
+      }
+
+      function refreshAfterParamChange(skipEl, flashedEls, rippleKey) {
+        computeDynamicParticleScale();
+        syncInputsFromState(skipEl);
+        flashInputs(flashedEls, rippleKey);
+
+        // Keep current simulation stage consistent with updated endpoint/starch threshold
+        state.particles = [];
+        state.flashes = [];
+        const vS = getStarchPauseVol();
+        const vE = state.vThioEnd;
+
+        if (isNotInExcess()) {
+          state.buretteVol = 0;
+          state.waitingForStarch = false;
+          state.endpointReached = state.stage >= 4;
+          state.isPlaying = false;
+        } else if (state.stage === 3) {
+          state.buretteVol = Math.min(state.buretteVol, vS);
+          state.waitingForStarch = !state.starchAdded && (state.buretteVol >= vS - 1e-4);
+          state.endpointReached = false;
+        } else if (state.stage === 4) {
+          state.buretteVol = Math.max(vS, Math.min(vE, state.buretteVol));
+          state.endpointReached = state.buretteVol >= vE - 1e-4;
+        } else if (state.stage === 5) {
+          state.buretteVol = vE;
+          state.endpointReached = true;
+        }
+
+        syncMicroPopulation();
+        updateAllUI();
+      }
+
+      function recalcThioFromVitCAndI2() {
+        if (state.nVitC >= state.nI2Total - 1e-12 && state.nI2Total > 0) {
+          state.warningKey = 'warnNotExcess';
+          state.nThioEnd = 0;
+          state.vThioEnd = 0;
+        } else {
+          state.warningKey = null;
+          const excessI2 = Math.max(0, state.nI2Total - state.nVitC);
+          state.nThioEnd = excessI2 * 2;
+          state.vThioEnd = state.mThio > 0 ? (state.nThioEnd / state.mThio) * 1000 : 0;
+        }
+      }
+
+      function handleParamEdit(source) {
+        try {
+          const parsePos = (el, minVal = 0) => {
+            const v = parseFloat(el.value);
+            return isFinite(v) && v >= minVal ? v : minVal;
+          };
+
+          if (source === 'vitCN') {
+            state.nVitC = parsePos(inputVitCN, 0);
+            state.mVitC = state.vVitC > 0 ? state.nVitC / (state.vVitC / 1000) : 0;
+            recalcThioFromVitCAndI2();
+            refreshAfterParamChange(inputVitCN, [inputVitCM, inputThioV, inputThioN], 'rippleFromVitC');
+          } else if (source === 'vitCM') {
+            state.mVitC = parsePos(inputVitCM, 0);
+            state.nVitC = state.mVitC * (state.vVitC / 1000);
+            recalcThioFromVitCAndI2();
+            refreshAfterParamChange(inputVitCM, [inputVitCN, inputThioV, inputThioN], 'rippleFromVitC');
+          } else if (source === 'vitCV') {
+            state.vVitC = parsePos(inputVitCV, 0.1);
+            state.nVitC = state.mVitC * (state.vVitC / 1000);
+            recalcThioFromVitCAndI2();
+            refreshAfterParamChange(inputVitCV, [inputVitCN, inputThioV, inputThioN], 'rippleFromVitC');
+          } else if (source === 'vitCSlider') {
+            const pct = Number(vitCSlider.value) / 100;
+            state.nVitC = state.nI2Total * pct;
+            state.mVitC = state.vVitC > 0 ? state.nVitC / (state.vVitC / 1000) : 0;
+            recalcThioFromVitCAndI2();
+            refreshAfterParamChange(null, [inputVitCN, inputVitCM, inputThioV, inputThioN], 'rippleFromVitC');
+          } else if (source === 'i2N') {
+            state.nI2Total = parsePos(inputI2N, 0.00001);
+            state.mI2Total = state.vI2Total > 0 ? state.nI2Total / (state.vI2Total / 1000) : 0;
+            recalcThioFromVitCAndI2();
+            refreshAfterParamChange(inputI2N, [inputI2M, inputThioV, inputThioN], 'rippleFromI2');
+          } else if (source === 'i2M') {
+            state.mI2Total = parsePos(inputI2M, 0.0001);
+            state.nI2Total = state.mI2Total * (state.vI2Total / 1000);
+            recalcThioFromVitCAndI2();
+            refreshAfterParamChange(inputI2M, [inputI2N, inputThioV, inputThioN], 'rippleFromI2');
+          } else if (source === 'i2V') {
+            state.vI2Total = parsePos(inputI2V, 0.1);
+            state.nI2Total = state.mI2Total * (state.vI2Total / 1000);
+            recalcThioFromVitCAndI2();
+            refreshAfterParamChange(inputI2V, [inputI2N, inputThioV, inputThioN], 'rippleFromI2');
+          } else if (source === 'thioM') {
+            state.mThio = parsePos(inputThioM, 0.001);
+            state.vThioEnd = state.mThio > 0 ? (state.nThioEnd / state.mThio) * 1000 : 0;
+            refreshAfterParamChange(inputThioM, [inputThioV], 'rippleFromThioM');
+          } else if (source === 'thioV') {
+            state.vThioEnd = parsePos(inputThioV, 0);
+            state.nThioEnd = state.mThio * (state.vThioEnd / 1000);
+            const excessI2 = 0.5 * state.nThioEnd;
+            if (excessI2 > state.nI2Total + 1e-12) {
+              state.warningKey = 'warnExcessTooHigh';
+              state.nVitC = 0;
+              state.mVitC = 0;
+            } else {
+              state.nVitC = Math.max(0, state.nI2Total - excessI2);
+              state.mVitC = state.vVitC > 0 ? state.nVitC / (state.vVitC / 1000) : 0;
+              state.warningKey = state.nVitC >= state.nI2Total - 1e-12 ? 'warnNotExcess' : null;
+            }
+            refreshAfterParamChange(inputThioV, [inputThioN, inputVitCN, inputVitCM], 'rippleFromThioBack');
+          } else if (source === 'thioN') {
+            state.nThioEnd = parsePos(inputThioN, 0);
+            state.vThioEnd = state.mThio > 0 ? (state.nThioEnd / state.mThio) * 1000 : 0;
+            const excessI2 = 0.5 * state.nThioEnd;
+            if (excessI2 > state.nI2Total + 1e-12) {
+              state.warningKey = 'warnExcessTooHigh';
+              state.nVitC = 0;
+              state.mVitC = 0;
+            } else {
+              state.nVitC = Math.max(0, state.nI2Total - excessI2);
+              state.mVitC = state.vVitC > 0 ? state.nVitC / (state.vVitC / 1000) : 0;
+              state.warningKey = state.nVitC >= state.nI2Total - 1e-12 ? 'warnNotExcess' : null;
+            }
+            refreshAfterParamChange(inputThioN, [inputThioV, inputVitCN, inputVitCM], 'rippleFromThioBack');
+          }
+        } catch (err) {
+          console.error('Parameter calculation error:', err);
+        }
+      }
+
+      function applyPreset(presetKey) {
+        const p = PRESETS[presetKey];
+        if (!p) return;
+        state.nVitC = p.nVitC;
+        state.vVitC = p.vVitC;
+        state.mVitC = state.vVitC > 0 ? state.nVitC / (state.vVitC / 1000) : 0;
+        state.nI2Total = p.nI2;
+        state.vI2Total = p.vI2;
+        state.mI2Total = state.vI2Total > 0 ? state.nI2Total / (state.vI2Total / 1000) : 0;
+        state.mThio = p.mThio;
+        recalcThioFromVitCAndI2();
+        refreshAfterParamChange(null, [inputVitCN, inputI2N, inputThioV], null);
+      }
+
+      /* =====================================================================
+         7. MICROSCOPIC PARTICLE SIMULATION ENGINE
+         ===================================================================== */
+      let microW = 500;
+      let microH = 360;
+
+      function createParticle(type, x, y) {
+        const angle = Math.random() * Math.PI * 2;
+        const spd = (type === 'iodide' || type === 's4o6') ? 0.55 : 0.92;
+        return {
+          type, // 'vitC' | 'oxVitC' | 'i2' | 'iodide' | 's4o6'
+          x: x !== undefined ? x : 34 + Math.random() * Math.max(100, microW - 68),
+          y: y !== undefined ? y : 34 + Math.random() * Math.max(100, microH - 68),
+          vx: Math.cos(angle) * spd,
+          vy: Math.sin(angle) * spd,
+          rot: Math.random() * Math.PI * 2,
+          vrot: (Math.random() - 0.5) * 0.032,
+          scale: 0.25,
+          targetScale: 1
+        };
+      }
+
+      function spawnFlash(x, y, color) {
+        state.flashes.push({ x, y, r: 6, alpha: 1, color });
+      }
+
+      function getCurrentRemainingI2Mol() {
+        const excess = getExcessI2Mol();
+        if (state.stage === 1) return state.nI2Total * state.stageProgress;
+        if (state.stage === 2) return Math.max(0, state.nI2Total - getReactedI2Mol() * state.stageProgress);
+        if (state.stage === 3 || state.stage === 4) {
+          if (state.endpointReached || excess <= 1e-12) return 0;
+          const nThioAdded = state.mThio * (state.buretteVol / 1000);
+          return Math.max(0, excess - 0.5 * nThioAdded);
+        }
+        return 0;
+      }
+
+      function getCurrentMicroCounts() {
+        const totalP = state.totalI2Particles;
+        const mpp = state.molPerParticle;
+
+        // Calculate exact visual particle counts
+        let vitCTotalP = state.nVitC > 1e-12 ? Math.max(1, Math.round(state.nVitC / mpp)) : 0;
+        if (vitCTotalP > 42) vitCTotalP = 42; // Visual cap if user enters huge excess Vit C
+        if (!isNotInExcess() && vitCTotalP >= totalP && state.nVitC < state.nI2Total) {
+          vitCTotalP = Math.max(0, totalP - 1);
+        }
+        const reactedTotalP = Math.min(vitCTotalP, totalP);
+        const excessTotalP = Math.max(0, totalP - reactedTotalP);
+
+        let vitC = vitCTotalP;
+        let oxVitC = 0;
+        let i2 = totalP;
+        let titratedI2 = 0;
+
+        if (state.stage === 1) {
+          vitC = vitCTotalP;
+          i2 = Math.round(totalP * state.stageProgress);
+        } else if (state.stage === 2) {
+          const reactedNow = Math.round(reactedTotalP * state.stageProgress);
+          vitC = Math.max(0, vitCTotalP - reactedNow);
+          oxVitC = reactedNow;
+          i2 = Math.max(0, totalP - reactedNow);
+        } else if (state.stage === 3 || state.stage === 4) {
+          vitC = Math.max(0, vitCTotalP - reactedTotalP); // Leftover Vit C if I2 not in excess!
+          oxVitC = reactedTotalP;
+          const frac = state.vThioEnd > 1e-9 ? Math.min(1, state.buretteVol / state.vThioEnd) : 1;
+          titratedI2 = state.endpointReached ? excessTotalP : Math.min(excessTotalP, Math.floor(excessTotalP * frac + 0.001));
+          i2 = Math.max(0, excessTotalP - titratedI2);
+        } else if (state.stage === 5) {
+          vitC = Math.max(0, vitCTotalP - reactedTotalP);
+          oxVitC = reactedTotalP;
+          titratedI2 = excessTotalP;
+          i2 = 0;
+        }
+
+        const thioAdded = titratedI2 * 2;
+        const iodideFormed = (oxVitC + titratedI2) * 2;
+        const s4o6Formed = titratedI2;
+        return { vitC, oxVitC, i2, thioAdded, iodideFormed, s4o6Formed };
+      }
+
+      function syncMicroPopulation() {
+        const counts = getCurrentMicroCounts();
+        const curVitC = state.particles.filter(p => p.type === 'vitC');
+        const curOx = state.particles.filter(p => p.type === 'oxVitC');
+        const curI2 = state.particles.filter(p => p.type === 'i2');
+        const curIodide = state.particles.filter(p => p.type === 'iodide');
+        const curS4O6 = state.particles.filter(p => p.type === 's4o6');
+
+        while (curVitC.length < counts.vitC) {
+          const p = createParticle('vitC');
+          state.particles.push(p);
+          curVitC.push(p);
+        }
+        while (curVitC.length > counts.vitC) {
+          const v = curVitC.pop();
+          if (state.stage >= 2) {
+            v.type = 'oxVitC';
+            curOx.push(v);
+            spawnFlash(v.x, v.y, '#10b981');
+          } else {
+            const idx = state.particles.indexOf(v);
+            if (idx !== -1) state.particles.splice(idx, 1);
+          }
+        }
+        while (curOx.length < counts.oxVitC) {
+          const p = createParticle('oxVitC');
+          p.scale = 1;
+          state.particles.push(p);
+          curOx.push(p);
+        }
+        while (curOx.length > counts.oxVitC) {
+          const o = curOx.pop();
+          const idx = state.particles.indexOf(o);
+          if (idx !== -1) state.particles.splice(idx, 1);
+        }
+
+        while (curI2.length < counts.i2) {
+          const px = state.stage === 1 ? microW * 0.22 + Math.random() * microW * 0.56 : undefined;
+          const py = state.stage === 1 ? 30 + Math.random() * 100 : undefined;
+          const p = createParticle('i2', px, py);
+          state.particles.push(p);
+          curI2.push(p);
+          if (state.stage === 1) spawnFlash(p.x, p.y, '#d97706');
+        }
+        while (curI2.length > counts.i2) {
+          const victim = curI2.pop();
+          const idx = state.particles.indexOf(victim);
+          if (idx !== -1) state.particles.splice(idx, 1);
+
+          spawnFlash(victim.x, victim.y, state.stage >= 3 ? '#3b82f6' : '#10b981');
+          if (curIodide.length < 24) {
+            const iod = createParticle('iodide', victim.x, victim.y);
+            iod.scale = 1;
+            state.particles.push(iod);
+            curIodide.push(iod);
+          }
+          if (state.stage >= 3 && curS4O6.length < 14) {
+            const tet = createParticle('s4o6', victim.x + 8, victim.y - 6);
+            tet.scale = 1;
+            state.particles.push(tet);
+            curS4O6.push(tet);
+          }
+        }
+
+        const targetVisualIodide = Math.min(24, counts.iodideFormed);
+        while (curIodide.length > targetVisualIodide) {
+          const p = curIodide.pop();
+          const idx = state.particles.indexOf(p);
+          if (idx !== -1) state.particles.splice(idx, 1);
+        }
+        const targetVisualS4O6 = Math.min(14, counts.s4o6Formed);
+        while (curS4O6.length > targetVisualS4O6) {
+          const p = curS4O6.pop();
+          const idx = state.particles.indexOf(p);
+          if (idx !== -1) state.particles.splice(idx, 1);
+        }
+
+        const prev = state.lastCounts;
+        hudVitCCount.textContent = counts.vitC;
+        hudI2Count.textContent = counts.i2;
+        hudThioCount.textContent = counts.thioAdded;
+        hudIodideCount.textContent = counts.iodideFormed;
+
+        hudVitCDelta.textContent = counts.vitC < prev.vitC ? '↓' : (counts.vitC > prev.vitC ? '↑' : '');
+        hudI2Delta.textContent = counts.i2 < prev.i2 ? '↓' : (counts.i2 > prev.i2 ? '↑' : '');
+        hudThioDelta.textContent = counts.thioAdded > prev.thio ? '↑' : '';
+        hudIodideDelta.textContent = counts.iodideFormed > prev.iodide ? '↑' : '';
+
+        state.lastCounts = { vitC: counts.vitC, i2: counts.i2, thio: counts.thioAdded, iodide: counts.iodideFormed };
+      }
+
+      /* =====================================================================
+         8. TITRANT ADDITION & MANDATORY STARCH PAUSE LOGIC
+         ===================================================================== */
+      function addTitrantVolume(deltaCm3) {
+        if (state.stage < 3 || state.stage > 4) return;
+        if (state.waitingForStarch || state.endpointReached || isNotInExcess()) return;
+
+        const vStarch = getStarchPauseVol();
+        const vEnd = state.vThioEnd;
+        state.dripPulseTimer = 0.45;
+
+        if (state.stage === 3 && !state.starchAdded) {
+          const nextVol = state.buretteVol + deltaCm3;
+          if (nextVol >= vStarch - 1e-4) {
+            state.buretteVol = vStarch;
+            state.waitingForStarch = true;
+            state.isPlaying = false;
+            state.stopcockHeld = false;
+          } else {
+            state.buretteVol = nextVol;
+          }
+        } else if (state.stage === 4 && state.starchAdded) {
+          const nextVol = state.buretteVol + deltaCm3;
+          if (nextVol >= vEnd - 1e-4) {
+            state.buretteVol = vEnd;
+            state.endpointReached = true;
+            state.isPlaying = false;
+            state.stopcockHeld = false;
+          } else {
+            state.buretteVol = nextVol;
+          }
+        }
+
+        syncMicroPopulation();
+        updateAllUI();
+      }
+
+      function manuallyAddStarch() {
+        if (state.starchAdded || isNotInExcess()) return;
+        state.starchAdded = true;
+        state.waitingForStarch = false;
+        state.starchDropAnim = 1.0;
+        state.stage = 4;
+        state.isPlaying = false;
+        highlightConcept('excess');
+        syncMicroPopulation();
+        updateAllUI();
+      }
+
+      /* =====================================================================
+         9. AUTHENTIC FLASK SOLUTION COLOUR CALCULATION
+         ===================================================================== */
+      function getFlaskVisualColour() {
+        const dict = I18N[state.lang];
+        const baseJuice = state.nVitC <= 1e-12 ? [236, 245, 255] : [255, 228, 196];
+        const darkBrown = [112, 38, 8];
+        const paleYellow = [252, 232, 126];
+        const deepBlue = [16, 26, 114];
+        const colourless = state.nVitC <= 1e-12 ? [240, 248, 255] : [248, 250, 252];
+
+        const remI2 = getCurrentRemainingI2Mol();
+        const fracRem = state.nI2Total > 0 ? Math.min(1, remI2 / state.nI2Total) : 0;
+
+        if (state.stage === 1) {
+          const rgb = lerpColor(baseJuice, darkBrown, state.stageProgress);
+          const lbl = state.stageProgress > 0.35 ? dict.colorDarkBrown : dict.colorJuice;
+          return { rgb, alpha: lerp(0.75, 0.94, state.stageProgress), label: lbl, badgeClasses: 'bg-amber-900 text-amber-50 border-amber-950' };
+        }
+        if (isNotInExcess() && state.stage >= 2 && (state.stage > 2 || state.stageProgress >= 0.98)) {
+          return { rgb: colourless, alpha: 0.65, label: dict.colorNoExcess, badgeClasses: 'bg-rose-100 text-rose-900 border-rose-400' };
+        }
+        if (state.stage === 2) {
+          const rgb = fracRem <= 0.14
+            ? lerpColor(colourless, paleYellow, fracRem / 0.14)
+            : lerpColor(paleYellow, darkBrown, (fracRem - 0.14) / 0.86);
+          const lbl = state.nVitC <= 1e-12 ? dict.colorDarkBrown : (fracRem <= 0.16 ? dict.colorPaleYellow : dict.colorBrown);
+          return { rgb, alpha: lerp(0.7, 0.94, fracRem), label: lbl, badgeClasses: 'bg-amber-800 text-amber-50 border-amber-900' };
+        }
+        if (state.stage === 3) {
+          if (state.waitingForStarch || fracRem <= 0.13) {
+            return { rgb: paleYellow, alpha: 0.86, label: dict.colorPaleYellow, badgeClasses: 'bg-yellow-100 text-yellow-900 border-yellow-400' };
+          }
+          const t = Math.min(1, Math.max(0, (fracRem - 0.12) / 0.88));
+          const rgb = lerpColor(paleYellow, darkBrown, t);
+          const lbl = t < 0.28 ? dict.colorPaleYellow : dict.colorAmber;
+          const cls = t < 0.28 ? 'bg-yellow-100 text-yellow-900 border-yellow-400' : 'bg-amber-100 text-amber-900 border-amber-300';
+          return { rgb, alpha: lerp(0.86, 0.93, t), label: lbl, badgeClasses: cls };
+        }
+        if (state.stage === 4) {
+          if (state.endpointReached || remI2 <= 1e-12) {
+            return { rgb: colourless, alpha: 0.62, label: dict.colorColourless, badgeClasses: 'bg-emerald-100 text-emerald-900 border-emerald-400' };
+          }
+          const snap = Math.max(0, 1 - state.starchDropAnim * 1.6);
+          const rgb = lerpColor(paleYellow, deepBlue, snap);
+          return { rgb, alpha: 0.95, label: dict.colorDeepBlue, badgeClasses: 'bg-indigo-900 text-white border-indigo-950' };
+        }
+        return { rgb: colourless, alpha: 0.62, label: dict.colorColourless, badgeClasses: 'bg-emerald-100 text-emerald-900 border-emerald-400' };
+      }
+
+      /* =====================================================================
+         10. RENDER MACROSCOPIC LAB VIEW (HTML5 CANVAS)
+         ===================================================================== */
+      function renderMacro(time) {
+        const dpr = window.devicePixelRatio || 1;
+        const w = macroCanvas.width / dpr;
+        const h = macroCanvas.height / dpr;
+        const ctx = macroCtx;
+        const labels = I18N[state.lang].canvasLabels;
+
+        ctx.save();
+        ctx.scale(dpr, dpr);
+        ctx.clearRect(0, 0, w, h);
+
+        // Lab bench
+        const benchY = h - 42;
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fillRect(0, benchY, w, 42);
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, benchY);
+        ctx.lineTo(w, benchY);
+        ctx.stroke();
+
+        const cx = w * 0.52;
+        const standX = cx - 108;
+
+        // 1. Retort Stand
+        ctx.fillStyle = '#334155';
+        ctx.beginPath();
+        ctx.roundRect(standX - 30, benchY - 10, 145, 12, 4);
+        ctx.fill();
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(standX - 4, 20, 8, benchY - 30);
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(standX + 4, 92, cx - standX - 18, 7);
+        ctx.beginPath();
+        ctx.roundRect(standX - 8, 88, 16, 15, 3);
+        ctx.fill();
+
+        // 2. White Tile
+        const tileW = 138;
+        const tileH = 11;
+        ctx.fillStyle = '#ffffff';
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.roundRect(cx - tileW / 2, benchY - tileH - 1, tileW, tileH, 3);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = '#475569';
+        ctx.font = '700 11px Inter, Noto Sans TC, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(labels.whiteTile, cx, benchY + 18);
+
+        // 3. Burette (Dynamic scale based on endpoint volume)
+        const burTop = 22;
+        const burBottom = 184;
+        const burW = 20;
+        const maxVol = getBuretteMaxVol();
+        const scaleTopY = burTop + 18;
+        const scaleBotY = burBottom - 22;
+        const meniscusY = lerp(scaleTopY, scaleBotY, Math.min(1, state.buretteVol / maxVol));
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.78)';
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.rect(cx - burW / 2, burTop, burW, burBottom - burTop);
+        ctx.fill();
+        ctx.stroke();
+
+        // Liquid inside burette
+        ctx.fillStyle = 'rgba(186, 230, 253, 0.78)';
+        ctx.beginPath();
+        ctx.moveTo(cx - burW / 2 + 1.5, meniscusY);
+        ctx.quadraticCurveTo(cx, meniscusY + 4, cx + burW / 2 - 1.5, meniscusY);
+        ctx.lineTo(cx + burW / 2 - 1.5, burBottom - 1);
+        ctx.lineTo(cx - burW / 2 + 1.5, burBottom - 1);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.strokeStyle = '#0284c7';
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.moveTo(cx - burW / 2 + 2, meniscusY);
+        ctx.quadraticCurveTo(cx, meniscusY + 4, cx + burW / 2 - 2, meniscusY);
+        ctx.stroke();
+
+        // Graduations (adaptive step)
+        const majorStep = maxVol <= 15 ? 5 : (maxVol <= 25 ? 5 : 10);
+        const tickCount = 15;
+        ctx.strokeStyle = '#334155';
+        ctx.fillStyle = '#334155';
+        ctx.font = '600 9px monospace';
+        ctx.textAlign = 'left';
+        for (let i = 0; i <= tickCount; i++) {
+          const val = (maxVol / tickCount) * i;
+          const ty = lerp(scaleTopY, scaleBotY, i / tickCount);
+          const isMajor = Math.abs(val % majorStep) < 0.01 || i === tickCount;
+          ctx.lineWidth = isMajor ? 1.4 : 0.8;
+          ctx.beginPath();
+          ctx.moveTo(cx - burW / 2 + 1, ty);
+          ctx.lineTo(cx - burW / 2 + (isMajor ? 10 : 6), ty);
+          ctx.stroke();
+          if (isMajor) ctx.fillText(String(Math.round(val)), cx + burW / 2 + 4, ty + 3);
+        }
+
+        // Burette tip
+        ctx.fillStyle = 'rgba(255,255,255,0.85)';
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(cx - 5, burBottom);
+        ctx.lineTo(cx - 2.2, burBottom + 36);
+        ctx.lineTo(cx + 2.2, burBottom + 36);
+        ctx.lineTo(cx + 5, burBottom);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Clickable Stopcock
+        const canDripNow = (state.stage === 3 || state.stage === 4) && !state.waitingForStarch && !state.endpointReached && !isNotInExcess();
+        const isDripping = canDripNow && (state.isPlaying || state.stopcockHeld || state.dripPulseTimer > 0);
+        state.stopcockHit = { x: cx, y: burBottom + 14, r: 22 };
+
+        ctx.save();
+        ctx.translate(cx, burBottom + 14);
+        if (canDripNow) {
+          ctx.fillStyle = 'rgba(37, 91, 166, 0.14)';
+          ctx.beginPath();
+          ctx.arc(0, 0, 16 + Math.sin(time * 0.006) * 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.fillStyle = canDripNow ? '#0284c7' : '#94a3b8';
+        ctx.beginPath();
+        ctx.arc(0, 0, 5.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = canDripNow ? '#0369a1' : '#64748b';
+        ctx.lineWidth = 4.2;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        if (isDripping) {
+          ctx.moveTo(0, -11);
+          ctx.lineTo(0, 11);
+        } else {
+          ctx.moveTo(-13, 0);
+          ctx.lineTo(13, 0);
+        }
+        ctx.stroke();
+        ctx.restore();
+
+        if (canDripNow) {
+          ctx.fillStyle = '#0369a1';
+          ctx.font = '800 10px Inter, Noto Sans TC, sans-serif';
+          ctx.textAlign = 'right';
+          ctx.fillText(labels.clickStopcock + ' →', cx - 18, burBottom + 17);
+        }
+
+        // Digital Burette Concentration & Reading Badge
+        const readoutX = Math.min(w - 134, cx + 44);
+        const readoutY = 26;
+        ctx.fillStyle = '#0f294a';
+        ctx.beginPath();
+        ctx.roundRect(readoutX, readoutY, 124, 52, 10);
+        ctx.fill();
+        ctx.fillStyle = '#93c5fd';
+        ctx.font = '700 10px Inter, Noto Sans TC, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${state.mThio.toFixed(3)} M Na₂S₂O₃`, readoutX + 62, readoutY + 17);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '800 16px monospace';
+        ctx.fillText(`${state.buretteVol.toFixed(2)} cm³`, readoutX + 62, readoutY + 39);
+
+        // 4. Falling Titrant Droplet
+        const flaskTopY = benchY - tileH - 112;
+        const flaskBotY = benchY - tileH - 2;
+        if (isDripping) {
+          const dropCycle = (time * 0.0045 * Math.max(0.7, state.speed)) % 1;
+          const dropY = lerp(burBottom + 38, flaskBotY - 38, dropCycle);
+          ctx.fillStyle = '#0ea5e9';
+          ctx.beginPath();
+          ctx.arc(cx, dropY, 3.4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // 5. Stage 1 Reagent Pipette
+        if (state.stage === 1 && state.stageProgress < 0.95) {
+          ctx.save();
+          ctx.translate(cx + 46, flaskTopY - 22);
+          ctx.rotate(-0.42);
+          ctx.fillStyle = '#fef3c7';
+          ctx.strokeStyle = '#b45309';
+          ctx.lineWidth = 1.6;
+          ctx.beginPath();
+          ctx.roundRect(-6, -42, 12, 52, 4);
+          ctx.fill();
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(-4, 10);
+          ctx.lineTo(0, 26);
+          ctx.lineTo(4, 10);
+          ctx.fill();
+          ctx.stroke();
+          ctx.restore();
+
+          const dy = lerp(flaskTopY + 4, flaskBotY - 36, (time * 0.005) % 1);
+          ctx.fillStyle = '#d97706';
+          ctx.beginPath();
+          ctx.arc(cx + 12, dy, 3.6, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = '#92400e';
+          ctx.font = '700 11px Inter, Noto Sans TC, sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText(labels.reagents, cx + 60, flaskTopY - 24);
+        }
+
+        // 6. Clickable Starch Indicator Dropper
+        state.dropperHit.active = false;
+        if (state.waitingForStarch || state.starchDropAnim > 0) {
+          const bob = state.waitingForStarch ? Math.sin(time * 0.006) * 4 : 0;
+          const dx = cx + 44;
+          const dy = flaskTopY - 24 + bob;
+          state.dropperHit = { x: dx - 28, y: dy - 52, w: 72, h: 92, active: state.waitingForStarch };
+
+          ctx.save();
+          ctx.translate(dx, dy);
+          ctx.rotate(-0.42);
+          ctx.fillStyle = '#1e3a8a';
+          ctx.beginPath();
+          ctx.roundRect(-8, -48, 16, 24, 8);
+          ctx.fill();
+          ctx.fillStyle = '#e0e7ff';
+          ctx.strokeStyle = '#3b82f6';
+          ctx.lineWidth = 1.8;
+          ctx.beginPath();
+          ctx.rect(-4.5, -24, 9, 32);
+          ctx.fill();
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(-4.5, 8);
+          ctx.lineTo(0, 20);
+          ctx.lineTo(4.5, 8);
+          ctx.fill();
+          ctx.stroke();
+          ctx.restore();
+
+          if (state.waitingForStarch) {
+            ctx.fillStyle = '#1e3a8a';
+            ctx.beginPath();
+            ctx.roundRect(dx + 14, dy - 38, 108, 24, 8);
+            ctx.fill();
+            ctx.fillStyle = '#fde047';
+            ctx.font = '800 10.5px Inter, Noto Sans TC, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(labels.clickDropper, dx + 68, dy - 22);
+          }
+
+          if (state.starchDropAnim > 0) {
+            const dropY = lerp(flaskTopY + 2, flaskBotY - 36, 1 - state.starchDropAnim);
+            ctx.fillStyle = '#ffffff';
+            ctx.strokeStyle = '#2563eb';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(cx + 10, dropY, 4.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+          }
+        }
+
+        // 7. Conical Flask & Swirling Liquid
+        const neckW = 28;
+        const baseW = 106;
+        const neckH = 30;
+        const flaskVisual = getFlaskVisualColour();
+
+        flaskColorBadge.textContent = flaskVisual.label;
+        flaskColorBadge.className = `px-2.5 py-1 rounded-full text-xs font-bold border transition-colors ${flaskVisual.badgeClasses}`;
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(cx - neckW / 2, flaskTopY);
+        ctx.lineTo(cx - neckW / 2, flaskTopY + neckH);
+        ctx.lineTo(cx - baseW / 2, flaskBotY - 10);
+        ctx.quadraticCurveTo(cx - baseW / 2, flaskBotY, cx - baseW / 2 + 12, flaskBotY);
+        ctx.lineTo(cx + baseW / 2 - 12, flaskBotY);
+        ctx.quadraticCurveTo(cx + baseW / 2, flaskBotY, cx + baseW / 2, flaskBotY - 10);
+        ctx.lineTo(cx + neckW / 2, flaskTopY + neckH);
+        ctx.lineTo(cx + neckW / 2, flaskTopY);
+        ctx.closePath();
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.58)';
+        ctx.fill();
+
+        ctx.save();
+        ctx.clip();
+
+        const liqH = 44 + Math.min(1, state.buretteVol / maxVol) * 16;
+        const liqY = flaskBotY - liqH;
+        const waveAmp = isDripping || state.starchDropAnim > 0 ? 3.0 : 1.1;
+
+        ctx.fillStyle = rgbStr(flaskVisual.rgb, flaskVisual.alpha);
+        ctx.beginPath();
+        ctx.moveTo(cx - baseW, liqY);
+        for (let x = cx - baseW; x <= cx + baseW; x += 8) {
+          ctx.lineTo(x, liqY + Math.sin(x * 0.08 + time * 0.007) * waveAmp);
+        }
+        ctx.lineTo(cx + baseW, flaskBotY + 10);
+        ctx.lineTo(cx - baseW, flaskBotY + 10);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.strokeStyle = 'rgba(255,255,255,0.45)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(cx - baseW * 0.44, liqY);
+        ctx.lineTo(cx + baseW * 0.44, liqY);
+        ctx.stroke();
+
+        ctx.restore();
+
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 2.2;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.roundRect(cx - neckW / 2 - 3, flaskTopY - 4, neckW + 6, 5, 2);
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+
+        if (state.endpointReached && state.stage >= 4 && !isNotInExcess()) {
+          ctx.fillStyle = '#059669';
+          ctx.beginPath();
+          ctx.roundRect(cx - 72, flaskTopY - 34, 144, 24, 12);
+          ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '800 11px Inter, Noto Sans TC, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(labels.endpointReached, cx, flaskTopY - 18);
+        }
+
+        // 8. MACRO ZOOM OVERLAY
+        if (state.macroZoom) {
+          const boxW = 148;
+          const boxH = 112;
+          const bx = 14;
+          const by = 14;
+
+          ctx.save();
+          ctx.fillStyle = '#ffffff';
+          ctx.shadowColor = 'rgba(15, 23, 42, 0.22)';
+          ctx.shadowBlur = 12;
+          ctx.beginPath();
+          ctx.roundRect(bx, by, boxW, boxH, 14);
+          ctx.fill();
+          ctx.shadowBlur = 0;
+          ctx.strokeStyle = '#0f294a';
+          ctx.lineWidth = 2.2;
+          ctx.stroke();
+
+          ctx.fillStyle = '#0f294a';
+          ctx.font = '800 10px Inter, Noto Sans TC, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(labels.zoomMeniscus, bx + boxW / 2, by + 16);
+
+          const zcx = bx + boxW * 0.42;
+          const zTop = by + 24;
+          const zBot = by + boxH - 12;
+          const zMid = (zTop + zBot) / 2;
+
+          ctx.save();
+          ctx.beginPath();
+          ctx.rect(bx + 10, zTop, boxW - 20, zBot - zTop);
+          ctx.clip();
+
+          ctx.fillStyle = 'rgba(125, 211, 252, 0.72)';
+          ctx.beginPath();
+          ctx.moveTo(zcx - 20, zMid - 6);
+          ctx.quadraticCurveTo(zcx, zMid + 6, zcx + 20, zMid - 6);
+          ctx.lineTo(zcx + 20, zBot);
+          ctx.lineTo(zcx - 20, zBot);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.strokeStyle = '#0284c7';
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.moveTo(zcx - 20, zMid - 6);
+          ctx.quadraticCurveTo(zcx, zMid + 6, zcx + 20, zMid - 6);
+          ctx.stroke();
+
+          ctx.setLineDash([4, 3]);
+          ctx.strokeStyle = '#e11d48';
+          ctx.lineWidth = 1.4;
+          ctx.beginPath();
+          ctx.moveTo(bx + 12, zMid);
+          ctx.lineTo(bx + boxW - 12, zMid);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          const baseV = Math.floor(state.buretteVol * 10) / 10;
+          ctx.strokeStyle = '#334155';
+          ctx.fillStyle = '#334155';
+          ctx.font = '700 9px monospace';
+          ctx.textAlign = 'left';
+          for (let dv = -0.4; dv <= 0.4; dv += 0.1) {
+            const vTick = baseV + dv;
+            if (vTick < 0 || vTick > maxVol + 0.5) continue;
+            const yTick = zMid + (vTick - state.buretteVol) * 75;
+            const isHalf = Math.abs((vTick * 10) % 5) < 0.05;
+            ctx.lineWidth = isHalf ? 1.6 : 1;
+            ctx.beginPath();
+            ctx.moveTo(zcx - 20, yTick);
+            ctx.lineTo(zcx - 20 + (isHalf ? 14 : 8), yTick);
+            ctx.stroke();
+            if (isHalf) ctx.fillText(vTick.toFixed(1), zcx + 24, yTick + 3);
+          }
+
+          ctx.strokeStyle = '#475569';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(zcx - 20, zTop);
+          ctx.lineTo(zcx - 20, zBot);
+          ctx.moveTo(zcx + 20, zTop);
+          ctx.lineTo(zcx + 20, zBot);
+          ctx.stroke();
+          ctx.restore();
+
+          // Flask colour swatch
+          const cby = by + boxH + 10;
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.roundRect(bx, cby, boxW, 64, 14);
+          ctx.fill();
+          ctx.strokeStyle = '#0f294a';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          ctx.fillStyle = '#0f294a';
+          ctx.font = '800 10px Inter, Noto Sans TC, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(labels.zoomColor, bx + boxW / 2, cby + 16);
+
+          ctx.fillStyle = rgbStr(flaskVisual.rgb, flaskVisual.alpha);
+          ctx.strokeStyle = '#94a3b8';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.roundRect(bx + 14, cby + 24, boxW - 28, 28, 8);
+          ctx.fill();
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        ctx.restore();
+      }
+
+      /* =====================================================================
+         11. RENDER MICROSCOPIC PARTICLE VIEW (HTML5 CANVAS)
+         ===================================================================== */
+      function drawHexagon(ctx, r) {
+        ctx.beginPath();
+        for (let i = 0; i < 6; i++) {
+          const a = (Math.PI / 3) * i - Math.PI / 6;
+          const x = Math.cos(a) * r;
+          const y = Math.sin(a) * r;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+      }
+
+      function drawSingleParticle(ctx, p, withStarch, time) {
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.scale(p.scale, p.scale);
+
+        const highlightI2 = (state.activeConcept === 'total' || state.activeConcept === 'excess' || state.activeConcept === 'subtraction') && p.type === 'i2';
+        const highlightVitC = (state.activeConcept === 'reacted' || state.activeConcept === 'subtraction') && (p.type === 'vitC' || p.type === 'oxVitC');
+
+        if (p.type === 'vitC') {
+          if (highlightVitC) {
+            ctx.strokeStyle = '#6ee7b7';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.arc(0, 0, 19, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+          ctx.rotate(p.rot);
+          drawHexagon(ctx, 14);
+          ctx.fillStyle = '#10b981';
+          ctx.fill();
+          ctx.strokeStyle = '#d1fae5';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          ctx.rotate(-p.rot);
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '800 8.5px Inter, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('Vit C', 0, 0.5);
+        } else if (p.type === 'oxVitC') {
+          ctx.globalAlpha = highlightVitC ? 0.92 : 0.55;
+          ctx.rotate(p.rot);
+          drawHexagon(ctx, 12);
+          ctx.fillStyle = '#475569';
+          ctx.fill();
+          ctx.strokeStyle = highlightVitC ? '#34d399' : '#94a3b8';
+          ctx.lineWidth = highlightVitC ? 2.2 : 1.4;
+          ctx.stroke();
+          ctx.rotate(-p.rot);
+          ctx.fillStyle = '#f1f5f9';
+          ctx.font = '700 8px Inter, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('Ox', 0, 0.5);
+        } else if (p.type === 'i2') {
+          if (withStarch) {
+            ctx.save();
+            ctx.strokeStyle = '#60a5fa';
+            ctx.lineWidth = 3.2;
+            ctx.shadowColor = '#2563eb';
+            ctx.shadowBlur = 14;
+            ctx.beginPath();
+            ctx.arc(0, 0, 17 + Math.sin(time * 0.008 + p.x) * 1.4, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.fillStyle = 'rgba(30, 58, 138, 0.45)';
+            ctx.fill();
+            ctx.restore();
+          } else if (highlightI2) {
+            ctx.strokeStyle = state.activeConcept === 'excess' ? '#60a5fa' : '#fbbf24';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(0, 0, 18, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+
+          ctx.rotate(p.rot);
+          ctx.fillStyle = withStarch ? '#1e3a8a' : '#b45309';
+          ctx.strokeStyle = withStarch ? '#93c5fd' : '#fde68a';
+          ctx.lineWidth = 1.6;
+          ctx.beginPath();
+          ctx.arc(-6.5, 0, 8.5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(6.5, 0, 8.5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.rotate(-p.rot);
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '800 9px Inter, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('I₂', 0, 0.5);
+        } else if (p.type === 'iodide') {
+          ctx.globalAlpha = 0.42;
+          ctx.fillStyle = '#cbd5e1';
+          ctx.strokeStyle = '#94a3b8';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.arc(0, 0, 6.5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+        } else if (p.type === 's4o6') {
+          ctx.globalAlpha = 0.58;
+          ctx.fillStyle = '#67e8f9';
+          ctx.strokeStyle = '#06b6d4';
+          ctx.lineWidth = 1.1;
+          ctx.beginPath();
+          ctx.arc(0, 0, 7.5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+        }
+
+        ctx.restore();
+      }
+
+      function renderMicro(time, dt) {
+        const dpr = window.devicePixelRatio || 1;
+        microW = microCanvas.width / dpr;
+        microH = microCanvas.height / dpr;
+        const ctx = microCtx;
+        const labels = I18N[state.lang].canvasLabels;
+
+        const stepFactor = Math.min(2.5, dt * 0.06) * (state.isPlaying ? Math.max(0.5, state.speed * 0.8) : 0.45);
+        for (const p of state.particles) {
+          p.scale += (p.targetScale - p.scale) * 0.14;
+          p.x += p.vx * stepFactor;
+          p.y += p.vy * stepFactor;
+          p.rot += p.vrot * stepFactor;
+
+          const pad = 22;
+          if (p.x < pad) { p.x = pad; p.vx = Math.abs(p.vx); }
+          if (p.x > microW - pad) { p.x = microW - pad; p.vx = -Math.abs(p.vx); }
+          if (p.y < pad) { p.y = pad; p.vy = Math.abs(p.vy); }
+          if (p.y > microH - pad) { p.y = microH - pad; p.vy = -Math.abs(p.vy); }
+        }
+
+        for (let i = state.flashes.length - 1; i >= 0; i--) {
+          const f = state.flashes[i];
+          f.r += 1.6;
+          f.alpha -= 0.045;
+          if (f.alpha <= 0) state.flashes.splice(i, 1);
+        }
+
+        ctx.save();
+        ctx.scale(dpr, dpr);
+        ctx.clearRect(0, 0, microW, microH);
+
+        ctx.fillStyle = state.starchAdded && !state.endpointReached ? '#0b1838' : '#0d1829';
+        ctx.fillRect(0, 0, microW, microH);
+
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.07)';
+        ctx.lineWidth = 1;
+        for (let gx = 40; gx < microW; gx += 40) {
+          ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, microH); ctx.stroke();
+        }
+        for (let gy = 40; gy < microH; gy += 40) {
+          ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(microW, gy); ctx.stroke();
+        }
+
+        const order = { iodide: 0, s4o6: 1, oxVitC: 2, vitC: 3, i2: 4 };
+        const sorted = [...state.particles].sort((a, b) => (order[a.type] || 0) - (order[b.type] || 0));
+        for (const p of sorted) {
+          drawSingleParticle(ctx, p, state.starchAdded, time);
+        }
+
+        // Incoming blue S₂O₃²⁻ ions from top while dripping
+        const activeDrip = (state.stage === 3 || state.stage === 4) && !state.waitingForStarch && !state.endpointReached && !isNotInExcess() &&
+                           (state.isPlaying || state.stopcockHeld || state.dripPulseTimer > 0);
+        if (activeDrip) {
+          const cycle = (time * 0.003 * Math.max(0.6, state.speed)) % 1;
+          const ty = 18 + cycle * 95;
+          for (const tx of [microW * 0.42, microW * 0.58]) {
+            ctx.save();
+            ctx.fillStyle = '#3b82f6';
+            ctx.strokeStyle = '#dbeafe';
+            ctx.lineWidth = 1.6;
+            ctx.beginPath();
+            ctx.arc(tx, ty, 11.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '800 7.5px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('S₂O₃²⁻', tx, ty + 0.5);
+            ctx.restore();
+          }
+        }
+
+        for (const f of state.flashes) {
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, f.alpha);
+          ctx.strokeStyle = f.color;
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        // MICRO ZOOM OVERLAY (2× Reaction Zone)
+        if (state.microZoom) {
+          const boxW = 198;
+          const boxH = 122;
+          const bx = microW - boxW - 12;
+          const by = 12;
+
+          ctx.save();
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
+          ctx.strokeStyle = '#38bdf8';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.roundRect(bx, by, boxW, boxH, 14);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = '#7dd3fc';
+          ctx.font = '800 10px Inter, Noto Sans TC, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(labels.zoomMicroTitle, bx + boxW / 2, by + 17);
+
+          const mcx = bx + boxW / 2;
+          const mcy = by + 64;
+
+          if (state.starchAdded && !state.endpointReached) {
+            ctx.strokeStyle = '#60a5fa';
+            ctx.lineWidth = 3.5;
+            ctx.beginPath();
+            for (let x = -48; x <= 48; x += 2) {
+              const y = Math.sin(x * 0.16 + time * 0.005) * 18;
+              if (x === -48) ctx.moveTo(mcx + x, mcy + y);
+              else ctx.lineTo(mcx + x, mcy + y);
+            }
+            ctx.stroke();
+
+            ctx.fillStyle = '#1e3a8a';
+            ctx.strokeStyle = '#93c5fd';
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.arc(mcx - 13, mcy, 14, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            ctx.beginPath(); ctx.arc(mcx + 13, mcy, 14, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '800 12px Inter, sans-serif';
+            ctx.fillText('I - I', mcx, mcy + 4);
+
+            ctx.fillStyle = '#93c5fd';
+            ctx.font = '700 10px Inter, Noto Sans TC, sans-serif';
+            ctx.fillText(labels.zoomMicroStarch, mcx, by + boxH - 12);
+          } else {
+            const pulse = Math.sin(time * 0.006) * 4;
+            ctx.fillStyle = state.stage >= 3 ? '#3b82f6' : '#10b981';
+            ctx.beginPath(); ctx.arc(mcx - 50, mcy, 18, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '800 9px Inter, sans-serif';
+            ctx.fillText(state.stage >= 3 ? '2S₂O₃²⁻' : 'Vit C', mcx - 50, mcy + 3);
+
+            ctx.strokeStyle = '#fde047';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath(); ctx.moveTo(mcx - 26, mcy); ctx.lineTo(mcx + 8, mcy); ctx.stroke();
+            ctx.fillStyle = '#fde047';
+            ctx.beginPath(); ctx.moveTo(mcx + 12, mcy); ctx.lineTo(mcx + 4, mcy - 5); ctx.lineTo(mcx + 4, mcy + 5); ctx.closePath(); ctx.fill();
+            ctx.font = '800 10px monospace';
+            ctx.fillText('2e⁻', mcx - 8, mcy - 10);
+
+            ctx.fillStyle = '#b45309';
+            ctx.strokeStyle = '#fde68a';
+            ctx.lineWidth = 1.8;
+            ctx.beginPath(); ctx.arc(mcx + 34 - pulse * 0.5, mcy, 13, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            ctx.beginPath(); ctx.arc(mcx + 56 + pulse * 0.5, mcy, 13, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '800 11px Inter, sans-serif';
+            ctx.fillText('I₂', mcx + 45, mcy + 4);
+
+            ctx.fillStyle = '#cbd5e1';
+            ctx.font = '700 10px Inter, Noto Sans TC, sans-serif';
+            ctx.fillText(labels.zoomMicroBond, mcx, by + boxH - 12);
+          }
+
+          ctx.restore();
+        }
+
+        ctx.restore();
+      }
+
+      /* =====================================================================
+         12. UPDATE ALL SYNCHRONIZED UI PANELS
+         ===================================================================== */
+      function updateAllUI() {
+        const dict = I18N[state.lang];
+        const excessMol = getExcessI2Mol();
+        const reactedMol = getReactedI2Mol();
+        const massG = state.nVitC * MOLAR_MASS_VITC;
+        const massMg = massG * 1000;
+        const vEnd = state.vThioEnd;
+        const notExcess = isNotInExcess();
+
+        // 1. Parameter Card Live Badges & Warnings
+        vitCSciBadge.textContent = `${formatSciPlain(state.nVitC)} mol`;
+        vitCMassBadge.textContent = `${massMg.toFixed(1)} mg`;
+        const pct = state.nI2Total > 0 ? Math.round((state.nVitC / state.nI2Total) * 100) : 0;
+        vitCSliderPct.textContent = `${pct}% of Total I₂`;
+
+        i2SciBadge.textContent = `${formatSciPlain(state.nI2Total)} mol`;
+        i2ExcessBadge.textContent = `${dict.excessPrefix}${formatSciPlain(excessMol)} mol`;
+        thioSciBadge.textContent = `${formatSciPlain(state.nThioEnd)} mol`;
+
+        if (state.warningKey) {
+          stoichWarningText.textContent = dict[state.warningKey];
+          stoichWarningBanner.classList.remove('hidden');
+        } else {
+          stoichWarningBanner.classList.add('hidden');
+        }
+
+        // Preset button active highlight
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+          const p = PRESETS[btn.dataset.preset];
+          const isMatch = p &&
+            Math.abs(state.nVitC - p.nVitC) < 1e-7 &&
+            Math.abs(state.nI2Total - p.nI2) < 1e-7 &&
+            Math.abs(state.mThio - p.mThio) < 1e-4;
+          btn.className = isMatch
+            ? 'preset-btn px-2.5 py-1.5 rounded-xl text-xs font-extrabold border-2 border-skhNavy bg-skhNavy text-white shadow-sm transition cursor-pointer'
+            : 'preset-btn px-2.5 py-1.5 rounded-xl text-xs font-bold border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 transition cursor-pointer';
+        });
+
+        // 2. Stage Buttons & Pedagogical Guide
+        document.querySelectorAll('.stage-btn').forEach(btn => {
+          const s = Number(btn.dataset.stage);
+          const spanClass = s === 5 ? ' col-span-2 sm:col-span-1' : '';
+          if (s === state.stage) {
+            btn.className = 'stage-btn text-left p-2.5 rounded-xl border-2 border-skhNavy bg-skhNavy text-white shadow-md transition cursor-pointer' + spanClass;
+          } else if (s < state.stage) {
+            btn.className = 'stage-btn text-left p-2.5 rounded-xl border-2 border-emerald-300 bg-emerald-50 text-emerald-950 hover:bg-emerald-100 transition cursor-pointer' + spanClass;
+          } else {
+            btn.className = 'stage-btn text-left p-2.5 rounded-xl border-2 border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition cursor-pointer' + spanClass;
+          }
+        });
+
+        stageBadge.textContent = `Stage ${state.stage}`;
+        const descParams = {
+          totalI2Str: formatSciPlain(state.nI2Total),
+          vitCStr: formatSciPlain(state.nVitC),
+          excessStr: formatSciPlain(excessMol),
+          vVitC: state.vVitC,
+          mThio: state.mThio,
+          vEnd: vEnd,
+          nVitC: state.nVitC,
+          totalP: state.totalI2Particles,
+          notExcess
+        };
+        stageDescription.textContent = dict.stageDescs[state.stage](descParams);
+
+        playPauseIcon.textContent = state.isPlaying ? '⏸' : '▶';
+        playPauseText.textContent = state.isPlaying ? dict.btnPause : dict.btnPlay;
+
+        // 3. Manual Titration Panel & Adaptive Step Buttons
+        const showManual = (state.stage === 3 || state.stage === 4) && !notExcess;
+        manualTitrationPanel.classList.toggle('hidden', !showManual);
+        manualVolReadout.textContent = `${state.buretteVol.toFixed(2)} cm³`;
+
+        const steps = getAdaptiveSteps();
+        addCoarseBtn.textContent = `+${steps.coarse.toFixed(2)} cm³ (${dict.coarseLabel})`;
+        addMedBtn.textContent = `+${steps.med.toFixed(2)} cm³ (${dict.medLabel})`;
+        addFineBtn.textContent = `+${steps.fine.toFixed(2)} cm³ (${dict.fineLabel})`;
+
+        const disableTitrant = state.waitingForStarch || state.endpointReached || notExcess;
+        addCoarseBtn.disabled = disableTitrant || state.stage === 4;
+        addMedBtn.disabled = disableTitrant;
+        addFineBtn.disabled = disableTitrant;
+
+        starchPromptPanel.classList.toggle('hidden', !state.waitingForStarch);
+        endpointBanner.classList.toggle('hidden', !(state.endpointReached && state.stage === 4 && !notExcess));
+        if (state.endpointReached) {
+          endpointBannerTitle.textContent = dict.endpointTitle;
+          endpointBannerSub.textContent = dict.endpointSub(vEnd, formatSciPlain(excessMol));
+        }
+
+        // 4. Macro Digital Readout Cards & Micro Scale Badge
+        readoutAddedVVal.textContent = `${state.buretteVol.toFixed(2)} cm³`;
+        readoutEndVVal.textContent = `${vEnd.toFixed(2)} cm³`;
+        readoutRemI2Val.textContent = `${formatSciPlain(getCurrentRemainingI2Mol())} mol`;
+        liveScaleBadge.textContent = `${dict.scalePrefix}${formatSciPlain(state.molPerParticle)} mol`;
+
+        // 5. Visual I₂ Distribution Bar
+        const totalP = state.totalI2Particles;
+        const genNow = state.stage === 1 ? Math.round(totalP * state.stageProgress) : totalP;
+        barTotalContainer.innerHTML = '';
+        for (let i = 0; i < totalP; i++) {
+          const block = document.createElement('div');
+          block.className = `flex-1 h-full rounded-sm transition-colors duration-150 ${i < genNow ? 'bg-amber-600' : 'bg-amber-200/70'}`;
+          barTotalContainer.appendChild(block);
+        }
+        barTotalValue.textContent = `${formatSciPlain(state.nI2Total)} mol (${totalP})`;
+
+        const reactedPct = state.nI2Total > 0 ? Math.min(100, (reactedMol / state.nI2Total) * 100) : 0;
+        const excessPct = Math.max(0, 100 - reactedPct);
+
+        if (reactedPct <= 0.01) {
+          barReactedSegment.style.width = '0%';
+          barReactedSegment.style.borderWidth = '0px';
+          barReactedSegment.style.padding = '0px';
+          barReactedSegment.textContent = '';
+        } else {
+          barReactedSegment.style.width = `${reactedPct}%`;
+          barReactedSegment.style.borderWidth = '2px';
+          barReactedSegment.style.padding = '0 6px';
+          barReactedSegment.textContent = reactedPct >= 10 ? `${Math.round(reactedPct)}%` : '';
+        }
+
+        if (excessPct <= 0.01) {
+          barExcessSegment.style.width = '0%';
+          barExcessSegment.style.borderWidth = '0px';
+          barExcessSegment.style.padding = '0px';
+          barExcessText.textContent = '';
+        } else {
+          barExcessSegment.style.width = `${excessPct}%`;
+          barExcessSegment.style.borderWidth = '2px';
+          barExcessSegment.style.padding = '0 6px';
+          barExcessText.textContent = excessPct >= 14 ? `${formatSciPlain(excessMol)} mol (${Math.round(excessPct)}%)` : `${Math.round(excessPct)}%`;
+        }
+
+        const liveFrac = state.stage >= 5 ? 1 : (vEnd > 1e-9 ? Math.min(1, state.buretteVol / vEnd) : 0);
+        barTitratedOverlay.style.width = `${liveFrac * 100}%`;
+        barTitratedStatus.textContent = `${dict.titratedProgressPrefix}${state.stage >= 5 ? vEnd.toFixed(2) : state.buretteVol.toFixed(2)} / ${vEnd.toFixed(2)} cm³`;
+
+        barReactedValue.textContent = `${formatSciPlain(reactedMol)} mol`;
+        barExcessValue.textContent = `${formatSciPlain(excessMol)} mol`;
+
+        // 6. 4-Step Live Calculation Cards (Proper HTML sub/sup)
+        calcTotalI2Formula.innerHTML = `n(I<sub>2</sub>)<sub>total</sub> = M × V / 1000 = ${state.mI2Total.toFixed(3)} × (${state.vI2Total.toFixed(1)} / 1000)`;
+        calcTotalI2Val.innerHTML = `${formatSciHTML(state.nI2Total)} mol`;
+
+        calcThioLine.innerHTML = `n(S<sub>2</sub>O<sub>3</sub><sup>2−</sup>) = ${state.mThio.toFixed(3)} × (${vEnd.toFixed(2)} / 1000) = ${formatSciHTML(state.nThioEnd)} mol`;
+        calcExcessI2Val.innerHTML = `${formatSciHTML(excessMol)} mol`;
+
+        calcSubEquation.innerHTML = `= ${formatSciHTML(state.nI2Total)} − ${formatSciHTML(excessMol)} = ${formatSciHTML(reactedMol)} mol`;
+
+        calcVitCMolLine.innerHTML = `n(C<sub>6</sub>H<sub>8</sub>O<sub>6</sub>) = n(I<sub>2</sub>)<sub>reacted</sub> = ${formatSciHTML(reactedMol)} mol`;
+        const calcMassG = reactedMol * MOLAR_MASS_VITC;
+        const calcMassMg = calcMassG * 1000;
+        const calcM = state.vVitC > 0 ? reactedMol / (state.vVitC / 1000) : 0;
+        calcMassFormula.innerHTML = `${dict.massPrefix} ${formatSciHTML(reactedMol)} × 176.0 =`;
+        calcMassResult.textContent = `${calcMassG.toFixed(4)} g (${calcMassMg.toFixed(1)} mg)`;
+        calcVitCMolarityLine.textContent = `${dict.molarityPrefix}${calcM.toFixed(5)} mol dm⁻³ (V = ${state.vVitC.toFixed(1)} cm³)`;
+
+        // 7. Highlight Active Chemical Equation
+        const eq1 = document.getElementById('eqBox1');
+        const eq2 = document.getElementById('eqBox2');
+        const eq3 = document.getElementById('eqBox3');
+        eq1.className = `p-3 rounded-xl border-2 transition-all ${state.stage === 1 ? 'border-amber-500 bg-amber-50 shadow-sm' : 'border-slate-200 bg-slate-50 opacity-75'}`;
+        eq2.className = `p-3 rounded-xl border-2 transition-all ${state.stage === 2 ? 'border-emerald-500 bg-emerald-50 shadow-sm' : 'border-slate-200 bg-slate-50 opacity-75'}`;
+        eq3.className = `p-3 rounded-xl border-2 transition-all ${state.stage >= 3 ? 'border-blue-500 bg-blue-50 shadow-sm' : 'border-slate-200 bg-slate-50 opacity-75'}`;
+      }
+
+      function highlightConcept(conceptKey) {
+        state.activeConcept = conceptKey;
+        const dict = I18N[state.lang];
+        const styles = {
+          total: 'bg-amber-50 border-amber-500 text-amber-950',
+          excess: 'bg-blue-50 border-blue-500 text-blue-950',
+          reacted: 'bg-emerald-50 border-emerald-500 text-emerald-950',
+          subtraction: 'bg-indigo-50 border-indigo-500 text-indigo-950'
+        };
+        conceptCallout.className = `rounded-xl p-3 border-l-4 text-xs sm:text-sm font-medium flex items-start gap-2.5 transition-all ${styles[conceptKey]}`;
+        conceptCalloutText.textContent = dict.conceptCallouts[conceptKey];
+
+        document.querySelectorAll('.concept-target, .concept-card').forEach(el => {
+          const targetKey = el.dataset.concept;
+          const match = conceptKey === 'subtraction'
+            ? (targetKey === 'subtraction' || targetKey === 'total' || targetKey === 'excess' || targetKey === 'reacted')
+            : (targetKey === conceptKey);
+          el.classList.toggle('concept-highlight-ring', targetKey === conceptKey);
+          el.style.opacity = match ? '1' : '0.62';
+        });
+      }
+
+      function updateExamTab() {
+        const dict = I18N[state.lang];
+        examTabContent.innerHTML = dict.examTabs[state.activeExamTab];
+        document.querySelectorAll('.exam-tab').forEach(btn => {
+          const idx = Number(btn.dataset.tab);
+          btn.className = idx === state.activeExamTab
+            ? 'exam-tab px-3 py-1.5 rounded-xl text-xs font-bold bg-skhNavy text-white shadow-sm transition cursor-pointer'
+            : 'exam-tab px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition cursor-pointer';
+        });
+      }
+
+      function applyLanguage() {
+        const dict = I18N[state.lang];
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+          const key = el.dataset.i18n;
+          if (dict[key] !== undefined) el.innerHTML = dict[key];
+        });
+        langToggleLabel.textContent = dict.langBtn;
+        toggleParamsLabel.textContent = state.paramsExpanded ? dict.btnCollapseParams : dict.btnExpandParams;
+        macroZoomBtn.querySelector('span:last-child').textContent = state.macroZoom ? dict.zoomActive : dict.zoomToggle;
+        microZoomBtn.querySelector('span:last-child').textContent = state.microZoom ? dict.zoomActive : dict.zoomToggle;
+        if (state.rippleKey && dict[state.rippleKey]) {
+          rippleInfoText.textContent = dict[state.rippleKey];
+        }
+
+        updateAllUI();
+        highlightConcept(state.activeConcept);
+        updateExamTab();
+      }
+
+      /* =====================================================================
+         13. STAGE NAVIGATION & RESET
+         ===================================================================== */
+      function goToStage(newStage, autoPlay = false) {
+        const s = Math.max(1, Math.min(5, newStage));
+        state.stage = s;
+        state.isPlaying = false;
+        state.stopcockHeld = false;
+
+        if (s === 1) {
+          state.stageProgress = autoPlay ? 0 : 1;
+          state.buretteVol = 0;
+          state.starchAdded = false;
+          state.waitingForStarch = false;
+          state.endpointReached = false;
+          state.isPlaying = autoPlay;
+          highlightConcept('total');
+        } else if (s === 2) {
+          state.stageProgress = autoPlay ? 0 : 1;
+          state.buretteVol = 0;
+          state.starchAdded = false;
+          state.waitingForStarch = false;
+          state.endpointReached = false;
+          state.isPlaying = autoPlay;
+          highlightConcept('reacted');
+        } else if (s === 3) {
+          state.stageProgress = 1;
+          state.buretteVol = 0;
+          state.starchAdded = false;
+          state.endpointReached = isNotInExcess();
+          state.waitingForStarch = !isNotInExcess() && getStarchPauseVol() <= 1e-4;
+          state.isPlaying = autoPlay && !state.waitingForStarch && !isNotInExcess();
+          highlightConcept('excess');
+        } else if (s === 4) {
+          state.stageProgress = 1;
+          state.buretteVol = isNotInExcess() ? 0 : getStarchPauseVol();
+          state.starchAdded = !isNotInExcess();
+          state.waitingForStarch = false;
+          state.endpointReached = isNotInExcess();
+          state.starchDropAnim = isNotInExcess() ? 0 : 0.9;
+          state.isPlaying = autoPlay && !isNotInExcess();
+          highlightConcept('excess');
+        } else if (s === 5) {
+          state.stageProgress = 1;
+          state.buretteVol = state.vThioEnd;
+          state.starchAdded = !isNotInExcess();
+          state.waitingForStarch = false;
+          state.endpointReached = true;
+          highlightConcept('subtraction');
+        }
+
+        syncMicroPopulation();
+        updateAllUI();
+      }
+
+      function resetLab() {
+        state.particles = [];
+        state.flashes = [];
+        goToStage(1, true);
+      }
+
+      /* =====================================================================
+         14. CANVAS INTERACTIONS (CLICKABLE STOPCOCK & STARCH DROPPER)
+         ===================================================================== */
+      function getCanvasPointer(canvas, e) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return { x: clientX - rect.left, y: clientY - rect.top };
+      }
+
+      function handleMacroPointerDown(e) {
+        const pt = getCanvasPointer(macroCanvas, e);
+
+        if (state.dropperHit.active) {
+          const d = state.dropperHit;
+          if (pt.x >= d.x && pt.x <= d.x + d.w && pt.y >= d.y && pt.y <= d.y + d.h) {
+            manuallyAddStarch();
+            return;
+          }
+        }
+
+        const sc = state.stopcockHit;
+        const dist = Math.hypot(pt.x - sc.x, pt.y - sc.y);
+        if (dist <= sc.r + 6 && (state.stage === 3 || state.stage === 4) && !state.waitingForStarch && !state.endpointReached && !isNotInExcess()) {
+          state.isPlaying = false;
+          state.stopcockHeld = true;
+          const steps = getAdaptiveSteps();
+          addTitrantVolume(state.stage === 4 ? steps.fine : steps.med * 0.5);
+        }
+      }
+
+      function handleMacroPointerUp() {
+        state.stopcockHeld = false;
+      }
+
+      macroCanvas.addEventListener('mousedown', handleMacroPointerDown);
+      window.addEventListener('mouseup', handleMacroPointerUp);
+      macroCanvas.addEventListener('touchstart', e => handleMacroPointerDown(e), { passive: true });
+      window.addEventListener('touchend', handleMacroPointerUp);
+
+      /* =====================================================================
+         15. DOM EVENT LISTENERS
+         ===================================================================== */
+      langToggleBtn.addEventListener('click', () => {
+        state.lang = state.lang === 'zh' ? 'en' : 'zh';
+        applyLanguage();
+      });
+
+      toggleParamsBtn.addEventListener('click', () => {
+        state.paramsExpanded = !state.paramsExpanded;
+        paramPanelBody.classList.toggle('hidden', !state.paramsExpanded);
+        toggleParamsLabel.textContent = state.paramsExpanded
+          ? I18N[state.lang].btnCollapseParams
+          : I18N[state.lang].btnExpandParams;
+      });
+
+      // Parameter Input Listeners
+      inputVitCN.addEventListener('input', () => handleParamEdit('vitCN'));
+      inputVitCM.addEventListener('input', () => handleParamEdit('vitCM'));
+      inputVitCV.addEventListener('input', () => handleParamEdit('vitCV'));
+      vitCSlider.addEventListener('input', () => handleParamEdit('vitCSlider'));
+
+      inputI2N.addEventListener('input', () => handleParamEdit('i2N'));
+      inputI2M.addEventListener('input', () => handleParamEdit('i2M'));
+      inputI2V.addEventListener('input', () => handleParamEdit('i2V'));
+
+      inputThioM.addEventListener('input', () => handleParamEdit('thioM'));
+      inputThioV.addEventListener('input', () => handleParamEdit('thioV'));
+      inputThioN.addEventListener('input', () => handleParamEdit('thioN'));
+
+      // Re-format neatly on blur
+      [inputVitCN, inputVitCM, inputVitCV, inputI2N, inputI2M, inputI2V, inputThioM, inputThioV, inputThioN].forEach(el => {
+        el.addEventListener('blur', () => syncInputsFromState(null));
+      });
+
+      document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => applyPreset(btn.dataset.preset));
+      });
+
+      document.querySelectorAll('.stage-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = Number(btn.dataset.stage);
+          goToStage(target, target <= 2);
+        });
+      });
+
+      playPauseBtn.addEventListener('click', () => {
+        if (state.waitingForStarch) return;
+        if (state.stage === 5) {
+          goToStage(1, true);
+          return;
+        }
+        if ((state.stage === 1 || state.stage === 2) && state.stageProgress >= 1) {
+          state.stageProgress = 0;
+        }
+        if (state.stage === 4 && state.endpointReached) {
+          goToStage(3, true);
+          return;
+        }
+        if ((state.stage === 3 || state.stage === 4) && isNotInExcess()) return;
+        state.isPlaying = !state.isPlaying;
+        updateAllUI();
+      });
+
+      prevStepBtn.addEventListener('click', () => goToStage(state.stage - 1, false));
+      nextStepBtn.addEventListener('click', () => {
+        if (state.stage === 3 && state.waitingForStarch) {
+          manuallyAddStarch();
+        } else {
+          goToStage(state.stage + 1, state.stage + 1 <= 2);
+        }
+      });
+      resetBtn.addEventListener('click', resetLab);
+
+      addCoarseBtn.addEventListener('click', () => {
+        state.isPlaying = false;
+        addTitrantVolume(getAdaptiveSteps().coarse);
+      });
+      addMedBtn.addEventListener('click', () => {
+        state.isPlaying = false;
+        addTitrantVolume(getAdaptiveSteps().med);
+      });
+      addFineBtn.addEventListener('click', () => {
+        state.isPlaying = false;
+        addTitrantVolume(getAdaptiveSteps().fine);
+      });
+      resetTitrationBtn.addEventListener('click', () => goToStage(3, false));
+
+      addStarchBtn.addEventListener('click', manuallyAddStarch);
+      goToCalcBtn.addEventListener('click', () => goToStage(5, false));
+
+      document.querySelectorAll('.speed-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.speed = Number(btn.dataset.speed);
+          document.querySelectorAll('.speed-btn').forEach(b => {
+            b.className = 'speed-btn px-2 py-1 rounded-lg text-xs font-bold text-slate-600 hover:bg-white transition cursor-pointer';
+          });
+          btn.className = 'speed-btn px-2 py-1 rounded-lg text-xs font-bold bg-white text-skhNavy shadow-sm transition cursor-pointer';
+        });
+      });
+
+      macroZoomBtn.addEventListener('click', () => {
+        state.macroZoom = !state.macroZoom;
+        macroZoomBtn.classList.toggle('bg-skhNavy', state.macroZoom);
+        macroZoomBtn.classList.toggle('text-white', state.macroZoom);
+        macroZoomBtn.classList.toggle('bg-white', !state.macroZoom);
+        macroZoomBtn.classList.toggle('text-slate-700', !state.macroZoom);
+        applyLanguage();
+      });
+
+      microZoomBtn.addEventListener('click', () => {
+        state.microZoom = !state.microZoom;
+        microZoomBtn.classList.toggle('bg-skhNavy', state.microZoom);
+        microZoomBtn.classList.toggle('text-white', state.microZoom);
+        microZoomBtn.classList.toggle('bg-white', !state.microZoom);
+        microZoomBtn.classList.toggle('text-slate-700', !state.microZoom);
+        applyLanguage();
+      });
+
+      document.querySelectorAll('.concept-pill, .concept-target, .concept-card').forEach(el => {
+        const key = el.dataset.concept;
+        if (!key) return;
+        el.addEventListener('click', () => highlightConcept(key));
+        el.addEventListener('mouseenter', () => highlightConcept(key));
+      });
+
+      document.querySelectorAll('.exam-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.activeExamTab = Number(btn.dataset.tab);
+          updateExamTab();
+        });
+      });
+
+      function resizeCanvases() {
+        const dpr = window.devicePixelRatio || 1;
+        [macroCanvas, microCanvas].forEach(c => {
+          const rect = c.parentElement.getBoundingClientRect();
+          c.width = Math.max(200, Math.floor(rect.width * dpr));
+          c.height = Math.max(200, Math.floor(rect.height * dpr));
+        });
+      }
+      window.addEventListener('resize', resizeCanvases);
+
+      /* =====================================================================
+         16. MAIN 60FPS ANIMATION LOOP
+         ===================================================================== */
+      function animate(timestamp) {
+        if (!state.lastTimestamp) state.lastTimestamp = timestamp;
+        const dt = Math.min(50, timestamp - state.lastTimestamp);
+        state.lastTimestamp = timestamp;
+        const dtSec = dt / 1000;
+
+        if (state.dripPulseTimer > 0) {
+          state.dripPulseTimer = Math.max(0, state.dripPulseTimer - dtSec);
+        }
+        if (state.starchDropAnim > 0) {
+          state.starchDropAnim = Math.max(0, state.starchDropAnim - dtSec * 1.6);
+        }
+
+        // Continuous drip while holding burette stopcock (scaled to endpoint volume)
+        if (state.stopcockHeld && !isNotInExcess()) {
+          const baseRate = Math.max(0.4, state.vThioEnd * 0.16);
+          const rate = state.stage === 4 ? baseRate * 0.25 : baseRate;
+          addTitrantVolume(rate * dtSec);
+        }
+
+        // Auto-Play progression
+        if (state.isPlaying) {
+          if (state.stage === 1 || state.stage === 2) {
+            const dur = state.stage === 1 ? 3.8 : 3.5;
+            state.stageProgress += (dtSec / dur) * state.speed;
+            if (state.stageProgress >= 1) {
+              state.stageProgress = 1;
+              state.isPlaying = false;
+            }
+            syncMicroPopulation();
+            updateAllUI();
+          } else if (state.stage === 3 && !state.waitingForStarch && !isNotInExcess()) {
+            const rate = Math.max(0.5, state.vThioEnd * 0.15);
+            addTitrantVolume(rate * dtSec * state.speed);
+          } else if (state.stage === 4 && !state.endpointReached && !isNotInExcess()) {
+            const rate = Math.max(0.15, state.vThioEnd * 0.045);
+            addTitrantVolume(rate * dtSec * state.speed);
+          }
+        }
+
+        renderMacro(timestamp);
+        renderMicro(timestamp, dt);
+        requestAnimationFrame(animate);
+      }
+
+      /* =====================================================================
+         17. INITIALIZATION
+         ===================================================================== */
+      window.onload = () => {
+        computeDynamicParticleScale();
+        syncInputsFromState(null);
+        resizeCanvases();
+        applyLanguage();
+        goToStage(1, true);
+        requestAnimationFrame(animate);
+      };
+    })();
+  </script>
+</body>
+</html>
