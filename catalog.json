@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-25T06:54:01.395Z",
+  "updatedAt": "2026-11-25T06:54:28.255Z",
   "folders": [
     "中三",
     "中四",
@@ -49,8 +49,8 @@
     {
       "fileName": "chap-2.html",
       "originalFileName": "chap-2.html",
-      "displayName": "chap-2",
-      "folder": "未分類",
+      "displayName": "液態空氣分餾模擬平台",
+      "folder": "中三",
       "size": 43081,
       "createdAt": "2026-11-25T06:54:01.395Z",
       "updatedAt": "2026-11-25T06:54:01.395Z"
