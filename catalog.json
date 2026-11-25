@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-25T08:10:40.895Z",
+  "updatedAt": "2026-11-25T08:11:31.498Z",
   "folders": [
     "中三",
     "中四",
@@ -11,49 +11,13 @@
   ],
   "items": [
     {
-      "fileName": "Chap 32 電解原理與化學電池比較互動平台.html",
-      "originalFileName": "Chap 32 電解原理與化學電池比較互動平台.html",
-      "displayName": "Chap 32 電解原理與化學電池比較互動平台.html",
-      "folder": "中三",
-      "size": 145458,
-      "createdAt": "2026-11-25T08:10:40.027Z",
-      "updatedAt": "2026-11-25T08:10:40.027Z"
-    },
-    {
-      "fileName": "Chap 31 含惰性電極的化學電池互動實驗室.html",
-      "originalFileName": "Chap 31 含惰性電極的化學電池互動實驗室.html",
-      "displayName": "Chap 31 含惰性電極的化學電池互動實驗室.html",
-      "folder": "中三",
-      "size": 99445,
-      "createdAt": "2026-11-25T08:10:37.838Z",
-      "updatedAt": "2026-11-25T08:10:37.838Z"
-    },
-    {
-      "fileName": "Chap 30 氧化還原全方位學習系統.html",
-      "originalFileName": "Chap 30 氧化還原全方位學習系統.html",
-      "displayName": "Chap 30 氧化還原全方位學習系統.html",
-      "folder": "中三",
-      "size": 153204,
-      "createdAt": "2026-11-25T08:10:35.242Z",
-      "updatedAt": "2026-11-25T08:10:35.242Z"
-    },
-    {
-      "fileName": "Chap 16 酸鹼中和滴定與指示劑選擇.html",
-      "originalFileName": "Chap 16 酸鹼中和滴定與指示劑選擇.html",
-      "displayName": "Chap 16 酸鹼中和滴定與指示劑選擇.html",
-      "folder": "中三",
-      "size": 48992,
-      "createdAt": "2026-11-25T08:10:32.633Z",
-      "updatedAt": "2026-11-25T08:10:32.633Z"
-    },
-    {
-      "fileName": "Chap 12 摩爾比.html",
-      "originalFileName": "Chap 12 摩爾比.html",
-      "displayName": "Chap 12 摩爾比.html",
-      "folder": "中三",
-      "size": 220509,
-      "createdAt": "2026-11-25T08:10:30.284Z",
-      "updatedAt": "2026-11-25T08:10:30.284Z"
+      "fileName": "Chap 10 平衡化學反應方程式.html",
+      "originalFileName": "Chap 10 平衡化學反應方程式.html",
+      "displayName": "Chap 10 平衡化學反應方程式.html",
+      "folder": "未分類",
+      "size": 45384,
+      "createdAt": "2026-11-25T08:10:40.895Z",
+      "updatedAt": "2026-11-25T08:10:40.895Z"
     },
     {
       "fileName": "Chap 11 置換反應 & 離子方程式.html",
@@ -65,13 +29,22 @@
       "updatedAt": "2026-11-25T08:10:27.875Z"
     },
     {
-      "fileName": "Chap 10 平衡化學反應方程式.html",
-      "originalFileName": "Chap 10 平衡化學反應方程式.html",
-      "displayName": "Chap 10 平衡化學反應方程式.html",
-      "folder": "未分類",
-      "size": 45384,
-      "createdAt": "2026-11-25T08:10:40.895Z",
-      "updatedAt": "2026-11-25T08:10:40.895Z"
+      "fileName": "Chap 12 摩爾比.html",
+      "originalFileName": "Chap 12 摩爾比.html",
+      "displayName": "Chap 12 摩爾比.html",
+      "folder": "中三",
+      "size": 220509,
+      "createdAt": "2026-11-25T08:10:30.284Z",
+      "updatedAt": "2026-11-25T08:10:30.284Z"
+    },
+    {
+      "fileName": "Chap 16 酸鹼中和滴定與指示劑選擇.html",
+      "originalFileName": "Chap 16 酸鹼中和滴定與指示劑選擇.html",
+      "displayName": "Chap 16 酸鹼中和滴定與指示劑選擇.html",
+      "folder": "中三",
+      "size": 48992,
+      "createdAt": "2026-11-25T08:10:32.633Z",
+      "updatedAt": "2026-11-25T08:10:32.633Z"
     },
     {
       "fileName": "Chap 2 液態空氣分餾模擬平台.html",
@@ -83,6 +56,15 @@
       "updatedAt": "2026-11-25T08:10:40.895Z"
     },
     {
+      "fileName": "Chap 30 氧化還原全方位學習系統.html",
+      "originalFileName": "Chap 30 氧化還原全方位學習系統.html",
+      "displayName": "Chap 30 氧化還原全方位學習系統.html",
+      "folder": "中三",
+      "size": 153204,
+      "createdAt": "2026-11-25T08:10:35.242Z",
+      "updatedAt": "2026-11-25T08:10:35.242Z"
+    },
+    {
       "fileName": "Chap 30 氧化還原全方位學習系統_刪.html",
       "originalFileName": "Chap 30 氧化還原全方位學習系統_刪.html",
       "displayName": "Chap 30 氧化還原全方位學習系統_刪.html",
@@ -90,6 +72,24 @@
       "size": 181317,
       "createdAt": "2026-11-25T08:10:40.895Z",
       "updatedAt": "2026-11-25T08:10:40.895Z"
+    },
+    {
+      "fileName": "Chap 31 含惰性電極的化學電池互動實驗室.html",
+      "originalFileName": "Chap 31 含惰性電極的化學電池互動實驗室.html",
+      "displayName": "Chap 31 含惰性電極的化學電池互動實驗室.html",
+      "folder": "中三",
+      "size": 99445,
+      "createdAt": "2026-11-25T08:10:37.838Z",
+      "updatedAt": "2026-11-25T08:10:37.838Z"
+    },
+    {
+      "fileName": "Chap 32 電解原理與化學電池比較互動平台.html",
+      "originalFileName": "Chap 32 電解原理與化學電池比較互動平台.html",
+      "displayName": "Chap 32 電解原理與化學電池比較互動平台.html",
+      "folder": "中三",
+      "size": 145458,
+      "createdAt": "2026-11-25T08:10:40.027Z",
+      "updatedAt": "2026-11-25T08:10:40.027Z"
     },
     {
       "fileName": "Chap 51 速率方程與對數圖解法互動教學.html",
@@ -185,7 +185,7 @@
       "fileName": "鬥獸棋.html",
       "originalFileName": "鬥獸棋.html",
       "displayName": "鬥獸棋.html",
-      "folder": "未分類",
+      "folder": "互動遊戲",
       "size": 73431,
       "createdAt": "2026-11-25T08:10:40.895Z",
       "updatedAt": "2026-11-25T08:10:40.895Z"
