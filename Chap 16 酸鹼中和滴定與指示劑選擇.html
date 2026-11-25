@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HKDSE 酸鹼滴定與指示劑選擇互動實驗室</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js for pH titration curve -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    
+    /* Drop animation */
+    @keyframes dropFall {
+      0% { top: 185px; opacity: 1; transform: scale(1); }
+      70% { opacity: 0.9; }
+      100% { top: 235px; opacity: 0; transform: scale(0.5); }
+    }
+    .animate-drop {
+      animation: dropFall 0.4s ease-in infinite;
+    }
+
+    /* Flask liquid fill transition */
+    .liquid-transition {
+      transition: background-color 0.3s ease, height 0.1s ease;
+    }
+
+    /* Modal transition styling */
+    .modal-backdrop {
+      background-color: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(4px);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen p-3 md:p-6">
+
+  <div class="max-w-7xl mx-auto space-y-6">
+    <!-- Header -->
+    <header class="bg-indigo-900 text-white p-6 rounded-2xl shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
+      <div>
+        <div class="flex items-center gap-3">
+          <span class="bg-indigo-700 text-indigo-200 text-xs px-2.5 py-1 rounded-full font-bold uppercase tracking-wide">HKDSE Chemistry</span>
+          <span class="text-indigo-300 text-sm">Topic 4 Acids &amp; Bases &amp; Topic 11 Analytical Chemistry</span>
+        </div>
+        <h1 class="text-2xl md:text-3xl font-extrabold mt-1">酸鹼中和滴定與指示劑選擇互動實驗室</h1>
+        <p class="text-indigo-200 text-sm mt-1">探索 4 種酸鹼滴定組合、pH 突變區（pH Jump）、pKa 測定與指示劑變色原理</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button id="calcModalBtn" class="bg-indigo-700 hover:bg-indigo-600 text-white px-3.5 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-calculator"></i> 滴定計算示範
+        </button>
+        <button id="quizModalBtn" class="bg-amber-500 hover:bg-amber-600 text-slate-900 px-3.5 py-2 rounded-xl text-sm font-extrabold transition flex items-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-clipboard-question"></i> DSE 考題挑戰
+        </button>
+        <button id="resetBtn" class="bg-indigo-800 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-rotate-left"></i> 重設實驗
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- Left Column: Controls & Apparatus (5 cols) -->
+      <div class="lg:col-span-5 space-y-6">
+        
+        <!-- Controls Card -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+          <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
+            <i class="fa-solid fa-sliders text-indigo-600"></i> 滴定參數設定
+          </h2>
+
+          <!-- Titration System Selection -->
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">1. 酸鹼反應組合 (Titration System)</label>
+            <select id="systemSelect" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-xl p-2.5 font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              <option value="sa_sb">① 強酸 + 強鹼 (如: HCl + NaOH)</option>
+              <option value="sa_wb">② 強酸 + 弱鹼 (如: HCl + NH₃)</option>
+              <option value="wa_sb">③ 弱酸 + 強鹼 (如: CH₃COOH + NaOH)</option>
+              <option value="wa_wb">④ 弱酸 + 弱鹼 (如: CH₃COOH + NH₃)</option>
+            </select>
+          </div>
+
+          <!-- Indicator Selection -->
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">2. 選擇酸鹼指示劑 (Indicator)</label>
+            <div class="grid grid-cols-2 gap-2">
+              <button id="btnPP" onclick="setIndicator('pp')" class="border-2 border-indigo-600 bg-indigo-50 text-indigo-900 p-2.5 rounded-xl font-bold text-xs flex flex-col items-center gap-1 transition">
+                <span>酚酞 Phenolphthalein</span>
+                <span class="text-[10px] text-indigo-600 font-normal">pH 變色範圍: 8.3 - 10.0</span>
+              </button>
+              <button id="btnMO" onclick="setIndicator('mo')" class="border-2 border-slate-200 bg-slate-50 text-slate-600 p-2.5 rounded-xl font-bold text-xs flex flex-col items-center gap-1 transition">
+                <span>甲基橙 Methyl Orange</span>
+                <span class="text-[10px] text-slate-500 font-normal">pH 變色範圍: 3.1 - 4.4</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Titrant Volume Slider -->
+          <div class="pt-2">
+            <div class="flex justify-between items-center mb-1">
+              <label class="text-xs font-bold text-slate-500 uppercase">3. 加入滴定液體積 (V_titrant)</label>
+              <span class="text-indigo-600 font-extrabold text-base" id="volDisplay">0.0 mL</span>
+            </div>
+            <input type="range" id="volSlider" min="0" max="50" step="0.1" value="0" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+            <div class="flex justify-between text-[10px] text-slate-400 mt-1">
+              <span>0 mL</span>
+              <span>12.5 mL (半當量點)</span>
+              <span>25 mL (當量點)</span>
+              <span>50 mL</span>
+            </div>
+          </div>
+
+          <!-- Fast Preset Volume Buttons -->
+          <div class="flex flex-wrap items-center gap-2 pt-1">
+            <span class="text-xs text-slate-400 font-medium">快速跳轉:</span>
+            <button onclick="jumpVolume(0)" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-semibold">0 mL</button>
+            <button onclick="jumpVolume(12.5)" class="px-2 py-1 bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 rounded-lg text-xs font-bold" title="半當量點: pH = pKa">12.5 mL (½當量點)</button>
+            <button onclick="jumpVolume(24.5)" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-semibold">24.5 mL</button>
+            <button onclick="jumpVolume(25.0)" class="px-2 py-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 border border-emerald-300 rounded-lg text-xs font-bold">25.0 mL (當量點)</button>
+            <button onclick="jumpVolume(30.0)" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-semibold">30 mL</button>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex gap-2 pt-2">
+            <button id="playBtn" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-4 rounded-xl text-sm transition flex items-center justify-center gap-2 shadow-sm">
+              <i class="fa-solid fa-play" id="playIcon"></i> <span id="playText">自動滴定 (Auto Titrate)</span>
+            </button>
+            <button id="stepBtn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-3 rounded-xl text-sm transition flex items-center justify-center gap-1">
+              +0.5 mL
+            </button>
+          </div>
+        </div>
+
+        <!-- Apparatus & Flask Color Display -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+          <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3 mb-4">
+            <i class="fa-solid fa-flask text-indigo-600"></i> 實驗裝置與顏色轉變模式
+          </h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+            <!-- SVG Titration Apparatus -->
+            <div class="relative w-full h-72 bg-slate-50 rounded-xl border border-slate-200 flex justify-center items-center overflow-hidden">
+              <svg width="180" height="260" viewBox="0 0 180 260" class="drop-shadow-sm">
+                <!-- Stand base -->
+                <rect x="20" y="240" width="140" height="10" rx="3" fill="#64748b" />
+                <!-- Stand rod -->
+                <rect x="40" y="20" width="8" height="220" rx="2" fill="#94a3b8" />
+                <!-- Clamp -->
+                <rect x="48" y="80" width="40" height="8" rx="2" fill="#475569" />
+                
+                <!-- Burette body -->
+                <rect x="82" y="30" width="16" height="150" rx="2" fill="none" stroke="#475569" stroke-width="2" />
+                <!-- Burette Liquid Level -->
+                <rect id="buretteLiquid" x="84" y="32" width="12" height="146" fill="#60a5fa" opacity="0.6" />
+                <!-- Burette markings -->
+                <line x1="90" y1="50" x2="98" y2="50" stroke="#475569" stroke-width="1" />
+                <line x1="90" y1="80" x2="98" y2="80" stroke="#475569" stroke-width="1" />
+                <line x1="90" y1="110" x2="98" y2="110" stroke="#475569" stroke-width="1" />
+                <line x1="90" y1="140" x2="98" y2="140" stroke="#475569" stroke-width="1" />
+
+                <!-- Burette Tap/Stopcock -->
+                <rect x="85" y="180" width="10" height="10" fill="#334155" />
+                <path d="M 82 185 L 98 185" stroke="#0f172a" stroke-width="3" />
+                <!-- Burette Tip -->
+                <path d="M 88 190 L 92 190 L 90 200 Z" fill="#475569" />
+
+                <!-- Liquid Drop -->
+                <ellipse id="drop" cx="90" cy="205" rx="2.5" ry="4" fill="#3b82f6" class="hidden" />
+
+                <!-- Conical Flask Outline -->
+                <path d="M 78 205 L 102 205 L 102 215 L 128 240 C 130 242 128 245 125 245 L 55 245 C 52 245 50 242 52 240 L 78 215 Z" 
+                      fill="none" stroke="#334155" stroke-width="2" stroke-linejoin="round" />
+                
+                <!-- Conical Flask Liquid Content -->
+                <path id="flaskLiquid" d="M 68 225 L 112 225 L 126 242 C 127 244 126 244 124 244 L 56 244 C 54 244 53 244 54 242 Z" 
+                      fill="#cbd5e1" class="liquid-transition" />
+              </svg>
+            </div>
+
+            <!-- Real-time Stat Display -->
+            <div class="space-y-3">
+              <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                <span class="text-xs text-slate-500 font-semibold block">溶液當前 pH 值</span>
+                <span id="phDisplay" class="text-3xl font-extrabold text-indigo-600">1.00</span>
+              </div>
+
+              <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                <span class="text-xs text-slate-500 font-semibold block">錐形瓶內顏色 (Color)</span>
+                <div class="flex items-center gap-2 mt-1">
+                  <div id="colorDot" class="w-5 h-5 rounded-full border border-slate-300 shadow-inner bg-slate-200"></div>
+                  <span id="colorName" class="font-bold text-sm text-slate-800">無色 (Colorless)</span>
+                </div>
+              </div>
+
+              <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                <span class="text-xs text-slate-500 font-semibold block">主要存在粒子 (Major Species)</span>
+                <span id="speciesDisplay" class="text-xs font-semibold text-indigo-900 mt-0.5 block">H⁺(aq), Cl⁻(aq)</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Right Column: Chart & Concept Analysis (7 cols) -->
+      <div class="lg:col-span-7 space-y-6">
+
+        <!-- Titration Curve Chart Card -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 relative">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3 mb-3">
+            <div class="flex items-center gap-2">
+              <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-chart-line text-indigo-600"></i> pH 滴定曲線與誤差對比圖
+              </h2>
+              <span id="systemTag" class="text-xs bg-indigo-100 text-indigo-800 font-semibold px-2.5 py-1 rounded-lg">
+                強酸 + 強鹼 (HCl + NaOH)
+              </span>
+            </div>
+            
+            <!-- Zoom Button -->
+            <button id="zoomBtn" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold px-3 py-1.5 rounded-xl border border-indigo-200 transition flex items-center gap-1.5 self-start sm:self-auto">
+              <i class="fa-solid fa-magnifying-glass-plus text-indigo-600"></i> 全屏放大圖表
+            </button>
+          </div>
+
+          <!-- Indicator Range Legend Badge -->
+          <div class="flex flex-wrap items-center gap-3 mb-3 text-xs">
+            <div class="flex items-center gap-1.5 font-bold text-slate-700">
+              <span id="indBandLegend" class="w-4 h-3 rounded border border-slate-300 inline-block bg-pink-100"></span>
+              <span id="indBandText">指示劑變色範圍: pH 8.3 - 10.0 (酚酞)</span>
+            </div>
+            <div class="flex items-center gap-1.5 font-bold text-amber-600" id="halfEqLegend">
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
+              <span>半當量點 (12.5 mL)</span>
+            </div>
+            <div class="flex items-center gap-1.5 font-bold text-emerald-700">
+              <span class="w-3 h-0.5 border-b-2 border-dashed border-emerald-600 inline-block"></span>
+              <span>當量點 (25.0 mL)</span>
+            </div>
+            <div class="flex items-center gap-1.5 font-bold text-rose-600" id="endPointLegend">
+              <span class="w-3 h-0.5 border-b-2 border-dashed border-rose-600 inline-block"></span>
+              <span>滴定終點 (V_end)</span>
+            </div>
+          </div>
+
+          <!-- Canvas Container -->
+          <div class="relative w-full h-[330px]">
+            <canvas id="phChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Analysis & Indicator Error Explanation -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+          <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
+            <i class="fa-solid fa-graduation-cap text-indigo-600"></i> HKDSE 考點診斷與 pH 突變敏感度
+          </h2>
+
+          <!-- Numerical Metrics -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center">
+              <span class="text-[11px] font-bold text-slate-500 block">理論當量點 (Equiv. Pt)</span>
+              <span id="eqVolText" class="text-sm font-extrabold text-emerald-700">25.0 mL</span>
+              <span id="eqPhText" class="text-[10px] text-slate-500 block">(pH = 7.0)</span>
+            </div>
+
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center">
+              <span class="text-[11px] font-bold text-slate-500 block">指示劑終點 (End Pt)</span>
+              <span id="endVolText" class="text-sm font-extrabold text-rose-600">25.0 mL</span>
+              <span id="endPhText" class="text-[10px] text-slate-500 block">(pH ≈ 8.3)</span>
+            </div>
+
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center">
+              <span class="text-[11px] font-bold text-slate-500 block">體積偏差/誤差 (Error)</span>
+              <span id="errorPercentText" class="text-sm font-extrabold text-emerald-600">0.0 %</span>
+              <span id="errorTypeText" class="text-[10px] text-emerald-600 font-bold block">無明顯偏差</span>
+            </div>
+
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center">
+              <span class="text-[11px] font-bold text-slate-500 block">當量點突變幅度 (pH Jump)</span>
+              <span id="jumpMagnitudeText" class="text-sm font-extrabold text-indigo-600">ΔpH ≈ 6.0</span>
+              <span id="suitabilityBadge" class="inline-block mt-0.5 text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                突變敏銳
+              </span>
+            </div>
+          </div>
+
+          <!-- Explanation Box -->
+          <div id="explanationBox" class="bg-indigo-50/70 border border-indigo-100 rounded-xl p-4 text-xs md:text-sm text-slate-700 leading-relaxed space-y-2">
+            <!-- Dynamic Content Injected via JS -->
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Fullscreen Modal for Zoomed Chart -->
+  <div id="chartModal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-3 md:p-6">
+    <div class="bg-white w-full max-w-5xl rounded-2xl shadow-2xl border border-slate-200 p-6 flex flex-col space-y-4 max-h-[95vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b border-slate-200 pb-3">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-chart-area text-indigo-600 text-xl"></i>
+          <h3 class="text-xl font-extrabold text-slate-900" id="modalTitle">高清 pH 滴定曲線與指示劑誤差圖表</h3>
+        </div>
+        <button id="closeModalBtn" class="text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl p-2 transition">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-4 text-xs bg-slate-50 p-3 rounded-xl border border-slate-200">
+        <div class="flex items-center gap-1.5 font-bold text-slate-700">
+          <span id="modalIndBandLegend" class="w-4 h-3 rounded border border-slate-300 inline-block bg-pink-100"></span>
+          <span id="modalIndBandText">指示劑變色區</span>
+        </div>
+        <div class="flex items-center gap-1.5 font-bold text-emerald-700">
+          <span class="w-3 h-0.5 border-b-2 border-dashed border-emerald-600 inline-block"></span>
+          <span>當量點 (25.0 mL)</span>
+        </div>
+        <div class="flex items-center gap-1.5 font-bold text-rose-600">
+          <span class="w-3 h-0.5 border-b-2 border-dashed border-rose-600 inline-block"></span>
+          <span>滴定終點 (V_end)</span>
+        </div>
+        <div id="modalHalfEqBadge" class="flex items-center gap-1.5 font-bold text-amber-600 hidden">
+          <span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span>
+          <span>半當量點 (pH = pKa)</span>
+        </div>
+      </div>
+
+      <div class="relative w-full h-[500px]">
+        <canvas id="modalPhChart"></canvas>
+      </div>
+
+      <div class="text-xs text-slate-500 text-right italic">
+        * 提示：綠色虛線代表化學計量當量點 (25.0 mL)，橙色標籤代表半當量點 (12.5 mL)，紅色虛線代表指示劑顏色改變的終點。
+      </div>
+    </div>
+  </div>
+
+  <!-- DSE Calculation Guide Modal -->
+  <div id="calcModal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-3 md:p-6">
+    <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl border border-slate-200 p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b border-slate-200 pb-3">
+        <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-calculator text-indigo-600"></i> HKDSE 滴定計算步驟指引
+        </h3>
+        <button onclick="document.getElementById('calcModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-700 bg-slate-100 rounded-xl p-2">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="space-y-3 text-xs md:text-sm text-slate-700">
+        <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
+          <h4 class="font-bold text-indigo-900 mb-1">基本公式與步驟 (Basic Equations):</h4>
+          <ol class="list-decimal list-inside space-y-1">
+            <li>計算已知標準溶液的摩爾數： 摩爾數 n = M &times; V(in L)</li>
+            <li>根據反應方程式化學比例（Mole Ratio），求出待測溶液中反應物的摩爾數。</li>
+            <li>求待測溶液濃度： M = n / V(in L) 或求質量百分純度 % = (純物質質量 / 總樣品質量) &times; 100%</li>
+          </ol>
+        </div>
+        <div class="bg-amber-50 p-3 rounded-xl border border-amber-200 font-mono text-xs text-amber-900 space-y-1">
+          <p class="font-bold">【典型 HKDSE 例題】</p>
+          <p>25.0 cm³ 未知濃度的 NaOH(aq) 恰好與 25.0 cm³ 的 0.10 mol dm⁻³ HCl(aq) 完全中和。</p>
+          <p>HCl mole = 0.10 &times; 0.025 = 0.0025 mol</p>
+          <p>NaOH : HCl = 1 : 1 &rArr; NaOH mole = 0.0025 mol</p>
+          <p>[NaOH] = 0.0025 mol / 0.025 dm³ = 0.10 mol dm⁻³</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DSE Quiz Modal -->
+  <div id="quizModal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-3 md:p-6">
+    <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl border border-slate-200 p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b border-slate-200 pb-3">
+        <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-clipboard-question text-amber-500"></i> HKDSE 酸鹼滴定微測驗
+        </h3>
+        <button onclick="document.getElementById('quizModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-700 bg-slate-100 rounded-xl p-2">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4 text-xs md:text-sm">
+        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+          <p class="font-bold text-slate-800 mb-2">Q1. 以 0.1 M NaOH(aq) 滴定 0.1 M CH₃COOH(aq) (弱酸強鹼) 時，最合適的指示劑是甚麼？</p>
+          <div class="space-y-2" id="quizOptions">
+            <button onclick="checkAnswer(this, false, '甲基橙變色區 (pH 3.1-4.4) 遠早於當量點 (pH 8.72)，會造成嚴重誤差！')" class="w-full text-left p-2.5 rounded-lg border border-slate-300 hover:bg-slate-100 font-medium">A) 甲基橙 (Methyl Orange)</button>
+            <button onclick="checkAnswer(this, true, '正確！當量點生成 CH₃COO⁻ (鹼性鹽，pH ≈ 8.72)，酚酞變色範圍 (pH 8.3-10.0) 完美涵蓋當量點！')" class="w-full text-left p-2.5 rounded-lg border border-slate-300 hover:bg-slate-100 font-medium">B) 酚酞 (Phenolphthalein)</button>
+            <button onclick="checkAnswer(this, false, '通用指示劑變色範圍過廣，無法精確捕捉急劇變色終點。')" class="w-full text-left p-2.5 rounded-lg border border-slate-300 hover:bg-slate-100 font-medium">C) 通用指示劑 (Universal Indicator)</button>
+          </div>
+          <div id="quizFeedback" class="mt-3 p-3 rounded-lg hidden font-medium"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Global state variables
+    let phChart = null;
+    let modalPhChart = null;
+    let autoPlayTimer = null;
+    let currentSystem = 'sa_sb';
+    let currentIndicator = 'pp';
+
+    // Volume axis points (0 to 50 mL with 0.1 mL step)
+    const volumes = Array.from({ length: 501 }, (_, i) => i * 0.1);
+
+    // Titration system definitions & pH calculation models
+    const systems = {
+      sa_sb: {
+        title: "① 強酸 + 強鹼 (HCl + NaOH)",
+        eqVol: 25.0,
+        eqpH: 7.0,
+        ppEndVol: 25.0,
+        moEndVol: 24.9,
+        pKa: null,
+        jumpMag: "高 (ΔpH ≈ 6.0)",
+        getpH: (v) => {
+          if (v < 25.0) {
+            let conc = (25.0 - v) * 0.1 / (25.0 + v);
+            return Math.max(1.0, -Math.log10(conc));
+          } else if (v === 25.0) {
+            return 7.0;
+          } else {
+            let conc = (v - 25.0) * 0.1 / (25.0 + v);
+            return Math.min(13.0, 14.0 + Math.log10(conc));
+          }
+        },
+        species: (v) => v < 25 ? "H⁺, Cl⁻, Na⁺" : (v === 25 ? "Na⁺, Cl⁻, H₂O" : "Na⁺, Cl⁻, OH⁻"),
+        desc: "<p><strong>HKDSE 核心要點：</strong>強酸強鹼滴定在當量點時，pH 突變區極為陡峭（pH 3 至 10）。因此，<strong>酚酞 (8.3-10.0)</strong> 與 <strong>甲基橙 (3.1-4.4)</strong> 的變色範圍均落在垂直突變區內，兩者滴定誤差均極小（&lt;0.5%），皆為合適指示劑。</p>"
+      },
+      sa_wb: {
+        title: "② 強酸 + 弱鹼 (HCl + NH₃)",
+        eqVol: 25.0,
+        eqpH: 5.27,
+        ppEndVol: 18.0, 
+        moEndVol: 24.9,
+        pKa: null,
+        jumpMag: "中等 (ΔpH ≈ 3.5)",
+        getpH: (v) => {
+          if (v === 0) return 1.0;
+          if (v < 25.0) {
+            let conc = (25.0 - v) * 0.1 / (25.0 + v);
+            return Math.max(1.0, -Math.log10(conc));
+          } else if (v === 25.0) {
+            return 5.27; // Salt hydrolysis: NH4+ is acidic
+          } else {
+            let ratio = (v - 25.0) / 25.0;
+            return Math.min(9.25, 9.25 + Math.log10(Math.max(0.01, ratio)));
+          }
+        },
+        species: (v) => v < 25 ? "H⁺, Cl⁻, NH₄⁺" : (v === 25 ? "NH₄⁺, Cl⁻" : "NH₃(aq), NH₄⁺, Cl⁻"),
+        desc: "<p><strong>HKDSE 核心要點：</strong>當量點生成酸性鹽 (NH₄⁺)，pH &lt; 7 (約 5.27)。突變區位於酸性區域（pH 3 至 7）。<br/><span class='text-emerald-700 font-bold'>✓ 甲基橙 (3.1-4.4)</span> 變色範圍落於突變區，滴定精確。<br/><span class='text-rose-600 font-bold'>✕ 酚酞 (8.3-10.0)</span> 會在未到達當量點（約 18.0 mL）即提前變色，產生巨大負誤差（-28.0%）！</p>"
+      },
+      wa_sb: {
+        title: "③ 弱酸 + 強鹼 (CH₃COOH + NaOH)",
+        eqVol: 25.0,
+        eqpH: 8.72,
+        ppEndVol: 25.0,
+        moEndVol: 8.5, 
+        pKa: 4.76,
+        jumpMag: "中等 (ΔpH ≈ 3.5)",
+        getpH: (v) => {
+          if (v === 0) return 2.88; 
+          if (v < 25.0) {
+            let ratio = v / (25.0 - v);
+            return 4.76 + Math.log10(Math.max(0.01, ratio));
+          } else if (v === 25.0) {
+            return 8.72; // Salt hydrolysis: CH3COO- is basic
+          } else {
+            let conc = (v - 25.0) * 0.1 / (25.0 + v);
+            return Math.min(13.0, 14.0 + Math.log10(conc));
+          }
+        },
+        species: (v) => v < 25 ? "CH₃COOH, CH₃COO⁻, Na⁺" : (v === 25 ? "CH₃COO⁻, Na⁺" : "OH⁻, CH₃COO⁻, Na⁺"),
+        desc: "<p><strong>HKDSE 核心要點：</strong>當量點生成鹼性鹽 (CH₃COO⁻)，pH &gt; 7 (約 8.72)。突變區位於鹼性區域（pH 7 至 10）。<br/><span class='text-emerald-700 font-bold'>✓ 酚酞 (8.3-10.0)</span> 變色範圍涵蓋當量點，非常合適。<br/><span class='text-rose-600 font-bold'>✕ 甲基橙 (3.1-4.4)</span> 在剛進入緩衝區（約 8.5 mL）時即變色，終點遠早於理論當量點。<br/><span class='text-amber-800 font-bold'>★ 特別考點：</span>在 12.5 mL（半當量點）時，[CH₃COOH] = [CH₃COO⁻]，溶液 pH 剛好等於 pKa (4.76)。</p>"
+      },
+      wa_wb: {
+        title: "④ 弱酸 + 弱鹼 (CH₃COOH + NH₃)",
+        eqVol: 25.0,
+        eqpH: 7.00,
+        ppEndVol: NaN,
+        moEndVol: NaN,
+        pKa: 4.76,
+        jumpMag: "極低 (無垂直突變區)",
+        getpH: (v) => {
+          if (v === 0) return 2.88;
+          if (v < 25.0) {
+            let ratio = v / (25.0 - v);
+            return 4.76 + Math.log10(Math.max(0.01, ratio));
+          } else if (v === 25.0) {
+            return 7.00;
+          } else {
+            let ratio = (v - 25.0) / 25.0;
+            return Math.min(9.25, 7.00 + Math.log10(1 + ratio));
+          }
+        },
+        species: (v) => v < 25 ? "CH₃COOH, CH₃COO⁻, NH₄⁺" : (v === 25 ? "CH₃COO⁻, NH₄⁺" : "NH₃(aq), CH₃COO⁻, NH₄⁺"),
+        desc: "<p><strong>HKDSE 核心要點：</strong>弱酸與弱鹼反應曲線十分平滑，<strong>沒有明顯的 pH 突變區（pH Jump）</strong>。任何酸鹼指示劑均無法產生敏銳的顏色突變，因此<strong>不能使用普通指示劑進行滴定分析</strong>，必須改用 pH 計（pH meter）進行電位滴定。</p>"
+      }
+    };
+
+    // Indicator color mapping
+    function getIndicatorColor(indicator, ph) {
+      if (indicator === 'pp') {
+        if (ph < 8.3) return { name: "無色 (Colorless)", hex: "#e2e8f0" };
+        if (ph > 10.0) return { name: "粉紅色 (Pink)", hex: "#f43f5e" };
+        let ratio = (ph - 8.3) / (10.0 - 8.3);
+        return { name: "微粉紅色 (Pale Pink)", hex: `rgba(244, 63, 94, ${0.2 + ratio * 0.7})` };
+      } else {
+        if (ph < 3.1) return { name: "紅色 (Red)", hex: "#ef4444" };
+        if (ph > 4.4) return { name: "黃色 (Yellow)", hex: "#eab308" };
+        return { name: "橙色 (Orange)", hex: "#f97316" };
+      }
+    }
+
+    function setIndicator(ind) {
+      currentIndicator = ind;
+      const btnPP = document.getElementById('btnPP');
+      const btnMO = document.getElementById('btnMO');
+
+      if (ind === 'pp') {
+        btnPP.className = "border-2 border-indigo-600 bg-indigo-50 text-indigo-900 p-2.5 rounded-xl font-bold text-xs flex flex-col items-center gap-1 transition shadow-sm";
+        btnMO.className = "border-2 border-slate-200 bg-slate-50 text-slate-600 p-2.5 rounded-xl font-bold text-xs flex flex-col items-center gap-1 transition opacity-70";
+      } else {
+        btnMO.className = "border-2 border-indigo-600 bg-indigo-50 text-indigo-900 p-2.5 rounded-xl font-bold text-xs flex flex-col items-center gap-1 transition shadow-sm";
+        btnPP.className = "border-2 border-slate-200 bg-slate-50 text-slate-600 p-2.5 rounded-xl font-bold text-xs flex flex-col items-center gap-1 transition opacity-70";
+      }
+      updateState();
+    }
+
+    function jumpVolume(targetVol) {
+      stopAutoPlay();
+      document.getElementById('volSlider').value = targetVol;
+      updateState();
+    }
+
+    const indicatorRanges = {
+      pp: { min: 8.3, max: 10.0, label: "酚酞 Phenolphthalein (pH 8.3-10.0)", color: "rgba(244, 63, 94, 0.16)", stroke: "#e11d48" },
+      mo: { min: 3.1, max: 4.4, label: "甲基橙 Methyl Orange (pH 3.1-4.4)", color: "rgba(249, 115, 22, 0.16)", stroke: "#ea580c" }
+    };
+
+    // Enhanced Custom Chart Plugin to draw Indicator Band, Half-Equivalence (12.5mL) & Equivalence Point Lines (25.0mL)
+    const indicatorBandPlugin = {
+      id: 'indicatorBandPlugin',
+      beforeDraw: (chart) => {
+        const { ctx, chartArea: { top, bottom, left, right }, scales: { x, y } } = chart;
+        const ind = indicatorRanges[currentIndicator];
+        const sys = systems[currentSystem];
+        let endV = (currentIndicator === 'pp') ? sys.ppEndVol : sys.moEndVol;
+
+        // Helper function to calculate pixel position for volume V (0 - 50 mL)
+        const getXPixelForVol = (v) => {
+          if (v < 0 || v > 50) return left;
+          return left + (v / 50) * (right - left);
+        };
+
+        ctx.save();
+
+        // 1. Shaded Horizontal Band for Indicator Transition Range
+        if (ind) {
+          const yMin = y.getPixelForValue(ind.min);
+          const yMax = y.getPixelForValue(ind.max);
+          const bandHeight = yMin - yMax;
+
+          ctx.fillStyle = ind.color;
+          ctx.fillRect(left, yMax, right - left, bandHeight);
+
+          // Boundaries
+          ctx.strokeStyle = ind.stroke;
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([4, 4]);
+
+          ctx.beginPath();
+          ctx.moveTo(left, yMin);
+          ctx.lineTo(right, yMin);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(left, yMax);
+          ctx.lineTo(right, yMax);
+          ctx.stroke();
+
+          // Label text
+          ctx.setLineDash([]);
+          ctx.fillStyle = ind.stroke;
+          ctx.font = "bold 11px Inter, sans-serif";
+          ctx.fillText(`指示劑變色區: pH ${ind.min} - ${ind.max}`, left + 10, yMax + 14);
+        }
+
+        // 2. Draw Half-Equivalence Point Line & Marker (12.5 mL)
+        if (sys.pKa !== null) {
+          const xHalf = getXPixelForVol(12.5);
+          const yHalf = y.getPixelForValue(sys.pKa);
+
+          ctx.strokeStyle = "#d97706"; // Amber
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([3, 3]);
+
+          // Vertical line at 12.5 mL
+          ctx.beginPath();
+          ctx.moveTo(xHalf, top + 20);
+          ctx.lineTo(xHalf, bottom);
+          ctx.stroke();
+
+          // Horizontal line to y-axis (pH = pKa)
+          ctx.beginPath();
+          ctx.moveTo(left, yHalf);
+          ctx.lineTo(xHalf, yHalf);
+          ctx.stroke();
+
+          // Half-Equivalence Dot
+          ctx.fillStyle = "#d97706";
+          ctx.beginPath();
+          ctx.arc(xHalf, yHalf, 5, 0, 2 * Math.PI);
+          ctx.fill();
+
+          // Label
+          ctx.setLineDash([]);
+          ctx.fillStyle = "#b45309";
+          ctx.font = "bold 11px Inter, sans-serif";
+          ctx.fillText(`半當量點 (12.5 mL, pH = pKa = ${sys.pKa})`, xHalf - 65, yHalf - 10);
+        }
+
+        // 3. Draw Theoretical Equivalence Point Vertical Dashed Line (V = 25.0 mL)
+        const xEq = getXPixelForVol(25.0);
+        if (xEq >= left && xEq <= right) {
+          ctx.strokeStyle = "#059669"; // Emerald
+          ctx.lineWidth = 2;
+          ctx.setLineDash([6, 4]);
+          ctx.beginPath();
+          ctx.moveTo(xEq, top);
+          ctx.lineTo(xEq, bottom);
+          ctx.stroke();
+
+          // Check if V_end is very close to V_eq to prevent label overlap
+          const isEndClose = !isNaN(endV) && Math.abs(endV - 25.0) < 1.0;
+
+          // High visibility Tag
+          ctx.fillStyle = "#059669";
+          ctx.font = "bold 11px Inter, sans-serif";
+          ctx.fillText("當量點 (25.0 mL)", isEndClose ? xEq + 6 : xEq + 4, top + 15);
+        }
+
+        // 4. Draw Indicator End Point Vertical Dashed Line (V_end)
+        if (!isNaN(endV)) {
+          const xEnd = getXPixelForVol(endV);
+          if (xEnd >= left && xEnd <= right) {
+            const isError = Math.abs(endV - 25.0) > 0.5;
+            ctx.strokeStyle = isError ? "#dc2626" : "#059669";
+            ctx.lineWidth = 2.5;
+            ctx.setLineDash(isError ? [4, 3] : [6, 4]);
+
+            ctx.beginPath();
+            ctx.moveTo(xEnd, top);
+            ctx.lineTo(xEnd, bottom);
+            ctx.stroke();
+
+            ctx.fillStyle = isError ? "#dc2626" : "#059669";
+            ctx.font = "bold 11px Inter, sans-serif";
+
+            // Intelligent offset for end point label to prevent text overlap
+            let labelX = xEnd + 6;
+            let labelY = top + 32;
+
+            if (Math.abs(endV - 25.0) < 1.0) {
+              // If close to 25.0 mL, place on the left side or adjust y position
+              labelX = xEnd - 130;
+              labelY = top + 15;
+            } else if (endV < 25.0) {
+              labelX = xEnd - 130;
+            }
+
+            ctx.fillText(`滴定終點 V_end (${endV.toFixed(1)} mL)`, labelX, labelY);
+
+            // Highlight Error Gap Shading
+            if (isError) {
+              const gapMinX = Math.min(xEq, xEnd);
+              const gapWidth = Math.abs(xEq - xEnd);
+              
+              ctx.fillStyle = "rgba(220, 38, 38, 0.18)";
+              ctx.fillRect(gapMinX, bottom - 30, gapWidth, 30);
+
+              ctx.strokeStyle = "#dc2626";
+              ctx.lineWidth = 1.5;
+              ctx.setLineDash([]);
+              ctx.strokeRect(gapMinX, bottom - 30, gapWidth, 30);
+
+              ctx.fillStyle = "#991b1b";
+              ctx.font = "extrabold 10px Inter, sans-serif";
+              const gapText = `體積誤差: ${Math.abs(25.0 - endV).toFixed(1)} mL`;
+              ctx.fillText(gapText, gapMinX + 2, bottom - 10);
+            }
+          }
+        }
+
+        ctx.restore();
+      }
+    };
+
+    function checkAnswer(btn, isCorrect, explanation) {
+      const feedback = document.getElementById('quizFeedback');
+      feedback.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'bg-rose-50', 'text-rose-800');
+      
+      if (isCorrect) {
+        feedback.classList.add('bg-emerald-50', 'text-emerald-800', 'border', 'border-emerald-200');
+        feedback.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i> <strong>答對了！</strong> ${explanation}`;
+      } else {
+        feedback.classList.add('bg-rose-50', 'text-rose-800', 'border', 'border-rose-200');
+        feedback.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-600 mr-1"></i> <strong>不正確！</strong> ${explanation}`;
+      }
+    }
+
+    // Modal listeners
+    document.getElementById('calcModalBtn').addEventListener('click', () => {
+      document.getElementById('calcModal').classList.remove('hidden');
+    });
+
+    document.getElementById('quizModalBtn').addEventListener('click', () => {
+      document.getElementById('quizModal').classList.remove('hidden');
+    });
+
+    function initCharts() {
+      // Main pH curve chart initialization
+      const ctx = document.getElementById('phChart').getContext('2d');
+      phChart = new Chart(ctx, {
+        type: 'line',
+        plugins: [indicatorBandPlugin],
+        data: {
+          labels: volumes.map(v => v.toFixed(1)),
+          datasets: [
+            {
+              label: 'pH 滴定曲線',
+              data: [],
+              borderColor: '#4f46e5',
+              borderWidth: 3,
+              pointRadius: 0,
+              tension: 0.1,
+              fill: false
+            },
+            {
+              label: '當前滴定點',
+              data: [],
+              borderColor: '#dc2626',
+              backgroundColor: '#dc2626',
+              pointRadius: 6,
+              showLine: false
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: false,
+          scales: {
+            x: {
+              title: { display: true, text: '加入滴定液體積 V (mL)', font: { weight: 'bold' } },
+              ticks: { stepSize: 5 }
+            },
+            y: {
+              title: { display: true, text: '溶液 pH 值', font: { weight: 'bold' } },
+              min: 0,
+              max: 14,
+              ticks: { stepSize: 1 }
+            }
+          },
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
+
+      // Modal zoom chart initialization
+      const modalCtx = document.getElementById('modalPhChart').getContext('2d');
+      modalPhChart = new Chart(modalCtx, {
+        type: 'line',
+        plugins: [indicatorBandPlugin],
+        data: {
+          labels: volumes.map(v => v.toFixed(1)),
+          datasets: [
+            {
+              label: 'pH 滴定曲線 (放大版)',
+              data: [],
+              borderColor: '#4f46e5',
+              borderWidth: 4,
+              pointRadius: 0,
+              tension: 0.1,
+              fill: false
+            },
+            {
+              label: '當前滴定點',
+              data: [],
+              borderColor: '#dc2626',
+              backgroundColor: '#dc2626',
+              pointRadius: 8,
+              showLine: false
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: false,
+          scales: {
+            x: {
+              title: { display: true, text: '加入滴定液體積 V (mL)', font: { weight: 'bold', size: 14 } },
+              ticks: { stepSize: 5, font: { size: 12 } }
+            },
+            y: {
+              title: { display: true, text: '溶液 pH 值', font: { weight: 'bold', size: 14 } },
+              min: 0,
+              max: 14,
+              ticks: { stepSize: 1, font: { size: 12 } }
+            }
+          },
+          plugins: {
+            legend: { display: true, position: 'top' }
+          }
+        }
+      });
+    }
+
+    function updateState() {
+      const sys = systems[currentSystem];
+      const volSlider = document.getElementById('volSlider');
+      const v = parseFloat(volSlider.value);
+      const ph = sys.getpH(v);
+      const color = getIndicatorColor(currentIndicator, ph);
+
+      // Update text & legend displays
+      const indInfo = indicatorRanges[currentIndicator];
+      document.getElementById('indBandText').textContent = `指示劑變色範圍: ${indInfo.label}`;
+      const legendDot = document.getElementById('indBandLegend');
+      legendDot.style.backgroundColor = indInfo.color;
+      legendDot.style.borderColor = indInfo.stroke;
+
+      // Update modal legends
+      document.getElementById('modalIndBandText').textContent = indInfo.label;
+      const modalLegendDot = document.getElementById('modalIndBandLegend');
+      modalLegendDot.style.backgroundColor = indInfo.color;
+      modalLegendDot.style.borderColor = indInfo.stroke;
+
+      if (sys.pKa !== null) {
+        document.getElementById('halfEqLegend').classList.remove('hidden');
+        document.getElementById('modalHalfEqBadge').classList.remove('hidden');
+      } else {
+        document.getElementById('halfEqLegend').classList.add('hidden');
+        document.getElementById('modalHalfEqBadge').classList.add('hidden');
+      }
+
+      document.getElementById('volDisplay').textContent = `${v.toFixed(1)} mL`;
+      document.getElementById('phDisplay').textContent = ph.toFixed(2);
+      document.getElementById('speciesDisplay').textContent = sys.species(v);
+
+      // Update apparatus visuals
+      document.getElementById('colorDot').style.backgroundColor = color.hex;
+      document.getElementById('colorName').textContent = color.name;
+      document.getElementById('flaskLiquid').setAttribute('fill', color.hex);
+
+      // Burette level
+      const buretteHeight = Math.max(0, 146 * (1 - v / 50));
+      document.getElementById('buretteLiquid').setAttribute('height', buretteHeight);
+
+      // Update Chart Data
+      const phCurve = volumes.map(vol => sys.getpH(vol));
+      
+      const pointIndex = Math.round(v * 10);
+      const currentPointData = Array(volumes.length).fill(null);
+      currentPointData[pointIndex] = ph;
+
+      // Update Main Chart
+      phChart.data.datasets[0].data = phCurve;
+      phChart.data.datasets[1].data = currentPointData;
+      phChart.update();
+
+      // Update Modal Chart
+      modalPhChart.data.datasets[0].data = phCurve;
+      modalPhChart.data.datasets[1].data = currentPointData;
+      modalPhChart.update();
+
+      // Numerical calculations
+      document.getElementById('systemTag').textContent = sys.title;
+      document.getElementById('eqVolText').textContent = `${sys.eqVol.toFixed(1)} mL`;
+      document.getElementById('eqPhText').textContent = `(pH = ${sys.eqpH.toFixed(2)})`;
+      document.getElementById('jumpMagnitudeText').textContent = sys.jumpMag;
+
+      let endV = (currentIndicator === 'pp') ? sys.ppEndVol : sys.moEndVol;
+      const endVolText = document.getElementById('endVolText');
+      const endPhText = document.getElementById('endPhText');
+      const errorPercentText = document.getElementById('errorPercentText');
+      const errorTypeText = document.getElementById('errorTypeText');
+      const suitabilityBadge = document.getElementById('suitabilityBadge');
+
+      if (isNaN(endV)) {
+        endVolText.textContent = "無明確終點";
+        endPhText.textContent = "(無突變區)";
+        errorPercentText.textContent = "N/A";
+        errorTypeText.textContent = "無法滴定計算";
+        errorPercentText.className = "text-sm font-extrabold text-amber-600";
+        suitabilityBadge.textContent = "不適用指示劑";
+        suitabilityBadge.className = "inline-block mt-0.5 text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800";
+      } else {
+        endVolText.textContent = `${endV.toFixed(1)} mL`;
+        const endPHVal = sys.getpH(endV);
+        endPhText.textContent = `(pH ≈ ${endPHVal.toFixed(1)})`;
+
+        const err = ((endV - sys.eqVol) / sys.eqVol) * 100;
+        errorPercentText.textContent = `${err >= 0 ? '+' : ''}${err.toFixed(1)} %`;
+
+        let isSuitable = false;
+        if (currentSystem === 'sa_sb') isSuitable = true;
+        if (currentSystem === 'sa_wb' && currentIndicator === 'mo') isSuitable = true;
+        if (currentSystem === 'wa_sb' && currentIndicator === 'pp') isSuitable = true;
+
+        if (isSuitable) {
+          errorPercentText.className = "text-sm font-extrabold text-emerald-600";
+          errorTypeText.textContent = "誤差極微小";
+          errorTypeText.className = "text-[10px] text-emerald-600 font-bold block";
+          suitabilityBadge.textContent = "突變敏銳/適合";
+          suitabilityBadge.className = "inline-block mt-0.5 text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800";
+        } else {
+          errorPercentText.className = "text-sm font-extrabold text-rose-600";
+          errorTypeText.textContent = err < 0 ? `提前變色 (少算 ${Math.abs(25 - endV).toFixed(1)} mL)` : "延遲變色";
+          errorTypeText.className = "text-[10px] text-rose-600 font-bold block";
+          suitabilityBadge.textContent = "不合適/偏差大";
+          suitabilityBadge.className = "inline-block mt-0.5 text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-rose-100 text-rose-800";
+        }
+      }
+
+      document.getElementById('explanationBox').innerHTML = sys.desc;
+    }
+
+    // Modal Control
+    const zoomBtn = document.getElementById('zoomBtn');
+    const chartModal = document.getElementById('chartModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+
+    zoomBtn.addEventListener('click', () => {
+      chartModal.classList.remove('hidden');
+      modalPhChart.update();
+    });
+
+    closeModalBtn.addEventListener('click', () => {
+      chartModal.classList.add('hidden');
+    });
+
+    chartModal.addEventListener('click', (e) => {
+      if (e.target === chartModal) {
+        chartModal.classList.add('hidden');
+      }
+    });
+
+    document.getElementById('systemSelect').addEventListener('change', (e) => {
+      currentSystem = e.target.value;
+      stopAutoPlay();
+      document.getElementById('volSlider').value = 0;
+      updateState();
+    });
+
+    document.getElementById('volSlider').addEventListener('input', () => {
+      stopAutoPlay();
+      updateState();
+    });
+
+    document.getElementById('stepBtn').addEventListener('click', () => {
+      stopAutoPlay();
+      const volSlider = document.getElementById('volSlider');
+      let currentVal = parseFloat(volSlider.value);
+      if (currentVal < 50) {
+        volSlider.value = Math.min(50, currentVal + 0.5);
+        updateState();
+      }
+    });
+
+    function stopAutoPlay() {
+      if (autoPlayTimer) {
+        clearInterval(autoPlayTimer);
+        autoPlayTimer = null;
+        document.getElementById('playIcon').className = "fa-solid fa-play";
+        document.getElementById('playText').textContent = "自動滴定 (Auto Titrate)";
+        document.getElementById('drop').classList.add('hidden');
+      }
+    }
+
+    document.getElementById('playBtn').addEventListener('click', () => {
+      const volSlider = document.getElementById('volSlider');
+      if (autoPlayTimer) {
+        stopAutoPlay();
+      } else {
+        if (parseFloat(volSlider.value) >= 50) volSlider.value = 0;
+        
+        document.getElementById('playIcon').className = "fa-solid fa-pause";
+        document.getElementById('playText').textContent = "暫停滴定 (Pause)";
+        document.getElementById('drop').classList.remove('hidden');
+
+        autoPlayTimer = setInterval(() => {
+          let val = parseFloat(volSlider.value);
+          if (val < 50) {
+            let increment = (val >= 23 && val <= 27) ? 0.1 : 0.4;
+            volSlider.value = Math.min(50, val + increment);
+            updateState();
+          } else {
+            stopAutoPlay();
+          }
+        }, 80);
+      }
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      stopAutoPlay();
+      document.getElementById('volSlider').value = 0;
+      updateState();
+    });
+
+    window.onload = () => {
+      initCharts();
+      updateState();
+    };
+  </script>
+</body>
+</html>
