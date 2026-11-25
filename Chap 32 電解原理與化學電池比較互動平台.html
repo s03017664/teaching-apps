@@ -1,0 +1,2832 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>電解原理與化學電池比較互動平台 | SKHLKYSS Chemistry</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & Noto Sans TC for crisp classroom projection -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans TC', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            navy: {
+              800: '#102a43',
+              900: '#0a192f',
+            },
+            crimson: {
+              600: '#b91c1c',
+              700: '#991b1b',
+            },
+            gold: {
+              400: '#facc15',
+              500: '#eab308',
+              600: '#ca8a04',
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    /* Clean laboratory aesthetics and smooth transitions */
+    body {
+      font-family: 'Inter', 'Noto Sans TC', system-ui, -apple-system, sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      -webkit-font-smoothing: antialiased;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .chem-eq {
+      font-feature-settings: "tnum" on, "lnum" on;
+      letter-spacing: 0.01em;
+    }
+    .chem-eq sub, .chem-eq sup {
+      font-size: 0.74em;
+      line-height: 0;
+    }
+    /* Custom scrollbar for sleek panels */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #e2e8f0;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #94a3b8;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #64748b;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- ==================== HEADER & NAVIGATION ==================== -->
+  <header class="bg-navy-900 text-white shadow-lg sticky top-0 z-40 border-b-4 border-gold-500">
+    <div class="max-w-[1440px] mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+      <!-- Left: Crest + School Branding + Title -->
+      <div class="flex items-center gap-3.5">
+        <!-- High-Resolution Inline SVG Crest for SKHLKYSS (Accurate Vector Reproduction) -->
+        <div class="shrink-0 bg-white/95 p-1 rounded-xl border border-gold-400/60 shadow-md">
+          <svg viewBox="0 0 120 132" class="w-12 h-13 sm:w-14 sm:h-15" xmlns="http://www.w3.org/2000/svg" aria-label="SKHLKYSS School Crest">
+            <defs>
+              <filter id="crestShadow" x="-15%" y="-15%" width="130%" height="130%">
+                <feDropShadow dx="0" dy="2" stdDeviation="2.2" flood-color="#0f172a" flood-opacity="0.22" />
+              </filter>
+              <clipPath id="shieldClip">
+                <path d="M28 12 L92 12 L92 61 C92 84 74 99 60 99 C46 99 28 84 28 61 Z" />
+              </clipPath>
+              <path id="mottoCurve" d="M24 111.5 Q60 126.5 96 111.5" />
+            </defs>
+            <!-- Outer White-Bordered Shield with Soft Drop Shadow -->
+            <path d="M23 7 L97 7 L97 62 C97 89 76 105 60 105 C44 105 23 89 23 62 Z" fill="#F5F7FA" stroke="#E2E8F0" stroke-width="1.2" filter="url(#crestShadow)" />
+            <!-- Four Quadrants with 5 Symmetrical Radiating Rays -->
+            <g clip-path="url(#shieldClip)">
+              <!-- Base Royal Blue Fill -->
+              <rect x="24" y="10" width="72" height="92" fill="#2E5FA8" />
+              <!-- Top-Left Quadrant Rays from (50, 34) -->
+              <polygon points="50,34 24,25 24,10 34,10" fill="#FFD800" />
+              <polygon points="50,34 24,18 24,10 30,10" fill="#F5F7FA" />
+              <polygon points="50,34 34,10 42,10" fill="#FFD800" />
+              <!-- Top-Right Quadrant Rays from (70, 34) -->
+              <polygon points="70,34 96,25 96,10 86,10" fill="#FFD800" />
+              <polygon points="70,34 96,18 96,10 90,10" fill="#F5F7FA" />
+              <polygon points="70,34 86,10 78,10" fill="#FFD800" />
+              <!-- Bottom-Left Quadrant Rays from (50, 50) -->
+              <polygon points="50,50 24,68 24,86 38,102 44,102" fill="#FFD800" />
+              <polygon points="50,50 24,78 24,96 34,102" fill="#F5F7FA" />
+              <!-- Bottom-Right Quadrant Rays from (70, 50) -->
+              <polygon points="70,50 96,68 96,86 82,102 76,102" fill="#FFD800" />
+              <polygon points="70,50 96,78 96,96 86,102" fill="#F5F7FA" />
+            </g>
+            <!-- Central White Cross with Yellow Border -->
+            <path d="M50 11 L70 11 L70 34 L93 34 L93 50 L70 50 L70 100 L50 100 L50 50 L27 50 L27 34 L50 34 Z" fill="#F5F7FA" stroke="#FFD800" stroke-width="3.2" stroke-linejoin="miter" clip-path="url(#shieldClip)" />
+            <!-- Crisp Inner Shield Edge -->
+            <path d="M28 12 L92 12 L92 61 C92 84 74 99 60 99 C46 99 28 84 28 61 Z" fill="none" stroke="#F5F7FA" stroke-width="2" />
+            <!-- Bold Red Letters: L / S K H / Y S S -->
+            <g fill="#D91616" font-family="Inter, Arial, sans-serif" font-weight="900" text-anchor="middle">
+              <text x="60" y="29.5" font-size="13.5">L</text>
+              <text x="40.5" y="46.5" font-size="13">S</text>
+              <text x="60" y="46.5" font-size="13">K</text>
+              <text x="79.5" y="46.5" font-size="13">H</text>
+              <text x="60" y="64" font-size="12.5">Y</text>
+              <text x="60" y="78" font-size="12.5">S</text>
+              <text x="60" y="92" font-size="12.5">S</text>
+            </g>
+            <!-- Curved Bright Yellow Bottom Ribbon with Upturned Ends -->
+            <g filter="url(#crestShadow)">
+              <!-- Left & Right Upturned Tails -->
+              <path d="M12 95 L26 100 L22 113 L8 107 Z" fill="#EAB308" stroke="#F5F7FA" stroke-width="1.2" stroke-linejoin="round" />
+              <path d="M108 95 L94 100 L98 113 L112 107 Z" fill="#EAB308" stroke="#F5F7FA" stroke-width="1.2" stroke-linejoin="round" />
+              <!-- Main Arched Banner -->
+              <path d="M21 98 Q60 114 99 98 L95 115 Q60 131 25 115 Z" fill="#FFD800" stroke="#F5F7FA" stroke-width="1.4" stroke-linejoin="round" />
+              <!-- Red Arched Motto -->
+              <text fill="#D91616" font-family="Inter, Arial, sans-serif" font-weight="800" font-size="7.6" letter-spacing="0.35">
+                <textPath href="#mottoCurve" startOffset="50%" text-anchor="middle">THE LORD IS MY LIGHT</textPath>
+              </text>
+            </g>
+          </svg>
+        </div>
+
+        <div>
+          <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs sm:text-sm font-semibold text-gold-400 tracking-wide">
+            <span data-i18n="schoolDept">聖公會梁季彜中學｜化學科</span>
+            <span class="text-slate-400 hidden sm:inline">•</span>
+            <span class="text-slate-300 font-medium" data-i18n="designer">由吳柏霖老師設計</span>
+          </div>
+          <h1 class="text-lg sm:text-2xl font-extrabold tracking-tight text-white leading-tight mt-0.5" data-i18n="platformTitle">
+            電解原理與化學電池比較互動平台
+          </h1>
+        </div>
+      </div>
+
+      <!-- Right: Page Switcher & Bilingual Toggle -->
+      <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+        <!-- Page Navigation Tabs -->
+        <nav class="flex bg-slate-800/90 p-1 rounded-xl border border-slate-700" role="tablist">
+          <button id="tab-page1" onclick="switchPage('page1')" class="px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all bg-gold-500 text-navy-900 shadow-sm" data-i18n="navPage1">
+            1. 電解原理與優先放電
+          </button>
+          <button id="tab-page2" onclick="switchPage('page2')" class="px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all text-slate-300 hover:text-white" data-i18n="navPage2">
+            2. 惰性電極化學電池與比較
+          </button>
+        </nav>
+
+        <!-- Bilingual Toggle -->
+        <button id="lang-toggle" onclick="toggleLanguage()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/25 text-xs sm:text-sm font-bold text-white transition-all shadow-sm" title="Switch Language">
+          <svg class="w-4 h-4 text-gold-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0 0c2.2 0 4-4 4-9s-1.8-9-4-9m0 18c-2.2 0-4-4-4-9s1.8-9 4-9M3.5 9h17m-17 6h17" />
+          </svg>
+          <span id="lang-toggle-label">English</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN CONTENT ==================== -->
+  <main class="flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-6 py-5 space-y-5">
+
+    <!-- ===================================================================== -->
+    <!-- PAGE 1: ELECTROLYSIS & PREFERENTIAL DISCHARGE                         -->
+    <!-- ===================================================================== -->
+    <section id="page1" class="space-y-5">
+
+      <!-- Top Control Deck: 3 Factors + Variable Selectors -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-5 space-y-4">
+        <!-- Row 1: 3 HKDSE Preferential Discharge Quick-Focus Buttons -->
+        <div>
+          <div class="flex items-center justify-between flex-wrap gap-2 mb-2.5">
+            <h2 class="text-sm sm:text-base font-extrabold text-navy-900 flex items-center gap-2">
+              <span class="w-2.5 h-6 bg-gold-500 rounded-full inline-block"></span>
+              <span data-i18n="p1FactorsTitle">優先放電三大因素快速切換 (HKDSE 核心概念)</span>
+            </h2>
+            <span id="p1-active-scenario-badge" class="text-xs font-bold px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
+              稀 NaCl(aq) + 碳電極
+            </span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+            <button id="factor-btn-1" onclick="selectFactorPreset(1)" class="text-left p-3 rounded-xl border-2 transition-all flex items-start gap-3">
+              <span class="shrink-0 w-7 h-7 rounded-lg bg-blue-600 text-white font-extrabold text-sm flex items-center justify-center">1</span>
+              <div>
+                <div class="font-extrabold text-sm text-slate-900" data-i18n="factor1Title">因素 1：電化序的位置</div>
+                <div class="text-xs text-slate-600 mt-0.5" data-i18n="factor1Desc">稀 NaCl(aq) 或 CuSO₄(aq) + 惰性碳電極</div>
+              </div>
+            </button>
+            <button id="factor-btn-2" onclick="selectFactorPreset(2)" class="text-left p-3 rounded-xl border-2 transition-all flex items-start gap-3">
+              <span class="shrink-0 w-7 h-7 rounded-lg bg-emerald-600 text-white font-extrabold text-sm flex items-center justify-center">2</span>
+              <div>
+                <div class="font-extrabold text-sm text-slate-900" data-i18n="factor2Title">因素 2：濃度效應</div>
+                <div class="text-xs text-slate-600 mt-0.5" data-i18n="factor2Desc">濃 NaCl(aq) (4.0 M) + 碳電極 (Cl⁻ 優先放電)</div>
+              </div>
+            </button>
+            <button id="factor-btn-3" onclick="selectFactorPreset(3)" class="text-left p-3 rounded-xl border-2 transition-all flex items-start gap-3">
+              <span class="shrink-0 w-7 h-7 rounded-lg bg-amber-600 text-white font-extrabold text-sm flex items-center justify-center">3</span>
+              <div>
+                <div class="font-extrabold text-sm text-slate-900" data-i18n="factor3Title">因素 3：電極性質</div>
+                <div class="text-xs text-slate-600 mt-0.5" data-i18n="factor3Desc">銅活性電極 (CuSO₄) 或 汞陰極 (濃 NaCl)</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Row 2: Direct Variable Controls (Electrolyte, Concentration, Electrodes) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 pt-3 border-t border-slate-100">
+          <!-- Electrolyte -->
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2" data-i18n="lblElectrolyte">電解質 (Electrolyte)</label>
+            <div class="grid grid-cols-2 gap-2">
+              <button id="btn-elec-nacl" onclick="setElectrolyte('nacl')" class="px-3 py-2 rounded-lg text-xs sm:text-sm font-bold border transition-all chem-eq" data-i18n="optNaCl">氯化鈉 NaCl(aq)</button>
+              <button id="btn-elec-cuso4" onclick="setElectrolyte('cuso4')" class="px-3 py-2 rounded-lg text-xs sm:text-sm font-bold border transition-all chem-eq" data-i18n="optCuSO4">硫酸銅(II) CuSO₄(aq)</button>
+            </div>
+          </div>
+
+          <!-- Concentration -->
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2" data-i18n="lblConc">濃度 (Concentration)</label>
+            <div class="grid grid-cols-2 gap-2">
+              <button id="btn-conc-dilute" onclick="setConcentration('dilute')" class="px-3 py-2 rounded-lg text-xs sm:text-sm font-bold border transition-all" data-i18n="optDilute">稀 Dilute (0.1 M)</button>
+              <button id="btn-conc-conc" onclick="setConcentration('conc')" class="px-3 py-2 rounded-lg text-xs sm:text-sm font-bold border transition-all" data-i18n="optConc">濃 Concentrated (4.0 M)</button>
+            </div>
+          </div>
+
+          <!-- Electrodes -->
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2" data-i18n="lblElectrodes">電極材質 (Electrodes)</label>
+            <div class="grid grid-cols-3 gap-1.5">
+              <button id="btn-mat-carbon" onclick="setElectrodeMaterial('carbon')" class="px-2 py-2 rounded-lg text-xs font-bold border transition-all leading-tight" data-i18n="optCarbon">碳 (惰性)</button>
+              <button id="btn-mat-copper" onclick="setElectrodeMaterial('copper')" class="px-2 py-2 rounded-lg text-xs font-bold border transition-all leading-tight" data-i18n="optCopper">銅 (活性)</button>
+              <button id="btn-mat-mercury" onclick="setElectrodeMaterial('mercury')" class="px-2 py-2 rounded-lg text-xs font-bold border transition-all leading-tight" data-i18n="optMercury">汞陰極+碳陽極</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Playback, Speed, Step-by-Step & Zoom Toolbar -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+        <!-- Play / Step / Reset -->
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="p1-play-btn" onclick="togglePlay('p1')" class="px-4 py-2 rounded-xl bg-navy-900 hover:bg-navy-800 text-white font-bold text-sm flex items-center gap-2 shadow-sm transition-all">
+            <span id="p1-play-icon">⏸</span>
+            <span id="p1-play-text" data-i18n="btnPause">暫停</span>
+          </button>
+          <button onclick="nextStep('p1')" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm flex items-center gap-1.5 shadow-sm transition-all">
+            <span>⏭</span>
+            <span data-i18n="btnNextStep">逐步演示</span>
+          </button>
+          <button onclick="resetSim('p1')" class="px-3.5 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-sm flex items-center gap-1.5 transition-all">
+            <span>↺</span>
+            <span data-i18n="btnReset">重設</span>
+          </button>
+        </div>
+
+        <!-- Speed Controls -->
+        <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200">
+          <span class="text-xs font-bold text-slate-600 px-2" data-i18n="lblSpeed">速度</span>
+          <button onclick="setSpeed('p1', 0.25)" id="p1-spd-025" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all">0.25x</button>
+          <button onclick="setSpeed('p1', 0.5)" id="p1-spd-05" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all">0.5x</button>
+          <button onclick="setSpeed('p1', 1)" id="p1-spd-1" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all">1x</button>
+          <button onclick="setSpeed('p1', 2)" id="p1-spd-2" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all">2x</button>
+        </div>
+
+        <!-- Sync Electrode Zoom Toggle -->
+        <div class="flex items-center gap-2">
+          <button id="p1-sync-zoom-btn" onclick="toggleSyncZoom('p1')" class="px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all" title="Sync Macro & Micro Electrode Zoom">
+            <span id="p1-sync-dot" class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
+            <span data-i18n="syncZoom">同步聚焦電極</span>
+          </button>
+          <span class="hidden sm:inline text-xs text-slate-500 font-medium" data-i18n="clickElecTip">💡 可直接點擊畫布電極放大</span>
+        </div>
+      </div>
+
+      <!-- 4-Stage Stepper Banner -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-2">
+        <button onclick="setStep('p1', 0)" id="p1-step-0" class="p-2.5 rounded-xl border text-left transition-all">
+          <div class="text-xs font-extrabold" data-i18n="p1Step1">階段 1：離子遷移</div>
+        </button>
+        <button onclick="setStep('p1', 1)" id="p1-step-1" class="p-2.5 rounded-xl border text-left transition-all">
+          <div class="text-xs font-extrabold" data-i18n="p1Step2">階段 2：優先放電競爭</div>
+        </button>
+        <button onclick="setStep('p1', 2)" id="p1-step-2" class="p-2.5 rounded-xl border text-left transition-all">
+          <div class="text-xs font-extrabold" data-i18n="p1Step3">階段 3：電子轉移與半反應</div>
+        </button>
+        <button onclick="setStep('p1', 3)" id="p1-step-3" class="p-2.5 rounded-xl border text-left transition-all">
+          <div class="text-xs font-extrabold" data-i18n="p1Step4">階段 4：宏觀與溶液變化</div>
+        </button>
+      </div>
+      <div id="p1-step-desc" class="bg-blue-50 border border-blue-200 text-blue-950 rounded-xl px-4 py-2.5 text-sm font-medium"></div>
+
+      <!-- Dual-View Synchronized Simulation Canvases -->
+      <div id="p1-grid" class="grid grid-cols-1 xl:grid-cols-2 gap-5">
+        <!-- Macroscopic View -->
+        <div id="p1-macro-card" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col transition-all">
+          <div class="px-3.5 py-2.5 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+            <h3 class="font-extrabold text-sm sm:text-base text-navy-900 flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span>
+              <span data-i18n="p1MacroTitle">宏觀實驗室視角 (Macroscopic View)</span>
+            </h3>
+            <div class="flex flex-wrap items-center gap-1.5">
+              <!-- Camera Focus Buttons (Macro) -->
+              <div class="flex items-center gap-1 bg-white p-0.5 rounded-lg border border-slate-200 shadow-sm">
+                <button id="p1-macro-zoom-full" onclick="setCameraZoom('p1', 'macro', 'full')" class="px-2 py-1 rounded-md text-[11px] font-bold transition-all" data-i18n="zoomFullShort">全景 1x</button>
+                <button id="p1-macro-zoom-anode" onclick="setCameraZoom('p1', 'macro', 'anode')" class="px-2 py-1 rounded-md text-[11px] font-bold transition-all" data-i18n="zoomAnodePos">🔍 放大陽極 (+)</button>
+                <button id="p1-macro-zoom-cathode" onclick="setCameraZoom('p1', 'macro', 'cathode')" class="px-2 py-1 rounded-md text-[11px] font-bold transition-all" data-i18n="zoomCathodeNeg">🔍 放大陰極 (-)</button>
+              </div>
+              <!-- Expand / Restore Viewport Button -->
+              <button id="p1-macro-expand-btn" onclick="toggleExpandView('p1', 'macro')" class="px-2.5 py-1.5 rounded-lg bg-navy-900 hover:bg-navy-800 text-white text-[11px] font-bold flex items-center gap-1 shadow-sm transition-all">
+                <span id="p1-macro-expand-icon">⛶</span>
+                <span id="p1-macro-expand-text" data-i18n="btnExpand">放大視窗</span>
+              </button>
+            </div>
+          </div>
+          <div id="p1-macro-wrap" class="relative w-full h-[380px] sm:h-[430px] bg-slate-50 cursor-pointer">
+            <canvas id="canvas-p1-macro"></canvas>
+          </div>
+        </div>
+
+        <!-- Microscopic View -->
+        <div id="p1-micro-card" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col transition-all">
+          <div class="px-3.5 py-2.5 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+            <h3 class="font-extrabold text-sm sm:text-base text-navy-900 flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 inline-block"></span>
+              <span data-i18n="p1MicroTitle">微觀粒子視角 (Microscopic View)</span>
+            </h3>
+            <div class="flex flex-wrap items-center gap-1.5">
+              <!-- Camera Focus Buttons (Micro) -->
+              <div class="flex items-center gap-1 bg-white p-0.5 rounded-lg border border-slate-200 shadow-sm">
+                <button id="p1-micro-zoom-full" onclick="setCameraZoom('p1', 'micro', 'full')" class="px-2 py-1 rounded-md text-[11px] font-bold transition-all" data-i18n="zoomFullShort">全景 1x</button>
+                <button id="p1-micro-zoom-anode" onclick="setCameraZoom('p1', 'micro', 'anode')" class="px-2 py-1 rounded-md text-[11px] font-bold transition-all" data-i18n="zoomAnodePos">🔍 放大陽極 (+)</button>
+                <button id="p1-micro-zoom-cathode" onclick="setCameraZoom('p1', 'micro', 'cathode')" class="px-2 py-1 rounded-md text-[11px] font-bold transition-all" data-i18n="zoomCathodeNeg">🔍 放大陰極 (-)</button>
+              </div>
+              <!-- Expand / Restore Viewport Button -->
+              <button id="p1-micro-expand-btn" onclick="toggleExpandView('p1', 'micro')" class="px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold flex items-center gap-1 shadow-sm transition-all">
+                <span id="p1-micro-expand-icon">⛶</span>
+                <span id="p1-micro-expand-text" data-i18n="btnExpand">放大視窗</span>
+              </button>
+            </div>
+          </div>
+          <div id="p1-micro-wrap" class="relative w-full h-[380px] sm:h-[430px] bg-slate-900 cursor-pointer">
+            <canvas id="canvas-p1-micro"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pedagogical Panel: ECS + Equations + Observable Changes -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <!-- Mini Visual ECS (5 cols) -->
+        <div class="lg:col-span-5 bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-5 flex flex-col justify-between space-y-4">
+          <div>
+            <h3 class="font-extrabold text-base text-navy-900 flex items-center gap-2 mb-3">
+              <span class="w-2 h-5 bg-blue-600 rounded-full"></span>
+              <span data-i18n="ecsTitle">電化序 (ECS) 與優先放電分析</span>
+            </h3>
+            <div id="p1-ecs-container" class="space-y-3"></div>
+          </div>
+          <div id="p1-factor-callout" class="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-sm text-amber-950 font-medium leading-relaxed"></div>
+        </div>
+
+        <!-- Half-Equations & HKDSE Observations (7 cols) -->
+        <div class="lg:col-span-7 bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-5 space-y-4">
+          <h3 class="font-extrabold text-base text-navy-900 flex items-center gap-2">
+            <span class="w-2 h-5 bg-crimson-600 rounded-full"></span>
+            <span data-i18n="eqObsTitle">半反應方程式與可觀察變化 (HKDSE 標準表述)</span>
+          </h3>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <!-- Anode (+) Card -->
+            <div class="p-3.5 rounded-xl bg-red-50/80 border border-red-200">
+              <div class="text-xs font-extrabold text-red-700 uppercase tracking-wide mb-1" data-i18n="p1AnodeHeader">陽極 Anode (+) : 氧化 Oxidation</div>
+              <div id="p1-eq-anode" class="text-base sm:text-lg font-extrabold text-slate-900 chem-eq my-1.5"></div>
+              <div id="p1-obs-anode" class="text-xs sm:text-sm text-slate-700 leading-relaxed"></div>
+            </div>
+
+            <!-- Cathode (-) Card -->
+            <div class="p-3.5 rounded-xl bg-blue-50/80 border border-blue-200">
+              <div class="text-xs font-extrabold text-blue-700 uppercase tracking-wide mb-1" data-i18n="p1CathodeHeader">陰極 Cathode (-) : 還原 Reduction</div>
+              <div id="p1-eq-cathode" class="text-base sm:text-lg font-extrabold text-slate-900 chem-eq my-1.5"></div>
+              <div id="p1-obs-cathode" class="text-xs sm:text-sm text-slate-700 leading-relaxed"></div>
+            </div>
+          </div>
+
+          <!-- Overall Equation -->
+          <div class="p-3.5 rounded-xl bg-slate-900 text-white">
+            <div class="text-xs font-bold text-gold-400 uppercase tracking-wide mb-1" data-i18n="lblOverallEq">總反應方程式 (Overall Equation)</div>
+            <div id="p1-eq-overall" class="text-base sm:text-lg font-bold chem-eq"></div>
+          </div>
+
+          <!-- Solution Changes -->
+          <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-start gap-3">
+            <span class="shrink-0 w-7 h-7 rounded-lg bg-emerald-600 text-white font-bold flex items-center justify-center text-sm">pH</span>
+            <div>
+              <div class="text-xs font-extrabold text-emerald-800 uppercase tracking-wide" data-i18n="lblSolChange">溶液成分、顏色與 pH 變化</div>
+              <div id="p1-sol-change" class="text-sm text-emerald-950 font-medium mt-0.5 leading-relaxed"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- PAGE 2: INERT-ELECTRODE CHEMICAL CELL & COMPARISON                    -->
+    <!-- ===================================================================== -->
+    <section id="page2" class="hidden space-y-5">
+
+      <!-- Cell Selector & Controls -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h2 class="text-sm sm:text-base font-extrabold text-navy-900 flex items-center gap-2">
+            <span class="w-2.5 h-6 bg-emerald-600 rounded-full inline-block"></span>
+            <span data-i18n="p2CellSelectTitle">選擇惰性電極 (碳) 化學電池組合 (HKDSE 經典例子)</span>
+          </h2>
+          <span class="text-xs font-bold px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200" data-i18n="p2SpontaneousBadge">
+            自發氧化還原反應 | 化學能 → 電能
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <button id="cell-btn-1" onclick="selectCell('fe_mno4')" class="text-left p-3.5 rounded-xl border-2 transition-all">
+            <div class="font-extrabold text-sm sm:text-base text-slate-900 chem-eq">
+              Fe<sup>2+</sup>(aq)/Fe<sup>3+</sup>(aq) || MnO<sub>4</sub><sup>−</sup>(aq)/H<sup>+</sup>(aq)/Mn<sup>2+</sup>(aq)
+            </div>
+            <div class="text-xs sm:text-sm text-slate-600 mt-1" data-i18n="cell1Desc">硫酸鐵(II) 溶液 vs 酸化高錳酸鉀溶液 (惰性碳電極 + KNO₃ 鹽橋)</div>
+          </button>
+
+          <button id="cell-btn-2" onclick="selectCell('i_cr2o7')" class="text-left p-3.5 rounded-xl border-2 transition-all">
+            <div class="font-extrabold text-sm sm:text-base text-slate-900 chem-eq">
+              I<sup>−</sup>(aq)/I<sub>2</sub>(aq) || Cr<sub>2</sub>O<sub>7</sub><sup>2−</sup>(aq)/H<sup>+</sup>(aq)/Cr<sup>3+</sup>(aq)
+            </div>
+            <div class="text-xs sm:text-sm text-slate-600 mt-1" data-i18n="cell2Desc">碘化鉀溶液 vs 酸化重鉻酸鉀溶液 (惰性碳電極 + KNO₃ 鹽橋)</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Playback, Speed & Zoom Toolbar for Page 2 -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="p2-play-btn" onclick="togglePlay('p2')" class="px-4 py-2 rounded-xl bg-navy-900 hover:bg-navy-800 text-white font-bold text-sm flex items-center gap-2 shadow-sm transition-all">
+            <span id="p2-play-icon">⏸</span>
+            <span id="p2-play-text" data-i18n="btnPause">暫停</span>
+          </button>
+          <button onclick="nextStep('p2')" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm flex items-center gap-1.5 shadow-sm transition-all">
+            <span>⏭</span>
+            <span data-i18n="btnNextStep">逐步演示</span>
+          </button>
+          <button onclick="resetSim('p2')" class="px-3.5 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-sm flex items-center gap-1.5 transition-all">
+            <span>↺</span>
+            <span data-i18n="btnReset">重設</span>
+          </button>
+        </div>
+
+        <!-- Speed Controls -->
+        <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200">
+          <span class="text-xs font-bold text-slate-600 px-2" data-i18n="lblSpeed">速度</span>
+          <button onclick="setSpeed('p2', 0.25)" id="p2-spd-025" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all">0.25x</button>
+          <button onclick="setSpeed('p2', 0.5)" id="p2-spd-05" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all">0.5x</button>
+          <button onclick="setSpeed('p2', 1)" id="p2-spd-1" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all">1x</button>
+          <button onclick="setSpeed('p2', 2)" id="p2-spd-2" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all">2x</button>
+        </div>
+
+        <!-- Sync Electrode Zoom Toggle -->
+        <div class="flex items-center gap-2">
+          <button id="p2-sync-zoom-btn" onclick="toggleSyncZoom('p2')" class="px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all" title="Sync Macro & Micro Electrode Zoom">
+            <span id="p2-sync-dot" class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
+            <span data-i18n="syncZoom">同步聚焦電極</span>
+          </button>
+          <span class="hidden sm:inline text-xs text-slate-500 font-medium" data-i18n="clickElecTip">💡 可直接點擊畫布電極放大</span>
+        </div>
+      </div>
+
+      <!-- 4-Stage Stepper Banner for Page 2 -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-2">
+        <button onclick="setStep('p2', 0)" id="p2-step-0" class="p-2.5 rounded-xl border text-left transition-all">
+          <div class="text-xs font-extrabold" data-i18n="p2Step1">階段 1：負極/陽極氧化釋出電子</div>
+        </button>
+        <button onclick="setStep('p2', 1)" id="p2-step-1" class="p-2.5 rounded-xl border text-left transition-all">
+          <div class="text-xs font-extrabold" data-i18n="p2Step2">階段 2：外電路電子自發流動</div>
+        </button>
+        <button onclick="setStep('p2', 2)" id="p2-step-2" class="p-2.5 rounded-xl border text-left transition-all">
+          <div class="text-xs font-extrabold" data-i18n="p2Step3">階段 3：正極/陰極還原接收電子</div>
+        </button>
+        <button onclick="setStep('p2', 3)" id="p2-step-3" class="p-2.5 rounded-xl border text-left transition-all">
+          <div class="text-xs font-extrabold" data-i18n="p2Step4">階段 4：鹽橋離子平衡電荷</div>
+        </button>
+      </div>
+      <div id="p2-step-desc" class="bg-emerald-50 border border-emerald-200 text-emerald-950 rounded-xl px-4 py-2.5 text-sm font-medium"></div>
+
+      <!-- Dual-View Chemical Cell Canvases -->
+      <div id="p2-grid" class="grid grid-cols-1 xl:grid-cols-2 gap-5">
+        <!-- Macroscopic View -->
+        <div id="p2-macro-card" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col transition-all">
+          <div class="px-3.5 py-2.5 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+            <h3 class="font-extrabold text-sm sm:text-base text-navy-900 flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
+              <span data-i18n="p2MacroTitle">宏觀化學電池視角 (Macroscopic Cell View)</span>
+            </h3>
+            <div class="flex flex-wrap items-center gap-1.5">
+              <!-- Camera Focus Buttons (Macro) -->
+              <div class="flex items-center gap-1 bg-white p-0.5 rounded-lg border border-slate-200 shadow-sm">
+                <button id="p2-macro-zoom-full" onclick="setCameraZoom('p2', 'macro', 'full')" class="px-2 py-1 rounded-md text-[11px] font-bold transition-all" data-i18n="zoomFullShort">全景 1x</button>
+                <button id="p2-macro-zoom-anode" onclick="setCameraZoom('p2', 'macro', 'anode')" class="px-2 py-1 rounded-md text-[11px] font-bold transition-all" data-i18n="zoomAnodeNeg">🔍 放大陽極 (-)</button>
+                <button id="p2-macro-zoom-cathode" onclick="setCameraZoom('p2', 'macro', 'cathode')" class="px-2 py-1 rounded-md text-[11px] font-bold transition-all" data-i18n="zoomCathodePos">🔍 放大陰極 (+)</button>
+              </div>
+              <!-- Expand / Restore Viewport Button -->
+              <button id="p2-macro-expand-btn" onclick="toggleExpandView('p2', 'macro')" class="px-2.5 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold flex items-center gap-1 shadow-sm transition-all">
+                <span id="p2-macro-expand-icon">⛶</span>
+                <span id="p2-macro-expand-text" data-i18n="btnExpand">放大視窗</span>
+              </button>
+            </div>
+          </div>
+          <div id="p2-macro-wrap" class="relative w-full h-[380px] sm:h-[430px] bg-slate-50 cursor-pointer">
+            <canvas id="canvas-p2-macro"></canvas>
+          </div>
+        </div>
+
+        <!-- Microscopic View -->
+        <div id="p2-micro-card" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col transition-all">
+          <div class="px-3.5 py-2.5 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+            <h3 class="font-extrabold text-sm sm:text-base text-navy-900 flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 inline-block"></span>
+              <span data-i18n="p2MicroTitle">微觀電極表面與鹽橋視角 (Microscopic View)</span>
+            </h3>
+            <div class="flex flex-wrap items-center gap-1.5">
+              <!-- Camera Focus Buttons (Micro) -->
+              <div class="flex items-center gap-1 bg-white p-0.5 rounded-lg border border-slate-200 shadow-sm">
+                <button id="p2-micro-zoom-full" onclick="setCameraZoom('p2', 'micro', 'full')" class="px-2 py-1 rounded-md text-[11px] font-bold transition-all" data-i18n="zoomFullShort">全景 1x</button>
+                <button id="p2-micro-zoom-anode" onclick="setCameraZoom('p2', 'micro', 'anode')" class="px-2 py-1 rounded-md text-[11px] font-bold transition-all" data-i18n="zoomAnodeNeg">🔍 放大陽極 (-)</button>
+                <button id="p2-micro-zoom-cathode" onclick="setCameraZoom('p2', 'micro', 'cathode')" class="px-2 py-1 rounded-md text-[11px] font-bold transition-all" data-i18n="zoomCathodePos">🔍 放大陰極 (+)</button>
+              </div>
+              <!-- Expand / Restore Viewport Button -->
+              <button id="p2-micro-expand-btn" onclick="toggleExpandView('p2', 'micro')" class="px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold flex items-center gap-1 shadow-sm transition-all">
+                <span id="p2-micro-expand-icon">⛶</span>
+                <span id="p2-micro-expand-text" data-i18n="btnExpand">放大視窗</span>
+              </button>
+            </div>
+          </div>
+          <div id="p2-micro-wrap" class="relative w-full h-[380px] sm:h-[430px] bg-slate-900 cursor-pointer">
+            <canvas id="canvas-p2-micro"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chemical Cell Equations & Observations -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-5 space-y-4">
+        <h3 class="font-extrabold text-base text-navy-900 flex items-center gap-2">
+          <span class="w-2 h-5 bg-emerald-600 rounded-full"></span>
+          <span data-i18n="p2EqTitle">半電池反應與顏色變化 (Half-Cell Reactions & Colour Changes)</span>
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="p-4 rounded-xl bg-blue-50/80 border border-blue-200">
+            <div class="text-xs font-extrabold text-blue-800 uppercase tracking-wide" data-i18n="p2AnodeHeader">左半電池：負極 Negative Pole / 陽極 Anode (-) : 氧化 Oxidation</div>
+            <div id="p2-eq-anode" class="text-base sm:text-lg font-extrabold text-slate-900 chem-eq my-1.5"></div>
+            <div id="p2-obs-anode" class="text-sm text-slate-700 leading-relaxed"></div>
+          </div>
+          <div class="p-4 rounded-xl bg-red-50/80 border border-red-200">
+            <div class="text-xs font-extrabold text-red-800 uppercase tracking-wide" data-i18n="p2CathodeHeader">右半電池：正極 Positive Pole / 陰極 Cathode (+) : 還原 Reduction</div>
+            <div id="p2-eq-cathode" class="text-base sm:text-lg font-extrabold text-slate-900 chem-eq my-1.5"></div>
+            <div id="p2-obs-cathode" class="text-sm text-slate-700 leading-relaxed"></div>
+          </div>
+        </div>
+        <div class="p-3.5 rounded-xl bg-slate-900 text-white">
+          <div class="text-xs font-bold text-gold-400 uppercase tracking-wide mb-1" data-i18n="lblOverallEq">總反應方程式 (Overall Equation)</div>
+          <div id="p2-eq-overall" class="text-base sm:text-lg font-bold chem-eq"></div>
+        </div>
+      </div>
+
+      <!-- Principle Comparison Section: Electrolysis vs Chemical Cell -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h2 class="text-lg sm:text-xl font-black text-navy-900 flex items-center gap-2.5">
+            <span class="w-3 h-7 bg-gold-500 rounded-full"></span>
+            <span data-i18n="compTitle">電解池 vs 化學電池：原理全面比較</span>
+          </h2>
+        </div>
+
+        <!-- Golden HKDSE Rule Banner -->
+        <div class="rounded-2xl bg-gradient-to-r from-navy-900 via-indigo-950 to-navy-900 text-white p-4 sm:p-5 border-2 border-gold-500 shadow-md">
+          <div class="flex items-start gap-3">
+            <span class="shrink-0 w-9 h-9 rounded-xl bg-gold-500 text-navy-900 font-black text-lg flex items-center justify-center shadow">★</span>
+            <div class="space-y-1.5">
+              <div class="text-gold-400 font-extrabold text-sm sm:text-base tracking-wide" data-i18n="goldenRuleTitle">
+                HKDSE 黃金記憶法則 (永遠不變 vs 極性相反)
+              </div>
+              <div class="text-sm sm:text-base font-bold leading-relaxed" data-i18n="goldenRuleLine1">
+                1. 陽極 (Anode) 永遠發生氧化 (Always Oxidation) | 陰極 (Cathode) 永遠發生還原 (Always Reduction)
+              </div>
+              <div class="text-sm sm:text-base font-medium text-slate-200 leading-relaxed" data-i18n="goldenRuleLine2">
+                2. 正負極極性相反：化學電池中 陽極 = 負極 (-)、陰極 = 正極 (+)；電解池中 陽極 = 正極 (+)、陰極 = 負極 (-)。
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- High-Contrast Comparison Table -->
+        <div class="overflow-x-auto rounded-xl border border-slate-200">
+          <table class="w-full text-left border-collapse min-w-[680px]">
+            <thead>
+              <tr class="bg-slate-900 text-white text-sm">
+                <th class="py-3.5 px-4 font-extrabold w-1/4" data-i18n="thItem">比較項目</th>
+                <th class="py-3.5 px-4 font-extrabold w-[37.5%] bg-indigo-950/90 border-l border-slate-700" data-i18n="thElec">電解池 (Electrolytic Cell)</th>
+                <th class="py-3.5 px-4 font-extrabold w-[37.5%] bg-emerald-950/90 border-l border-slate-700" data-i18n="thCell">化學電池 (Chemical Cell)</th>
+              </tr>
+            </thead>
+            <tbody id="comparison-tbody" class="divide-y divide-slate-200 text-sm">
+              <!-- Populated dynamically by JS for instant bilingual updates -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-slate-400 text-xs py-4 px-4 mt-8 border-t border-slate-800">
+    <div class="max-w-[1440px] mx-auto flex flex-wrap items-center justify-between gap-2">
+      <span data-i18n="footerLeft">聖公會梁季彜中學｜化學科教學互動平台 (HKDSE 中五級)</span>
+      <span data-i18n="footerRight">由吳柏霖老師設計 | 適用於課堂投影與自主探究</span>
+    </div>
+  </footer>
+
+  <!-- ==================== APPLICATION SCRIPT ==================== -->
+  <script>
+    // =========================================================================
+    // 1. INTERNATIONALIZATION (TRADITIONAL CHINESE & ENGLISH)
+    // =========================================================================
+    let currentLang = 'zh';
+    let activePage = 'page1';
+
+    const I18N = {
+      zh: {
+        schoolDept: '聖公會梁季彜中學｜化學科',
+        designer: '由吳柏霖老師設計',
+        platformTitle: '電解原理與化學電池比較互動平台',
+        navPage1: '1. 電解原理與優先放電',
+        navPage2: '2. 惰性電極化學電池與比較',
+        langBtn: 'English',
+        p1FactorsTitle: '優先放電三大因素快速切換 (HKDSE 核心概念)',
+        factor1Title: '因素 1：電化序的位置',
+        factor1Desc: '稀 NaCl(aq) 或 CuSO₄(aq) + 惰性碳電極',
+        factor2Title: '因素 2：濃度效應',
+        factor2Desc: '濃 NaCl(aq) (4.0 M) + 碳電極 (Cl⁻ 優先放電)',
+        factor3Title: '因素 3：電極性質',
+        factor3Desc: '銅活性電極 (CuSO₄) 或 汞陰極 (濃 NaCl)',
+        lblElectrolyte: '電解質 (Electrolyte)',
+        optNaCl: '氯化鈉 NaCl(aq)',
+        optCuSO4: '硫酸銅(II) CuSO<sub>4</sub>(aq)',
+        lblConc: '濃度 (Concentration)',
+        optDilute: '稀 Dilute (0.1 M)',
+        optConc: '濃 Concentrated (4.0 M)',
+        lblElectrodes: '電極材質 (Electrodes)',
+        optCarbon: '碳 (惰性)',
+        optCopper: '銅 (活性)',
+        optMercury: '汞陰極+碳陽極',
+        btnPlay: '播放',
+        btnPause: '暫停',
+        btnNextStep: '逐步演示',
+        btnReset: '重設',
+        lblSpeed: '速度',
+        lblZoom: '微觀放大',
+        zoomFull: '全景',
+        zoomFullShort: '全景 1x',
+        zoomAnodePos: '🔍 放大陽極 (+)',
+        zoomCathodeNeg: '🔍 放大陰極 (-)',
+        zoomAnodeNeg: '🔍 放大陽極 (-)',
+        zoomCathodePos: '🔍 放大陰極 (+)',
+        btnExpand: '放大視窗',
+        btnRestore: '還原雙視窗',
+        syncZoom: '同步聚焦電極',
+        clickElecTip: '💡 可直接點擊畫布電極放大',
+        hudBackTip: '點擊電極或按「全景 1x」還原',
+        p1Step1: '階段 1：離子遷移',
+        p1Step2: '階段 2：優先放電競爭',
+        p1Step3: '階段 3：電子轉移與半反應',
+        p1Step4: '階段 4：宏觀與溶液變化',
+        p1MacroTitle: '宏觀實驗室視角 (Macroscopic View)',
+        p1MacroSub: '陽極 (+) 氧化 | 陰極 (-) 還原',
+        p1MicroTitle: '微觀粒子視角 (Microscopic View)',
+        ecsTitle: '電化序 (ECS) 與優先放電分析',
+        eqObsTitle: '半反應方程式與可觀察變化 (HKDSE 標準表述)',
+        p1AnodeHeader: '陽極 Anode (+) : 氧化 Oxidation',
+        p1CathodeHeader: '陰極 Cathode (-) : 還原 Reduction',
+        lblOverallEq: '總反應方程式 (Overall Equation)',
+        lblSolChange: '溶液成分、顏色與 pH 變化',
+        p2CellSelectTitle: '選擇惰性電極 (碳) 化學電池組合 (HKDSE 經典例子)',
+        p2SpontaneousBadge: '自發氧化還原反應 | 化學能 → 電能',
+        cell1Desc: '硫酸鐵(II) 溶液 vs 酸化高錳酸鉀溶液 (惰性碳電極 + KNO₃ 鹽橋)',
+        cell2Desc: '碘化鉀溶液 vs 酸化重鉻酸鉀溶液 (惰性碳電極 + KNO₃ 鹽橋)',
+        p2Step1: '階段 1：負極/陽極氧化釋出電子',
+        p2Step2: '階段 2：外電路電子自發流動',
+        p2Step3: '階段 3：正極/陰極還原接收電子',
+        p2Step4: '階段 4：鹽橋離子平衡電荷',
+        p2MacroTitle: '宏觀化學電池視角 (Macroscopic Cell View)',
+        p2MacroSub: '負極 = 陽極 (-) 氧化 | 正極 = 陰極 (+) 還原',
+        p2MicroTitle: '微觀電極表面與鹽橋視角 (Microscopic View)',
+        p2EqTitle: '半電池反應與顏色變化 (Half-Cell Reactions & Colour Changes)',
+        p2AnodeHeader: '左半電池：負極 Negative Pole / 陽極 Anode (-) : 氧化 Oxidation',
+        p2CathodeHeader: '右半電池：正極 Positive Pole / 陰極 Cathode (+) : 還原 Reduction',
+        compTitle: '電解池 vs 化學電池：原理全面比較',
+        goldenRuleTitle: 'HKDSE 黃金記憶法則 (永遠不變 vs 極性相反)',
+        goldenRuleLine1: '1. 陽極 (Anode) 永遠發生氧化 (Always Oxidation) | 陰極 (Cathode) 永遠發生還原 (Always Reduction)',
+        goldenRuleLine2: '2. 正負極極性相反：化學電池中 陽極 = 負極 (-)、陰極 = 正極 (+)；電解池中 陽極 = 正極 (+)、陰極 = 負極 (-)。',
+        thItem: '比較項目',
+        thElec: '電解池 (Electrolytic Cell)',
+        thCell: '化學電池 (Chemical Cell)',
+        footerLeft: '聖公會梁季彜中學｜化學科教學互動平台 (HKDSE 中五級)',
+        footerRight: '由吳柏霖老師設計 | 適用於課堂投影與自主探究',
+        // Canvas Labels
+        dcPower: '直流電源 DC',
+        anodePos: '陽極 (+)',
+        cathodeNeg: '陰極 (-)',
+        oxidation: '氧化 Oxidation',
+        reduction: '還原 Reduction',
+        carbonElec: '碳電極',
+        copperElec: '銅電極',
+        mercuryCathode: '汞陰極 Hg(l)',
+        saltBridge: '鹽橋 KNO₃(aq)',
+        cellAnodeNeg: '負極 / 陽極 (-)',
+        cellCathodePos: '正極 / 陰極 (+)',
+        voltmeter: '伏特計',
+        ammeter: '安培計',
+        gasRatio: '氣體體積比',
+        amalgamNote: '鈉汞齊 Na/Hg(l) 形成',
+        ecsCations: '陽離子 (前往陰極 -)',
+        ecsAnions: '陰離子 (前往陽極 +)',
+        easierDischarge: '愈向右愈容易優先放電 →',
+        loserBounce: '未放電離子彈開',
+        eTransferOut: '釋出電子 (氧化)',
+        eTransferIn: '接收電子 (還原)',
+      },
+      en: {
+        schoolDept: 'SKH Leung Kwai Yee Secondary School | Chemistry',
+        designer: 'Designed by Mr. Ng Pak Lam',
+        platformTitle: 'Electrolysis & Chemical Cells Interactive Platform',
+        navPage1: '1. Electrolysis & Preferential Discharge',
+        navPage2: '2. Inert-Electrode Cell & Comparison',
+        langBtn: '繁體中文',
+        p1FactorsTitle: '3 Preferential Discharge Factors Quick-Focus (HKDSE Core)',
+        factor1Title: 'Factor 1: Position in ECS',
+        factor1Desc: 'Dilute NaCl(aq) or CuSO₄(aq) + Inert Carbon Electrodes',
+        factor2Title: 'Factor 2: Concentration Effect',
+        factor2Desc: 'Conc. NaCl(aq) (4.0 M) + Carbon (Cl⁻ preferentially discharged)',
+        factor3Title: 'Factor 3: Nature of Electrodes',
+        factor3Desc: 'Copper Active Electrodes (CuSO₄) or Mercury Cathode (Conc. NaCl)',
+        lblElectrolyte: 'Electrolyte',
+        optNaCl: 'Sodium Chloride NaCl(aq)',
+        optCuSO4: 'Copper(II) Sulphate CuSO<sub>4</sub>(aq)',
+        lblConc: 'Concentration',
+        optDilute: 'Dilute (0.1 M)',
+        optConc: 'Concentrated (4.0 M)',
+        lblElectrodes: 'Electrode Material',
+        optCarbon: 'Carbon (Inert)',
+        optCopper: 'Copper (Active)',
+        optMercury: 'Hg Cathode + C Anode',
+        btnPlay: 'Play',
+        btnPause: 'Pause',
+        btnNextStep: 'Step-by-Step',
+        btnReset: 'Reset',
+        lblSpeed: 'Speed',
+        lblZoom: 'Micro Zoom',
+        zoomFull: 'Full View',
+        zoomFullShort: 'Full 1x',
+        zoomAnodePos: '🔍 Anode (+)',
+        zoomCathodeNeg: '🔍 Cathode (-)',
+        zoomAnodeNeg: '🔍 Anode (-)',
+        zoomCathodePos: '🔍 Cathode (+)',
+        btnExpand: 'Expand',
+        btnRestore: 'Restore Dual',
+        syncZoom: 'Sync Electrode Zoom',
+        clickElecTip: '💡 Click electrode on canvas to zoom',
+        hudBackTip: 'Click electrode or Full 1x to reset',
+        p1Step1: 'Stage 1: Ion Migration',
+        p1Step2: 'Stage 2: Preferential Discharge',
+        p1Step3: 'Stage 3: Electron Transfer',
+        p1Step4: 'Stage 4: Macroscopic & Solution Changes',
+        p1MacroTitle: 'Macroscopic Lab View',
+        p1MacroSub: 'Anode (+) Oxidation | Cathode (-) Reduction',
+        p1MicroTitle: 'Microscopic Particle View',
+        ecsTitle: 'Electrochemical Series (ECS) & Discharge Analysis',
+        eqObsTitle: 'Half-Equations & Observable Changes (HKDSE Standard)',
+        p1AnodeHeader: 'Anode (+) : Oxidation',
+        p1CathodeHeader: 'Cathode (-) : Reduction',
+        lblOverallEq: 'Overall Equation',
+        lblSolChange: 'Solution Composition, Colour & pH Changes',
+        p2CellSelectTitle: 'Select Inert-Electrode (Carbon) Chemical Cell (HKDSE Classic)',
+        p2SpontaneousBadge: 'Spontaneous Redox | Chemical → Electrical Energy',
+        cell1Desc: 'Iron(II) sulphate vs Acidified potassium permanganate (Carbon + KNO₃ salt bridge)',
+        cell2Desc: 'Potassium iodide vs Acidified potassium dichromate (Carbon + KNO₃ salt bridge)',
+        p2Step1: 'Stage 1: Oxidation at Negative Pole / Anode',
+        p2Step2: 'Stage 2: Spontaneous External Electron Flow',
+        p2Step3: 'Stage 3: Reduction at Positive Pole / Cathode',
+        p2Step4: 'Stage 4: Salt Bridge Ion Balance',
+        p2MacroTitle: 'Macroscopic Chemical Cell View',
+        p2MacroSub: 'Negative = Anode (-) Oxidation | Positive = Cathode (+) Reduction',
+        p2MicroTitle: 'Microscopic Electrode Surface & Salt Bridge View',
+        p2EqTitle: 'Half-Cell Reactions & Colour Changes',
+        p2AnodeHeader: 'Left Half-Cell: Negative Pole / Anode (-) : Oxidation',
+        p2CathodeHeader: 'Right Half-Cell: Positive Pole / Cathode (+) : Reduction',
+        compTitle: 'Electrolytic Cell vs Chemical Cell: Principle Comparison',
+        goldenRuleTitle: 'HKDSE Golden Memory Rule (Always Constant vs Opposite Polarity)',
+        goldenRuleLine1: '1. Anode is ALWAYS Oxidation | Cathode is ALWAYS Reduction',
+        goldenRuleLine2: '2. Opposite Polarities: In a Chemical Cell, Anode = Negative (-) and Cathode = Positive (+). In an Electrolytic Cell, Anode = Positive (+) and Cathode = Negative (-).',
+        thItem: 'Comparison Aspect',
+        thElec: 'Electrolytic Cell',
+        thCell: 'Chemical Cell',
+        footerLeft: 'SKH Leung Kwai Yee Secondary School | F.5 HKDSE Chemistry Platform',
+        footerRight: 'Designed by Mr. Ng Pak Lam | Classroom Projection Ready',
+        // Canvas Labels
+        dcPower: 'DC Power Supply',
+        anodePos: 'Anode (+)',
+        cathodeNeg: 'Cathode (-)',
+        oxidation: 'Oxidation',
+        reduction: 'Reduction',
+        carbonElec: 'Carbon',
+        copperElec: 'Copper',
+        mercuryCathode: 'Mercury Cathode Hg(l)',
+        saltBridge: 'Salt Bridge KNO₃(aq)',
+        cellAnodeNeg: 'Neg / Anode (-)',
+        cellCathodePos: 'Pos / Cathode (+)',
+        voltmeter: 'Voltmeter',
+        ammeter: 'Ammeter',
+        gasRatio: 'Gas Volume Ratio',
+        amalgamNote: 'Sodium amalgam Na/Hg(l) forms',
+        ecsCations: 'Cations (to Cathode -)',
+        ecsAnions: 'Anions (to Anode +)',
+        easierDischarge: 'Easier to discharge →',
+        loserBounce: 'Non-discharged ions deflect',
+        eTransferOut: 'Loses e⁻ (Oxidation)',
+        eTransferIn: 'Gains e⁻ (Reduction)',
+      }
+    };
+
+    function t(key) {
+      return I18N[currentLang][key] || key;
+    }
+
+    // =========================================================================
+    // 2. PAGE 1 SCENARIO DATA (5 ACCURATE HKDSE SCENARIOS)
+    // =========================================================================
+    const P1_SCENARIOS = {
+      dilute_nacl_carbon: {
+        id: 'dilute_nacl_carbon',
+        factor: 1,
+        badge: { zh: '稀 NaCl(aq) (0.1 M) + 碳電極', en: 'Dilute NaCl(aq) (0.1 M) + Carbon' },
+        electrolyte: 'nacl', conc: 'dilute', material: 'carbon',
+        cations: ['Na⁺', 'H⁺'], anions: ['Cl⁻', 'OH⁻'],
+        winCation: 'H⁺', winAnion: 'OH⁻',
+        anodeGas: 'O2', cathodeGas: 'H2',
+        gasRatioText: 'H₂ : O₂ = 2 : 1',
+        anodeEq: '4OH<sup>−</sup>(aq) → O<sub>2</sub>(g) + 2H<sub>2</sub>O(l) + 4e<sup>−</sup>',
+        cathodeEq: '2H<sup>+</sup>(aq) + 2e<sup>−</sup> → H<sub>2</sub>(g)',
+        overallEq: '2H<sub>2</sub>O(l) → 2H<sub>2</sub>(g) + O<sub>2</sub>(g)',
+        anodeObs: {
+          zh: '有無色氣泡 (O<sub>2</sub>) 釋出；能令帶有餘燼的木條重燃。',
+          en: 'Colourless gas bubbles (O<sub>2</sub>) evolve; relights a glowing splint.'
+        },
+        cathodeObs: {
+          zh: '有無色氣泡 (H<sub>2</sub>) 釋出；以燃燒的木條測試會發出爆鳴聲。H<sub>2</sub> 與 O<sub>2</sub> 體積比約為 2 : 1。',
+          en: 'Colourless gas bubbles (H<sub>2</sub>) evolve; gives a "pop" sound with a burning splint. Volume ratio of H<sub>2</sub> : O<sub>2</sub> is 2 : 1.'
+        },
+        solChange: {
+          zh: '水分子不斷被電解消耗，剩餘的 NaCl(aq) 溶液濃度逐漸增加；溶液中 H<sup>+</sup> 與 OH<sup>−</sup> 等量消耗，pH 維持約 7 (中性)。',
+          en: 'Water is electrolysed away, so the remaining NaCl(aq) becomes more concentrated. Equal amounts of H<sup>+</sup> and OH<sup>−</sup> are discharged, so pH remains ~7 (neutral).'
+        },
+        factorNote: {
+          zh: '【因素 1：電化序位置】在陽極，OH<sup>−</sup> 在電化序位置低於 Cl<sup>−</sup> (較易放電)，且溶液為稀溶液，故 OH<sup>−</sup> 優先放電生成 O<sub>2</sub>。在陰極，H<sup>+</sup> 位置遠低於 Na<sup>+</sup>，故 H<sup>+</sup> 優先放電生成 H<sub>2</sub>。',
+          en: '[Factor 1: Position in ECS] At the anode, OH⁻ is lower than Cl⁻ in the ECS (and solution is dilute), so OH⁻ is preferentially discharged to form O₂. At the cathode, H⁺ is much lower than Na⁺, so H⁺ is preferentially discharged to form H₂.'
+        },
+        pHStart: 7.0, pHEnd: 7.0, currentA: 0.45,
+        steps: {
+          zh: [
+            '接通直流電源後，陽離子 (Na⁺、H⁺) 移向陰極 (-)，陰離子 (Cl⁻、OH⁻) 移向陽極 (+)。',
+            '陰極處 H⁺ 在電化序位置較 Na⁺ 低，優先放電；陽極處 OH⁻ 較 Cl⁻ 易失去電子，優先放電。',
+            '陽極 (+) 上 OH⁻ 失去電子被氧化為 O₂；陰極 (-) 上 H⁺ 獲得電子被還原為 H₂。',
+            '宏觀上兩極均收集到無色氣體，陰極 H₂ 體積為陽極 O₂ 的兩倍 (2 : 1)，溶液維持中性 (pH ≈ 7)。'
+          ],
+          en: [
+            'When DC power is switched on, cations (Na⁺, H⁺) migrate to the cathode (-) and anions (Cl⁻, OH⁻) migrate to the anode (+).',
+            'At the cathode, H⁺ is lower than Na⁺ in the ECS and discharges preferentially. At the anode, OH⁻ loses electrons more readily than Cl⁻.',
+            'At the anode (+), OH⁻ loses electrons (oxidation) to form O₂. At the cathode (-), H⁺ gains electrons (reduction) to form H₂.',
+            'Macroscopically, colourless gases collect at both electrodes in a 2 : 1 (H₂ : O₂) volume ratio, while pH remains ~7.'
+          ]
+        }
+      },
+      conc_nacl_carbon: {
+        id: 'conc_nacl_carbon',
+        factor: 2,
+        badge: { zh: '濃 NaCl(aq) (4.0 M) + 碳電極', en: 'Conc. NaCl(aq) (4.0 M) + Carbon' },
+        electrolyte: 'nacl', conc: 'conc', material: 'carbon',
+        cations: ['Na⁺', 'H⁺'], anions: ['Cl⁻', 'OH⁻'],
+        winCation: 'H⁺', winAnion: 'Cl⁻',
+        anodeGas: 'Cl2', cathodeGas: 'H2',
+        gasRatioText: 'H₂ : Cl₂ = 1 : 1',
+        anodeEq: '2Cl<sup>−</sup>(aq) → Cl<sub>2</sub>(g) + 2e<sup>−</sup>',
+        cathodeEq: '2H<sup>+</sup>(aq) + 2e<sup>−</sup> → H<sub>2</sub>(g)',
+        overallEq: '2H<sup>+</sup>(aq) + 2Cl<sup>−</sup>(aq) → H<sub>2</sub>(g) + Cl<sub>2</sub>(g)',
+        anodeObs: {
+          zh: '有淡黃綠色、具刺鼻氣味的氯氣 (Cl<sub>2</sub>) 釋出；能令濕潤藍色石蕊試紙先變紅後漂白。',
+          en: 'Pale yellowish-green, pungent chlorine gas (Cl<sub>2</sub>) evolves; turns moist blue litmus paper red and then bleaches it.'
+        },
+        cathodeObs: {
+          zh: '有無色氣泡 (H<sub>2</sub>) 釋出。理論上 H<sub>2</sub> 與 Cl<sub>2</sub> 體積比為 1 : 1 (實際因 Cl<sub>2</sub> 微溶於水而略少)。',
+          en: 'Colourless gas bubbles (H<sub>2</sub>) evolve. Theoretical volume ratio of H<sub>2</sub> : Cl<sub>2</sub> is 1 : 1.'
+        },
+        solChange: {
+          zh: 'H<sup>+</sup> 與 Cl<sup>−</sup> 被放電消耗，溶液中餘下大量 Na<sup>+</sup> 與 OH<sup>−</sup>，逐漸變成氫氧化鈉溶液 NaOH(aq)，溶液呈鹼性，pH 顯著上升 (7 → ~12.5)。',
+          en: 'As H<sup>+</sup> and Cl<sup>−</sup> are discharged, Na<sup>+</sup> and excess OH<sup>−</sup> remain, turning the solution into alkaline NaOH(aq). pH rises significantly (7 → ~12.5).'
+        },
+        factorNote: {
+          zh: '【因素 2：濃度效應】雖然在電化序中 OH<sup>−</sup> 較 Cl<sup>−</sup> 易放電，但濃鹽水中 Cl<sup>−</sup> 濃度極高 (4.0 M)，濃度效應凌駕電化序位置，使 Cl<sup>−</sup> 在陽極優先放電生成 Cl<sub>2</sub>！(陰極 Na<sup>+</sup> 與 H<sup>+</sup> 相距太遠，濃度效應不適用，仍由 H<sup>+</sup> 放電。)',
+          en: '[Factor 2: Concentration Effect] Although OH⁻ is lower than Cl⁻ in the ECS, the very high concentration of Cl⁻ (4.0 M) overrides the ECS position, causing Cl⁻ to discharge preferentially at the anode to form Cl₂! (At the cathode, Na⁺ is too far above H⁺, so H⁺ still discharges.)'
+        },
+        pHStart: 7.0, pHEnd: 12.5, currentA: 1.65,
+        steps: {
+          zh: [
+            '濃氯化鈉溶液含有極高濃度的 Na⁺ 與 Cl⁻ 離子，分別移向陰極 (-) 與陽極 (+)。',
+            '在陽極，極高濃度的 Cl⁻ 壓倒 OH⁻ 而優先放電 (濃度效應)；在陰極，H⁺ 仍優先於 Na⁺ 放電。',
+            '陽極 (+) 上 2Cl⁻ 失去 2e⁻ 生成淡黃綠色 Cl₂；陰極 (-) 上 2H⁺ 獲得 2e⁻ 生成無色 H₂。',
+            '溶液因 H⁺ 消耗而餘下 OH⁻ 與 Na⁺，逐漸轉為鹼性 NaOH(aq)，pH 計讀數明顯上升。'
+          ],
+          en: [
+            'Concentrated NaCl(aq) has a very high density of Na⁺ and Cl⁻ ions migrating to the cathode (-) and anode (+).',
+            'At the anode, high Cl⁻ concentration overrides OH⁻ (concentration effect). At the cathode, H⁺ still discharges over Na⁺.',
+            'At the anode (+), 2Cl⁻ loses 2e⁻ to form pale yellow-green Cl₂. At the cathode (-), 2H⁺ gains 2e⁻ to form colourless H₂.',
+            'Removal of H⁺ leaves excess OH⁻ and Na⁺, making the solution alkaline (NaOH(aq)) as the pH meter rises.'
+          ]
+        }
+      },
+      cuso4_carbon: {
+        id: 'cuso4_carbon',
+        factor: 1,
+        badge: { zh: 'CuSO₄(aq) + 碳電極 (惰性)', en: 'CuSO₄(aq) + Carbon (Inert)' },
+        electrolyte: 'cuso4', conc: 'dilute', material: 'carbon',
+        cations: ['Cu²⁺', 'H⁺'], anions: ['SO₄²⁻', 'OH⁻'],
+        winCation: 'Cu²⁺', winAnion: 'OH⁻',
+        anodeGas: 'O2', cathodeGas: null,
+        cathodePlateCu: true,
+        gasRatioText: 'O₂ (陽極 only)',
+        anodeEq: '4OH<sup>−</sup>(aq) → O<sub>2</sub>(g) + 2H<sub>2</sub>O(l) + 4e<sup>−</sup>',
+        cathodeEq: 'Cu<sup>2+</sup>(aq) + 2e<sup>−</sup> → Cu(s)',
+        overallEq: '2Cu<sup>2+</sup>(aq) + 2H<sub>2</sub>O(l) → 2Cu(s) + O<sub>2</sub>(g) + 4H<sup>+</sup>(aq)',
+        anodeObs: {
+          zh: '有無色氣泡 (O<sub>2</sub>) 釋出；能令帶有餘燼的木條重燃。',
+          en: 'Colourless gas bubbles (O<sub>2</sub>) evolve; relights a glowing splint.'
+        },
+        cathodeObs: {
+          zh: '紅棕色固體 (銅金屬 Cu) 沉積於碳陰極表面，沒有氣泡產生。',
+          en: 'A reddish-brown solid (copper metal, Cu) deposits on the carbon cathode. No gas bubbles form.'
+        },
+        solChange: {
+          zh: '隨著藍色 Cu<sup>2+</sup>(aq) 不斷被還原消耗，溶液的藍色逐漸變淺；同時 OH<sup>−</sup> 消耗留下 H<sup>+</sup> 與 SO<sub>4</sub><sup>2−</sup>，溶液逐漸變為酸性硫酸 H<sub>2</sub>SO<sub>4</sub>(aq)，pH 下降。',
+          en: 'As blue Cu<sup>2+</sup>(aq) ions are consumed, the blue colour fades gradually. Removal of OH<sup>−</sup> leaves H<sup>+</sup> and SO<sub>4</sub><sup>2−</sup>, making the solution acidic (H<sub>2</sub>SO<sub>4</sub>(aq)) as pH drops.'
+        },
+        factorNote: {
+          zh: '【因素 1：電化序位置】在陰極，Cu<sup>2+</sup> 在電化序位置低於 H<sup>+</sup>，故 Cu<sup>2+</sup> 優先獲得電子沉積為銅金屬。在陽極，OH<sup>−</sup> 遠較 SO<sub>4</sub><sup>2−</sup> 易放電，故生成 O<sub>2</sub>。',
+          en: '[Factor 1: Position in ECS] At the cathode, Cu²⁺ is lower than H⁺ in the ECS, so Cu²⁺ gains electrons preferentially to deposit as Cu(s). At the anode, OH⁻ discharges far more readily than SO₄²⁻ to form O₂.'
+        },
+        pHStart: 5.5, pHEnd: 2.1, currentA: 0.85,
+        steps: {
+          zh: [
+            '陽離子 (Cu²⁺、H⁺) 移向陰極 (-)，陰離子 (SO₄²⁻、OH⁻) 移向陽極 (+)。',
+            '陰極處 Cu²⁺ 在電化序位置低於 H⁺，優先放電；陽極處 OH⁻ 較 SO₄²⁻ 易放電。',
+            '陰極 (-) 上 Cu²⁺ 獲得 2e⁻ 還原成紅棕色銅原子沉積；陽極 (+) 上 OH⁻ 氧化成無色 O₂。',
+            '溶液中藍色 Cu²⁺ 濃度下降令藍色變淺，剩餘 H⁺ 與 SO₄²⁻ 令溶液變酸 (pH 下降)。'
+          ],
+          en: [
+            'Cations (Cu²⁺, H⁺) migrate to the cathode (-) and anions (SO₄²⁻, OH⁻) migrate to the anode (+).',
+            'At the cathode, Cu²⁺ is lower than H⁺ in the ECS and discharges preferentially. At the anode, OH⁻ discharges over SO₄²⁻.',
+            'At the cathode (-), Cu²⁺ gains 2e⁻ to plate as reddish-brown copper. At the anode (+), OH⁻ is oxidised to colourless O₂.',
+            'Loss of Cu²⁺ fades the blue colour gradually, while remaining H⁺ and SO₄²⁻ turn the solution acidic (pH drops).'
+          ]
+        }
+      },
+      cuso4_copper: {
+        id: 'cuso4_copper',
+        factor: 3,
+        badge: { zh: 'CuSO₄(aq) + 銅電極 (活性電極)', en: 'CuSO₄(aq) + Copper (Active Electrodes)' },
+        electrolyte: 'cuso4', conc: 'dilute', material: 'copper',
+        cations: ['Cu²⁺', 'H⁺'], anions: ['SO₄²⁻', 'OH⁻'],
+        winCation: 'Cu²⁺', winAnion: 'Cu(anode)',
+        anodeGas: null, cathodeGas: null,
+        cathodePlateCu: true, anodeDissolveCu: true,
+        gasRatioText: '無氣體產生',
+        anodeEq: 'Cu(s) → Cu<sup>2+</sup>(aq) + 2e<sup>−</sup>',
+        cathodeEq: 'Cu<sup>2+</sup>(aq) + 2e<sup>−</sup> → Cu(s)',
+        overallEq: 'Cu(s, 陽極) → Cu(s, 陰極) (淨銅轉移)',
+        overallEqEn: 'Cu(s, anode) → Cu(s, cathode) (Net Cu transfer)',
+        anodeObs: {
+          zh: '銅陽極逐漸溶解變薄 (質量減少)，沒有氣泡產生。',
+          en: 'The copper anode gradually dissolves and becomes thinner (mass decreases). No gas bubbles form.'
+        },
+        cathodeObs: {
+          zh: '紅棕色固體 (銅) 沉積於銅陰極表面，陰極逐漸變厚 (質量增加)。',
+          en: 'Reddish-brown copper deposits on the copper cathode, making it thicker (mass increases).'
+        },
+        solChange: {
+          zh: '陽極每溶解 1 摩爾 Cu 生成 1 摩爾 Cu<sup>2+</sup>，陰極同時消耗 1 摩爾 Cu<sup>2+</sup>。溶液中 Cu<sup>2+</sup> 濃度保持不變，因此藍色深淺度維持不變，pH 亦不變。',
+          en: 'The rate of Cu²⁺ formation at the anode equals the rate of Cu²⁺ discharge at the cathode. Thus [Cu²⁺] stays constant, the blue colour intensity remains unchanged, and pH stays constant.'
+        },
+        factorNote: {
+          zh: '【因素 3：電極性質】銅屬於活性陽極，銅原子比溶液中的 OH<sup>−</sup> 和 SO<sub>4</sub><sup>2−</sup> 更強還原劑 (更易失去電子)，因此銅陽極本身優先氧化溶解為 Cu<sup>2+</sup>，而不產生氧氣。',
+          en: '[Factor 3: Nature of Electrodes] Copper is an active anode. Copper atoms lose electrons more readily than OH⁻ or SO₄²⁻, so the copper anode itself oxidises and dissolves into Cu²⁺ ions instead of producing O₂.'
+        },
+        pHStart: 5.5, pHEnd: 5.5, currentA: 1.10,
+        steps: {
+          zh: [
+            '陽離子 (Cu²⁺、H⁺) 移向銅陰極 (-)，陰離子 (SO₄²⁻、OH⁻) 移向銅陽極 (+)。',
+            '由於使用活性銅電極，陽極上的銅原子比 OH⁻ 更易失去電子，優先氧化溶解。',
+            '陽極 (+) 銅原子失去 2e⁻ 變成 Cu²⁺ 進入溶液；陰極 (-) 上 Cu²⁺ 獲得 2e⁻ 沉積為銅金屬。',
+            '陽極變薄、陰極變厚，溶液中 Cu²⁺ 濃度與藍色深淺度完全維持不變！'
+          ],
+          en: [
+            'Cations (Cu²⁺, H⁺) migrate toward the Cu cathode (-) and anions (SO₄²⁻, OH⁻) toward the Cu anode (+).',
+            'Because copper is an active electrode, Cu atoms at the anode lose electrons more readily than OH⁻.',
+            'At the anode (+), Cu atoms lose 2e⁻ to dissolve as Cu²⁺. At the cathode (-), Cu²⁺ gains 2e⁻ to deposit as Cu(s).',
+            'The anode thins and the cathode thickens, while [Cu²⁺] and the blue solution intensity remain unchanged!'
+          ]
+        }
+      },
+      conc_nacl_mercury: {
+        id: 'conc_nacl_mercury',
+        factor: 3,
+        badge: { zh: '濃 NaCl(aq) + 汞陰極 & 碳陽極', en: 'Conc. NaCl(aq) + Hg Cathode & C Anode' },
+        electrolyte: 'nacl', conc: 'conc', material: 'mercury',
+        cations: ['Na⁺', 'H⁺'], anions: ['Cl⁻', 'OH⁻'],
+        winCation: 'Na⁺', winAnion: 'Cl⁻',
+        anodeGas: 'Cl2', cathodeGas: null,
+        mercuryCathode: true,
+        gasRatioText: 'Cl₂ (陽極 only)',
+        anodeEq: '2Cl<sup>−</sup>(aq) → Cl<sub>2</sub>(g) + 2e<sup>−</sup>',
+        cathodeEq: 'Na<sup>+</sup>(aq) + e<sup>−</sup> + Hg(l) → Na/Hg(l)',
+        overallEq: '2Na<sup>+</sup>(aq) + 2Cl<sup>−</sup>(aq) + 2Hg(l) → 2Na/Hg(l) + Cl<sub>2</sub>(g)',
+        anodeObs: {
+          zh: '碳陽極有淡黃綠色、具刺鼻氣味的氯氣 (Cl<sub>2</sub>) 釋出。',
+          en: 'Pale yellowish-green, pungent chlorine gas (Cl<sub>2</sub>) evolves at the carbon anode.'
+        },
+        cathodeObs: {
+          zh: '液態汞陰極表面沒有無色 H<sub>2</sub> 氣泡；Na<sup>+</sup> 優先放電生成鈉並溶於汞中形成銀白色液態鈉汞齊 (Na/Hg)。',
+          en: 'No H<sub>2</sub> bubbles form at the mercury cathode; Na⁺ discharges preferentially to form sodium dissolved in mercury as liquid sodium amalgam (Na/Hg).'
+        },
+        solChange: {
+          zh: 'Na<sup>+</sup> 與 Cl<sup>−</sup> 同時被放電移走，故氯化鈉溶液濃度逐漸降低；溶液 pH 維持約 7 (中性)。',
+          en: 'Both Na⁺ and Cl⁻ are removed from the electrolyte, so the concentration of NaCl(aq) decreases while pH stays around 7 (neutral).'
+        },
+        factorNote: {
+          zh: '【因素 3：電極性質 + 因素 2：濃度效應】液態汞 (Hg) 陰極能與鈉形成穩定的合金 (鈉汞齊 Na/Hg)，大幅降低 Na<sup>+</sup> 放電所需能量，使 Na<sup>+</sup> 優先於 H<sup>+</sup> 放電！陽極則因濃度效應由 Cl<sup>−</sup> 優先放電生成 Cl<sub>2</sub>。',
+          en: '[Factor 3: Nature of Electrodes + Factor 2: Concentration] The mercury cathode forms a stable alloy (sodium amalgam, Na/Hg), favouring Na⁺ discharge over H⁺! At the carbon anode, high [Cl⁻] causes Cl⁻ to discharge as Cl₂.'
+        },
+        pHStart: 7.0, pHEnd: 7.0, currentA: 1.80,
+        steps: {
+          zh: [
+            '濃氯化鈉溶液中，Na⁺、H⁺ 移向底部的液態汞陰極 (-)，Cl⁻、OH⁻ 移向碳陽極 (+)。',
+            '汞陰極能與鈉形成鈉汞齊 (Na/Hg)，令 Na⁺ 優先於 H⁺ 放電 (電極性質)；碳陽極因高濃度由 Cl⁻ 放電。',
+            '碳陽極 (+) 上 Cl⁻ 失電子成 Cl₂；汞陰極 (-) 上 Na⁺ 得電子融入汞池形成 Na/Hg(l)。',
+            '陽極釋出黃綠色 Cl₂，底部汞池無 H₂ 氣泡並形成鈉汞齊，NaCl 溶液濃度逐漸變稀。'
+          ],
+          en: [
+            'In concentrated NaCl(aq), Na⁺ and H⁺ migrate to the liquid Hg cathode (-), while Cl⁻ and OH⁻ migrate to the carbon anode (+).',
+            'Mercury favours Na⁺ discharge by forming sodium amalgam (nature of electrode); high [Cl⁻] favours Cl⁻ at the carbon anode.',
+            'At the anode (+), Cl⁻ loses e⁻ to form Cl₂. At the Hg cathode (-), Na⁺ gains e⁻ to dissolve into Hg as Na/Hg(l).',
+            'Yellow-green Cl₂ evolves at the anode, no H₂ forms at the mercury pool, and NaCl(aq) becomes more dilute.'
+          ]
+        }
+      }
+    };
+
+    // =========================================================================
+    // 3. PAGE 2 INERT-ELECTRODE CHEMICAL CELL DATA
+    // =========================================================================
+    const P2_CELLS = {
+      fe_mno4: {
+        id: 'fe_mno4',
+        voltage: 0.74,
+        leftName: { zh: 'Fe²⁺(aq) / Fe³⁺(aq)', en: 'Fe²⁺(aq) / Fe³⁺(aq)' },
+        rightName: { zh: 'MnO₄⁻(aq) / H⁺(aq) / Mn²⁺(aq)', en: 'MnO₄⁻(aq) / H⁺(aq) / Mn²⁺(aq)' },
+        leftColorStart: [167, 243, 208, 0.72],  // Pale green Fe2+
+        leftColorEnd:   [217, 119, 6, 0.72],    // Yellow-brown Fe3+
+        rightColorStart:[126, 34, 206, 0.80],   // Deep purple MnO4-
+        rightColorEnd:  [241, 245, 249, 0.45],  // Colourless Mn2+
+        anodeEq: 'Fe<sup>2+</sup>(aq) → Fe<sup>3+</sup>(aq) + e<sup>−</sup>',
+        cathodeEq: 'MnO<sub>4</sub><sup>−</sup>(aq) + 8H<sup>+</sup>(aq) + 5e<sup>−</sup> → Mn<sup>2+</sup>(aq) + 4H<sub>2</sub>O(l)',
+        overallEq: 'MnO<sub>4</sub><sup>−</sup>(aq) + 5Fe<sup>2+</sup>(aq) + 8H<sup>+</sup>(aq) → Mn<sup>2+</sup>(aq) + 5Fe<sup>3+</sup>(aq) + 4H<sub>2</sub>O(l)',
+        anodeObs: {
+          zh: '淺綠色 Fe<sup>2+</sup>(aq) 失去電子被氧化，溶液逐漸由淺綠色變為黃棕色 (Fe<sup>3+</sup>)。惰性碳棒僅作導電用途。',
+          en: 'Pale green Fe²⁺(aq) loses electrons (oxidised), turning the solution gradually from pale green to yellow-brown (Fe³⁺). The carbon rod conducts electrons without reacting.'
+        },
+        cathodeObs: {
+          zh: '紫色 MnO<sub>4</sub><sup>−</sup>(aq) 在酸性介質中接收電子被還原，溶液由紫色逐漸褪為無色 (Mn<sup>2+</sup>)。',
+          en: 'Purple MnO₄⁻(aq) in acidic medium gains electrons (reduced), fading from purple to colourless (Mn²⁺).'
+        },
+        microLeftReactant: 'Fe²⁺', microLeftProduct: 'Fe³⁺',
+        microLeftReactCol: '#22c55e', microLeftProdCol: '#d97706',
+        microRightReactant: 'MnO₄⁻', microRightProduct: 'Mn²⁺',
+        microRightReactCol: '#a855f7', microRightProdCol: '#cbd5e1',
+        steps: {
+          zh: [
+            '左半電池 (負極 / 陽極 -)：Fe²⁺ 在碳電極表面失去電子被氧化為黃棕色 Fe³⁺。',
+            '電子 (e⁻) 自發地由負極 (陽極) 經外電路流過伏特計與燈泡，前往右邊的正極 (陰極)。',
+            '右半電池 (正極 / 陰極 +)：紫色 MnO₄⁻ 與 H⁺ 在碳電極表面接收電子，還原為無色 Mn²⁺。',
+            'KNO₃ 鹽橋中，NO₃⁻ 移向左杯中和新增正電荷，K⁺ 移向右杯補充消耗的正電荷，維持電中性。'
+          ],
+          en: [
+            'Left Half-Cell (Negative / Anode -): Fe²⁺ loses e⁻ at the carbon surface, oxidising to yellow-brown Fe³⁺.',
+            'Electrons (e⁻) flow spontaneously through the external wire, voltmeter, and bulb from the negative pole (anode) to the positive pole (cathode).',
+            'Right Half-Cell (Positive / Cathode +): Purple MnO₄⁻ and H⁺ gain e⁻ at the carbon surface, reducing to colourless Mn²⁺.',
+            'In the KNO₃ salt bridge, NO₃⁻ migrates left and K⁺ migrates right to maintain electrical neutrality in both half-cells.'
+          ]
+        }
+      },
+      i_cr2o7: {
+        id: 'i_cr2o7',
+        voltage: 0.79,
+        leftName: { zh: 'I⁻(aq) / I₂(aq)', en: 'I⁻(aq) / I₂(aq)' },
+        rightName: { zh: 'Cr₂O₇²⁻(aq) / H⁺(aq) / Cr³⁺(aq)', en: 'Cr₂O₇²⁻(aq) / H⁺(aq) / Cr³⁺(aq)' },
+        leftColorStart: [226, 232, 240, 0.45],  // Colourless I-
+        leftColorEnd:   [146, 64, 14, 0.78],    // Brown I2(aq)
+        rightColorStart:[249, 115, 22, 0.80],   // Orange Cr2O7^2-
+        rightColorEnd:  [22, 163, 74, 0.78],    // Green Cr3+
+        anodeEq: '2I<sup>−</sup>(aq) → I<sub>2</sub>(aq) + 2e<sup>−</sup>',
+        cathodeEq: 'Cr<sub>2</sub>O<sub>7</sub><sup>2−</sup>(aq) + 14H<sup>+</sup>(aq) + 6e<sup>−</sup> → 2Cr<sup>3+</sup>(aq) + 7H<sub>2</sub>O(l)',
+        overallEq: 'Cr<sub>2</sub>O<sub>7</sub><sup>2−</sup>(aq) + 6I<sup>−</sup>(aq) + 14H<sup>+</sup>(aq) → 2Cr<sup>3+</sup>(aq) + 3I<sub>2</sub>(aq) + 7H<sub>2</sub>O(l)',
+        anodeObs: {
+          zh: '無色 I<sup>−</sup>(aq) 失去電子被氧化，溶液逐漸由無色變為棕色 (I<sub>2</sub>(aq))。',
+          en: 'Colourless I⁻(aq) loses electrons (oxidised), turning the solution gradually from colourless to brown (I₂(aq)).'
+        },
+        cathodeObs: {
+          zh: '橙色 Cr<sub>2</sub>O<sub>7</sub><sup>2−</sup>(aq) 在酸性介質中接收電子被還原，溶液由橙色逐漸變為綠色 (Cr<sup>3+</sup>)。',
+          en: 'Orange Cr₂O₇²⁻(aq) in acidic medium gains electrons (reduced), changing from orange to green (Cr³⁺).'
+        },
+        microLeftReactant: 'I⁻', microLeftProduct: 'I₂',
+        microLeftReactCol: '#94a3b8', microLeftProdCol: '#b45309',
+        microRightReactant: 'Cr₂O₇²⁻', microRightProduct: 'Cr³⁺',
+        microRightReactCol: '#f97316', microRightProdCol: '#16a34a',
+        steps: {
+          zh: [
+            '左半電池 (負極 / 陽極 -)：無色 I⁻ 在碳電極表面失去電子，氧化為棕色 I₂。',
+            '電子 (e⁻) 自發地由負極 (陽極) 經外電路流過伏特計與燈泡，前往右邊的正極 (陰極)。',
+            '右半電池 (正極 / 陰極 +)：橙色 Cr₂O₇²⁻ 與 H⁺ 在碳電極表面接收電子，還原為綠色 Cr³⁺。',
+            'KNO₃ 鹽橋中，NO₃⁻ 移向左杯，K⁺ 移向右杯，完成內部電路並保持兩杯溶液電中性。'
+          ],
+          en: [
+            'Left Half-Cell (Negative / Anode -): Colourless I⁻ loses e⁻ at the carbon surface, oxidising to brown I₂.',
+            'Electrons (e⁻) flow spontaneously through the external circuit from the negative pole (anode) to the positive pole (cathode).',
+            'Right Half-Cell (Positive / Cathode +): Orange Cr₂O₇²⁻ and H⁺ gain e⁻ at the carbon surface, reducing to green Cr³⁺.',
+            'In the KNO₃ salt bridge, NO₃⁻ migrates left and K⁺ migrates right to complete the circuit and maintain electrical neutrality.'
+          ]
+        }
+      }
+    };
+
+    // Comparison Table Data
+    const COMPARISON_ROWS = [
+      {
+        item: { zh: '能量轉換', en: 'Energy Conversion' },
+        elec: { zh: '電能 → 化學能', en: 'Electrical energy → Chemical energy' },
+        cell: { zh: '化學能 → 電能', en: 'Chemical energy → Electrical energy' }
+      },
+      {
+        item: { zh: '反應自發性', en: 'Spontaneity' },
+        elec: { zh: '非自發反應 (必須由外部直流電源強迫驅動)', en: 'Non-spontaneous (driven by external DC power supply)' },
+        cell: { zh: '自發氧化還原反應 (自動產生電流)', en: 'Spontaneous redox reaction (generates electric current)' }
+      },
+      {
+        item: { zh: '陽極 (氧化) 極性', en: 'Anode (Oxidation) Polarity' },
+        elec: { zh: '正極 (+) [連接電源正極，奪取電子]', en: 'Positive (+) [Connected to DC +, withdraws electrons]' },
+        cell: { zh: '負極 (-) [還原劑在此釋出電子]', en: 'Negative (-) [Reducing agent releases electrons here]' }
+      },
+      {
+        item: { zh: '陰極 (還原) 極性', en: 'Cathode (Reduction) Polarity' },
+        elec: { zh: '負極 (-) [連接電源負極，供應電子]', en: 'Negative (-) [Connected to DC -, supplies electrons]' },
+        cell: { zh: '正極 (+) [氧化劑在此接收電子]', en: 'Positive (+) [Oxidising agent accepts electrons here]' }
+      },
+      {
+        item: { zh: '外電路電子流向', en: 'External Electron Flow' },
+        elec: { zh: '由陽極 (+) → 直流電源 → 陰極 (-)', en: 'From Anode (+) → DC Supply → Cathode (-)' },
+        cell: { zh: '由負極 / 陽極 (-) → 外電路 (伏特計) → 正極 / 陰極 (+)', en: 'From Negative / Anode (-) → External Load → Positive / Cathode (+)' }
+      },
+      {
+        item: { zh: '電源 / 鹽橋需求', en: 'Power Supply / Salt Bridge' },
+        elec: { zh: '必須連接直流電源；通常在單一電解槽進行，無需鹽橋', en: 'Requires DC power supply; single vessel, no salt bridge needed' },
+        cell: { zh: '無需外接電源；分離半電池必須以鹽橋 (如 KNO₃) 連接以平衡離子電荷', en: 'No external power; separated half-cells require a salt bridge (e.g., KNO₃) for ion balance' }
+      },
+      {
+        item: { zh: '惰性電極 (碳/鉑) 作用', en: 'Role of Inert Electrodes (C / Pt)' },
+        elec: { zh: '導電並提供電解質離子放電的反應表面，本身不參與化學反應', en: 'Conducts electricity and provides surface for ion discharge without reacting' },
+        cell: { zh: '導電並提供溶液中氧化劑與還原劑交換電子的表面，本身不參與反應', en: 'Conducts electrons and provides surface for aqueous redox species to exchange electrons' }
+      }
+    ];
+
+    // =========================================================================
+    // 4. APPLICATION STATE
+    // =========================================================================
+    const state = {
+      p1: {
+        electrolyte: 'nacl',
+        conc: 'dilute',
+        material: 'carbon',
+        scenarioId: 'dilute_nacl_carbon',
+        playing: true,
+        speed: 1,
+        expandedView: null, // null | 'macro' | 'micro'
+        syncZoom: false,
+        macroCam: { mode: 'full', scale: 1, tx: 0.5, ty: 0.5 },
+        microCam: { mode: 'full', scale: 1, tx: 0.5, ty: 0.5 },
+        step: 0,
+        progress: 0,        // 0 to 1 for cumulative gas/plating/colour/pH
+        time: 0,
+        particles: [],
+        bubbles: [],
+        flashes: []
+      },
+      p2: {
+        cellId: 'fe_mno4',
+        playing: true,
+        speed: 1,
+        expandedView: null, // null | 'macro' | 'micro'
+        syncZoom: false,
+        macroCam: { mode: 'full', scale: 1, tx: 0.5, ty: 0.5 },
+        microCam: { mode: 'full', scale: 1, tx: 0.5, ty: 0.5 },
+        step: 0,
+        progress: 0,
+        time: 0,
+        leftIons: [],
+        rightIons: [],
+        bridgeIons: [],
+        flashes: []
+      }
+    };
+
+    function stripHtmlToPlain(html) {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = html;
+      return tmp.textContent || tmp.innerText || '';
+    }
+
+    // =========================================================================
+    // 5. UI & CONTROL HANDLERS
+    // =========================================================================
+    function switchPage(page) {
+      activePage = page;
+      document.getElementById('page1').classList.toggle('hidden', page !== 'page1');
+      document.getElementById('page2').classList.toggle('hidden', page !== 'page2');
+
+      const tab1 = document.getElementById('tab-page1');
+      const tab2 = document.getElementById('tab-page2');
+      if (page === 'page1') {
+        tab1.className = 'px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all bg-gold-500 text-navy-900 shadow-sm';
+        tab2.className = 'px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all text-slate-300 hover:text-white';
+      } else {
+        tab2.className = 'px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all bg-gold-500 text-navy-900 shadow-sm';
+        tab1.className = 'px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all text-slate-300 hover:text-white';
+      }
+      resizeAllCanvases();
+    }
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'zh' ? 'en' : 'zh';
+      applyTranslations();
+    }
+
+    function applyTranslations() {
+      document.getElementById('lang-toggle-label').textContent = t('langBtn');
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (I18N[currentLang][key]) {
+          el.innerHTML = I18N[currentLang][key];
+        }
+      });
+      updateP1UI();
+      updateP2UI();
+      renderComparisonTable();
+    }
+
+    function selectFactorPreset(factorNum) {
+      if (factorNum === 1) {
+        state.p1.electrolyte = 'nacl';
+        state.p1.conc = 'dilute';
+        state.p1.material = 'carbon';
+      } else if (factorNum === 2) {
+        state.p1.electrolyte = 'nacl';
+        state.p1.conc = 'conc';
+        state.p1.material = 'carbon';
+      } else if (factorNum === 3) {
+        state.p1.electrolyte = 'cuso4';
+        state.p1.conc = 'dilute';
+        state.p1.material = 'copper';
+      }
+      resolveP1Scenario();
+    }
+
+    function setElectrolyte(elec) {
+      state.p1.electrolyte = elec;
+      if (elec === 'nacl' && state.p1.material === 'copper') {
+        state.p1.material = 'carbon';
+      }
+      if (elec === 'cuso4' && state.p1.material === 'mercury') {
+        state.p1.material = 'carbon';
+      }
+      resolveP1Scenario();
+    }
+
+    function setConcentration(conc) {
+      state.p1.conc = conc;
+      if (conc === 'dilute' && state.p1.material === 'mercury') {
+        state.p1.material = 'carbon';
+      }
+      resolveP1Scenario();
+    }
+
+    function setElectrodeMaterial(mat) {
+      state.p1.material = mat;
+      if (mat === 'copper') {
+        state.p1.electrolyte = 'cuso4';
+      } else if (mat === 'mercury') {
+        state.p1.electrolyte = 'nacl';
+        state.p1.conc = 'conc';
+      }
+      resolveP1Scenario();
+    }
+
+    function resolveP1Scenario() {
+      const { electrolyte, conc, material } = state.p1;
+      let id = 'dilute_nacl_carbon';
+      if (electrolyte === 'nacl') {
+        if (material === 'mercury') id = 'conc_nacl_mercury';
+        else if (conc === 'conc') id = 'conc_nacl_carbon';
+        else id = 'dilute_nacl_carbon';
+      } else {
+        if (material === 'copper') id = 'cuso4_copper';
+        else id = 'cuso4_carbon';
+      }
+      state.p1.scenarioId = id;
+      state.p1.progress = 0;
+      state.p1.bubbles = [];
+      state.p1.flashes = [];
+      initP1Particles();
+      updateP1UI();
+    }
+
+    function selectCell(cellId) {
+      state.p2.cellId = cellId;
+      state.p2.progress = 0;
+      state.p2.flashes = [];
+      initP2Particles();
+      updateP2UI();
+    }
+
+    function togglePlay(pageKey) {
+      state[pageKey].playing = !state[pageKey].playing;
+      const isPlaying = state[pageKey].playing;
+      document.getElementById(`${pageKey}-play-icon`).textContent = isPlaying ? '⏸' : '▶';
+      document.getElementById(`${pageKey}-play-text`).textContent = isPlaying ? t('btnPause') : t('btnPlay');
+    }
+
+    function setSpeed(pageKey, spd) {
+      state[pageKey].speed = spd;
+      const map = { 0.25: '025', 0.5: '05', 1: '1', 2: '2' };
+      Object.entries(map).forEach(([val, suffix]) => {
+        const btn = document.getElementById(`${pageKey}-spd-${suffix}`);
+        if (Number(val) === spd) {
+          btn.className = 'px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-navy-900 text-white shadow-sm';
+        } else {
+          btn.className = 'px-2.5 py-1 rounded-lg text-xs font-bold transition-all text-slate-600 hover:bg-slate-200';
+        }
+      });
+    }
+
+    function toggleSyncZoom(pageKey) {
+      state[pageKey].syncZoom = !state[pageKey].syncZoom;
+      updateSyncZoomUI(pageKey);
+    }
+
+    function updateSyncZoomUI(pageKey) {
+      const btn = document.getElementById(`${pageKey}-sync-zoom-btn`);
+      const dot = document.getElementById(`${pageKey}-sync-dot`);
+      if (!btn || !dot) return;
+      if (state[pageKey].syncZoom) {
+        btn.className = 'px-3 py-1.5 rounded-xl border-2 border-indigo-600 bg-indigo-50 text-indigo-900 text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm';
+        dot.className = 'w-2.5 h-2.5 rounded-full bg-indigo-600';
+      } else {
+        btn.className = 'px-3 py-1.5 rounded-xl border border-slate-300 bg-white text-slate-600 hover:bg-slate-50 text-xs font-bold flex items-center gap-1.5 transition-all';
+        dot.className = 'w-2.5 h-2.5 rounded-full bg-slate-300';
+      }
+    }
+
+    function setCameraZoom(pageKey, viewKey, mode) {
+      const targetViews = state[pageKey].syncZoom ? ['macro', 'micro'] : [viewKey];
+      targetViews.forEach(vk => {
+        state[pageKey][`${vk}Cam`].mode = mode;
+        updateCameraButtonsUI(pageKey, vk);
+      });
+    }
+
+    function updateCameraButtonsUI(pageKey, viewKey) {
+      const activeMode = state[pageKey][`${viewKey}Cam`].mode;
+      ['full', 'anode', 'cathode'].forEach(m => {
+        const btn = document.getElementById(`${pageKey}-${viewKey}-zoom-${m}`);
+        if (!btn) return;
+        if (m === activeMode) {
+          const activeColor = m === 'anode'
+            ? (pageKey === 'p1' ? 'bg-red-600 text-white' : 'bg-blue-600 text-white')
+            : m === 'cathode'
+              ? (pageKey === 'p1' ? 'bg-blue-600 text-white' : 'bg-red-600 text-white')
+              : 'bg-slate-800 text-white';
+          btn.className = `px-2 py-1 rounded-md text-[11px] font-bold transition-all shadow-sm ${activeColor}`;
+        } else {
+          btn.className = 'px-2 py-1 rounded-md text-[11px] font-bold transition-all text-slate-600 hover:bg-slate-100';
+        }
+      });
+    }
+
+    function toggleExpandView(pageKey, viewKey) {
+      state[pageKey].expandedView = (state[pageKey].expandedView === viewKey) ? null : viewKey;
+      updateExpandViewUI(pageKey);
+      // Immediately resize canvases after DOM layout change
+      requestAnimationFrame(() => resizeAllCanvases());
+    }
+
+    function updateExpandViewUI(pageKey) {
+      const exp = state[pageKey].expandedView;
+      const macroCard = document.getElementById(`${pageKey}-macro-card`);
+      const microCard = document.getElementById(`${pageKey}-micro-card`);
+      const macroWrap = document.getElementById(`${pageKey}-macro-wrap`);
+      const microWrap = document.getElementById(`${pageKey}-micro-wrap`);
+      const macroTxt = document.getElementById(`${pageKey}-macro-expand-text`);
+      const microTxt = document.getElementById(`${pageKey}-micro-expand-text`);
+      const macroIcon = document.getElementById(`${pageKey}-macro-expand-icon`);
+      const microIcon = document.getElementById(`${pageKey}-micro-expand-icon`);
+
+      if (exp === 'macro') {
+        macroCard.classList.remove('hidden');
+        macroCard.classList.add('xl:col-span-2');
+        microCard.classList.add('hidden');
+        microCard.classList.remove('xl:col-span-2');
+        macroWrap.className = 'relative w-full h-[520px] sm:h-[580px] bg-slate-50 cursor-pointer';
+        macroTxt.textContent = t('btnRestore');
+        macroIcon.textContent = '⤢';
+      } else if (exp === 'micro') {
+        microCard.classList.remove('hidden');
+        microCard.classList.add('xl:col-span-2');
+        macroCard.classList.add('hidden');
+        macroCard.classList.remove('xl:col-span-2');
+        microWrap.className = 'relative w-full h-[520px] sm:h-[580px] bg-slate-900 cursor-pointer';
+        microTxt.textContent = t('btnRestore');
+        microIcon.textContent = '⤢';
+      } else {
+        macroCard.classList.remove('hidden', 'xl:col-span-2');
+        microCard.classList.remove('hidden', 'xl:col-span-2');
+        macroWrap.className = 'relative w-full h-[380px] sm:h-[430px] bg-slate-50 cursor-pointer';
+        microWrap.className = 'relative w-full h-[380px] sm:h-[430px] bg-slate-900 cursor-pointer';
+        macroTxt.textContent = t('btnExpand');
+        microTxt.textContent = t('btnExpand');
+        macroIcon.textContent = '⛶';
+        microIcon.textContent = '⛶';
+      }
+    }
+
+    function setStep(pageKey, stepIdx) {
+      state[pageKey].step = stepIdx;
+      for (let i = 0; i < 4; i++) {
+        const btn = document.getElementById(`${pageKey}-step-${i}`);
+        if (i === stepIdx) {
+          btn.className = 'p-2.5 rounded-xl border-2 border-indigo-600 bg-indigo-50 text-indigo-950 text-left transition-all shadow-sm';
+        } else {
+          btn.className = 'p-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 text-left transition-all';
+        }
+      }
+      if (pageKey === 'p1') {
+        const sc = P1_SCENARIOS[state.p1.scenarioId];
+        document.getElementById('p1-step-desc').textContent = sc.steps[currentLang][stepIdx];
+      } else {
+        const cell = P2_CELLS[state.p2.cellId];
+        document.getElementById('p2-step-desc').textContent = cell.steps[currentLang][stepIdx];
+      }
+    }
+
+    function nextStep(pageKey) {
+      const next = (state[pageKey].step + 1) % 4;
+      setStep(pageKey, next);
+      if (!state[pageKey].playing) {
+        togglePlay(pageKey);
+      }
+    }
+
+    function resetSim(pageKey) {
+      state[pageKey].progress = 0;
+      state[pageKey].time = 0;
+      state[pageKey].flashes = [];
+      if (pageKey === 'p1') {
+        state.p1.bubbles = [];
+        initP1Particles();
+      } else {
+        initP2Particles();
+      }
+      setStep(pageKey, 0);
+    }
+
+    function updateP1UI() {
+      const sc = P1_SCENARIOS[state.p1.scenarioId];
+      // Factor buttons highlight
+      [1, 2, 3].forEach(f => {
+        const btn = document.getElementById(`factor-btn-${f}`);
+        if (sc.factor === f) {
+          btn.className = 'text-left p-3 rounded-xl border-2 border-navy-900 bg-blue-50/70 shadow-sm transition-all flex items-start gap-3';
+        } else {
+          btn.className = 'text-left p-3 rounded-xl border-2 border-slate-200 bg-white hover:border-slate-300 transition-all flex items-start gap-3';
+        }
+      });
+
+      // Pill highlights
+      const activePill = 'bg-navy-900 text-white border-navy-900 shadow-sm';
+      const idlePill = 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100';
+
+      document.getElementById('btn-elec-nacl').className = `px-3 py-2 rounded-lg text-xs sm:text-sm font-bold border transition-all chem-eq ${state.p1.electrolyte === 'nacl' ? activePill : idlePill}`;
+      document.getElementById('btn-elec-cuso4').className = `px-3 py-2 rounded-lg text-xs sm:text-sm font-bold border transition-all chem-eq ${state.p1.electrolyte === 'cuso4' ? activePill : idlePill}`;
+
+      document.getElementById('btn-conc-dilute').className = `px-3 py-2 rounded-lg text-xs sm:text-sm font-bold border transition-all ${state.p1.conc === 'dilute' ? activePill : idlePill}`;
+      document.getElementById('btn-conc-conc').className = `px-3 py-2 rounded-lg text-xs sm:text-sm font-bold border transition-all ${state.p1.conc === 'conc' ? activePill : idlePill}`;
+
+      document.getElementById('btn-mat-carbon').className = `px-2 py-2 rounded-lg text-xs font-bold border transition-all leading-tight ${state.p1.material === 'carbon' ? activePill : idlePill}`;
+      document.getElementById('btn-mat-copper').className = `px-2 py-2 rounded-lg text-xs font-bold border transition-all leading-tight ${state.p1.material === 'copper' ? activePill : idlePill}`;
+      document.getElementById('btn-mat-mercury').className = `px-2 py-2 rounded-lg text-xs font-bold border transition-all leading-tight ${state.p1.material === 'mercury' ? activePill : idlePill}`;
+
+      // Badge & Pedagogical Text
+      document.getElementById('p1-active-scenario-badge').textContent = sc.badge[currentLang];
+      document.getElementById('p1-eq-anode').innerHTML = sc.anodeEq;
+      document.getElementById('p1-obs-anode').innerHTML = sc.anodeObs[currentLang];
+      document.getElementById('p1-eq-cathode').innerHTML = sc.cathodeEq;
+      document.getElementById('p1-obs-cathode').innerHTML = sc.cathodeObs[currentLang];
+      document.getElementById('p1-eq-overall').innerHTML = (currentLang === 'en' && sc.overallEqEn) ? sc.overallEqEn : sc.overallEq;
+      document.getElementById('p1-sol-change').innerHTML = sc.solChange[currentLang];
+      document.getElementById('p1-factor-callout').innerHTML = sc.factorNote[currentLang];
+      // Update Step description & Camera / Expand UI
+      setStep('p1', state.p1.step);
+      updateCameraButtonsUI('p1', 'macro');
+      updateCameraButtonsUI('p1', 'micro');
+      updateExpandViewUI('p1');
+      updateSyncZoomUI('p1');
+      document.getElementById('p1-play-text').textContent = state.p1.playing ? t('btnPause') : t('btnPlay');
+
+      // Render Mini Visual ECS
+      renderMiniECS(sc);
+    }
+
+    function renderMiniECS(sc) {
+      const cationsList = ['K⁺', 'Na⁺', 'Ca²⁺', 'Mg²⁺', 'Zn²⁺', 'Fe²⁺', 'H⁺', 'Cu²⁺', 'Ag⁺'];
+      const anionsList = ['SO₄²⁻', 'NO₃⁻', 'Cl⁻', 'Br⁻', 'I⁻', 'OH⁻'];
+
+      const buildRow = (label, list, present, winner) => {
+        const chips = list.map(ion => {
+          const isPresent = present.includes(ion);
+          const isWinner = ion === winner;
+          let cls = 'px-2 py-1 rounded-md text-xs font-bold border ';
+          if (isWinner) {
+            cls += 'bg-emerald-600 text-white border-emerald-700 ring-2 ring-emerald-300 shadow-sm scale-105';
+          } else if (isPresent) {
+            cls += 'bg-amber-100 text-amber-900 border-amber-400';
+          } else {
+            cls += 'bg-slate-50 text-slate-400 border-slate-200';
+          }
+          return `<span class="${cls}">${ion}${isWinner ? ' ✓' : ''}</span>`;
+        }).join('');
+
+        return `
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+            <div class="flex items-center justify-between text-xs font-bold text-slate-600 mb-2">
+              <span>${label}</span>
+              <span class="text-indigo-600">${t('easierDischarge')}</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5 items-center">${chips}</div>
+          </div>
+        `;
+      };
+
+      const container = document.getElementById('p1-ecs-container');
+      container.innerHTML =
+        buildRow(t('ecsCations'), cationsList, sc.cations, sc.winCation) +
+        buildRow(t('ecsAnions'), anionsList, sc.anions, sc.winAnion);
+    }
+
+    function updateP2UI() {
+      const cell = P2_CELLS[state.p2.cellId];
+      const b1 = document.getElementById('cell-btn-1');
+      const b2 = document.getElementById('cell-btn-2');
+      const act = 'text-left p-3.5 rounded-xl border-2 border-emerald-600 bg-emerald-50/70 shadow-sm transition-all';
+      const idle = 'text-left p-3.5 rounded-xl border-2 border-slate-200 bg-white hover:border-slate-300 transition-all';
+      b1.className = state.p2.cellId === 'fe_mno4' ? act : idle;
+      b2.className = state.p2.cellId === 'i_cr2o7' ? act : idle;
+
+      document.getElementById('p2-eq-anode').innerHTML = cell.anodeEq;
+      document.getElementById('p2-obs-anode').innerHTML = cell.anodeObs[currentLang];
+      document.getElementById('p2-eq-cathode').innerHTML = cell.cathodeEq;
+      document.getElementById('p2-obs-cathode').innerHTML = cell.cathodeObs[currentLang];
+      document.getElementById('p2-eq-overall').innerHTML = cell.overallEq;
+
+      setStep('p2', state.p2.step);
+      updateCameraButtonsUI('p2', 'macro');
+      updateCameraButtonsUI('p2', 'micro');
+      updateExpandViewUI('p2');
+      updateSyncZoomUI('p2');
+      document.getElementById('p2-play-text').textContent = state.p2.playing ? t('btnPause') : t('btnPlay');
+    }
+
+    function renderComparisonTable() {
+      const tbody = document.getElementById('comparison-tbody');
+      tbody.innerHTML = COMPARISON_ROWS.map((r, idx) => `
+        <tr class="${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/70'} hover:bg-blue-50/40 transition-colors">
+          <td class="py-3.5 px-4 font-extrabold text-navy-900">${r.item[currentLang]}</td>
+          <td class="py-3.5 px-4 text-slate-800 border-l border-slate-200 font-medium">${r.elec[currentLang]}</td>
+          <td class="py-3.5 px-4 text-slate-800 border-l border-slate-200 font-medium">${r.cell[currentLang]}</td>
+        </tr>
+      `).join('');
+    }
+
+    // =========================================================================
+    // 6. CANVAS SETUP, RESIZEOBSERVER & INTERACTIVE ELECTRODE CLICK-TO-ZOOM
+    // =========================================================================
+    const canvases = {};
+    let canvasResizeObserver = null;
+
+    function setupCanvas(id, pageKey, viewKey) {
+      const el = document.getElementById(id);
+      const ctx = el.getContext('2d');
+      canvases[id] = { el, ctx, w: 0, h: 0, pageKey, viewKey };
+
+      // Click directly on an electrode region to toggle zoom on that electrode
+      el.addEventListener('click', (evt) => {
+        const rect = el.getBoundingClientRect();
+        const nx = (evt.clientX - rect.left) / rect.width;
+        const cam = state[pageKey][`${viewKey}Cam`];
+
+        if (cam.mode !== 'full') {
+          // Clicking while zoomed returns to full view
+          setCameraZoom(pageKey, viewKey, 'full');
+          return;
+        }
+        // Left side => Anode, Right side => Cathode
+        if (nx < 0.45) {
+          setCameraZoom(pageKey, viewKey, 'anode');
+        } else if (nx > 0.55) {
+          setCameraZoom(pageKey, viewKey, 'cathode');
+        }
+      });
+
+      if (typeof ResizeObserver !== 'undefined') {
+        if (!canvasResizeObserver) {
+          canvasResizeObserver = new ResizeObserver(() => resizeAllCanvases());
+        }
+        canvasResizeObserver.observe(el.parentElement);
+      }
+    }
+
+    function resizeAllCanvases() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      Object.values(canvases).forEach(c => {
+        const rect = c.el.parentElement.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+          c.w = rect.width;
+          c.h = rect.height;
+          c.el.width = Math.round(rect.width * dpr);
+          c.el.height = Math.round(rect.height * dpr);
+          c.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+      });
+    }
+
+    function lerp(a, b, t) {
+      return a + (b - a) * t;
+    }
+
+    function lerpRGBA(c1, c2, t) {
+      const r = Math.round(lerp(c1[0], c2[0], t));
+      const g = Math.round(lerp(c1[1], c2[1], t));
+      const b = Math.round(lerp(c1[2], c2[2], t));
+      const a = lerp(c1[3], c2[3], t).toFixed(2);
+      return `rgba(${r},${g},${b},${a})`;
+    }
+
+    // =========================================================================
+    // 7. PARTICLE INITIALIZATION (PAGE 1 & PAGE 2 MICROSCOPIC VIEWS)
+    // =========================================================================
+    function initP1Particles() {
+      const sc = P1_SCENARIOS[state.p1.scenarioId];
+      const particles = [];
+      const ionColors = {
+        'Na⁺': '#fde047',
+        'H⁺': '#f87171',
+        'Cu²⁺': '#38bdf8',
+        'Cl⁻': '#a3e635',
+        'OH⁻': '#f472b6',
+        'SO₄²⁻': '#c084fc'
+      };
+
+      const addIons = (label, charge, count) => {
+        for (let i = 0; i < count; i++) {
+          particles.push({
+            label,
+            charge,
+            x: 0.18 + Math.random() * 0.64,
+            y: 0.16 + Math.random() * 0.68,
+            vx: (Math.random() - 0.5) * 0.14,
+            vy: (Math.random() - 0.5) * 0.26,
+            bounceTimer: 0,
+            color: ionColors[label] || '#cbd5e1'
+          });
+        }
+      };
+
+      // Proportional counts to visually demonstrate concentration effect (4.0 M vs 0.1 M)
+      const isConc = sc.conc === 'conc';
+      sc.cations.forEach(ion => {
+        const count = (isConc && ion === 'Na⁺') ? 13 : (ion === 'H⁺' ? 5 : 7);
+        addIons(ion, +1, count);
+      });
+      sc.anions.forEach(ion => {
+        const count = (isConc && ion === 'Cl⁻') ? 14 : (ion === 'OH⁻' ? 5 : 7);
+        addIons(ion, -1, count);
+      });
+
+      state.p1.particles = particles;
+    }
+
+    function initP2Particles() {
+      const leftIons = [];
+      const rightIons = [];
+      const bridgeIons = [];
+
+      for (let i = 0; i < 10; i++) {
+        leftIons.push({
+          x: 0.18 + Math.random() * 0.25,
+          y: 0.34 + Math.random() * 0.50,
+          vx: (Math.random() - 0.5) * 0.08,
+          vy: (Math.random() - 0.5) * 0.20,
+          isProduct: false
+        });
+        rightIons.push({
+          x: 0.57 + Math.random() * 0.25,
+          y: 0.34 + Math.random() * 0.50,
+          vx: (Math.random() - 0.5) * 0.08,
+          vy: (Math.random() - 0.5) * 0.20,
+          isProduct: false
+        });
+      }
+
+      // Salt bridge K+ (migrating right) and NO3- (migrating left)
+      for (let i = 0; i < 4; i++) {
+        bridgeIons.push({
+          label: 'K⁺',
+          dir: 1,
+          x: 0.36 + i * 0.075,
+          y: 0.14,
+          color: '#38bdf8'
+        });
+        bridgeIons.push({
+          label: 'NO₃⁻',
+          dir: -1,
+          x: 0.38 + i * 0.075,
+          y: 0.24,
+          color: '#fb7185'
+        });
+      }
+
+      state.p2.leftIons = leftIons;
+      state.p2.rightIons = rightIons;
+      state.p2.bridgeIons = bridgeIons;
+    }
+
+    // =========================================================================
+    // 8. PAGE 1 DRAWING: MACROSCOPIC VIEW (WITH SMOOTH ELECTRODE ZOOM & HUD)
+    // =========================================================================
+    function drawP1Macro(dt) {
+      const c = canvases['canvas-p1-macro'];
+      if (!c || c.w === 0) return;
+      const { ctx, w, h } = c;
+      const sc = P1_SCENARIOS[state.p1.scenarioId];
+      const prog = state.p1.progress;
+      const cam = state.p1.macroCam;
+
+      // Coordinates
+      const cx = w * 0.5;
+      const beakerW = Math.min(w * 0.64, 380);
+      const beakerH = h * 0.52;
+      const beakerX = cx - beakerW / 2;
+      const beakerY = h * 0.40;
+      const liqTop = beakerY + beakerH * 0.16;
+      const liqH = beakerH * 0.82;
+
+      const anodeX = cx - beakerW * 0.27;
+      const cathodeX = cx + beakerW * 0.27;
+      const elecW = 18;
+      const elecTop = beakerY - 12;
+      const elecBottom = beakerY + beakerH - 22;
+
+      // Smooth Camera Interpolation for Macroscopic Electrode Zoom
+      const targetScale = cam.mode === 'full' ? 1.0 : 2.25;
+      const targetTx = cam.mode === 'anode' ? anodeX / w : cam.mode === 'cathode' ? cathodeX / w : 0.5;
+      const targetTy = cam.mode === 'full' ? 0.5 : (sc.mercuryCathode && cam.mode === 'cathode' ? (beakerY + beakerH * 0.78) / h : (beakerY + beakerH * 0.46) / h);
+      cam.scale = lerp(cam.scale, targetScale, Math.min(1, dt * 7.5));
+      cam.tx = lerp(cam.tx, targetTx, Math.min(1, dt * 7.5));
+      cam.ty = lerp(cam.ty, targetTy, Math.min(1, dt * 7.5));
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Background subtle lab grid
+      ctx.fillStyle = '#f8fafc';
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.save();
+      ctx.translate(w / 2, h / 2);
+      ctx.scale(cam.scale, cam.scale);
+      ctx.translate(-cam.tx * w, -cam.ty * h);
+
+      // 1. DC Power Supply Box at Top
+      const dcW = 136, dcH = 44;
+      const dcX = cx - dcW / 2, dcY = 16;
+      ctx.fillStyle = '#1e293b';
+      roundRect(ctx, dcX, dcY, dcW, dcH, 10, true, false);
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 2;
+      roundRect(ctx, dcX, dcY, dcW, dcH, 10, false, true);
+
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = '700 12px Inter, Noto Sans TC, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(t('dcPower'), cx, dcY + 18);
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '600 10px Inter, sans-serif';
+      ctx.fillText('6.0 V', cx, dcY + 34);
+
+      // + and - terminals
+      ctx.fillStyle = '#ef4444';
+      ctx.beginPath(); ctx.arc(dcX + 14, dcY + dcH / 2, 10, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#ffffff'; ctx.font = '800 15px Inter'; ctx.fillText('+', dcX + 14, dcY + dcH / 2 + 5);
+
+      ctx.fillStyle = '#2563eb';
+      ctx.beginPath(); ctx.arc(dcX + dcW - 14, dcY + dcH / 2, 10, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#ffffff'; ctx.font = '800 16px Inter'; ctx.fillText('−', dcX + dcW - 14, dcY + dcH / 2 + 5);
+
+      // 2. External Circuit Wires
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 3;
+      // Left wire: Anode -> DC +
+      ctx.beginPath();
+      ctx.moveTo(anodeX, elecTop);
+      ctx.lineTo(anodeX, dcY + dcH / 2);
+      ctx.lineTo(dcX, dcY + dcH / 2);
+      ctx.stroke();
+
+      // Right wire: DC - -> Cathode
+      ctx.beginPath();
+      ctx.moveTo(dcX + dcW, dcY + dcH / 2);
+      ctx.lineTo(cathodeX, dcY + dcH / 2);
+      ctx.lineTo(cathodeX, sc.mercuryCathode ? beakerY + beakerH - 12 : elecTop);
+      ctx.stroke();
+
+      // Animated Electron Flow (e-) along wires
+      // From Anode (+) UP to DC (+), and from DC (-) DOWN to Cathode (-)
+      const flowSpeed = 0.45 * state.p1.speed;
+      const eOffset = (state.p1.time * flowSpeed) % 1;
+      for (let i = 0; i < 4; i++) {
+        const u = (eOffset + i * 0.25) % 1;
+        // Left wire (Anode -> DC +)
+        const pL = getPolylinePoint([[anodeX, elecTop], [anodeX, dcY + dcH / 2], [dcX, dcY + dcH / 2]], u);
+        drawElectronDot(ctx, pL.x, pL.y);
+        // Right wire (DC - -> Cathode)
+        const pR = getPolylinePoint([[dcX + dcW, dcY + dcH / 2], [cathodeX, dcY + dcH / 2], [cathodeX, elecTop]], u);
+        drawElectronDot(ctx, pR.x, pR.y);
+      }
+
+      // Digital Ammeter on Right Wire
+      const amX = Math.min(w - 58, cathodeX + 26);
+      const amY = dcY + 46;
+      ctx.fillStyle = '#0f172a';
+      roundRect(ctx, amX - 34, amY, 68, 34, 8, true, false);
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = '700 12px monospace';
+      ctx.textAlign = 'center';
+      const ampVal = state.p1.playing ? (sc.currentA + Math.sin(state.p1.time * 4) * 0.02).toFixed(2) : '0.00';
+      ctx.fillText(`${ampVal} A`, amX, amY + 15);
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '600 9px Inter, Noto Sans TC';
+      ctx.fillText(t('ammeter'), amX, amY + 28);
+
+      // Digital pH Meter on Left Side
+      const phX = Math.max(58, anodeX - 28);
+      const phY = dcY + 46;
+      const curPH = lerp(sc.pHStart, sc.pHEnd, prog);
+      ctx.fillStyle = '#0f172a';
+      roundRect(ctx, phX - 38, phY, 76, 36, 8, true, false);
+      ctx.fillStyle = curPH > 8.5 ? '#c084fc' : curPH < 4.5 ? '#fb923c' : '#4ade80';
+      ctx.font = '700 12px monospace';
+      ctx.fillText(`pH ${curPH.toFixed(1)}`, phX, phY + 16);
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '600 9px Inter, Noto Sans TC';
+      ctx.fillText(curPH > 8.5 ? 'Alkaline' : curPH < 4.5 ? 'Acidic' : 'Neutral', phX, phY + 30);
+
+      // 3. Electrolyte Liquid inside Beaker
+      let liqColor = 'rgba(224, 242, 254, 0.55)';
+      if (sc.electrolyte === 'cuso4') {
+        if (sc.id === 'cuso4_carbon') {
+          liqColor = lerpRGBA([14, 165, 233, 0.65], [186, 230, 253, 0.35], prog);
+        } else {
+          liqColor = 'rgba(14, 165, 233, 0.65)';
+        }
+      } else if (sc.id === 'conc_nacl_carbon') {
+        liqColor = lerpRGBA([224, 242, 254, 0.55], [233, 213, 255, 0.45], prog * 0.5);
+      }
+
+      ctx.fillStyle = liqColor;
+      ctx.fillRect(beakerX + 3, liqTop, beakerW - 6, liqH);
+      // Liquid meniscus line
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.6)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(beakerX + 3, liqTop);
+      ctx.lineTo(beakerX + beakerW - 3, liqTop);
+      ctx.stroke();
+
+      // Mercury Pool at bottom if Mercury Cathode scenario
+      if (sc.mercuryCathode) {
+        const hgGrad = ctx.createLinearGradient(beakerX, beakerY + beakerH - 28, beakerX + beakerW, beakerY + beakerH);
+        hgGrad.addColorStop(0, '#94a3b8');
+        hgGrad.addColorStop(0.5, '#e2e8f0');
+        hgGrad.addColorStop(1, '#64748b');
+        ctx.fillStyle = hgGrad;
+        ctx.fillRect(beakerX + 4, beakerY + beakerH - 26, beakerW - 8, 22);
+        // Shimmering amalgam highlight
+        ctx.fillStyle = `rgba(255,255,255,${0.25 + 0.2 * Math.sin(state.p1.time * 3)})`;
+        ctx.fillRect(beakerX + 18, beakerY + beakerH - 22, beakerW - 36, 4);
+
+        ctx.fillStyle = '#0f172a';
+        ctx.font = '700 11px Inter, Noto Sans TC';
+        ctx.textAlign = 'center';
+        ctx.fillText(prog > 0.25 ? t('amalgamNote') : t('mercuryCathode'), cx, beakerY + beakerH - 9);
+      }
+
+      // 4. Electrodes
+      // Anode (+) on Left
+      const anodeThin = sc.anodeDissolveCu ? prog * 7 : 0;
+      const curAnodeW = Math.max(7, elecW - anodeThin);
+      ctx.fillStyle = sc.material === 'copper' ? '#c2410c' : '#334155';
+      roundRect(ctx, anodeX - curAnodeW / 2, elecTop, curAnodeW, elecBottom - elecTop - (sc.mercuryCathode ? 26 : 0), 4, true, false);
+
+      // Cathode (-) on Right (unless mercury pool)
+      if (!sc.mercuryCathode) {
+        ctx.fillStyle = sc.material === 'copper' ? '#c2410c' : '#334155';
+        roundRect(ctx, cathodeX - elecW / 2, elecTop, elecW, elecBottom - elecTop, 4, true, false);
+        // Reddish-brown Copper Plating Layer
+        if (sc.cathodePlateCu && prog > 0.02) {
+          const plateThick = prog * 6;
+          ctx.fillStyle = '#b45309';
+          const submTop = liqTop + 6;
+          roundRect(ctx, cathodeX - elecW / 2 - plateThick, submTop, elecW + plateThick * 2, elecBottom - submTop + 2, 4, true, false);
+        }
+      } else {
+        // Insulated glass tube carrying wire down to mercury pool
+        ctx.strokeStyle = 'rgba(203, 213, 225, 0.9)';
+        ctx.lineWidth = 7;
+        ctx.beginPath();
+        ctx.moveTo(cathodeX, elecTop);
+        ctx.lineTo(cathodeX, beakerY + beakerH - 18);
+        ctx.stroke();
+        ctx.strokeStyle = '#2563eb';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(cathodeX, elecTop);
+        ctx.lineTo(cathodeX, beakerY + beakerH - 14);
+        ctx.stroke();
+      }
+
+      // 5. Inverted Gas Collection Tubes (for gas-producing electrodes)
+      const drawGasTube = (xPos, gasType, fillFraction) => {
+        const tubeW = 34, tubeH = 74;
+        const tubeY = liqTop - 32;
+        // Glass outline
+        ctx.strokeStyle = 'rgba(71, 85, 105, 0.7)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(xPos - tubeW / 2, tubeY, tubeW, tubeH, [14, 14, 0, 0]);
+        ctx.stroke();
+
+        // Collected Gas Pocket at top of tube
+        const gasH = Math.max(4, fillFraction * (tubeH - 14));
+        ctx.fillStyle = gasType === 'Cl2' ? 'rgba(190, 242, 100, 0.72)' : 'rgba(255, 255, 255, 0.85)';
+        ctx.beginPath();
+        ctx.roundRect(xPos - tubeW / 2 + 1.5, tubeY + 1.5, tubeW - 3, gasH, [12, 12, 0, 0]);
+        ctx.fill();
+
+        // Gas label
+        ctx.fillStyle = '#0f172a';
+        ctx.font = '800 11px Inter';
+        ctx.textAlign = 'center';
+        const gText = gasType === 'O2' ? 'O₂' : gasType === 'H2' ? 'H₂' : 'Cl₂';
+        ctx.fillText(gText, xPos, tubeY + 16);
+      };
+
+      if (sc.anodeGas) {
+        const fill = sc.id === 'dilute_nacl_carbon' ? prog * 0.42 : prog * 0.78;
+        drawGasTube(anodeX, sc.anodeGas, fill);
+      }
+      if (sc.cathodeGas) {
+        const fill = prog * 0.84;
+        drawGasTube(cathodeX, sc.cathodeGas, fill);
+      }
+
+      // 6. Rising Gas Bubbles
+      if (state.p1.playing && Math.random() < 0.35 * state.p1.speed) {
+        if (sc.anodeGas) {
+          state.p1.bubbles.push({
+            x: anodeX + (Math.random() - 0.5) * 16,
+            y: elecBottom - 16 - Math.random() * 40,
+            r: 2 + Math.random() * 2.5,
+            color: sc.anodeGas === 'Cl2' ? 'rgba(163, 230, 53, 0.85)' : 'rgba(255, 255, 255, 0.9)'
+          });
+        }
+        if (sc.cathodeGas) {
+          const spawnCount = sc.id === 'dilute_nacl_carbon' ? 2 : 1;
+          for (let k = 0; k < spawnCount; k++) {
+            state.p1.bubbles.push({
+              x: cathodeX + (Math.random() - 0.5) * 16,
+              y: elecBottom - 16 - Math.random() * 40,
+              r: 2 + Math.random() * 2.5,
+              color: 'rgba(255, 255, 255, 0.9)'
+            });
+          }
+        }
+      }
+      for (let i = state.p1.bubbles.length - 1; i >= 0; i--) {
+        const b = state.p1.bubbles[i];
+        if (state.p1.playing) b.y -= 55 * dt * state.p1.speed;
+        ctx.fillStyle = b.color;
+        ctx.strokeStyle = 'rgba(100, 116, 139, 0.4)';
+        ctx.lineWidth = 0.8;
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        if (b.y < liqTop - 8) state.p1.bubbles.splice(i, 1);
+      }
+
+      // 7. Beaker Glass Outline
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(beakerX, beakerY);
+      ctx.lineTo(beakerX, beakerY + beakerH);
+      ctx.lineTo(beakerX + beakerW, beakerY + beakerH);
+      ctx.lineTo(beakerX + beakerW, beakerY);
+      ctx.stroke();
+
+      // 8. Clear Classroom Labels for Anode (+) & Cathode (-)
+      // Anode label badge
+      drawLabelPill(ctx, anodeX - 18, beakerY - 38, `${t('anodePos')}`, '#dc2626', '#fef2f2');
+      ctx.fillStyle = '#b91c1c';
+      ctx.font = '700 10.5px Inter, Noto Sans TC';
+      ctx.textAlign = 'center';
+      ctx.fillText(t('oxidation'), anodeX - 18, beakerY - 19);
+
+      // Cathode label badge
+      drawLabelPill(ctx, cathodeX + 18, beakerY - 38, `${t('cathodeNeg')}`, '#2563eb', '#eff6ff');
+      ctx.fillStyle = '#1d4ed8';
+      ctx.font = '700 10.5px Inter, Noto Sans TC';
+      ctx.textAlign = 'center';
+      ctx.fillText(t('reduction'), cathodeX + 18, beakerY - 19);
+
+      // Gas Ratio Pill at bottom
+      if (sc.anodeGas || sc.cathodeGas) {
+        drawLabelPill(ctx, cx, beakerY + beakerH + 18, `${t('gasRatio')}: ${sc.gasRatioText}`, '#0f172a', '#e2e8f0');
+      }
+
+      ctx.restore();
+
+      // Focused Electrode HUD Overlay (Screen Space)
+      if (cam.mode !== 'full') {
+        const isAnode = cam.mode === 'anode';
+        drawFocusHUD(ctx, w, h, {
+          title: isAnode ? `${t('anodePos')} • ${t('oxidation')}` : `${t('cathodeNeg')} • ${t('reduction')}`,
+          eq: stripHtmlToPlain(isAnode ? sc.anodeEq : sc.cathodeEq),
+          note: stripHtmlToPlain(isAnode ? sc.anodeObs[currentLang] : sc.cathodeObs[currentLang]),
+          accent: isAnode ? '#dc2626' : '#2563eb',
+          dark: false
+        });
+      }
+    }
+
+    // =========================================================================
+    // 9. PAGE 1 DRAWING: MICROSCOPIC VIEW (WITH SMOOTH ZOOM & HUD)
+    // =========================================================================
+    function drawP1Micro(dt) {
+      const c = canvases['canvas-p1-micro'];
+      if (!c || c.w === 0) return;
+      const { ctx, w, h } = c;
+      const sc = P1_SCENARIOS[state.p1.scenarioId];
+      const cam = state.p1.microCam;
+
+      // Smooth Zoom Interpolation
+      const targetScale = cam.mode === 'full' ? 1.0 : 2.25;
+      const targetX = cam.mode === 'anode' ? 0.16 : cam.mode === 'cathode' ? 0.84 : 0.5;
+      cam.scale = lerp(cam.scale, targetScale, Math.min(1, dt * 7.5));
+      cam.tx = lerp(cam.tx, targetX, Math.min(1, dt * 7.5));
+
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.save();
+      ctx.translate(w / 2, h / 2);
+      ctx.scale(cam.scale, cam.scale);
+      ctx.translate(-cam.tx * w, -0.5 * h);
+
+      // Solution subtle gradient
+      const bgGrad = ctx.createLinearGradient(0, 0, w, 0);
+      bgGrad.addColorStop(0, 'rgba(239, 68, 68, 0.10)');
+      bgGrad.addColorStop(0.5, sc.electrolyte === 'cuso4' ? 'rgba(14, 165, 233, 0.16)' : 'rgba(30, 41, 59, 0.4)');
+      bgGrad.addColorStop(1, 'rgba(59, 130, 246, 0.10)');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, w, h);
+
+      // Left Electrode: Anode (+)
+      const anodeEdge = w * 0.12;
+      ctx.fillStyle = sc.material === 'copper' ? '#c2410c' : '#334155';
+      ctx.fillRect(0, 26, anodeEdge, h - 52);
+      ctx.strokeStyle = '#ef4444';
+      ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(anodeEdge, 26); ctx.lineTo(anodeEdge, h - 26); ctx.stroke();
+
+      // Right Electrode: Cathode (-)
+      const cathodeEdge = w * 0.88;
+      ctx.fillStyle = sc.mercuryCathode ? '#94a3b8' : (sc.material === 'copper' ? '#c2410c' : '#334155');
+      ctx.fillRect(cathodeEdge, 26, w - cathodeEdge, h - 52);
+      ctx.strokeStyle = '#3b82f6';
+      ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(cathodeEdge, 26); ctx.lineTo(cathodeEdge, h - 26); ctx.stroke();
+
+      // Vertical Electrode Labels
+      ctx.save();
+      ctx.fillStyle = '#fca5a5';
+      ctx.font = '800 12px Inter, Noto Sans TC';
+      ctx.textAlign = 'center';
+      ctx.translate(anodeEdge * 0.5, h * 0.5);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText(`${t('anodePos')} • ${t('oxidation')}`, 0, 4);
+      ctx.restore();
+
+      ctx.save();
+      ctx.fillStyle = '#93c5fd';
+      ctx.font = '800 12px Inter, Noto Sans TC';
+      ctx.textAlign = 'center';
+      ctx.translate(cathodeEdge + (w - cathodeEdge) * 0.5, h * 0.5);
+      ctx.rotate(Math.PI / 2);
+      ctx.fillText(`${t('cathodeNeg')} • ${t('reduction')}`, 0, 4);
+      ctx.restore();
+
+      // Update & Draw Migrating Ions
+      const spd = state.p1.playing ? state.p1.speed : 0;
+      const moveScale = dt * spd * 0.24;
+
+      state.p1.particles.forEach(p => {
+        if (spd > 0) {
+          // Drift toward oppositely charged electrode
+          const drift = p.charge > 0 ? 0.36 : -0.36;
+          if (p.bounceTimer > 0) {
+            p.bounceTimer -= dt * spd;
+            p.x -= drift * moveScale * 1.4;
+          } else {
+            p.x += (drift + p.vx) * moveScale;
+          }
+          p.y += p.vy * moveScale;
+          if (p.y < 0.14 || p.y > 0.86) p.vy *= -1;
+
+          // Check Anode collision (x <= 0.15)
+          if (p.charge < 0 && p.x <= 0.155) {
+            if (p.label === sc.winAnion) {
+              // Preferential Discharge at Anode!
+              const prodLabel = sc.anodeGas === 'Cl2' ? 'Cl₂' : 'O₂';
+              state.p1.flashes.push({
+                x: anodeEdge + 8, y: p.y * h, life: 1.0,
+                text: `${prodLabel} + e⁻`, color: sc.anodeGas === 'Cl2' ? '#bef264' : '#f8fafc',
+                eDir: -1
+              });
+              p.x = 0.72 + Math.random() * 0.1;
+              p.y = 0.18 + Math.random() * 0.64;
+            } else {
+              // Non-discharged anion bounces back
+              p.x = 0.165;
+              p.bounceTimer = 0.55;
+            }
+          }
+
+          // Check Cathode collision (x >= 0.845)
+          if (p.charge > 0 && p.x >= 0.845) {
+            if (p.label === sc.winCation) {
+              const prodLabel = sc.cathodeGas === 'H2' ? 'H₂' : sc.mercuryCathode ? 'Na/Hg' : 'Cu(s)';
+              state.p1.flashes.push({
+                x: cathodeEdge - 8, y: p.y * h, life: 1.0,
+                text: prodLabel, color: sc.cathodePlateCu ? '#fb923c' : '#e0f2fe',
+                eDir: 1
+              });
+              p.x = 0.22 + Math.random() * 0.1;
+              p.y = 0.18 + Math.random() * 0.64;
+            } else {
+              p.x = 0.835;
+              p.bounceTimer = 0.55;
+            }
+          }
+        }
+
+        // Draw Ion Circle
+        const px = p.x * w;
+        const py = p.y * h;
+        const isWinner = (p.label === sc.winAnion || p.label === sc.winCation);
+        ctx.beginPath();
+        ctx.arc(px, py, isWinner ? 14 : 11.5, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.fill();
+        if (isWinner) {
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 1.8;
+          ctx.stroke();
+        }
+        ctx.fillStyle = '#0f172a';
+        ctx.font = '800 9.5px Inter';
+        ctx.textAlign = 'center';
+        ctx.fillText(p.label, px, py + 3.5);
+      });
+
+      // Active Copper Anode Dissolving Visual
+      if (sc.anodeDissolveCu && spd > 0 && Math.random() < 0.05 * spd) {
+        state.p1.flashes.push({
+          x: anodeEdge + 10, y: (0.2 + Math.random() * 0.6) * h, life: 1.0,
+          text: 'Cu → Cu²⁺ + 2e⁻', color: '#38bdf8', eDir: -1
+        });
+      }
+
+      // Draw Electron Transfer Flashes & Product Formation
+      for (let i = state.p1.flashes.length - 1; i >= 0; i--) {
+        const f = state.p1.flashes[i];
+        if (spd > 0) f.life -= dt * spd * 0.85;
+        if (f.life <= 0) { state.p1.flashes.splice(i, 1); continue; }
+
+        ctx.save();
+        ctx.globalAlpha = Math.min(1, f.life * 1.4);
+        // Glowing reaction halo
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, 18 * (1.2 - f.life * 0.4), 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(250, 204, 21, 0.25)';
+        ctx.fill();
+
+        // Product text rising slightly
+        ctx.fillStyle = f.color;
+        ctx.font = '800 11px Inter';
+        ctx.textAlign = f.eDir < 0 ? 'left' : 'right';
+        ctx.fillText(f.text, f.x + (f.eDir < 0 ? 6 : -6), f.y - (1 - f.life) * 24);
+
+        // Electron arrow into/out of electrode
+        const ex = f.x + f.eDir * (1 - f.life) * 28;
+        drawElectronDot(ctx, ex, f.y + 8);
+        ctx.restore();
+      }
+
+      ctx.restore();
+
+      // Focused Electrode HUD Overlay (Screen Space)
+      if (cam.mode !== 'full') {
+        const isAnode = cam.mode === 'anode';
+        drawFocusHUD(ctx, w, h, {
+          title: `${isAnode ? t('anodePos') : t('cathodeNeg')} • ${isAnode ? t('eTransferOut') : t('eTransferIn')}`,
+          eq: stripHtmlToPlain(isAnode ? sc.anodeEq : sc.cathodeEq),
+          note: isAnode
+            ? (currentLang === 'zh' ? `優先放電：${sc.winAnion} (${t('oxidation')})` : `Preferential discharge: ${sc.winAnion}`)
+            : (currentLang === 'zh' ? `優先放電：${sc.winCation} (${t('reduction')})` : `Preferential discharge: ${sc.winCation}`),
+          accent: isAnode ? '#ef4444' : '#3b82f6',
+          dark: true
+        });
+      }
+    }
+
+    // =========================================================================
+    // 10. PAGE 2 DRAWING: MACROSCOPIC INERT-ELECTRODE CHEMICAL CELL (WITH ZOOM)
+    // =========================================================================
+    function drawP2Macro(dt) {
+      const c = canvases['canvas-p2-macro'];
+      if (!c || c.w === 0) return;
+      const { ctx, w, h } = c;
+      const cell = P2_CELLS[state.p2.cellId];
+      const prog = state.p2.progress;
+      const cam = state.p2.macroCam;
+
+      const cx = w * 0.5;
+      const bW = Math.min(w * 0.34, 185);
+      const bH = h * 0.45;
+      const gap = Math.min(w * 0.14, 78);
+      const leftBX = cx - gap / 2 - bW;
+      const rightBX = cx + gap / 2;
+      const bY = h * 0.45;
+
+      const leftElecX = leftBX + bW * 0.34;
+      const rightElecX = rightBX + bW * 0.66;
+      const elecTop = bY - 14;
+      const elecBot = bY + bH - 18;
+
+      // Smooth Camera Interpolation for Macroscopic Electrode Zoom
+      const targetScale = cam.mode === 'full' ? 1.0 : 2.25;
+      const targetTx = cam.mode === 'anode' ? (leftBX + bW * 0.45) / w : cam.mode === 'cathode' ? (rightBX + bW * 0.55) / w : 0.5;
+      const targetTy = cam.mode === 'full' ? 0.5 : (bY + bH * 0.42) / h;
+      cam.scale = lerp(cam.scale, targetScale, Math.min(1, dt * 7.5));
+      cam.tx = lerp(cam.tx, targetTx, Math.min(1, dt * 7.5));
+      cam.ty = lerp(cam.ty, targetTy, Math.min(1, dt * 7.5));
+
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = '#f8fafc';
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.save();
+      ctx.translate(w / 2, h / 2);
+      ctx.scale(cam.scale, cam.scale);
+      ctx.translate(-cam.tx * w, -cam.ty * h);
+
+      // 1. External Circuit Wire + Voltmeter + Glowing Bulb
+      const wireTop = 34;
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(leftElecX, elecTop);
+      ctx.lineTo(leftElecX, wireTop);
+      ctx.lineTo(rightElecX, wireTop);
+      ctx.lineTo(rightElecX, elecTop);
+      ctx.stroke();
+
+      // Spontaneous Electrons (e-) flowing Left (Anode -) -> Right (Cathode +)
+      const eOff = (state.p2.time * 0.45 * state.p2.speed) % 1;
+      for (let i = 0; i < 6; i++) {
+        const u = (eOff + i / 6) % 1;
+        const pt = getPolylinePoint([[leftElecX, elecTop], [leftElecX, wireTop], [rightElecX, wireTop], [rightElecX, elecTop]], u);
+        drawElectronDot(ctx, pt.x, pt.y);
+      }
+
+      // Digital Voltmeter at Top Center
+      const vmW = 94, vmH = 42;
+      ctx.fillStyle = '#0f172a';
+      roundRect(ctx, cx - vmW / 2 - 28, wireTop - vmH / 2, vmW, vmH, 10, true, false);
+      ctx.strokeStyle = '#10b981';
+      ctx.lineWidth = 2;
+      roundRect(ctx, cx - vmW / 2 - 28, wireTop - vmH / 2, vmW, vmH, 10, false, true);
+      ctx.fillStyle = '#4ade80';
+      ctx.font = '800 14px monospace';
+      ctx.textAlign = 'center';
+      const vVal = (cell.voltage * (1 - prog * 0.12)).toFixed(2);
+      ctx.fillText(`+${vVal} V`, cx - 28, wireTop - 1);
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '600 9.5px Inter, Noto Sans TC';
+      ctx.fillText(t('voltmeter'), cx - 28, wireTop + 14);
+
+      // Glowing Light Bulb beside Voltmeter
+      const bulbX = cx + 44, bulbY = wireTop;
+      if (state.p2.playing) {
+        const glow = ctx.createRadialGradient(bulbX, bulbY, 2, bulbX, bulbY, 24);
+        glow.addColorStop(0, 'rgba(250, 204, 21, 0.95)');
+        glow.addColorStop(1, 'rgba(250, 204, 21, 0)');
+        ctx.fillStyle = glow;
+        ctx.beginPath(); ctx.arc(bulbX, bulbY, 24, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.fillStyle = state.p2.playing ? '#fef08a' : '#e2e8f0';
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(bulbX, bulbY, 12, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+      // 2. Two Beakers with Realistic Gradual Colour Changes
+      const liqTop = bY + bH * 0.18;
+      const liqH = bH * 0.80;
+
+      // Left Beaker Liquid
+      ctx.fillStyle = lerpRGBA(cell.leftColorStart, cell.leftColorEnd, prog);
+      ctx.fillRect(leftBX + 3, liqTop, bW - 6, liqH);
+      // Right Beaker Liquid
+      ctx.fillStyle = lerpRGBA(cell.rightColorStart, cell.rightColorEnd, prog);
+      ctx.fillRect(rightBX + 3, liqTop, bW - 6, liqH);
+
+      // 3. Inverted U-Tube Salt Bridge (KNO3)
+      const sbLeftX = leftBX + bW * 0.78;
+      const sbRightX = rightBX + bW * 0.22;
+      const sbArchY = bY - 38;
+      ctx.strokeStyle = 'rgba(203, 213, 225, 0.88)';
+      ctx.lineWidth = 18;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      ctx.moveTo(sbLeftX, liqTop + 34);
+      ctx.lineTo(sbLeftX, sbArchY);
+      ctx.lineTo(sbRightX, sbArchY);
+      ctx.lineTo(sbRightX, liqTop + 34);
+      ctx.stroke();
+
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Animated Salt Bridge Ion Arrows (K+ right, NO3- left)
+      ctx.fillStyle = '#0f172a';
+      ctx.font = '800 10px Inter';
+      ctx.textAlign = 'center';
+      ctx.fillText(t('saltBridge'), cx, sbArchY - 14);
+      ctx.fillStyle = '#0284c7';
+      ctx.fillText('K⁺ →', cx + 22, sbArchY + 4);
+      ctx.fillStyle = '#e11d48';
+      ctx.fillText('← NO₃⁻', cx - 22, sbArchY + 4);
+
+      // 4. Inert Carbon Electrodes
+      ctx.fillStyle = '#334155';
+      roundRect(ctx, leftElecX - 8, elecTop, 16, elecBot - elecTop, 4, true, false);
+      roundRect(ctx, rightElecX - 8, elecTop, 16, elecBot - elecTop, 4, true, false);
+
+      // 5. Beaker Glass Outlines
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 3;
+      [leftBX, rightBX].forEach(bx => {
+        ctx.beginPath();
+        ctx.moveTo(bx, bY);
+        ctx.lineTo(bx, bY + bH);
+        ctx.lineTo(bx + bW, bY + bH);
+        ctx.lineTo(bx + bW, bY);
+        ctx.stroke();
+      });
+
+      // 6. Prominent Polarity & Half-Cell Labels
+      drawLabelPill(ctx, leftElecX, bY - 46, t('cellAnodeNeg'), '#2563eb', '#eff6ff');
+      ctx.fillStyle = '#1d4ed8';
+      ctx.font = '700 10.5px Inter, Noto Sans TC';
+      ctx.fillText(t('oxidation'), leftElecX, bY - 26);
+
+      drawLabelPill(ctx, rightElecX, bY - 46, t('cellCathodePos'), '#dc2626', '#fef2f2');
+      ctx.fillStyle = '#b91c1c';
+      ctx.font = '700 10.5px Inter, Noto Sans TC';
+      ctx.fillText(t('reduction'), rightElecX, bY - 26);
+
+      // Solution Names below Beakers
+      ctx.fillStyle = '#0f172a';
+      ctx.font = '700 11.5px Inter, Noto Sans TC';
+      ctx.textAlign = 'center';
+      ctx.fillText(cell.leftName[currentLang], leftBX + bW / 2, bY + bH + 20);
+      ctx.fillText(cell.rightName[currentLang], rightBX + bW / 2, bY + bH + 20);
+
+      ctx.restore();
+
+      // Focused Electrode HUD Overlay (Screen Space)
+      if (cam.mode !== 'full') {
+        const isAnode = cam.mode === 'anode';
+        drawFocusHUD(ctx, w, h, {
+          title: isAnode ? `${t('cellAnodeNeg')} • ${t('oxidation')}` : `${t('cellCathodePos')} • ${t('reduction')}`,
+          eq: stripHtmlToPlain(isAnode ? cell.anodeEq : cell.cathodeEq),
+          note: stripHtmlToPlain(isAnode ? cell.anodeObs[currentLang] : cell.cathodeObs[currentLang]),
+          accent: isAnode ? '#2563eb' : '#dc2626',
+          dark: false
+        });
+      }
+    }
+
+    // =========================================================================
+    // 11. PAGE 2 DRAWING: MICROSCOPIC CHEMICAL CELL VIEW (WITH ZOOM & HUD)
+    // =========================================================================
+    function drawP2Micro(dt) {
+      const c = canvases['canvas-p2-micro'];
+      if (!c || c.w === 0) return;
+      const { ctx, w, h } = c;
+      const cell = P2_CELLS[state.p2.cellId];
+      const cam = state.p2.microCam;
+
+      const targetScale = cam.mode === 'full' ? 1.0 : 2.25;
+      const targetX = cam.mode === 'anode' ? 0.16 : cam.mode === 'cathode' ? 0.84 : 0.5;
+      cam.scale = lerp(cam.scale, targetScale, Math.min(1, dt * 7.5));
+      cam.tx = lerp(cam.tx, targetX, Math.min(1, dt * 7.5));
+
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.save();
+      ctx.translate(w / 2, h / 2);
+      ctx.scale(cam.scale, cam.scale);
+      ctx.translate(-cam.tx * w, -0.5 * h);
+
+      // Divider wall between half-cells with Salt Bridge Channel at top
+      const midX = w * 0.5;
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(midX - 6, h * 0.30, 12, h * 0.70);
+
+      // Salt bridge channel
+      ctx.fillStyle = 'rgba(148, 163, 184, 0.25)';
+      ctx.fillRect(w * 0.34, h * 0.08, w * 0.32, h * 0.22);
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(w * 0.34, h * 0.08, w * 0.32, h * 0.22);
+
+      // Left Carbon Electrode (Negative / Anode -)
+      const anodeEdge = w * 0.12;
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(0, 26, anodeEdge, h - 52);
+      ctx.strokeStyle = '#3b82f6';
+      ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(anodeEdge, 26); ctx.lineTo(anodeEdge, h - 26); ctx.stroke();
+
+      // Right Carbon Electrode (Positive / Cathode +)
+      const cathodeEdge = w * 0.88;
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(cathodeEdge, 26, w - cathodeEdge, h - 52);
+      ctx.strokeStyle = '#ef4444';
+      ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(cathodeEdge, 26); ctx.lineTo(cathodeEdge, h - 26); ctx.stroke();
+
+      // Vertical Electrode Labels
+      ctx.save();
+      ctx.fillStyle = '#93c5fd';
+      ctx.font = '800 11.5px Inter, Noto Sans TC';
+      ctx.textAlign = 'center';
+      ctx.translate(anodeEdge * 0.5, h * 0.5);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText(`${t('cellAnodeNeg')} • ${t('oxidation')}`, 0, 4);
+      ctx.restore();
+
+      ctx.save();
+      ctx.fillStyle = '#fca5a5';
+      ctx.font = '800 11.5px Inter, Noto Sans TC';
+      ctx.textAlign = 'center';
+      ctx.translate(cathodeEdge + (w - cathodeEdge) * 0.5, h * 0.5);
+      ctx.rotate(Math.PI / 2);
+      ctx.fillText(`${t('cellCathodePos')} • ${t('reduction')}`, 0, 4);
+      ctx.restore();
+
+      const spd = state.p2.playing ? state.p2.speed : 0;
+
+      // Update & Draw Salt Bridge Ions
+      state.p2.bridgeIons.forEach(bi => {
+        if (spd > 0) {
+          bi.x += bi.dir * dt * spd * 0.08;
+          if (bi.x > 0.64) bi.x = 0.36;
+          if (bi.x < 0.36) bi.x = 0.64;
+        }
+        ctx.beginPath();
+        ctx.arc(bi.x * w, bi.y * h, 10, 0, Math.PI * 2);
+        ctx.fillStyle = bi.color;
+        ctx.fill();
+        ctx.fillStyle = '#0f172a';
+        ctx.font = '800 8.5px Inter';
+        ctx.textAlign = 'center';
+        ctx.fillText(bi.label, bi.x * w, bi.y * h + 3);
+      });
+
+      // Left Half-Cell Particles (Reactant approaches Anode -, oxidises into Product)
+      state.p2.leftIons.forEach(p => {
+        if (spd > 0) {
+          const drift = p.isProduct ? 0.14 : -0.22;
+          p.x += (drift + p.vx) * dt * spd * 0.35;
+          p.y += p.vy * dt * spd * 0.35;
+          if (p.y < 0.32 || p.y > 0.88) p.vy *= -1;
+          if (p.x > 0.45) {
+            p.x = 0.44;
+            p.isProduct = false; // Recycle for continuous visualization
+          }
+          if (!p.isProduct && p.x <= 0.15) {
+            p.isProduct = true;
+            p.x = 0.16;
+            state.p2.flashes.push({
+              x: anodeEdge + 8, y: p.y * h, life: 1.0,
+              text: `${cell.microLeftProduct} + e⁻`, color: '#fde047', eDir: -1
+            });
+          }
+        }
+        ctx.beginPath();
+        ctx.arc(p.x * w, p.y * h, 13.5, 0, Math.PI * 2);
+        ctx.fillStyle = p.isProduct ? cell.microLeftProdCol : cell.microLeftReactCol;
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+        ctx.fillStyle = '#0f172a';
+        ctx.font = '800 9.5px Inter';
+        ctx.textAlign = 'center';
+        ctx.fillText(p.isProduct ? cell.microLeftProduct : cell.microLeftReactant, p.x * w, p.y * h + 3.5);
+      });
+
+      // Right Half-Cell Particles (Reactant approaches Cathode +, reduces into Product)
+      state.p2.rightIons.forEach(p => {
+        if (spd > 0) {
+          const drift = p.isProduct ? -0.14 : 0.22;
+          p.x += (drift + p.vx) * dt * spd * 0.35;
+          p.y += p.vy * dt * spd * 0.35;
+          if (p.y < 0.32 || p.y > 0.88) p.vy *= -1;
+          if (p.x < 0.55) {
+            p.x = 0.56;
+            p.isProduct = false;
+          }
+          if (!p.isProduct && p.x >= 0.85) {
+            p.isProduct = true;
+            p.x = 0.84;
+            state.p2.flashes.push({
+              x: cathodeEdge - 8, y: p.y * h, life: 1.0,
+              text: `+ e⁻ → ${cell.microRightProduct}`, color: '#4ade80', eDir: 1
+            });
+          }
+        }
+        ctx.beginPath();
+        ctx.arc(p.x * w, p.y * h, 14.5, 0, Math.PI * 2);
+        ctx.fillStyle = p.isProduct ? cell.microRightProdCol : cell.microRightReactCol;
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+        ctx.fillStyle = p.isProduct ? '#0f172a' : '#ffffff';
+        ctx.font = '800 8.5px Inter';
+        ctx.textAlign = 'center';
+        ctx.fillText(p.isProduct ? cell.microRightProduct : cell.microRightReactant, p.x * w, p.y * h + 3);
+      });
+
+      // Draw Electron Transfer Flashes
+      for (let i = state.p2.flashes.length - 1; i >= 0; i--) {
+        const f = state.p2.flashes[i];
+        if (spd > 0) f.life -= dt * spd * 0.85;
+        if (f.life <= 0) { state.p2.flashes.splice(i, 1); continue; }
+
+        ctx.save();
+        ctx.globalAlpha = Math.min(1, f.life * 1.4);
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, 17, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(250, 204, 21, 0.25)';
+        ctx.fill();
+
+        ctx.fillStyle = f.color;
+        ctx.font = '800 10.5px Inter';
+        ctx.textAlign = f.eDir < 0 ? 'left' : 'right';
+        ctx.fillText(f.text, f.x + (f.eDir < 0 ? 6 : -6), f.y - (1 - f.life) * 20);
+        drawElectronDot(ctx, f.x + f.eDir * (1 - f.life) * 26, f.y + 8);
+        ctx.restore();
+      }
+
+      ctx.restore();
+
+      // Focused Electrode HUD Overlay (Screen Space)
+      if (cam.mode !== 'full') {
+        const isAnode = cam.mode === 'anode';
+        drawFocusHUD(ctx, w, h, {
+          title: `${isAnode ? t('cellAnodeNeg') : t('cellCathodePos')} • ${isAnode ? t('eTransferOut') : t('eTransferIn')}`,
+          eq: stripHtmlToPlain(isAnode ? cell.anodeEq : cell.cathodeEq),
+          note: isAnode
+            ? `${cell.microLeftReactant} → ${cell.microLeftProduct} + e⁻`
+            : `${cell.microRightReactant} + e⁻ → ${cell.microRightProduct}`,
+          accent: isAnode ? '#3b82f6' : '#ef4444',
+          dark: true
+        });
+      }
+    }
+
+    // =========================================================================
+    // 12. CANVAS DRAWING HELPERS
+    // =========================================================================
+    function drawFocusHUD(ctx, w, h, opts) {
+      ctx.save();
+      const padX = 12, padY = 10;
+      const maxW = Math.min(w - 24, 340);
+      const boxH = 74;
+      const bx = 12;
+      const by = h - boxH - 12;
+
+      ctx.fillStyle = opts.dark ? 'rgba(15, 23, 42, 0.90)' : 'rgba(255, 255, 255, 0.94)';
+      ctx.strokeStyle = opts.accent;
+      ctx.lineWidth = 2;
+      roundRect(ctx, bx, by, maxW, boxH, 12, true, true);
+
+      // Left accent bar
+      ctx.fillStyle = opts.accent;
+      roundRect(ctx, bx + 6, by + 10, 4, boxH - 20, 2, true, false);
+
+      ctx.textAlign = 'left';
+      ctx.fillStyle = opts.accent;
+      ctx.font = '800 11.5px Inter, Noto Sans TC, sans-serif';
+      ctx.fillText(opts.title, bx + 18, by + 22);
+
+      ctx.fillStyle = opts.dark ? '#f8fafc' : '#0f172a';
+      ctx.font = '800 12.5px Inter, Noto Sans TC, sans-serif';
+      const eqTrunc = opts.eq.length > 44 ? opts.eq.slice(0, 43) + '…' : opts.eq;
+      ctx.fillText(eqTrunc, bx + 18, by + 42);
+
+      ctx.fillStyle = opts.dark ? '#94a3b8' : '#475569';
+      ctx.font = '600 10.5px Inter, Noto Sans TC, sans-serif';
+      const noteTrunc = opts.note.length > 46 ? opts.note.slice(0, 45) + '…' : opts.note;
+      ctx.fillText(noteTrunc, bx + 18, by + 60);
+
+      // Subtle reset hint pill top-right
+      const tip = t('hudBackTip');
+      ctx.font = '700 10px Inter, Noto Sans TC, sans-serif';
+      const tw = ctx.measureText(tip).width + 16;
+      ctx.fillStyle = opts.dark ? 'rgba(15, 23, 42, 0.78)' : 'rgba(15, 23, 42, 0.72)';
+      roundRect(ctx, w - tw - 10, 10, tw, 22, 11, true, false);
+      ctx.fillStyle = '#fde047';
+      ctx.textAlign = 'center';
+      ctx.fillText(tip, w - tw / 2 - 10, 24.5);
+
+      ctx.restore();
+    }
+
+    function roundRect(ctx, x, y, w, h, r, fill, stroke) {
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, r);
+      if (fill) ctx.fill();
+      if (stroke) ctx.stroke();
+    }
+
+    function drawElectronDot(ctx, x, y) {
+      ctx.save();
+      ctx.fillStyle = '#facc15';
+      ctx.strokeStyle = '#854d0e';
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.arc(x, y, 7.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = '#0f172a';
+      ctx.font = '800 9px Inter';
+      ctx.textAlign = 'center';
+      ctx.fillText('e⁻', x, y + 3);
+      ctx.restore();
+    }
+
+    function drawLabelPill(ctx, cx, cy, text, textColor, bgColor) {
+      ctx.save();
+      ctx.font = '800 11.5px Inter, Noto Sans TC, sans-serif';
+      const tw = ctx.measureText(text).width;
+      const pw = tw + 16;
+      const ph = 20;
+      ctx.fillStyle = bgColor;
+      ctx.strokeStyle = textColor;
+      ctx.lineWidth = 1.5;
+      roundRect(ctx, cx - pw / 2, cy - ph / 2, pw, ph, 10, true, true);
+      ctx.fillStyle = textColor;
+      ctx.textAlign = 'center';
+      ctx.fillText(text, cx, cy + 4);
+      ctx.restore();
+    }
+
+    function getPolylinePoint(pts, u) {
+      let total = 0;
+      const segs = [];
+      for (let i = 0; i < pts.length - 1; i++) {
+        const d = Math.hypot(pts[i + 1][0] - pts[i][0], pts[i + 1][1] - pts[i][1]);
+        segs.push({ d, a: pts[i], b: pts[i + 1] });
+        total += d;
+      }
+      let target = u * total;
+      for (const s of segs) {
+        if (target <= s.d || s === segs[segs.length - 1]) {
+          const f = s.d > 0 ? target / s.d : 0;
+          return { x: lerp(s.a[0], s.b[0], f), y: lerp(s.a[1], s.b[1], f) };
+        }
+        target -= s.d;
+      }
+      return { x: pts[0][0], y: pts[0][1] };
+    }
+
+    // =========================================================================
+    // 13. MAIN ANIMATION LOOP & BOOTSTRAP
+    // =========================================================================
+    let lastTs = 0;
+    function animate(ts) {
+      const dt = Math.min((ts - lastTs) / 1000 || 0.016, 0.05);
+      lastTs = ts;
+
+      if (activePage === 'page1') {
+        if (state.p1.playing) {
+          state.p1.time += dt;
+          state.p1.progress = Math.min(1, state.p1.progress + dt * 0.032 * state.p1.speed);
+        }
+        drawP1Macro(dt);
+        drawP1Micro(dt);
+      } else {
+        if (state.p2.playing) {
+          state.p2.time += dt;
+          state.p2.progress = Math.min(1, state.p2.progress + dt * 0.032 * state.p2.speed);
+        }
+        drawP2Macro(dt);
+        drawP2Micro(dt);
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    window.onload = function () {
+      setupCanvas('canvas-p1-macro', 'p1', 'macro');
+      setupCanvas('canvas-p1-micro', 'p1', 'micro');
+      setupCanvas('canvas-p2-macro', 'p2', 'macro');
+      setupCanvas('canvas-p2-micro', 'p2', 'micro');
+      resizeAllCanvases();
+
+      window.addEventListener('resize', resizeAllCanvases);
+
+      initP1Particles();
+      initP2Particles();
+      setSpeed('p1', 1);
+      setSpeed('p2', 1);
+      setCameraZoom('p1', 'macro', 'full');
+      setCameraZoom('p1', 'micro', 'full');
+      setCameraZoom('p2', 'macro', 'full');
+      setCameraZoom('p2', 'micro', 'full');
+      applyTranslations();
+
+      requestAnimationFrame(animate);
+    };
+  </script>
+</body>
+</html>
