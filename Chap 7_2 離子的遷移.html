@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>離子的遷移 - 互動實驗室 (Ion Migration Lab)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        body {
+            font-family: 'Noto Sans TC', 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        .canvas-container {
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-slate-950 text-slate-100 antialiased selection:bg-indigo-500 selection:text-white">
+
+    <!-- Top Header -->
+    <header class="bg-slate-900 border-b border-slate-800 px-4 py-3 sticky top-0 z-30 shadow-md">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="p-2 bg-indigo-600/30 border border-indigo-500/50 rounded-xl text-indigo-400">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-white tracking-wide flex items-center gap-2">
+                        離子的遷移 <span class="text-xs font-semibold px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">HKDSE Chemistry 7.7</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Migration of Ions in an Electric Field Simulation</p>
+                </div>
+            </div>
+
+            <!-- View Toggle & Preset Quick Selection -->
+            <div class="flex items-center space-x-2 bg-slate-800/80 p-1 rounded-xl border border-slate-700/60">
+                <button id="viewMacroBtn" onclick="setViewMode('macro')" class="px-3 py-1.5 text-xs font-medium rounded-lg transition-all bg-indigo-600 text-white shadow-sm">
+                    🔬 宏觀實驗視角 (Macroscopic)
+                </button>
+                <button id="viewMicroBtn" onclick="setViewMode('micro')" class="px-3 py-1.5 text-xs font-medium rounded-lg transition-all text-slate-400 hover:text-white hover:bg-slate-700/50">
+                    ⚛️ 微觀粒子視角 (Microscopic)
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-5 grid grid-cols-1 lg:grid-cols-12 gap-5">
+        
+        <!-- Left / Top Column: Canvas Simulation View (8 Cols) -->
+        <div class="lg:col-span-8 flex flex-col space-y-4">
+            
+            <!-- Canvas Card -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+                <!-- Canvas Control Bar -->
+                <div class="bg-slate-900/90 border-b border-slate-800 px-4 py-2.5 flex items-center justify-between text-xs text-slate-300">
+                    <div class="flex items-center space-x-3">
+                        <span class="flex items-center gap-1.5 font-medium">
+                            <span id="powerStatusBadge" class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
+                            電源狀態: <span id="powerStatusText" class="text-red-400 font-bold">已斷開 (OFF)</span>
+                        </span>
+                        <span class="text-slate-600">|</span>
+                        <span class="text-slate-400">當前電壓: <strong id="voltageReadout" class="text-amber-400 font-mono text-sm">20 V</strong></span>
+                        <span class="text-slate-600">|</span>
+                        <span class="text-slate-400">迴路電流: <strong id="currentReadout" class="text-emerald-400 font-mono text-sm">0.0 mA</strong></span>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <button onclick="resetSimulation()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-md border border-slate-700 transition flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            重置 (Reset)
+                        </button>
+                        <button onclick="togglePause()" id="pauseBtn" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-md border border-slate-700 transition">
+                            ⏸️ 暫停
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main Canvas Element -->
+                <div class="relative w-full bg-slate-950 canvas-container aspect-[16/9] min-h-[320px] sm:min-h-[420px] flex items-center justify-center overflow-hidden cursor-crosshair">
+                    <canvas id="simCanvas" class="w-full h-full block"></canvas>
+                    
+                    <!-- Overlay Tooltip instruction -->
+                    <div class="absolute bottom-3 left-3 bg-slate-900/80 backdrop-blur border border-slate-700/60 rounded-lg px-3 py-1.5 text-xs text-slate-300 flex items-center gap-2 pointer-events-none">
+                        <span class="text-amber-400">💡 提示：</span>
+                        <span>點擊濾紙任意位置可放置晶體/溶液斑點</span>
+                    </div>
+
+                    <!-- Visual Indicator Badges on Canvas -->
+                    <div id="leftPoleBadge" class="absolute top-4 left-4 px-3 py-1 rounded-lg font-bold text-xs bg-red-900/80 border border-red-500 text-red-200 shadow-lg flex items-center gap-1">
+                        <span class="text-sm">⊕</span> 正電極 (Anode)
+                    </div>
+                    <div id="rightPoleBadge" class="absolute top-4 right-4 px-3 py-1 rounded-lg font-bold text-xs bg-blue-900/80 border border-blue-500 text-blue-200 shadow-lg flex items-center gap-1">
+                        <span class="text-sm">⊖</span> 負電極 (Cathode)
+                    </div>
+                </div>
+            </div>
+
+            <!-- Real-time Observation Card -->
+            <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-md">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                    即時實驗現象與觀察 (Live Observations)
+                </h3>
+                <div id="liveObservationText" class="text-sm text-slate-200 leading-relaxed bg-slate-950/60 p-3 rounded-xl border border-slate-800">
+                    請開啟 DC 直流電源以觀察離子在電場下的遷移現象。
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Column: Control Dashboard (4 Cols) -->
+        <div class="lg:col-span-4 flex flex-col space-y-4">
+            
+            <!-- Experiment Control Panel -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-5">
+                <h2 class="text-sm font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-3">
+                    <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+                    實驗參數控制面板 (Control Panel)
+                </h2>
+
+                <!-- 1. Compound Selection Preset -->
+                <div class="space-y-2">
+                    <label class="text-xs font-semibold text-slate-300 flex justify-between">
+                        <span>選擇化合物 / 測試樣品</span>
+                        <span id="compoundTypeBadge" class="text-indigo-400 font-normal">離子化合物</span>
+                    </label>
+                    <select id="compoundSelect" onchange="changeCompound()" class="w-full bg-slate-950 border border-slate-700 text-slate-200 text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:border-indigo-500 transition">
+                        <option value="KMnO4">高錳酸鉀 (KMnO₄) - 紫色陰離子 MnO₄⁻</option>
+                        <option value="CuSO4">硫酸銅 (CuSO₄) - 藍色陽離子 Cu²⁺</option>
+                        <option value="CuCrO4" selected>鉻酸銅 (CuCrO₄) - 雙色分離: 藍Cu²⁺ + 黃CrO₄²⁻</option>
+                        <option value="K2Cr2O7">重鉻酸鉀 (K₂Cr₂O₇) - 橙色陰離子 Cr₂O₇²⁻</option>
+                        <option value="Sucrose">蔗糖溶液 (C₁₂H₂₂O₁₁) - 共價化合物 (分子)</option>
+                        <option value="Ethanol">乙醇 (C₂H₅OH) - 共價化合物 (非電解質)</option>
+                        <option value="Custom">自訂化合物 (Custom Compound)</option>
+                    </select>
+                </div>
+
+                <!-- Custom Compound Controls (Hidden by default) -->
+                <div id="customControls" class="hidden p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-3 text-xs">
+                    <div class="font-bold text-slate-300 border-b border-slate-800 pb-1">自訂離子參數 (Custom Ions)</div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-slate-400">陽離子顏色 & 電荷</label>
+                            <div class="flex gap-1 mt-1">
+                                <input type="color" id="customCationColor" value="#00b4d8" class="w-7 h-7 rounded cursor-pointer border-0 bg-transparent">
+                                <select id="customCationCharge" class="bg-slate-800 border border-slate-700 text-slate-200 rounded px-1 flex-1 text-xs">
+                                    <option value="1">+1 電荷</option>
+                                    <option value="2" selected>+2 電荷</option>
+                                    <option value="3">+3 電荷</option>
+                                    <option value="0">無電荷 (0)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-slate-400">陰離子顏色 & 電荷</label>
+                            <div class="flex gap-1 mt-1">
+                                <input type="color" id="customAnionColor" value="#ffb703" class="w-7 h-7 rounded cursor-pointer border-0 bg-transparent">
+                                <select id="customAnionCharge" class="bg-slate-800 border border-slate-700 text-slate-200 rounded px-1 flex-1 text-xs">
+                                    <option value="-1">-1 電荷</option>
+                                    <option value="-2" selected>-2 電荷</option>
+                                    <option value="-3">-3 電荷</option>
+                                    <option value="0">無電荷 (0)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="applyCustomCompound()" class="w-full py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-lg transition">套用自訂化合物</button>
+                </div>
+
+                <!-- 2. Circuit Power Switch & Voltage Slider -->
+                <div class="space-y-3 pt-2 border-t border-slate-800">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-300">直流電源開關 (DC Power)</span>
+                        <button id="powerToggleBtn" onclick="togglePower()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition shadow-lg shadow-emerald-900/30">
+                            ⚡ 通電 (TURN ON)
+                        </button>
+                    </div>
+
+                    <!-- Voltage Slider -->
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-slate-400">電壓大小 (Voltage):</span>
+                            <span id="sliderVoltageVal" class="text-amber-400 font-bold">20 V</span>
+                        </div>
+                        <input type="range" id="voltageSlider" min="0" max="30" step="1" value="20" oninput="updateVoltage(this.value)" class="w-full accent-amber-400 bg-slate-800 h-2 rounded-lg cursor-pointer">
+                        <div class="flex justify-between text-[10px] text-slate-500">
+                            <span>0V (強弱)</span>
+                            <span>15V</span>
+                            <span>30V (極快)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Electrode Polarity Reversal Switch -->
+                <div class="space-y-2 pt-2 border-t border-slate-800">
+                    <label class="text-xs font-semibold text-slate-300">電極極性設定 (Polarity)</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="polarityNormalBtn" onclick="setPolarity(false)" class="py-2 px-3 bg-indigo-600 text-white rounded-xl text-xs font-medium transition border border-indigo-500">
+                            左(+) / 右(-) 標準
+                        </button>
+                        <button id="polarityReverseBtn" onclick="setPolarity(true)" class="py-2 px-3 bg-slate-800 text-slate-400 hover:text-white rounded-xl text-xs font-medium transition border border-slate-700">
+                            左(-) / 右(+) 對調 🔄
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 4. Filter Paper Wetting Solution -->
+                <div class="space-y-2 pt-2 border-t border-slate-800">
+                    <label class="text-xs font-semibold text-slate-300 flex justify-between">
+                        <span>濾紙沾濕溶液 (Wetting Liquid)</span>
+                        <span class="text-amber-400 text-[10px]">DSE考點</span>
+                    </label>
+                    <select id="wettingSelect" onchange="changeWettingLiquid()" class="w-full bg-slate-950 border border-slate-700 text-slate-200 text-xs rounded-xl px-3 py-2 focus:outline-none focus:border-indigo-500">
+                        <option value="Na2SO4" selected>硫酸鈉溶液 (Na₂SO₄) - 導電佳 (濕)</option>
+                        <option value="PureWater">蒸餾水 (Pure Water) - 極弱導電</option>
+                        <option value="Dry">乾燥濾紙 (Dry Paper) - 不導電</option>
+                    </select>
+                </div>
+
+                <!-- Drop Sample Button -->
+                <div class="pt-2 border-t border-slate-800">
+                    <button onclick="dropSampleInCenter()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition flex items-center justify-center gap-2">
+                        💧 在中心重新放置晶粒 / 溶液點
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- DSE Learning Notes Panel -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
+                <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-wider flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    HKDSE 化學重點錦囊
+                </h3>
+                <ul class="text-xs text-slate-300 space-y-2 list-disc list-inside leading-relaxed">
+                    <li><strong class="text-amber-300">異性相吸原則：</strong> 帶負電荷的陰離子 (Anion) 被吸引向<span class="text-red-400">正電極 (Anode)</span> ；帶正電荷的陽離子 (Cation) 被吸引向<span class="text-blue-400">負電極 (Cathode)</span>。</li>
+                    <li><strong class="text-amber-300">無色離子：</strong> 鉀離子 ($\text{K}^+$) 和硫酸根離子 ($\text{SO}_4^{2-}$) 也是移動的，但因為是無色，所以視覺上看不見色斑移動。</li>
+                    <li><strong class="text-amber-300">鉻酸銅 ($\text{CuCrO}_4$) 特例：</strong> 原始斑點為藍與黃混合的<span class="text-emerald-400 font-bold">綠色</span>。通電後，藍色 $\text{Cu}^{2+}$ 向負極移動，黃色 $\text{CrO}_4^{2-}$ 向正極移動，導致綠色斑點分離！</li>
+                    <li><strong class="text-amber-300">共價化合物：</strong> 蔗糖或乙醇在水中以中性分子存在，無自由移動離子，故在電場下<span class="text-red-400">不會遷移</span>。</li>
+                    <li><strong class="text-amber-300">沾濕濾紙的目的：</strong> 提供可自由移動的離子 (如 $\text{Na}^+$ 及 $\text{SO}_4^{2-}$) 以完成導電迴路。</li>
+                </ul>
+            </div>
+
+        </div>
+
+    </main>
+
+    <script>
+        // --- Compound Data Definitions ---
+        const COMPOUNDS = {
+            'KMnO4': {
+                name: '高錳酸鉀 (KMnO₄)',
+                type: 'ionic',
+                cation: { name: 'K⁺', charge: 1, color: 'rgba(200, 220, 255, 0.15)', visible: false, radius: 4 },
+                anion: { name: 'MnO₄⁻', charge: -1, color: 'rgb(168, 85, 247)', hex: '#a855f7', visible: true, radius: 6 },
+                initialColor: '#a855f7',
+                desc: '紫色高錳酸根離子 (MnO₄⁻) 帶負電，向正電極移動；鉀離子 (K⁺) 為無色，向負電極移動。'
+            },
+            'CuSO4': {
+                name: '硫酸銅 (CuSO₄)',
+                type: 'ionic',
+                cation: { name: 'Cu²⁺', charge: 2, color: 'rgb(2, 132, 199)', hex: '#0284c7', visible: true, radius: 5 },
+                anion: { name: 'SO₄²⁻', charge: -2, color: 'rgba(220, 220, 220, 0.15)', visible: false, radius: 6 },
+                initialColor: '#0284c7',
+                desc: '藍色銅(II)離子 (Cu²⁺) 帶正電，向負電極移動；硫酸根離子 (SO₄²⁻) 為無色，向正電極移動。'
+            },
+            'CuCrO4': {
+                name: '鉻酸銅 (CuCrO₄)',
+                type: 'ionic',
+                cation: { name: 'Cu²⁺', charge: 2, color: 'rgb(2, 132, 199)', hex: '#0284c7', visible: true, radius: 5 },
+                anion: { name: 'CrO₄²⁻', charge: -2, color: 'rgb(234, 179, 8)', hex: '#eab308', visible: true, radius: 6 },
+                initialColor: '#10b981', // Mixed Green!
+                desc: '混合呈綠色。通電後，藍色 Cu²⁺ 離子移向負極，黃色 CrO₄²⁻ 離子移向正極，綠色斑點一分為二！'
+            },
+            'K2Cr2O7': {
+                name: '重鉻酸鉀 (K₂Cr₂O₇)',
+                type: 'ionic',
+                cation: { name: 'K⁺', charge: 1, color: 'rgba(200, 220, 255, 0.15)', visible: false, radius: 4 },
+                anion: { name: 'Cr₂O₇²⁻', charge: -2, color: 'rgb(249, 115, 22)', hex: '#f97316', visible: true, radius: 7 },
+                initialColor: '#f97316',
+                desc: '橙色重鉻酸根離子 (Cr₂O₇²⁻) 帶負電荷，向正電極遷移。'
+            },
+            'Sucrose': {
+                name: '蔗糖溶液 (C₁₂H₂₂O₁₁)',
+                type: 'covalent',
+                neutral: { name: '蔗糖分子', charge: 0, color: 'rgb(245, 158, 11)', hex: '#f59e0b', visible: true, radius: 7 },
+                initialColor: '#f59e0b',
+                desc: '蔗糖為共價化合物，溶於水形成中性分子而非離子。在電場下不受電場力，斑點原地擴散而不遷移。'
+            },
+            'Ethanol': {
+                name: '乙醇 (C₂H₅OH)',
+                type: 'covalent',
+                neutral: { name: '乙醇分子', charge: 0, color: 'rgb(236, 72, 153)', hex: '#ec4899', visible: true, radius: 5 },
+                initialColor: '#ec4899',
+                desc: '乙醇為非電解質共價化合物，不解離出離子，不導電且無定向遷移。'
+            },
+            'Custom': {
+                name: '自訂化合物',
+                type: 'ionic',
+                cation: { name: '陽離子⁺', charge: 2, color: 'rgb(0, 180, 216)', hex: '#00b4d8', visible: true, radius: 5 },
+                anion: { name: '陰離子⁻', charge: -2, color: 'rgb(255, 183, 3)', hex: '#ffb703', visible: true, radius: 6 },
+                initialColor: '#10b981',
+                desc: '自訂離子化合物實驗。'
+            }
+        };
+
+        // --- Simulation State Variables ---
+        let currentCompoundKey = 'CuCrO4';
+        let viewMode = 'macro'; // 'macro' or 'micro'
+        let isPowerOn = false;
+        let isPaused = false;
+        let voltage = 20; // Volts
+        let isReversedPolarity = false; // false: Left(+)/Right(-), true: Left(-)/Right(+)
+        let wettingLiquid = 'Na2SO4'; // 'Na2SO4', 'PureWater', 'Dry'
+
+        let particles = [];
+        let spots = []; // Macroscopic spots data
+
+        // Canvas & Context references
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Animation handle
+        let animationFrameId = null;
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            draw();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        // --- Initialize Particle Physics Simulation ---
+        function initSimulation() {
+            particles = [];
+            spots = [];
+
+            const comp = COMPOUNDS[currentCompoundKey];
+            
+            // Central drop coordinates
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            // Add initial macroscopic spot
+            spots.push({
+                x: centerX,
+                y: centerY,
+                cationX: centerX,
+                anionX: centerX,
+                neutralX: centerX,
+                radius: 18,
+                compoundKey: currentCompoundKey
+            });
+
+            // Populate micro particles
+            const particleCount = 140;
+
+            if (comp.type === 'ionic') {
+                // Add Cations
+                for (let i = 0; i < particleCount / 2; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const r = Math.random() * 22;
+                    particles.push({
+                        x: centerX + Math.cos(angle) * r,
+                        y: centerY + Math.sin(angle) * r,
+                        vx: (Math.random() - 0.5) * 0.4,
+                        vy: (Math.random() - 0.5) * 0.4,
+                        charge: comp.cation.charge,
+                        color: comp.cation.color,
+                        hex: comp.cation.hex,
+                        name: comp.cation.name,
+                        visible: comp.cation.visible,
+                        radius: comp.cation.radius,
+                        type: 'cation'
+                    });
+                }
+                // Add Anions
+                for (let i = 0; i < particleCount / 2; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const r = Math.random() * 22;
+                    particles.push({
+                        x: centerX + Math.cos(angle) * r,
+                        y: centerY + Math.sin(angle) * r,
+                        vx: (Math.random() - 0.5) * 0.4,
+                        vy: (Math.random() - 0.5) * 0.4,
+                        charge: comp.anion.charge,
+                        color: comp.anion.color,
+                        hex: comp.anion.hex,
+                        name: comp.anion.name,
+                        visible: comp.anion.visible,
+                        radius: comp.anion.radius,
+                        type: 'anion'
+                    });
+                }
+            } else {
+                // Add Covalent Neutral molecules
+                for (let i = 0; i < particleCount; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const r = Math.random() * 22;
+                    particles.push({
+                        x: centerX + Math.cos(angle) * r,
+                        y: centerY + Math.sin(angle) * r,
+                        vx: (Math.random() - 0.5) * 0.4,
+                        vy: (Math.random() - 0.5) * 0.4,
+                        charge: 0,
+                        color: comp.neutral.color,
+                        hex: comp.neutral.hex,
+                        name: comp.neutral.name,
+                        visible: comp.neutral.visible,
+                        radius: comp.neutral.radius,
+                        type: 'neutral'
+                    });
+                }
+            }
+
+            updateObservationText();
+        }
+
+        function updatePhysics() {
+            if (isPaused) return;
+
+            // Calculate Conductivity Multiplier based on filter paper wetting liquid
+            let conductivity = 1.0;
+            if (wettingLiquid === 'PureWater') conductivity = 0.05;
+            if (wettingLiquid === 'Dry') conductivity = 0.0;
+
+            // Determine Electric Field Direction (E-field points from + to -)
+            // Left is (+) and Right is (-) if not reversed.
+            let eFieldDir = 1; // 1 means E points Right -> (+ is Left, - is Right)
+            if (isReversedPolarity) {
+                eFieldDir = -1; // -1 means E points Left -> (+ is Right, - is Left)
+            }
+
+            // Drift speed factor proportional to Voltage & Conductivity
+            const driftSpeedFactor = (voltage / 20) * 0.85 * conductivity;
+
+            // Update Macroscopic spots
+            spots.forEach(spot => {
+                const comp = COMPOUNDS[spot.compoundKey];
+                if (isPowerOn && conductivity > 0) {
+                    if (comp.type === 'ionic') {
+                        // Positive cations move in direction of E (towards negative electrode)
+                        // Negative anions move opposite to E (towards positive electrode)
+                        const cationSpeed = comp.cation.charge * driftSpeedFactor * eFieldDir;
+                        const anionSpeed = comp.anion.charge * driftSpeedFactor * eFieldDir; // charge is negative!
+
+                        spot.cationX += cationSpeed;
+                        spot.anionX += anionSpeed;
+                    }
+                    // Natural diffusion (slow expansion)
+                    spot.radius = Math.min(spot.radius + 0.008, 45);
+                }
+            });
+
+            // Filter paper bounds
+            const paperLeft = canvas.width * 0.15;
+            const paperRight = canvas.width * 0.85;
+            const paperTop = canvas.height * 0.28;
+            const paperBottom = canvas.height * 0.72;
+
+            // Update Microscopic particles
+            particles.forEach(p => {
+                // Brownian random walk (thermal movement)
+                p.vx += (Math.random() - 0.5) * 0.15;
+                p.vy += (Math.random() - 0.5) * 0.15;
+
+                // Damping
+                p.vx *= 0.92;
+                p.vy *= 0.92;
+
+                // Electric drift force: F = q * E
+                if (isPowerOn && conductivity > 0 && p.charge !== 0) {
+                    const driftVx = p.charge * driftSpeedFactor * eFieldDir * 0.45;
+                    p.vx += driftVx;
+                }
+
+                p.x += p.vx;
+                p.y += p.vy;
+
+                // Bounce off filter paper edges
+                if (p.x < paperLeft + 10) { p.x = paperLeft + 10; p.vx *= -0.5; }
+                if (p.x > paperRight - 10) { p.x = paperRight - 10; p.vx *= -0.5; }
+                if (p.y < paperTop + 10) { p.y = paperTop + 10; p.vy *= -0.5; }
+                if (p.y > paperBottom - 10) { p.y = paperBottom - 10; p.vy *= -0.5; }
+            });
+
+            // Update Readout Display
+            let currentVal = 0;
+            if (isPowerOn) {
+                if (wettingLiquid === 'Na2SO4') currentVal = (voltage * 1.45).toFixed(1);
+                else if (wettingLiquid === 'PureWater') currentVal = (voltage * 0.08).toFixed(1);
+                else currentVal = 0.0;
+            }
+            document.getElementById('currentReadout').innerText = `${currentVal} mA`;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 1. Draw Lab Table Background
+            const bgGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            bgGrad.addColorStop(0, '#0f172a');
+            bgGrad.addColorStop(1, '#020617');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Glass Slide & Filter Paper Dimensions
+            const paperWidth = canvas.width * 0.70;
+            const paperHeight = canvas.height * 0.42;
+            const paperX = (canvas.width - paperWidth) / 2;
+            const paperY = (canvas.height - paperHeight) / 2;
+
+            // Draw Glass Slide beneath paper
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.roundRect(paperX - 15, paperY - 10, paperWidth + 30, paperHeight + 20, 12);
+            ctx.fill();
+            ctx.stroke();
+
+            // Glass specular highlight
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.beginPath();
+            ctx.moveTo(paperX - 5, paperY - 5);
+            ctx.lineTo(paperX + paperWidth + 5, paperY - 5);
+            ctx.stroke();
+
+            // Draw Filter Paper
+            ctx.save();
+            let paperFill = '#f8fafc'; // White moist paper
+            if (wettingLiquid === 'Dry') paperFill = '#f1f5f9';
+            
+            ctx.fillStyle = paperFill;
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+            ctx.shadowBlur = 15;
+            ctx.beginPath();
+            ctx.roundRect(paperX, paperY, paperWidth, paperHeight, 6);
+            ctx.fill();
+            ctx.restore();
+
+            // Filter paper texture outline
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(paperX, paperY, paperWidth, paperHeight);
+
+            // Water droplet / moisture subtle effect
+            if (wettingLiquid !== 'Dry') {
+                ctx.fillStyle = 'rgba(56, 189, 248, 0.05)';
+                ctx.fillRect(paperX, paperY, paperWidth, paperHeight);
+            }
+
+            // 2. Draw Electrodes and Crocodile Clips
+            const leftIsPositive = !isReversedPolarity;
+            const leftColor = leftIsPositive ? '#ef4444' : '#3b82f6';
+            const rightColor = leftIsPositive ? '#3b82f6' : '#ef4444';
+
+            // Left Electrode Clip
+            drawCrocodileClip(paperX - 5, paperY + paperHeight/2, leftColor, leftIsPositive ? '+' : '-', 'left');
+            // Right Electrode Clip
+            drawCrocodileClip(paperX + paperWidth + 5, paperY + paperHeight/2, rightColor, leftIsPositive ? '-' : '+', 'right');
+
+            // Draw Connecting Wires
+            ctx.lineWidth = 3;
+            // Left Wire
+            ctx.strokeStyle = leftColor;
+            ctx.beginPath();
+            ctx.moveTo(paperX - 25, paperY + paperHeight/2);
+            ctx.quadraticCurveTo(paperX - 60, canvas.height - 20, 40, canvas.height - 20);
+            ctx.stroke();
+
+            // Right Wire
+            ctx.strokeStyle = rightColor;
+            ctx.beginPath();
+            ctx.moveTo(paperX + paperWidth + 25, paperY + paperHeight/2);
+            ctx.quadraticCurveTo(paperX + paperWidth + 60, canvas.height - 20, canvas.width - 40, canvas.height - 20);
+            ctx.stroke();
+
+            // Power Glow indicator on wires if ON
+            if (isPowerOn && wettingLiquid !== 'Dry') {
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = '#fef08a';
+                ctx.setLineDash([6, 6]);
+                ctx.lineDashOffset = -Date.now() / 30;
+                
+                ctx.beginPath();
+                ctx.moveTo(paperX - 25, paperY + paperHeight/2);
+                ctx.quadraticCurveTo(paperX - 60, canvas.height - 20, 40, canvas.height - 20);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(paperX + paperWidth + 25, paperY + paperHeight/2);
+                ctx.quadraticCurveTo(paperX + paperWidth + 60, canvas.height - 20, canvas.width - 40, canvas.height - 20);
+                ctx.stroke();
+
+                ctx.setLineDash([]);
+            }
+
+            // 3. Render Views based on ViewMode
+            if (viewMode === 'macro') {
+                // Macroscopic Spot Color Bleeding / Diffusion View
+                spots.forEach(spot => {
+                    const comp = COMPOUNDS[spot.compoundKey];
+
+                    if (comp.type === 'ionic') {
+                        // Render Cation spot
+                        if (comp.cation.visible) {
+                            const gradCation = ctx.createRadialGradient(spot.cationX, spot.y, 2, spot.cationX, spot.y, spot.radius * 1.5);
+                            gradCation.addColorStop(0, comp.cation.color);
+                            gradCation.addColorStop(0.7, comp.cation.color.replace('rgb', 'rgba').replace(')', ', 0.4)'));
+                            gradCation.addColorStop(1, 'rgba(255,255,255,0)');
+                            ctx.fillStyle = gradCation;
+                            ctx.beginPath();
+                            ctx.arc(spot.cationX, spot.y, spot.radius * 1.5, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+
+                        // Render Anion spot
+                        if (comp.anion.visible) {
+                            const gradAnion = ctx.createRadialGradient(spot.anionX, spot.y, 2, spot.anionX, spot.y, spot.radius * 1.5);
+                            gradAnion.addColorStop(0, comp.anion.color);
+                            gradAnion.addColorStop(0.7, comp.anion.color.replace('rgb', 'rgba').replace(')', ', 0.4)'));
+                            gradAnion.addColorStop(1, 'rgba(255,255,255,0)');
+                            ctx.fillStyle = gradAnion;
+                            ctx.beginPath();
+                            ctx.arc(spot.anionX, spot.y, spot.radius * 1.5, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+
+                        // If CuCrO4 or both visible and overlapping near center, show combined green blend
+                        if (spot.compoundKey === 'CuCrO4' && Math.abs(spot.cationX - spot.anionX) < spot.radius * 1.8) {
+                            const midX = (spot.cationX + spot.anionX) / 2;
+                            const overlapGrad = ctx.createRadialGradient(midX, spot.y, 0, midX, spot.y, spot.radius);
+                            overlapGrad.addColorStop(0, 'rgba(16, 185, 129, 0.85)'); // Green blend
+                            overlapGrad.addColorStop(1, 'rgba(16, 185, 129, 0)');
+                            ctx.fillStyle = overlapGrad;
+                            ctx.beginPath();
+                            ctx.arc(midX, spot.y, spot.radius, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+
+                    } else {
+                        // Covalent Neutral Molecule Spot
+                        const gradNeutral = ctx.createRadialGradient(spot.neutralX, spot.y, 2, spot.neutralX, spot.y, spot.radius * 1.6);
+                        gradNeutral.addColorStop(0, comp.neutral.color);
+                        gradNeutral.addColorStop(0.8, comp.neutral.color.replace('rgb', 'rgba').replace(')', ', 0.3)'));
+                        gradNeutral.addColorStop(1, 'rgba(255,255,255,0)');
+                        ctx.fillStyle = gradNeutral;
+                        ctx.beginPath();
+                        ctx.arc(spot.neutralX, spot.y, spot.radius * 1.6, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                });
+
+            } else {
+                // Microscopic View: Individual Ions / Molecules
+                particles.forEach(p => {
+                    ctx.save();
+                    ctx.fillStyle = p.color;
+                    ctx.shadowColor = p.hex || '#ffffff';
+                    ctx.shadowBlur = 6;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Render charge text inside particle
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 9px Inter, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+
+                    let label = '';
+                    if (p.type === 'cation') label = p.charge > 1 ? `+${p.charge}` : '+';
+                    else if (p.type === 'anion') label = p.charge < -1 ? `${p.charge}` : '-';
+                    else label = '0';
+
+                    ctx.fillText(label, p.x, p.y);
+                    ctx.restore();
+                });
+            }
+
+            // Draw Electric Field Vector Arrows if power is ON
+            if (isPowerOn && wettingLiquid !== 'Dry') {
+                drawElectricFieldVectors(paperX, paperY, paperWidth, paperHeight, leftIsPositive);
+            }
+        }
+
+        function drawCrocodileClip(x, y, color, symbol, side) {
+            ctx.save();
+            ctx.fillStyle = color;
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1.5;
+
+            const dir = side === 'left' ? -1 : 1;
+
+            // Clip metal jaws
+            ctx.beginPath();
+            ctx.moveTo(x, y - 12);
+            ctx.lineTo(x + dir * 25, y - 8);
+            ctx.lineTo(x + dir * 25, y + 8);
+            ctx.lineTo(x, y + 12);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // Clip handle symbol
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 14px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(symbol, x + dir * 12, y);
+
+            ctx.restore();
+        }
+
+        function drawElectricFieldVectors(px, py, pw, ph, leftIsPositive) {
+            ctx.save();
+            ctx.strokeStyle = 'rgba(234, 179, 8, 0.35)'; // Subtle yellow field lines
+            ctx.fillStyle = 'rgba(234, 179, 8, 0.35)';
+            ctx.lineWidth = 1.5;
+
+            const arrowY = py + ph + 16;
+            const startX = leftIsPositive ? px + 20 : px + pw - 20;
+            const endX = leftIsPositive ? px + pw - 20 : px + 20;
+
+            // Draw main vector line
+            ctx.beginPath();
+            ctx.moveTo(startX, arrowY);
+            ctx.lineTo(endX, arrowY);
+            ctx.stroke();
+
+            // Arrow head
+            const dir = leftIsPositive ? 1 : -1;
+            ctx.beginPath();
+            ctx.moveTo(endX, arrowY);
+            ctx.lineTo(endX - dir * 10, arrowY - 5);
+            ctx.lineTo(endX - dir * 10, arrowY + 5);
+            ctx.closePath();
+            ctx.fill();
+
+            // Field text label
+            ctx.fillStyle = '#fde047';
+            ctx.font = '11px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(`電場方向 E (Electric Field)`, (px + pw/2), arrowY + 16);
+
+            ctx.restore();
+        }
+
+        function togglePower() {
+            isPowerOn = !isPowerOn;
+            const btn = document.getElementById('powerToggleBtn');
+            const badge = document.getElementById('powerStatusBadge');
+            const text = document.getElementById('powerStatusText');
+
+            if (isPowerOn) {
+                btn.innerText = '🛑 斷開 (TURN OFF)';
+                btn.className = 'px-4 py-2 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs transition shadow-lg shadow-red-900/30';
+                badge.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping';
+                text.innerText = '已通電 (ON)';
+                text.className = 'text-emerald-400 font-bold';
+            } else {
+                btn.innerText = '⚡ 通電 (TURN ON)';
+                btn.className = 'px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition shadow-lg shadow-emerald-900/30';
+                badge.className = 'w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse';
+                text.innerText = '已斷開 (OFF)';
+                text.className = 'text-red-400 font-bold';
+            }
+            updateObservationText();
+        }
+
+        function setPolarity(reverse) {
+            isReversedPolarity = reverse;
+            const normBtn = document.getElementById('polarityNormalBtn');
+            const revBtn = document.getElementById('polarityReverseBtn');
+            const leftBadge = document.getElementById('leftPoleBadge');
+            const rightBadge = document.getElementById('rightPoleBadge');
+
+            if (reverse) {
+                revBtn.className = 'py-2 px-3 bg-indigo-600 text-white rounded-xl text-xs font-medium transition border border-indigo-500';
+                normBtn.className = 'py-2 px-3 bg-slate-800 text-slate-400 hover:text-white rounded-xl text-xs font-medium transition border border-slate-700';
+                
+                leftBadge.className = 'absolute top-4 left-4 px-3 py-1 rounded-lg font-bold text-xs bg-blue-900/80 border border-blue-500 text-blue-200 shadow-lg flex items-center gap-1';
+                leftBadge.innerHTML = '<span class="text-sm">⊖</span> 負電極 (Cathode)';
+
+                rightBadge.className = 'absolute top-4 right-4 px-3 py-1 rounded-lg font-bold text-xs bg-red-900/80 border border-red-500 text-red-200 shadow-lg flex items-center gap-1';
+                rightBadge.innerHTML = '<span class="text-sm">⊕</span> 正電極 (Anode)';
+            } else {
+                normBtn.className = 'py-2 px-3 bg-indigo-600 text-white rounded-xl text-xs font-medium transition border border-indigo-500';
+                revBtn.className = 'py-2 px-3 bg-slate-800 text-slate-400 hover:text-white rounded-xl text-xs font-medium transition border border-slate-700';
+
+                leftBadge.className = 'absolute top-4 left-4 px-3 py-1 rounded-lg font-bold text-xs bg-red-900/80 border border-red-500 text-red-200 shadow-lg flex items-center gap-1';
+                leftBadge.innerHTML = '<span class="text-sm">⊕</span> 正電極 (Anode)';
+
+                rightBadge.className = 'absolute top-4 right-4 px-3 py-1 rounded-lg font-bold text-xs bg-blue-900/80 border border-blue-500 text-blue-200 shadow-lg flex items-center gap-1';
+                rightBadge.innerHTML = '<span class="text-sm">⊖</span> 負電極 (Cathode)';
+            }
+            updateObservationText();
+        }
+
+        function updateVoltage(val) {
+            voltage = parseFloat(val);
+            document.getElementById('voltageReadout').innerText = `${voltage} V`;
+            document.getElementById('sliderVoltageVal').innerText = `${voltage} V`;
+        }
+
+        function changeCompound() {
+            currentCompoundKey = document.getElementById('compoundSelect').value;
+            const customBox = document.getElementById('customControls');
+            const compTypeBadge = document.getElementById('compoundTypeBadge');
+
+            if (currentCompoundKey === 'Custom') {
+                customBox.classList.remove('hidden');
+            } else {
+                customBox.classList.add('hidden');
+            }
+
+            const comp = COMPOUNDS[currentCompoundKey];
+            compTypeBadge.innerText = comp.type === 'ionic' ? '離子化合物' : '共價化合物';
+
+            initSimulation();
+        }
+
+        function applyCustomCompound() {
+            const catColor = document.getElementById('customCationColor').value;
+            const catCharge = parseInt(document.getElementById('customCationCharge').value);
+            const anColor = document.getElementById('customAnionColor').value;
+            const anCharge = parseInt(document.getElementById('customAnionCharge').value);
+
+            COMPOUNDS['Custom'].cation.color = catColor;
+            COMPOUNDS['Custom'].cation.hex = catColor;
+            COMPOUNDS['Custom'].cation.charge = catCharge;
+
+            COMPOUNDS['Custom'].anion.color = anColor;
+            COMPOUNDS['Custom'].anion.hex = anColor;
+            COMPOUNDS['Custom'].anion.charge = anCharge;
+
+            initSimulation();
+        }
+
+        function changeWettingLiquid() {
+            wettingLiquid = document.getElementById('wettingSelect').value;
+            updateObservationText();
+        }
+
+        function setViewMode(mode) {
+            viewMode = mode;
+            const macroBtn = document.getElementById('viewMacroBtn');
+            const microBtn = document.getElementById('viewMicroBtn');
+
+            if (mode === 'macro') {
+                macroBtn.className = 'px-3 py-1.5 text-xs font-medium rounded-lg transition-all bg-indigo-600 text-white shadow-sm';
+                microBtn.className = 'px-3 py-1.5 text-xs font-medium rounded-lg transition-all text-slate-400 hover:text-white hover:bg-slate-700/50';
+            } else {
+                microBtn.className = 'px-3 py-1.5 text-xs font-medium rounded-lg transition-all bg-indigo-600 text-white shadow-sm';
+                macroBtn.className = 'px-3 py-1.5 text-xs font-medium rounded-lg transition-all text-slate-400 hover:text-white hover:bg-slate-700/50';
+            }
+        }
+
+        function dropSampleInCenter() {
+            initSimulation();
+        }
+
+        function resetSimulation() {
+            initSimulation();
+        }
+
+        function togglePause() {
+            isPaused = !isPaused;
+            document.getElementById('pauseBtn').innerText = isPaused ? '▶️ 繼續' : '⏸️ 暫停';
+        }
+
+        function updateObservationText() {
+            const textEl = document.getElementById('liveObservationText');
+            const comp = COMPOUNDS[currentCompoundKey];
+
+            let leftPolarity = !isReversedPolarity ? '正極 (+)' : '負極 (-)';
+            let rightPolarity = !isReversedPolarity ? '負極 (-)' : '正極 (+)';
+
+            if (wettingLiquid === 'Dry') {
+                textEl.innerHTML = `<span class="text-red-400 font-bold">⚠️ 注意：</span> 乾燥濾紙沒有自由移動離子，電流為零，<b>離子無法發生遷移</b>。請切換為 Na₂SO₄ 溶液沾濕濾紙。`;
+                return;
+            }
+
+            if (!isPowerOn) {
+                textEl.innerHTML = `當前電源為斷開狀態。測試樣品 <b>${comp.name}</b> 在濾紙中央呈自然擴散狀。按下「⚡ 通電」開關後開始實驗。`;
+                return;
+            }
+
+            if (comp.type === 'covalent') {
+                textEl.innerHTML = `<span class="text-amber-400 font-bold">🧪 觀察結果：</span> <b>${comp.name}</b> 是共價化合物，在水中保持分子型態，不帶電荷。通電後<b>斑點完全不移動</b>。`;
+                return;
+            }
+
+            if (currentCompoundKey === 'CuCrO4') {
+                const posPoleName = !isReversedPolarity ? '左側正極 (+)' : '右側正極 (+)';
+                const negPoleName = !isReversedPolarity ? '右側負極 (-)' : '左側負極 (-)';
+                textEl.innerHTML = `<span class="text-emerald-400 font-bold">✨ 經典DSE考點現象：</span> 原始綠色斑點在電場下<b>一分為二</b>！<br>• 藍色帶正電的 <b>Cu²⁺ 陽離子</b> 被吸引移向 <b>${negPoleName}</b>；<br>• 黃色帶負電的 <b>CrO₄²⁻ 陰離子</b> 被吸引移向 <b>${posPoleName}</b>。`;
+            } else if (currentCompoundKey === 'KMnO4') {
+                const posPoleName = !isReversedPolarity ? '左側正極 (+)' : '右側正極 (+)';
+                textEl.innerHTML = `<span class="text-purple-400 font-bold">🧪 觀察結果：</span> 紫色帶負電的 <b>MnO₄⁻ 陰離子</b> 慢慢向 <b>${posPoleName}</b> 遷移；<br>無色的 <b>K⁺ 陽離子</b> 向負極遷移（視覺上不可見）。`;
+            } else if (currentCompoundKey === 'CuSO4') {
+                const negPoleName = !isReversedPolarity ? '右側負極 (-)' : '左側負極 (-)';
+                textEl.innerHTML = `<span class="text-sky-400 font-bold">🧪 觀察結果：</span> 藍色帶正電的 <b>Cu²⁺ 陽離子</b> 慢慢向 <b>${negPoleName}</b> 遷移；<br>無色的 <b>SO₄²⁻ 陰離子</b> 向正極遷移（視覺上不可見）。`;
+            } else {
+                textEl.innerHTML = `<span class="text-indigo-400 font-bold">🧪 觀察結果：</span> 帶電離子在電場下受到電場力作用，正離子走向負極，負離子走向正極。`;
+            }
+        }
+
+        // Allow clicking on filter paper to drop sample
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const clickX = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const clickY = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+            // Add new spot at click location
+            spots.push({
+                x: clickX,
+                y: clickY,
+                cationX: clickX,
+                anionX: clickX,
+                neutralX: clickX,
+                radius: 16,
+                compoundKey: currentCompoundKey
+            });
+        });
+
+        function animate() {
+            updatePhysics();
+            draw();
+            animationFrameId = requestAnimationFrame(animate);
+        }
+
+        window.onload = function() {
+            resizeCanvas();
+            initSimulation();
+            animate();
+        };
+    </script>
+</body>
+</html>
