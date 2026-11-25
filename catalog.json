@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-25T07:47:36.578Z",
+  "updatedAt": "2026-11-25T08:10:40.895Z",
   "folders": [
     "中三",
     "中四",
@@ -9,5 +9,186 @@
     "互動遊戲",
     "未分類"
   ],
-  "items": []
+  "items": [
+    {
+      "fileName": "Chap 32 電解原理與化學電池比較互動平台.html",
+      "originalFileName": "Chap 32 電解原理與化學電池比較互動平台.html",
+      "displayName": "Chap 32 電解原理與化學電池比較互動平台.html",
+      "folder": "中三",
+      "size": 145458,
+      "createdAt": "2026-11-25T08:10:40.027Z",
+      "updatedAt": "2026-11-25T08:10:40.027Z"
+    },
+    {
+      "fileName": "Chap 31 含惰性電極的化學電池互動實驗室.html",
+      "originalFileName": "Chap 31 含惰性電極的化學電池互動實驗室.html",
+      "displayName": "Chap 31 含惰性電極的化學電池互動實驗室.html",
+      "folder": "中三",
+      "size": 99445,
+      "createdAt": "2026-11-25T08:10:37.838Z",
+      "updatedAt": "2026-11-25T08:10:37.838Z"
+    },
+    {
+      "fileName": "Chap 30 氧化還原全方位學習系統.html",
+      "originalFileName": "Chap 30 氧化還原全方位學習系統.html",
+      "displayName": "Chap 30 氧化還原全方位學習系統.html",
+      "folder": "中三",
+      "size": 153204,
+      "createdAt": "2026-11-25T08:10:35.242Z",
+      "updatedAt": "2026-11-25T08:10:35.242Z"
+    },
+    {
+      "fileName": "Chap 16 酸鹼中和滴定與指示劑選擇.html",
+      "originalFileName": "Chap 16 酸鹼中和滴定與指示劑選擇.html",
+      "displayName": "Chap 16 酸鹼中和滴定與指示劑選擇.html",
+      "folder": "中三",
+      "size": 48992,
+      "createdAt": "2026-11-25T08:10:32.633Z",
+      "updatedAt": "2026-11-25T08:10:32.633Z"
+    },
+    {
+      "fileName": "Chap 12 摩爾比.html",
+      "originalFileName": "Chap 12 摩爾比.html",
+      "displayName": "Chap 12 摩爾比.html",
+      "folder": "中三",
+      "size": 220509,
+      "createdAt": "2026-11-25T08:10:30.284Z",
+      "updatedAt": "2026-11-25T08:10:30.284Z"
+    },
+    {
+      "fileName": "Chap 11 置換反應 & 離子方程式.html",
+      "originalFileName": "Chap 11 置換反應 & 離子方程式.html",
+      "displayName": "Chap 11 置換反應 & 離子方程式.html",
+      "folder": "中三",
+      "size": 42763,
+      "createdAt": "2026-11-25T08:10:27.875Z",
+      "updatedAt": "2026-11-25T08:10:27.875Z"
+    },
+    {
+      "fileName": "Chap 10 平衡化學反應方程式.html",
+      "originalFileName": "Chap 10 平衡化學反應方程式.html",
+      "displayName": "Chap 10 平衡化學反應方程式.html",
+      "folder": "未分類",
+      "size": 45384,
+      "createdAt": "2026-11-25T08:10:40.895Z",
+      "updatedAt": "2026-11-25T08:10:40.895Z"
+    },
+    {
+      "fileName": "Chap 2 液態空氣分餾模擬平台.html",
+      "originalFileName": "Chap 2 液態空氣分餾模擬平台.html",
+      "displayName": "Chap 2 液態空氣分餾模擬平台.html",
+      "folder": "未分類",
+      "size": 43081,
+      "createdAt": "2026-11-25T08:10:40.895Z",
+      "updatedAt": "2026-11-25T08:10:40.895Z"
+    },
+    {
+      "fileName": "Chap 30 氧化還原全方位學習系統_刪.html",
+      "originalFileName": "Chap 30 氧化還原全方位學習系統_刪.html",
+      "displayName": "Chap 30 氧化還原全方位學習系統_刪.html",
+      "folder": "未分類",
+      "size": 181317,
+      "createdAt": "2026-11-25T08:10:40.895Z",
+      "updatedAt": "2026-11-25T08:10:40.895Z"
+    },
+    {
+      "fileName": "Chap 51 速率方程與對數圖解法互動教學.html",
+      "originalFileName": "Chap 51 速率方程與對數圖解法互動教學.html",
+      "displayName": "Chap 51 速率方程與對數圖解法互動教學.html",
+      "folder": "未分類",
+      "size": 118939,
+      "createdAt": "2026-11-25T08:10:40.895Z",
+      "updatedAt": "2026-11-25T08:10:40.895Z"
+    },
+    {
+      "fileName": "Chap 52 阿列紐斯方程.html",
+      "originalFileName": "Chap 52 阿列紐斯方程.html",
+      "displayName": "Chap 52 阿列紐斯方程.html",
+      "folder": "未分類",
+      "size": 34951,
+      "createdAt": "2026-11-25T08:10:40.895Z",
+      "updatedAt": "2026-11-25T08:10:40.895Z"
+    },
+    {
+      "fileName": "Chap 62 液液萃取微觀模擬.html",
+      "originalFileName": "Chap 62 液液萃取微觀模擬.html",
+      "displayName": "Chap 62 液液萃取微觀模擬.html",
+      "folder": "未分類",
+      "size": 44800,
+      "createdAt": "2026-11-25T08:10:40.895Z",
+      "updatedAt": "2026-11-25T08:10:40.895Z"
+    },
+    {
+      "fileName": "Chap 62_2 色層分析法微觀與宏觀模擬.html",
+      "originalFileName": "Chap 62_2 色層分析法微觀與宏觀模擬.html",
+      "displayName": "Chap 62_2 色層分析法微觀與宏觀模擬.html",
+      "folder": "未分類",
+      "size": 38845,
+      "createdAt": "2026-11-25T08:10:40.895Z",
+      "updatedAt": "2026-11-25T08:10:40.895Z"
+    },
+    {
+      "fileName": "Chap 63.4 測定果汁中抗壞血酸的質量.html",
+      "originalFileName": "Chap 63.4 測定果汁中抗壞血酸的質量.html",
+      "displayName": "Chap 63.4 測定果汁中抗壞血酸的質量.html",
+      "folder": "未分類",
+      "size": 168495,
+      "createdAt": "2026-11-25T08:10:40.895Z",
+      "updatedAt": "2026-11-25T08:10:40.895Z"
+    },
+    {
+      "fileName": "Chap 7 化學離子大師_新.html",
+      "originalFileName": "Chap 7 化學離子大師_新.html",
+      "displayName": "Chap 7 化學離子大師_新.html",
+      "folder": "未分類",
+      "size": 142775,
+      "createdAt": "2026-11-25T08:10:40.895Z",
+      "updatedAt": "2026-11-25T08:10:40.895Z"
+    },
+    {
+      "fileName": "Chap 7 化學離子大師_舊.html",
+      "originalFileName": "Chap 7 化學離子大師_舊.html",
+      "displayName": "Chap 7 化學離子大師_舊.html",
+      "folder": "未分類",
+      "size": 80540,
+      "createdAt": "2026-11-25T08:10:40.895Z",
+      "updatedAt": "2026-11-25T08:10:40.895Z"
+    },
+    {
+      "fileName": "Chap 7_2 離子的遷移.html",
+      "originalFileName": "Chap 7_2 離子的遷移.html",
+      "displayName": "Chap 7_2 離子的遷移.html",
+      "folder": "未分類",
+      "size": 52036,
+      "createdAt": "2026-11-25T08:10:40.895Z",
+      "updatedAt": "2026-11-25T08:10:40.895Z"
+    },
+    {
+      "fileName": "publisher.html",
+      "originalFileName": "publisher.html",
+      "displayName": "publisher.html",
+      "folder": "未分類",
+      "size": 130216,
+      "createdAt": "2026-11-25T08:10:40.895Z",
+      "updatedAt": "2026-11-25T08:10:40.895Z"
+    },
+    {
+      "fileName": "寶可夢親子對戰平台.html",
+      "originalFileName": "寶可夢親子對戰平台.html",
+      "displayName": "寶可夢親子對戰平台.html",
+      "folder": "未分類",
+      "size": 144965,
+      "createdAt": "2026-11-25T08:10:40.895Z",
+      "updatedAt": "2026-11-25T08:10:40.895Z"
+    },
+    {
+      "fileName": "鬥獸棋.html",
+      "originalFileName": "鬥獸棋.html",
+      "displayName": "鬥獸棋.html",
+      "folder": "未分類",
+      "size": 73431,
+      "createdAt": "2026-11-25T08:10:40.895Z",
+      "updatedAt": "2026-11-25T08:10:40.895Z"
+    }
+  ]
 }
