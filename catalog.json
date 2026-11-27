@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-27T17:17:42.380Z",
+  "updatedAt": "2026-11-27T17:18:24.011Z",
   "folders": [
     "中三",
     "中四",
@@ -11,6 +11,15 @@
     "未分類"
   ],
   "items": [
+    {
+      "fileName": "pat_pet_v1_4_0_shiba_care.html",
+      "originalFileName": "pat_pet_v1_4_0_shiba_care.html",
+      "displayName": "Pat Pet 護理手帳",
+      "folder": "工具",
+      "size": 643209,
+      "createdAt": "2026-11-27T17:18:23.410Z",
+      "updatedAt": "2026-11-27T17:18:23.410Z"
+    },
     {
       "fileName": "Chap 10 平衡化學反應方程式.html",
       "originalFileName": "Chap 10 平衡化學反應方程式.html",
