@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JFIF 轉 JPEG 一鍵批次轉換工具（免安裝離線版）</title>
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --surface: #ffffff;
+      --surface-alt: #f8fafc;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --text-subtle: #64748b;
+      --primary: #0f766e;
+      --primary-hover: #115e59;
+      --primary-soft: #f0fdfa;
+      --primary-border: #99f6e4;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --success: #15803d;
+      --success-bg: #f0fdf4;
+      --success-border: #bbf7d0;
+      --warn: #b45309;
+      --warn-bg: #fffbeb;
+      --warn-border: #fde68a;
+      --danger: #dc2626;
+      --danger-bg: #fef2f2;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 6px 20px rgba(15, 23, 42, 0.07);
+      --radius: 14px;
+      --radius-sm: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Inter", "Microsoft JhengHei UI", "PingFang HK", "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      padding: 20px 16px 48px;
+    }
+
+    .app-shell {
+      max-width: 980px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    /* Header */
+    .header {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #0f766e, #0d9488);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(15, 118, 110, 0.25);
+    }
+
+    .brand h1 {
+      font-size: 1.28rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .brand p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: var(--primary-soft);
+      color: var(--primary);
+      border: 1px solid var(--primary-border);
+    }
+
+    .badge.neutral {
+      background: var(--surface-alt);
+      color: var(--text-muted);
+      border-color: var(--border);
+    }
+
+    /* Dropzone Card */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .dropzone {
+      border: 2px dashed var(--border-strong);
+      border-radius: var(--radius-sm);
+      background: var(--surface-alt);
+      padding: 32px 20px;
+      text-align: center;
+      transition: border-color 0.18s ease, background-color 0.18s ease, transform 0.15s ease;
+      cursor: pointer;
+    }
+
+    .dropzone:hover,
+    .dropzone.drag-over {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+    }
+
+    .dropzone.drag-over {
+      transform: scale(1.005);
+    }
+
+    .dropzone-icon {
+      width: 52px;
+      height: 52px;
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .dropzone h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .dropzone p {
+      font-size: 0.88rem;
+      color: var(--text-subtle);
+      margin-top: 4px;
+    }
+
+    .picker-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--primary-hover);
+    }
+
+    .btn-accent {
+      background: var(--accent);
+      color: #ffffff;
+    }
+
+    .btn-accent:hover:not(:disabled) {
+      background: var(--accent-hover);
+    }
+
+    .btn-outline {
+      background: #ffffff;
+      color: var(--text);
+      border-color: var(--border-strong);
+    }
+
+    .btn-outline:hover:not(:disabled) {
+      background: var(--surface-alt);
+      border-color: var(--text-subtle);
+    }
+
+    .btn-danger-ghost {
+      background: transparent;
+      color: var(--danger);
+      border-color: transparent;
+      padding: 8px 12px;
+    }
+
+    .btn-danger-ghost:hover:not(:disabled) {
+      background: var(--danger-bg);
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.82rem;
+      border-radius: 8px;
+    }
+
+    /* Settings Row */
+    .settings-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .mode-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .mode-label {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .radio-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 12px;
+      border: 1px solid var(--border-strong);
+      border-radius: 999px;
+      font-size: 0.84rem;
+      font-weight: 500;
+      color: var(--text);
+      background: #ffffff;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+
+    .radio-pill input {
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    .radio-pill.active {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .auto-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .auto-toggle input {
+      accent-color: var(--primary);
+      width: 15px;
+      height: 15px;
+      cursor: pointer;
+    }
+
+    /* Action Bar & Progress */
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .stats-summary {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .stat-chip {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      padding: 5px 11px;
+      border-radius: 8px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .stat-chip span {
+      color: var(--primary);
+    }
+
+    .export-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .progress-wrap {
+      margin-top: 14px;
+      display: none;
+    }
+
+    .progress-wrap.visible {
+      display: block;
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #0f766e, #14b8a6);
+      border-radius: 999px;
+      transition: width 0.2s ease;
+    }
+
+    /* File Grid */
+    .file-list {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 28px 16px;
+      color: var(--text-subtle);
+      font-size: 0.9rem;
+      background: var(--surface-alt);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-sm);
+    }
+
+    .file-item {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      background: #ffffff;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .file-item:hover {
+      border-color: var(--border-strong);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .thumb-wrap {
+      width: 58px;
+      height: 58px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .thumb-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .file-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .file-name {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-origin {
+      font-size: 0.76rem;
+      color: var(--text-subtle);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 1px;
+    }
+
+    .file-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text-muted);
+    }
+
+    .tag.ok {
+      background: var(--success-bg);
+      border-color: var(--success-border);
+      color: var(--success);
+    }
+
+    .tag.warn {
+      background: var(--warn-bg);
+      border-color: var(--warn-border);
+      color: var(--warn);
+    }
+
+    .tag.err {
+      background: var(--danger-bg);
+      border-color: #fecaca;
+      color: var(--danger);
+    }
+
+    .item-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .icon-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-soft);
+    }
+
+    .icon-btn.remove:hover {
+      border-color: #fca5a5;
+      color: var(--danger);
+      background: var(--danger-bg);
+    }
+
+    /* Footer note */
+    .footer-note {
+      font-size: 0.8rem;
+      color: var(--text-subtle);
+      text-align: center;
+      padding: 4px 8px;
+    }
+
+    /* Toast */
+    .toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 9999;
+      max-width: 360px;
+    }
+
+    .toast {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 0.86rem;
+      font-weight: 500;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.22);
+      animation: toastIn 0.2s ease;
+    }
+
+    .toast.success {
+      background: #14532d;
+    }
+
+    .toast.error {
+      background: #991b1b;
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hidden-input {
+      display: none;
+    }
+
+    @media (max-width: 640px) {
+      .header, .card {
+        padding: 16px;
+      }
+      .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .export-actions {
+        width: 100%;
+      }
+      .export-actions .btn {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Header -->
+    <header class="header">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+            <path d="M21 15l-5-5L5 21"></path>
+          </svg>
+        </div>
+        <div>
+          <h1>JFIF 轉 JPEG 一鍵批次轉換工具</h1>
+          <p>免安裝・100% 本機離線運作・保留原始檔案名稱與最高質素</p>
+        </div>
+      </div>
+      <div class="badges">
+        <span class="badge">無需安裝程式</span>
+        <span class="badge neutral">不經雲端上傳</span>
+      </div>
+    </header>
+
+    <!-- Upload & Settings Card -->
+    <section class="card">
+      <div id="dropzone" class="dropzone" role="button" tabindex="0" aria-label="拖放或點擊選擇 JFIF 圖片檔案">
+        <div class="dropzone-icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+        </div>
+        <h2>拖放多個 .jfif 檔案或整個資料夾到此處</h2>
+        <p>選取後會即時在電腦本機自動轉換為 .jpeg，原始檔名完整保留</p>
+        <div class="picker-actions">
+          <button type="button" id="btnPickFiles" class="btn btn-primary">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+            一鍵選擇多個 JFIF 檔案
+          </button>
+          <button type="button" id="btnPickFolder" class="btn btn-outline">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+            一鍵選擇整個資料夾
+          </button>
+        </div>
+      </div>
+
+      <input id="fileInput" class="hidden-input" type="file" accept=".jfif,.JFIF,image/jpeg" multiple>
+      <input id="folderInput" class="hidden-input" type="file" webkitdirectory directory multiple>
+
+      <div class="settings-bar">
+        <div class="mode-group" role="radiogroup" aria-label="轉換質素模式">
+          <span class="mode-label">畫質模式：</span>
+          <label class="radio-pill active" id="pillLossless">
+            <input type="radio" name="qualityMode" value="lossless" checked>
+            無損原畫質（推薦・100% 原始最高質素）
+          </label>
+          <label class="radio-pill" id="pillReencode">
+            <input type="radio" name="qualityMode" value="reencode">
+            最高畫質重新編碼（Quality 100%）
+          </label>
+        </div>
+        <label class="auto-toggle">
+          <input type="checkbox" id="chkIncludeNonJfif">
+          同時接受其他圖片並轉存為 .jpeg
+        </label>
+      </div>
+    </section>
+
+    <!-- Results & One-Click Export Card -->
+    <section class="card">
+      <div class="toolbar">
+        <div class="stats-summary">
+          <div class="stat-chip">已轉換：<span id="statCount">0</span> 張</div>
+          <div class="stat-chip">總大小：<span id="statSize">0 KB</span></div>
+        </div>
+        <div class="export-actions">
+          <button type="button" id="btnSaveFolder" class="btn btn-primary" disabled>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+            一鍵直接儲存到資料夾
+          </button>
+          <button type="button" id="btnDownloadZip" class="btn btn-accent" disabled>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            一鍵下載全部（ZIP）
+          </button>
+          <button type="button" id="btnClearAll" class="btn btn-danger-ghost" disabled>
+            清空清單
+          </button>
+        </div>
+      </div>
+
+      <div id="progressWrap" class="progress-wrap">
+        <div class="progress-meta">
+          <span id="progressText">正在轉換...</span>
+          <span id="progressPct">0%</span>
+        </div>
+        <div class="progress-track">
+          <div id="progressFill" class="progress-fill"></div>
+        </div>
+      </div>
+
+      <div id="fileList" class="file-list">
+        <div class="empty-state">
+          尚未加入任何檔案。請拖放 .jfif 圖片或點擊上方「一鍵選擇多個 JFIF 檔案」開始轉換。
+        </div>
+      </div>
+    </section>
+
+    <p class="footer-note">
+      提示：JFIF 本質與 JPEG 相同，預設「無損原畫質」模式會驗證 JPEG 標頭並保留 100% 原始位元組、EXIF 及色彩設定檔，不會造成二次壓縮失真。使用 Chrome 或 Edge 瀏覽器即可直接將全部檔案一鍵寫入指定資料夾。
+    </p>
+  </div>
+
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      // State
+      const items = []; // { id, origName, outName, blob, size, width, height, method, status, thumbUrl, error }
+      let nextId = 1;
+      let isProcessing = false;
+
+      // DOM refs
+      const dropzone = document.getElementById("dropzone");
+      const fileInput = document.getElementById("fileInput");
+      const folderInput = document.getElementById("folderInput");
+      const btnPickFiles = document.getElementById("btnPickFiles");
+      const btnPickFolder = document.getElementById("btnPickFolder");
+      const btnSaveFolder = document.getElementById("btnSaveFolder");
+      const btnDownloadZip = document.getElementById("btnDownloadZip");
+      const btnClearAll = document.getElementById("btnClearAll");
+      const pillLossless = document.getElementById("pillLossless");
+      const pillReencode = document.getElementById("pillReencode");
+      const chkIncludeNonJfif = document.getElementById("chkIncludeNonJfif");
+      const statCount = document.getElementById("statCount");
+      const statSize = document.getElementById("statSize");
+      const progressWrap = document.getElementById("progressWrap");
+      const progressText = document.getElementById("progressText");
+      const progressPct = document.getElementById("progressPct");
+      const progressFill = document.getElementById("progressFill");
+      const fileList = document.getElementById("fileList");
+      const toastContainer = document.getElementById("toastContainer");
+
+      // Utilities
+      function showToast(message, type) {
+        const el = document.createElement("div");
+        el.className = "toast" + (type ? " " + type : "");
+        el.textContent = message;
+        toastContainer.appendChild(el);
+        setTimeout(function () {
+          el.style.opacity = "0";
+          el.style.transition = "opacity 0.25s ease";
+          setTimeout(function () {
+            if (el.parentNode) el.parentNode.removeChild(el);
+          }, 260);
+        }, 3200);
+      }
+
+      function formatBytes(bytes) {
+        if (!bytes || bytes <= 0) return "0 KB";
+        if (bytes < 1024) return bytes + " B";
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+        return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+      }
+
+      function getMode() {
+        const checked = document.querySelector('input[name="qualityMode"]:checked');
+        return checked ? checked.value : "lossless";
+      }
+
+      function stripExtension(filename) {
+        const idx = filename.lastIndexOf(".");
+        return idx > 0 ? filename.slice(0, idx) : filename;
+      }
+
+      function isJfifFile(file) {
+        return /\.jfif$/i.test(file.name);
+      }
+
+      function isAcceptedImage(file) {
+        if (isJfifFile(file)) return true;
+        if (!chkIncludeNonJfif.checked) return false;
+        return /\.(jpe?g|png|webp|bmp|gif)$/i.test(file.name) || (file.type && file.type.startsWith("image/"));
+      }
+
+      function allocateUniqueOutputName(origName, usedSet) {
+        const stem = stripExtension(origName);
+        let candidate = stem + ".jpeg";
+        if (!usedSet.has(candidate.toLowerCase())) {
+          usedSet.add(candidate.toLowerCase());
+          return candidate;
+        }
+        let counter = 1;
+        while (true) {
+          candidate = stem + "_" + counter + ".jpeg";
+          if (!usedSet.has(candidate.toLowerCase())) {
+            usedSet.add(candidate.toLowerCase());
+            return candidate;
+          }
+          counter += 1;
+        }
+      }
+
+      function hasJpegMagicBytes(uint8) {
+        return uint8.length >= 3 && uint8[0] === 0xff && uint8[1] === 0xd8 && uint8[2] === 0xff;
+      }
+
+      function getImageDimensions(blob) {
+        return new Promise(function (resolve) {
+          const url = URL.createObjectURL(blob);
+          const img = new Image();
+          img.onload = function () {
+            resolve({ width: img.naturalWidth, height: img.naturalHeight, thumbUrl: url });
+          };
+          img.onerror = function () {
+            URL.revokeObjectURL(url);
+            resolve({ width: 0, height: 0, thumbUrl: "" });
+          };
+          img.src = url;
+        });
+      }
+
+      function reencodeToMaxQualityJpeg(file) {
+        return new Promise(function (resolve, reject) {
+          const url = URL.createObjectURL(file);
+          const img = new Image();
+          img.onload = function () {
+            try {
+              const canvas = document.createElement("canvas");
+              canvas.width = img.naturalWidth;
+              canvas.height = img.naturalHeight;
+              const ctx = canvas.getContext("2d");
+              ctx.fillStyle = "#ffffff";
+              ctx.fillRect(0, 0, canvas.width, canvas.height);
+              ctx.drawImage(img, 0, 0);
+              canvas.toBlob(
+                function (blob) {
+                  URL.revokeObjectURL(url);
+                  if (!blob) {
+                    reject(new Error("瀏覽器無法編碼此圖片"));
+                    return;
+                  }
+                  resolve({ blob: blob, width: img.naturalWidth, height: img.naturalHeight });
+                },
+                "image/jpeg",
+                1.0
+              );
+            } catch (err) {
+              URL.revokeObjectURL(url);
+              reject(err);
+            }
+          };
+          img.onerror = function () {
+            URL.revokeObjectURL(url);
+            reject(new Error("無法讀取圖片內容"));
+          };
+          img.src = url;
+        });
+      }
+
+      async function convertFile(file, outName, mode) {
+        const buffer = await file.arrayBuffer();
+        const bytes = new Uint8Array(buffer);
+        const validJpeg = hasJpegMagicBytes(bytes);
+
+        if (mode === "lossless" && validJpeg) {
+          const blob = new Blob([buffer], { type: "image/jpeg" });
+          const dims = await getImageDimensions(blob);
+          return {
+            blob: blob,
+            size: blob.size,
+            width: dims.width,
+            height: dims.height,
+            thumbUrl: dims.thumbUrl,
+            method: "無損原畫質",
+            status: "ok",
+            error: ""
+          };
+        }
+
+        const encoded = await reencodeToMaxQualityJpeg(file);
+        const thumbUrl = URL.createObjectURL(encoded.blob);
+        return {
+          blob: encoded.blob,
+          size: encoded.blob.size,
+          width: encoded.width,
+          height: encoded.height,
+          thumbUrl: thumbUrl,
+          method: validJpeg ? "Q100 重編碼" : "自動轉碼 Q100",
+          status: "ok",
+          error: ""
+        };
+      }
+
+      function updateProgress(current, total, label) {
+        if (total <= 0) {
+          progressWrap.classList.remove("visible");
+          return;
+        }
+        progressWrap.classList.add("visible");
+        const pct = Math.round((current / total) * 100);
+        progressText.textContent = label;
+        progressPct.textContent = pct + "%";
+        progressFill.style.width = pct + "%";
+      }
+
+      async function handleIncomingFiles(rawFiles) {
+        if (isProcessing) {
+          showToast("正在轉換檔案，請稍候完成再加入。", "");
+          return;
+        }
+        const allFiles = Array.from(rawFiles || []);
+        const filtered = allFiles.filter(isAcceptedImage);
+        const skippedCount = allFiles.length - filtered.length;
+
+        if (filtered.length === 0) {
+          showToast("找不到符合的 .jfif 圖片檔案。", "error");
+          return;
+        }
+
+        // Sort alphabetically for clean display
+        filtered.sort(function (a, b) {
+          return a.name.localeCompare(b.name, "zh-Hant", { numeric: true });
+        });
+
+        isProcessing = true;
+        const mode = getMode();
+        const usedNames = new Set(items.map(function (it) { return it.outName.toLowerCase(); }));
+
+        let okCount = 0;
+        let failCount = 0;
+
+        updateProgress(0, filtered.length, "準備轉換 " + filtered.length + " 個檔案...");
+
+        for (let i = 0; i < filtered.length; i++) {
+          const f = filtered[i];
+          const outName = allocateUniqueOutputName(f.name, usedNames);
+          updateProgress(i, filtered.length, "正在轉換 (" + (i + 1) + "/" + filtered.length + ")：" + f.name);
+
+          try {
+            const res = await convertFile(f, outName, mode);
+            items.push({
+              id: nextId++,
+              origName: f.name,
+              outName: outName,
+              blob: res.blob,
+              size: res.size,
+              width: res.width,
+              height: res.height,
+              method: res.method,
+              status: "ok",
+              thumbUrl: res.thumbUrl,
+              error: ""
+            });
+            okCount++;
+          } catch (err) {
+            items.push({
+              id: nextId++,
+              origName: f.name,
+              outName: outName,
+              blob: null,
+              size: f.size,
+              width: 0,
+              height: 0,
+              method: "失敗",
+              status: "err",
+              thumbUrl: "",
+              error: err && err.message ? err.message : "轉換失敗"
+            });
+            failCount++;
+          }
+          renderList();
+        }
+
+        updateProgress(filtered.length, filtered.length, "轉換完成：成功 " + okCount + " 張" + (failCount ? "，失敗 " + failCount + " 張" : ""));
+        isProcessing = false;
+
+        let msg = "已完成轉換 " + okCount + " 張圖片！";
+        if (skippedCount > 0) {
+          msg += "（已略過 " + skippedCount + " 個非 JFIF 檔案）";
+        }
+        showToast(msg, failCount > 0 ? "" : "success");
+      }
+
+      // Recursive drag-and-drop folder reader
+      function readEntryFiles(entry) {
+        return new Promise(function (resolve) {
+          if (entry.isFile) {
+            entry.file(
+              function (file) { resolve([file]); },
+              function () { resolve([]); }
+            );
+          } else if (entry.isDirectory) {
+            const reader = entry.createReader();
+            const collected = [];
+            function readBatch() {
+              reader.readEntries(
+                async function (entries) {
+                  if (!entries.length) {
+                    resolve(collected);
+                    return;
+                  }
+                  for (let i = 0; i < entries.length; i++) {
+                    const sub = await readEntryFiles(entries[i]);
+                    for (let j = 0; j < sub.length; j++) collected.push(sub[j]);
+                  }
+                  readBatch();
+                },
+                function () { resolve(collected); }
+              );
+            }
+            readBatch();
+          } else {
+            resolve([]);
+          }
+        });
+      }
+
+      function renderList() {
+        const validItems = items.filter(function (it) { return it.status === "ok" && it.blob; });
+        const totalBytes = validItems.reduce(function (sum, it) { return sum + it.size; }, 0);
+
+        statCount.textContent = String(validItems.length);
+        statSize.textContent = formatBytes(totalBytes);
+
+        const hasValid = validItems.length > 0;
+        btnSaveFolder.disabled = !hasValid;
+        btnDownloadZip.disabled = !hasValid;
+        btnClearAll.disabled = items.length === 0;
+
+        if (items.length === 0) {
+          fileList.innerHTML = '<div class="empty-state">尚未加入任何檔案。請拖放 .jfif 圖片或點擊上方「一鍵選擇多個 JFIF 檔案」開始轉換。</div>';
+          return;
+        }
+
+        fileList.innerHTML = "";
+        const frag = document.createDocumentFragment();
+
+        for (let i = 0; i < items.length; i++) {
+          const it = items[i];
+          const card = document.createElement("div");
+          card.className = "file-item";
+
+          const thumbWrap = document.createElement("div");
+          thumbWrap.className = "thumb-wrap";
+          if (it.thumbUrl) {
+            const img = document.createElement("img");
+            img.src = it.thumbUrl;
+            img.alt = it.outName;
+            thumbWrap.appendChild(img);
+          } else {
+            thumbWrap.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="M21 15l-5-5L5 21"></path></svg>';
+          }
+
+          const info = document.createElement("div");
+          info.className = "file-info";
+
+          const titleEl = document.createElement("div");
+          titleEl.className = "file-name";
+          titleEl.title = it.outName;
+          titleEl.textContent = it.outName;
+
+          const origEl = document.createElement("div");
+          origEl.className = "file-origin";
+          origEl.title = "原檔：" + it.origName;
+          origEl.textContent = "原檔：" + it.origName;
+
+          const meta = document.createElement("div");
+          meta.className = "file-meta";
+
+          const methodTag = document.createElement("span");
+          methodTag.className = "tag " + (it.status === "ok" ? "ok" : "err");
+          methodTag.textContent = it.status === "ok" ? it.method : it.error;
+          meta.appendChild(methodTag);
+
+          const sizeTag = document.createElement("span");
+          sizeTag.className = "tag";
+          sizeTag.textContent = formatBytes(it.size);
+          meta.appendChild(sizeTag);
+
+          if (it.width > 0 && it.height > 0) {
+            const dimTag = document.createElement("span");
+            dimTag.className = "tag";
+            dimTag.textContent = it.width + "×" + it.height;
+            meta.appendChild(dimTag);
+          }
+
+          info.appendChild(titleEl);
+          info.appendChild(origEl);
+          info.appendChild(meta);
+
+          const actions = document.createElement("div");
+          actions.className = "item-actions";
+
+          if (it.status === "ok" && it.blob) {
+            const dlBtn = document.createElement("button");
+            dlBtn.type = "button";
+            dlBtn.className = "icon-btn";
+            dlBtn.title = "下載 " + it.outName;
+            dlBtn.setAttribute("aria-label", "下載 " + it.outName);
+            dlBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>';
+            dlBtn.addEventListener("click", function () {
+              triggerDownload(it.blob, it.outName);
+            });
+            actions.appendChild(dlBtn);
+          }
+
+          const rmBtn = document.createElement("button");
+          rmBtn.type = "button";
+          rmBtn.className = "icon-btn remove";
+          rmBtn.title = "從清單移除";
+          rmBtn.setAttribute("aria-label", "從清單移除 " + it.outName);
+          rmBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+          rmBtn.addEventListener("click", function () {
+            removeItem(it.id);
+          });
+          actions.appendChild(rmBtn);
+
+          card.appendChild(thumbWrap);
+          card.appendChild(info);
+          card.appendChild(actions);
+          frag.appendChild(card);
+        }
+
+        fileList.appendChild(frag);
+      }
+
+      function removeItem(id) {
+        const idx = items.findIndex(function (it) { return it.id === id; });
+        if (idx !== -1) {
+          if (items[idx].thumbUrl) URL.revokeObjectURL(items[idx].thumbUrl);
+          items.splice(idx, 1);
+          renderList();
+        }
+      }
+
+      function clearAll() {
+        for (let i = 0; i < items.length; i++) {
+          if (items[i].thumbUrl) URL.revokeObjectURL(items[i].thumbUrl);
+        }
+        items.length = 0;
+        progressWrap.classList.remove("visible");
+        renderList();
+        showToast("已清空轉換清單。", "");
+      }
+
+      function triggerDownload(blob, filename) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function () {
+          URL.revokeObjectURL(url);
+        }, 4000);
+      }
+
+      // Built-in Zero-Dependency Offline ZIP Generator (STORE method + UTF-8 filenames)
+      const crcTable = (function () {
+        const table = new Uint32Array(256);
+        for (let n = 0; n < 256; n++) {
+          let c = n;
+          for (let k = 0; k < 8; k++) {
+            c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
+          }
+          table[n] = c >>> 0;
+        }
+        return table;
+      })();
+
+      function crc32(bytes) {
+        let crc = 0xffffffff;
+        for (let i = 0; i < bytes.length; i++) {
+          crc = crcTable[(crc ^ bytes[i]) & 0xff] ^ (crc >>> 8);
+        }
+        return (crc ^ 0xffffffff) >>> 0;
+      }
+
+      function getDosTimeDate(date) {
+        const d = date || new Date();
+        const dosTime = ((d.getHours() & 0x1f) << 11) | ((d.getMinutes() & 0x3f) << 5) | ((d.getSeconds() >> 1) & 0x1f);
+        const dosDate = (((Math.max(d.getFullYear(), 1980) - 1980) & 0x7f) << 9) | (((d.getMonth() + 1) & 0x0f) << 5) | (d.getDate() & 0x1f);
+        return { dosTime: dosTime, dosDate: dosDate };
+      }
+
+      async function buildOfflineZip(validItems) {
+        const encoder = new TextEncoder();
+        const localParts = [];
+        const centralParts = [];
+        let offset = 0;
+        const { dosTime, dosDate } = getDosTimeDate(new Date());
+
+        for (let i = 0; i < validItems.length; i++) {
+          const item = validItems[i];
+          const nameBytes = encoder.encode(item.outName);
+          const dataBytes = new Uint8Array(await item.blob.arrayBuffer());
+          const checksum = crc32(dataBytes);
+          const size = dataBytes.length;
+
+          // Local file header (30 bytes + filename)
+          const localHeader = new ArrayBuffer(30 + nameBytes.length);
+          const lv = new DataView(localHeader);
+          lv.setUint32(0, 0x04034b50, true); // signature
+          lv.setUint16(4, 20, true);         // version needed
+          lv.setUint16(6, 0x0800, true);     // UTF-8 flag
+          lv.setUint16(8, 0, true);          // method: STORE (lossless, instant)
+          lv.setUint16(10, dosTime, true);
+          lv.setUint16(12, dosDate, true);
+          lv.setUint32(14, checksum, true);
+          lv.setUint32(18, size, true);
+          lv.setUint32(22, size, true);
+          lv.setUint16(26, nameBytes.length, true);
+          lv.setUint16(28, 0, true);
+          new Uint8Array(localHeader, 30).set(nameBytes);
+
+          localParts.push(localHeader, dataBytes);
+
+          // Central directory header (46 bytes + filename)
+          const centralHeader = new ArrayBuffer(46 + nameBytes.length);
+          const cv = new DataView(centralHeader);
+          cv.setUint32(0, 0x02014b50, true);
+          cv.setUint16(4, 20, true);
+          cv.setUint16(6, 20, true);
+          cv.setUint16(8, 0x0800, true);     // UTF-8 flag
+          cv.setUint16(10, 0, true);         // STORE
+          cv.setUint16(12, dosTime, true);
+          cv.setUint16(14, dosDate, true);
+          cv.setUint32(16, checksum, true);
+          cv.setUint32(20, size, true);
+          cv.setUint32(24, size, true);
+          cv.setUint16(28, nameBytes.length, true);
+          cv.setUint16(30, 0, true);
+          cv.setUint16(32, 0, true);
+          cv.setUint16(34, 0, true);
+          cv.setUint16(36, 0, true);
+          cv.setUint32(38, 0, true);
+          cv.setUint32(42, offset, true);
+          new Uint8Array(centralHeader, 46).set(nameBytes);
+
+          centralParts.push(centralHeader);
+          offset += localHeader.byteLength + dataBytes.byteLength;
+        }
+
+        let centralSize = 0;
+        for (let i = 0; i < centralParts.length; i++) {
+          centralSize += centralParts[i].byteLength;
+        }
+
+        // End of central directory record (22 bytes)
+        const eocd = new ArrayBuffer(22);
+        const ev = new DataView(eocd);
+        ev.setUint32(0, 0x06054b50, true);
+        ev.setUint16(4, 0, true);
+        ev.setUint16(6, 0, true);
+        ev.setUint16(8, validItems.length, true);
+        ev.setUint16(10, validItems.length, true);
+        ev.setUint32(12, centralSize, true);
+        ev.setUint32(16, offset, true);
+        ev.setUint16(20, 0, true);
+
+        return new Blob(localParts.concat(centralParts, [eocd]), { type: "application/zip" });
+      }
+
+      async function saveDirectlyToFolder() {
+        const validItems = items.filter(function (it) { return it.status === "ok" && it.blob; });
+        if (!validItems.length) return;
+
+        if (typeof window.showDirectoryPicker !== "function") {
+          showToast("目前瀏覽器不支援直接寫入資料夾，將改用「一鍵下載全部（ZIP）」。", "");
+          await downloadAllAsZip();
+          return;
+        }
+
+        try {
+          const dirHandle = await window.showDirectoryPicker({ mode: "readwrite" });
+          updateProgress(0, validItems.length, "正在儲存至指定資料夾...");
+
+          for (let i = 0; i < validItems.length; i++) {
+            const it = validItems[i];
+            const fileHandle = await dirHandle.getFileHandle(it.outName, { create: true });
+            const writable = await fileHandle.createWritable();
+            await writable.write(it.blob);
+            await writable.close();
+            updateProgress(i + 1, validItems.length, "已儲存 (" + (i + 1) + "/" + validItems.length + ")：" + it.outName);
+          }
+
+          showToast("已成功將 " + validItems.length + " 個 .jpeg 檔案直接儲存到指定資料夾！", "success");
+        } catch (err) {
+          if (err && err.name === "AbortError") return;
+          showToast("無法直接寫入資料夾（若在預覽視窗請先下載本 HTML 檔在電腦開啟，或按「一鍵下載全部 ZIP」）。", "error");
+        }
+      }
+
+      async function downloadAllAsZip() {
+        const validItems = items.filter(function (it) { return it.status === "ok" && it.blob; });
+        if (!validItems.length) return;
+
+        if (validItems.length === 1) {
+          triggerDownload(validItems[0].blob, validItems[0].outName);
+          showToast("已下載 " + validItems[0].outName, "success");
+          return;
+        }
+
+        btnDownloadZip.disabled = true;
+        updateProgress(1, 2, "正在本機打包 " + validItems.length + " 個最高畫質 JPEG 檔案...");
+        try {
+          const zipBlob = await buildOfflineZip(validItems);
+          const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+          triggerDownload(zipBlob, "JPEG_轉換結果_" + stamp + ".zip");
+          updateProgress(2, 2, "打包完成，已開始下載 ZIP。");
+          showToast("已打包下載 " + validItems.length + " 個 .jpeg 檔案！", "success");
+        } catch (err) {
+          showToast("打包 ZIP 失敗：" + (err && err.message ? err.message : "未知錯誤"), "error");
+        } finally {
+          btnDownloadZip.disabled = false;
+        }
+      }
+
+      // Event Listeners
+      btnPickFiles.addEventListener("click", function (e) {
+        e.stopPropagation();
+        fileInput.value = "";
+        fileInput.click();
+      });
+
+      btnPickFolder.addEventListener("click", function (e) {
+        e.stopPropagation();
+        folderInput.value = "";
+        folderInput.click();
+      });
+
+      dropzone.addEventListener("click", function () {
+        fileInput.value = "";
+        fileInput.click();
+      });
+
+      dropzone.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          fileInput.value = "";
+          fileInput.click();
+        }
+      });
+
+      fileInput.addEventListener("change", function (e) {
+        if (e.target.files && e.target.files.length) {
+          handleIncomingFiles(e.target.files);
+        }
+      });
+
+      folderInput.addEventListener("change", function (e) {
+        if (e.target.files && e.target.files.length) {
+          handleIncomingFiles(e.target.files);
+        }
+      });
+
+      dropzone.addEventListener("dragover", function (e) {
+        e.preventDefault();
+        dropzone.classList.add("drag-over");
+      });
+
+      dropzone.addEventListener("dragleave", function () {
+        dropzone.classList.remove("drag-over");
+      });
+
+      dropzone.addEventListener("drop", async function (e) {
+        e.preventDefault();
+        dropzone.classList.remove("drag-over");
+
+        const dt = e.dataTransfer;
+        if (!dt) return;
+
+        if (dt.items && dt.items.length && typeof dt.items[0].webkitGetAsEntry === "function") {
+          const allFiles = [];
+          const entries = [];
+          for (let i = 0; i < dt.items.length; i++) {
+            const entry = dt.items[i].webkitGetAsEntry();
+            if (entry) entries.push(entry);
+          }
+          for (let i = 0; i < entries.length; i++) {
+            const sub = await readEntryFiles(entries[i]);
+            for (let j = 0; j < sub.length; j++) allFiles.push(sub[j]);
+          }
+          handleIncomingFiles(allFiles);
+        } else if (dt.files && dt.files.length) {
+          handleIncomingFiles(dt.files);
+        }
+      });
+
+      document.querySelectorAll('input[name="qualityMode"]').forEach(function (radio) {
+        radio.addEventListener("change", function () {
+          const mode = getMode();
+          pillLossless.classList.toggle("active", mode === "lossless");
+          pillReencode.classList.toggle("active", mode === "reencode");
+        });
+      });
+
+      btnSaveFolder.addEventListener("click", saveDirectlyToFolder);
+      btnDownloadZip.addEventListener("click", downloadAllAsZip);
+      btnClearAll.addEventListener("click", clearAll);
+    })();
+  </script>
+</body>
+</html>
