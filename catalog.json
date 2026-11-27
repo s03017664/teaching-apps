@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-27T17:14:58.335Z",
+  "updatedAt": "2026-11-27T17:16:13.119Z",
   "folders": [
     "中三",
     "中四",
@@ -11,6 +11,15 @@
     "未分類"
   ],
   "items": [
+    {
+      "fileName": "qrquick_v1_5_0_svg.html",
+      "originalFileName": "qrquick_v1_5_0_svg.html",
+      "displayName": "QRQuick",
+      "folder": "工具",
+      "size": 132899,
+      "createdAt": "2026-11-27T17:16:12.512Z",
+      "updatedAt": "2026-11-27T17:16:12.512Z"
+    },
     {
       "fileName": "Chap 10 平衡化學反應方程式.html",
       "originalFileName": "Chap 10 平衡化學反應方程式.html",
