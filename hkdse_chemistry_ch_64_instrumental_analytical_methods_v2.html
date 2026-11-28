@@ -1,0 +1,2713 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>聖公會梁季彜中學｜化學科 第64章：儀器分析方法 (HKDSE Instrumental Analytical Methods)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0f2544;
+      --navy-mid: #1a3b6e;
+      --gold: #d4af37;
+      --gold-soft: #fef08a;
+      --bg-canvas: #eef2f7;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-canvas);
+      color: #1e293b;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    .school-header {
+      background: linear-gradient(135deg, #091830 0%, #132e59 55%, #1d4482 100%);
+      border-bottom: 3px solid var(--gold);
+    }
+    .gold-badge {
+      background: rgba(212, 175, 55, 0.18);
+      border: 1px solid rgba(253, 224, 71, 0.55);
+      color: #fef08a;
+    }
+    .panel-card {
+      background: #ffffff;
+      border: 1px solid #dbe3ee;
+      border-radius: 1rem;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+    }
+    .tab-btn {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .tab-active {
+      background: #0f2544;
+      color: #ffffff;
+      border-color: #d4af37;
+      box-shadow: 0 4px 12px rgba(15, 37, 68, 0.22);
+    }
+    .tab-inactive {
+      background: #ffffff;
+      color: #334155;
+      border-color: #cbd5e1;
+    }
+    .tab-inactive:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+    }
+    .step-pill {
+      transition: all 0.18s ease;
+    }
+    .step-pill.active {
+      background: #0f2544;
+      color: #ffffff;
+      border-color: #d4af37;
+      box-shadow: 0 2px 8px rgba(15, 37, 68, 0.2);
+    }
+    .zoom-ring {
+      box-shadow: 0 0 0 3px #d4af37, 0 10px 24px rgba(15, 37, 68, 0.25);
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: 0.75rem;
+    }
+    /* Device viewport simulation frames */
+    .device-frame-mobile {
+      max-width: 410px !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+      border: 8px solid #1e293b;
+      border-radius: 2rem;
+      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.22);
+      padding: 0.75rem;
+      background: #f8fafc;
+    }
+    .device-frame-tablet {
+      max-width: 820px !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+      border: 6px solid #334155;
+      border-radius: 1.5rem;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+      padding: 1rem;
+      background: #f8fafc;
+    }
+    .device-frame-desktop {
+      max-width: 1360px !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+    /* 3D Flashcard Flip */
+    .perspective-1000 { perspective: 1000px; }
+    .flip-inner {
+      position: relative;
+      width: 100%;
+      min-height: 290px;
+      transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+    .flip-inner.is-flipped { transform: rotateY(180deg); }
+    .flip-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .flip-back { transform: rotateY(180deg); }
+    ::-webkit-scrollbar { width: 7px; height: 7px; }
+    ::-webkit-scrollbar-track { background: #e2e8f0; }
+    ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- TOP BRANDED HEADER -->
+  <header class="school-header text-white shadow-lg sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-3">
+      <!-- Left: SKHLKYSS Shield Crest + School & Chapter Title -->
+      <div class="flex items-center gap-3 sm:gap-4">
+        <div class="shrink-0 bg-white/95 p-1 rounded-xl shadow-md border border-amber-300/80" aria-label="聖公會梁季彜中學校徽">
+          <!-- High-Resolution Inline SVG Matching SKHLKYSS Shield Crest -->
+          <svg width="54" height="60" viewBox="0 0 120 134" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="crestGold" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#fde047"/>
+                <stop offset="100%" stop-color="#eab308"/>
+              </linearGradient>
+            </defs>
+            <!-- Shield background -->
+            <path d="M22,10 L98,10 L98,62 C98,90 78,106 60,114 C42,106 22,90 22,62 Z" fill="#ffffff" stroke="#d4af37" stroke-width="3"/>
+            <!-- Sunburst Rays: Blue & Gold alternating -->
+            <path d="M60,55 L25,14 L42,14 Z" fill="#2563eb"/>
+            <path d="M60,55 L42,14 L56,14 Z" fill="#facc15"/>
+            <path d="M60,55 L64,14 L78,14 Z" fill="#facc15"/>
+            <path d="M60,55 L78,14 L95,14 Z" fill="#2563eb"/>
+            <path d="M60,55 L95,34 L95,52 Z" fill="#facc15"/>
+            <path d="M60,55 L95,52 L95,70 Z" fill="#2563eb"/>
+            <path d="M60,55 L92,70 L78,94 Z" fill="#facc15"/>
+            <path d="M60,55 L78,94 L60,110 Z" fill="#2563eb"/>
+            <path d="M60,55 L60,110 L42,94 Z" fill="#facc15"/>
+            <path d="M60,55 L42,94 L28,70 Z" fill="#2563eb"/>
+            <path d="M60,55 L25,70 L25,52 Z" fill="#facc15"/>
+            <path d="M60,55 L25,52 L25,34 Z" fill="#2563eb"/>
+            <!-- White Cross with Gold Border -->
+            <rect x="50" y="13" width="20" height="88" fill="#ffffff" stroke="#eab308" stroke-width="2"/>
+            <rect x="25" y="38" width="70" height="20" fill="#ffffff" stroke="#eab308" stroke-width="2"/>
+            <rect x="51" y="39" width="18" height="18" fill="#ffffff"/>
+            <!-- Bold Red Letters along Cross: L (top), S-K-H (horizontal), Y-S-S (vertical bottom) -->
+            <text x="60" y="31" text-anchor="middle" fill="#dc2626" font-family="Inter, sans-serif" font-weight="900" font-size="14">L</text>
+            <text x="36" y="53" text-anchor="middle" fill="#dc2626" font-family="Inter, sans-serif" font-weight="900" font-size="12.5">S</text>
+            <text x="60" y="53" text-anchor="middle" fill="#dc2626" font-family="Inter, sans-serif" font-weight="900" font-size="12.5">K</text>
+            <text x="84" y="53" text-anchor="middle" fill="#dc2626" font-family="Inter, sans-serif" font-weight="900" font-size="12.5">H</text>
+            <text x="60" y="70" text-anchor="middle" fill="#dc2626" font-family="Inter, sans-serif" font-weight="900" font-size="12.5">Y</text>
+            <text x="60" y="84" text-anchor="middle" fill="#dc2626" font-family="Inter, sans-serif" font-weight="900" font-size="12.5">S</text>
+            <text x="60" y="98" text-anchor="middle" fill="#dc2626" font-family="Inter, sans-serif" font-weight="900" font-size="12.5">S</text>
+            <!-- Gold Banner Ribbon -->
+            <path d="M12,102 L26,97 L26,112 L12,117 Z" fill="#eab308"/>
+            <path d="M108,102 L94,97 L94,112 L108,117 Z" fill="#eab308"/>
+            <path d="M24,100 Q60,113 96,100 L96,116 Q60,129 24,116 Z" fill="url(#crestGold)" stroke="#b45309" stroke-width="1.2"/>
+            <text x="60" y="114" text-anchor="middle" fill="#dc2626" font-family="Inter, sans-serif" font-weight="900" font-size="7.8" letter-spacing="0.2">THE LORD IS MY LIGHT</text>
+          </svg>
+        </div>
+
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-sm sm:text-base font-extrabold tracking-wide text-amber-300" data-i18n="schoolHeader">聖公會梁季彜中學｜化學科</span>
+            <span class="gold-badge text-xs px-2.5 py-0.5 rounded-full font-semibold" data-i18n="designerCredit">由吳柏霖老師設計</span>
+          </div>
+          <h1 class="text-sm sm:text-xl font-extrabold text-white mt-0.5 leading-snug" data-i18n="mainTopic">
+            第64章：儀器分析方法 (Instrumental Analytical Methods)
+          </h1>
+          <p class="text-xs text-slate-300 hidden md:block" data-i18n="subTopic">
+            HKDSE 選修課題：分析化學 · 嚴謹步驟宏微觀動畫、一次過展示、同分異構體質譜比較、記憶卡及挑戰題庫
+          </p>
+        </div>
+      </div>
+
+      <!-- Right: Device Mode Switcher + Language Toggle -->
+      <div class="flex flex-wrap items-center gap-2 ml-auto sm:ml-0">
+        <!-- One-Click Device Mode Switcher -->
+        <div class="flex items-center bg-slate-900/80 border border-slate-600/80 rounded-xl p-1 gap-0.5" title="裝置預覽模式">
+          <button onclick="setDeviceMode('auto')" id="dev-auto" class="dev-btn px-2 py-1 rounded-lg text-xs font-bold bg-amber-400 text-slate-950 cursor-pointer transition" data-i18n="devAuto">自動</button>
+          <button onclick="setDeviceMode('mobile')" id="dev-mobile" class="dev-btn px-2 py-1 rounded-lg text-xs font-bold text-slate-200 hover:bg-slate-800 cursor-pointer transition" data-i18n="devMobile">手機</button>
+          <button onclick="setDeviceMode('tablet')" id="dev-tablet" class="dev-btn px-2 py-1 rounded-lg text-xs font-bold text-slate-200 hover:bg-slate-800 cursor-pointer transition" data-i18n="devTablet">平板</button>
+          <button onclick="setDeviceMode('desktop')" id="dev-desktop" class="dev-btn px-2 py-1 rounded-lg text-xs font-bold text-slate-200 hover:bg-slate-800 cursor-pointer transition" data-i18n="devDesktop">電腦</button>
+        </div>
+
+        <button id="langToggleBtn" onclick="toggleLanguage()" class="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs sm:text-sm shadow-md transition flex items-center gap-1.5 cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/></svg>
+          <span>繁體中文 / EN</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <div id="deviceViewportWrapper" class="flex-1 w-full transition-all duration-300">
+    <main id="appMainContainer" class="max-w-7xl w-full mx-auto px-3 sm:px-6 py-4 space-y-4">
+
+      <!-- SIX-PAGE NAVIGATION TABS -->
+      <nav class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2" role="tablist">
+        <button id="tab-0" onclick="switchTab(0)" class="tab-btn tab-active border-2 rounded-xl p-2.5 text-left flex items-center gap-2.5 cursor-pointer">
+          <div class="w-8 h-8 rounded-lg bg-amber-400/20 border border-amber-400/40 flex items-center justify-center shrink-0 font-extrabold text-amber-400 text-sm">1</div>
+          <div class="min-w-0">
+            <div class="font-bold text-xs sm:text-sm truncate" data-i18n="tab1Title">比色計</div>
+            <div class="text-[11px] opacity-80 truncate" data-i18n="tab1Sub">Colorimeter</div>
+          </div>
+        </button>
+
+        <button id="tab-1" onclick="switchTab(1)" class="tab-btn tab-inactive border-2 rounded-xl p-2.5 text-left flex items-center gap-2.5 cursor-pointer">
+          <div class="w-8 h-8 rounded-lg bg-rose-500/15 border border-rose-500/30 flex items-center justify-center shrink-0 font-extrabold text-rose-600 text-sm">2</div>
+          <div class="min-w-0">
+            <div class="font-bold text-xs sm:text-sm truncate" data-i18n="tab2Title">紅外光譜儀</div>
+            <div class="text-[11px] opacity-80 truncate" data-i18n="tab2Sub">IR Spectrum</div>
+          </div>
+        </button>
+
+        <button id="tab-2" onclick="switchTab(2)" class="tab-btn tab-inactive border-2 rounded-xl p-2.5 text-left flex items-center gap-2.5 cursor-pointer">
+          <div class="w-8 h-8 rounded-lg bg-sky-500/15 border border-sky-500/30 flex items-center justify-center shrink-0 font-extrabold text-sky-600 text-sm">3</div>
+          <div class="min-w-0">
+            <div class="font-bold text-xs sm:text-sm truncate" data-i18n="tab3Title">質譜儀</div>
+            <div class="text-[11px] opacity-80 truncate" data-i18n="tab3Sub">Mass Spec</div>
+          </div>
+        </button>
+
+        <button id="tab-3" onclick="switchTab(3)" class="tab-btn tab-inactive border-2 rounded-xl p-2.5 text-left flex items-center gap-2.5 cursor-pointer">
+          <div class="w-8 h-8 rounded-lg bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center shrink-0 font-extrabold text-indigo-600 text-sm">4</div>
+          <div class="min-w-0">
+            <div class="font-bold text-xs sm:text-sm truncate" data-i18n="tab4Title">質譜異構體比較</div>
+            <div class="text-[11px] opacity-80 truncate" data-i18n="tab4Sub">Isomer MS Lab</div>
+          </div>
+        </button>
+
+        <button id="tab-4" onclick="switchTab(4)" class="tab-btn tab-inactive border-2 rounded-xl p-2.5 text-left flex items-center gap-2.5 cursor-pointer">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center shrink-0 font-extrabold text-emerald-600 text-sm">5</div>
+          <div class="min-w-0">
+            <div class="font-bold text-xs sm:text-sm truncate" data-i18n="tab5Title">溫習記憶卡</div>
+            <div class="text-[11px] opacity-80 truncate" data-i18n="tab5Sub">Flashcards</div>
+          </div>
+        </button>
+
+        <button id="tab-5" onclick="switchTab(5)" class="tab-btn tab-inactive border-2 rounded-xl p-2.5 text-left flex items-center gap-2.5 cursor-pointer">
+          <div class="w-8 h-8 rounded-lg bg-purple-500/15 border border-purple-500/30 flex items-center justify-center shrink-0 font-extrabold text-purple-600 text-sm">6</div>
+          <div class="min-w-0">
+            <div class="font-bold text-xs sm:text-sm truncate" data-i18n="tab6Title">DSE 挑戰題庫</div>
+            <div class="text-[11px] opacity-80 truncate" data-i18n="tab6Sub">Quiz Bank</div>
+          </div>
+        </button>
+      </nav>
+
+      <!-- =================================================================== -->
+      <!-- SHARED INSTRUMENT SIMULATION WORKSPACE (TABS 0, 1, 2)                 -->
+      <!-- =================================================================== -->
+      <div id="instrumentSimWorkspace" class="space-y-4">
+        <!-- PLAYBACK, STEPPER, "SHOW ALL STEPS" & MAGNIFIER CONTROL BAR -->
+        <section class="panel-card p-3 sm:p-4 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-2">
+            <button id="playPauseBtn" onclick="togglePlay()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs sm:text-sm flex items-center gap-1.5 shadow-sm cursor-pointer transition">
+              <span id="playIcon">⏸</span>
+              <span id="playText" data-i18n="btnPause">暫停動畫</span>
+            </button>
+
+            <button onclick="nextStep()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-semibold text-xs sm:text-sm flex items-center gap-1.5 shadow-sm cursor-pointer transition">
+              <span>⏭</span>
+              <span data-i18n="btnStep">逐步推進</span>
+            </button>
+
+            <button id="showAllStepsBtn" onclick="toggleShowAllSteps()" class="px-3.5 py-2 rounded-xl border-2 border-indigo-600 bg-indigo-50 hover:bg-indigo-100 text-indigo-950 font-extrabold text-xs sm:text-sm flex items-center gap-1.5 cursor-pointer transition">
+              <span>⚡</span>
+              <span id="showAllStepsText" data-i18n="btnShowAllOff">一次過展示：關閉</span>
+            </button>
+
+            <button onclick="resetSimulation()" class="px-3 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold text-xs sm:text-sm flex items-center gap-1.5 cursor-pointer transition">
+              <span>↺</span>
+              <span data-i18n="btnReset">重置</span>
+            </button>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-1.5 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">
+            <span class="text-xs font-bold text-slate-600 mr-1" data-i18n="speedLabel">速度:</span>
+            <button onclick="setSpeed(0.25)" data-speed="0.25" class="speed-btn px-2 py-1 rounded-lg text-xs font-bold bg-white text-slate-700 border border-slate-300 cursor-pointer">0.25x</button>
+            <button onclick="setSpeed(0.5)" data-speed="0.5" class="speed-btn px-2 py-1 rounded-lg text-xs font-bold bg-white text-slate-700 border border-slate-300 cursor-pointer">0.5x</button>
+            <button onclick="setSpeed(1)" data-speed="1" class="speed-btn px-2 py-1 rounded-lg text-xs font-bold bg-slate-900 text-white border border-slate-900 cursor-pointer">1x</button>
+            <button onclick="setSpeed(2)" data-speed="2" class="speed-btn px-2 py-1 rounded-lg text-xs font-bold bg-white text-slate-700 border border-slate-300 cursor-pointer">2x</button>
+          </div>
+
+          <div class="flex items-center">
+            <button id="zoomToggleBtn" onclick="toggleZoomMode()" class="w-full lg:w-auto px-3.5 py-2 rounded-xl border-2 border-amber-500 bg-amber-50 hover:bg-amber-100 text-amber-950 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 cursor-pointer transition">
+              <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/></svg>
+              <span id="zoomBtnText" data-i18n="btnZoomOff">放大檢視：關閉</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- STRICT STEP SELECTOR PILLS + EXPLANATION BANNER -->
+        <section class="panel-card p-3 sm:p-4 space-y-3">
+          <div id="stagePillsContainer" class="flex flex-wrap gap-2"></div>
+          <div id="stageBannerBox" class="bg-slate-900 text-white rounded-xl p-3.5 sm:p-4 border-l-4 border-amber-400">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+              <h2 id="stageTitle" class="font-bold text-sm sm:text-lg text-amber-300"></h2>
+              <span id="stageBadge" class="text-xs px-2.5 py-0.5 rounded-full bg-slate-800 border border-slate-600 text-slate-200 font-semibold"></span>
+            </div>
+            <p id="stageDesc" class="text-xs sm:text-sm text-slate-200 leading-relaxed"></p>
+          </div>
+        </section>
+
+        <!-- DUAL SYNCHRONIZED VIEW: MACROSCOPIC + MICROSCOPIC -->
+        <section id="dualCanvasGrid" class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <div id="macroCard" class="panel-card p-3 sm:p-4 lg:col-span-7 flex flex-col">
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="w-2.5 h-2.5 rounded-full bg-sky-500 shrink-0"></span>
+                <h3 class="font-bold text-xs sm:text-base text-slate-800 truncate" data-i18n="macroHeader">宏觀儀器內部構造與訊號流程</h3>
+              </div>
+              <span id="macroStepIndicator" class="text-[11px] font-bold text-sky-800 bg-sky-100 border border-sky-200 px-2 py-0.5 rounded-md shrink-0"></span>
+            </div>
+            <div class="relative w-full h-72 sm:h-80 bg-slate-950 rounded-xl overflow-hidden border border-slate-700">
+              <canvas id="macroCanvas"></canvas>
+            </div>
+          </div>
+
+          <div id="microCard" class="panel-card p-3 sm:p-4 lg:col-span-5 flex flex-col transition-all duration-300">
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse shrink-0"></span>
+                <h3 class="font-bold text-xs sm:text-base text-slate-800 truncate" data-i18n="microHeader">微觀粒子與能量作用室</h3>
+              </div>
+              <span id="zoomStatusTag" class="text-[11px] font-bold text-amber-800 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-md shrink-0" data-i18n="microNormalTag">標準倍率 1x</span>
+            </div>
+            <div class="relative w-full h-72 sm:h-80 bg-slate-950 rounded-xl overflow-hidden border border-slate-700">
+              <canvas id="microCanvas"></canvas>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- =================================================================== -->
+      <!-- PAGE 1 LAB: COLORIMETER & CALIBRATION CURVE                         -->
+      <!-- =================================================================== -->
+      <section id="lab-page-0" class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <div class="panel-card p-4 lg:col-span-5 space-y-4">
+          <h3 class="font-bold text-base sm:text-lg text-slate-900 border-b pb-2 flex items-center gap-2">
+            <span>🧪</span>
+            <span data-i18n="colLabCtrlTitle">比色計實驗參數設定</span>
+          </h3>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1.5" data-i18n="colReagentLabel">1. 選擇有色待測溶液：</label>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <button onclick="setColorReagent('k2cr2o7')" id="reag-k2cr2o7" class="reag-btn p-2.5 rounded-xl border-2 border-orange-500 bg-orange-50 text-left cursor-pointer">
+                <div class="font-bold text-xs text-orange-900">K<sub>2</sub>Cr<sub>2</sub>O<sub>7</sub>(aq)</div>
+                <div class="text-[11px] text-orange-700" data-i18n="reagOrange">橙色 (Cr<sub>2</sub>O<sub>7</sub><sup>2−</sup>)</div>
+              </button>
+              <button onclick="setColorReagent('cuso4')" id="reag-cuso4" class="reag-btn p-2.5 rounded-xl border-2 border-slate-200 bg-white text-left cursor-pointer">
+                <div class="font-bold text-xs text-blue-900">CuSO<sub>4</sub>(aq)</div>
+                <div class="text-[11px] text-blue-700" data-i18n="reagBlue">藍色 (Cu<sup>2+</sup>)</div>
+              </button>
+              <button onclick="setColorReagent('kmno4')" id="reag-kmno4" class="reag-btn p-2.5 rounded-xl border-2 border-slate-200 bg-white text-left cursor-pointer">
+                <div class="font-bold text-xs text-purple-900">KMnO<sub>4</sub>(aq)</div>
+                <div class="text-[11px] text-purple-700" data-i18n="reagPurple">紫色 (MnO<sub>4</sub><sup>−</sup>)</div>
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1.5" data-i18n="colFilterLabel">2. 選擇濾光片 (互補色原理)：</label>
+            <div class="grid grid-cols-3 gap-2">
+              <button onclick="setColorFilter('blue')" id="filt-blue" class="filt-btn p-2 rounded-xl border-2 border-blue-600 bg-blue-600 text-white font-bold text-xs text-center cursor-pointer">
+                <span data-i18n="filtBlue">藍色濾光片</span><br><span class="font-normal opacity-90">470 nm</span>
+              </button>
+              <button onclick="setColorFilter('orange')" id="filt-orange" class="filt-btn p-2 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-bold text-xs text-center cursor-pointer">
+                <span data-i18n="filtOrange">橙色濾光片</span><br><span class="font-normal opacity-80">600 nm</span>
+              </button>
+              <button onclick="setColorFilter('yellow')" id="filt-yellow" class="filt-btn p-2 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-bold text-xs text-center cursor-pointer">
+                <span data-i18n="filtYellow">黃綠色濾光片</span><br><span class="font-normal opacity-80">550 nm</span>
+              </button>
+            </div>
+            <div id="filterFeedbackBox" class="mt-2 p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs"></div>
+          </div>
+
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
+            <div class="flex justify-between items-center gap-2">
+              <label for="concSlider" class="text-xs font-bold text-slate-700" data-i18n="colConcLabel">3. 標準溶液濃度：</label>
+              <span id="concDisplay" class="font-mono font-bold text-xs sm:text-sm text-slate-900 bg-white px-2 py-0.5 rounded border border-slate-300">0.40 × 10<sup>−3</sup> mol dm<sup>−3</sup></span>
+            </div>
+            <input id="concSlider" type="range" min="0" max="0.80" step="0.05" value="0.40" oninput="updateColorimeterConc(this.value)" class="w-full accent-slate-900 cursor-pointer" />
+            <div class="flex justify-between text-[11px] text-slate-500">
+              <span>0.00 (空白樣本 Blank)</span>
+              <span>0.80 × 10<sup>−3</sup> mol dm<sup>−3</sup></span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 items-center bg-slate-900 text-white p-3 rounded-xl">
+            <div>
+              <div class="text-[11px] text-slate-400" data-i18n="absMeterLabel">吸光度讀數 (Absorbance, 無單位):</div>
+              <div id="absReadout" class="font-mono text-2xl font-bold text-emerald-400">0.124</div>
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <button onclick="recordCalibrationPoint()" class="px-3 py-2 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs cursor-pointer transition" data-i18n="btnRecordPt">
+                + 記錄數據點至校準曲線
+              </button>
+              <button onclick="testUnknownSample()" class="px-3 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs cursor-pointer transition" data-i18n="btnTestUnknown">
+                🔍 測試未知樣本 (Unknown)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-card p-4 lg:col-span-7 flex flex-col justify-between space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b pb-2">
+            <div>
+              <h3 class="font-bold text-base sm:text-lg text-slate-900" data-i18n="calCurveTitle">校準曲線與未知樣本濃度還原</h3>
+              <p class="text-xs text-slate-500" data-i18n="calCurveSub">比爾-朗伯定律 (Beer-Lambert Law): A = εcl</p>
+            </div>
+            <div class="flex gap-1.5">
+              <button onclick="autoFillCalibration()" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs border border-slate-300 cursor-pointer" data-i18n="btnAutoCal">一鍵繪製標準曲線</button>
+              <button onclick="clearCalibration()" class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold text-xs border border-rose-200 cursor-pointer" data-i18n="btnClearCal">清除數據</button>
+            </div>
+          </div>
+
+          <div class="w-full bg-slate-50 rounded-xl border border-slate-200 p-2">
+            <svg id="calCurveSvg" viewBox="0 0 560 265" class="w-full h-auto"></svg>
+          </div>
+
+          <div id="unknownAnalysisBox" class="p-3 rounded-xl bg-sky-50 border border-sky-200 text-xs sm:text-sm text-slate-800"></div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- PAGE 2 LAB: IR SPECTROPHOTOMETER & SPECTRUM ANALYZER              -->
+      <!-- =================================================================== -->
+      <section id="lab-page-1" class="hidden grid-cols-1 lg:grid-cols-12 gap-4">
+        <div class="panel-card p-4 lg:col-span-5 space-y-4">
+          <h3 class="font-bold text-base sm:text-lg text-slate-900 border-b pb-2 flex items-center gap-2">
+            <span>📡</span>
+            <span data-i18n="irLabTitle">紅外光譜樣本與鍵振動模式</span>
+          </h3>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1.5" data-i18n="irSampleLabel">1. 選擇有機化合物樣本：</label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="irCompoundButtons"></div>
+          </div>
+
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <label class="block text-xs font-bold text-slate-700 mb-1.5" data-i18n="irVibModeLabel">2. 觀察微觀共價鍵振動模式：</label>
+            <div class="grid grid-cols-3 gap-1.5">
+              <button onclick="setIrVibMode('sym')" id="vib-sym" class="vib-btn p-2 rounded-lg border-2 border-slate-900 bg-slate-900 text-white text-xs font-bold cursor-pointer" data-i18n="vibSym">對稱伸縮</button>
+              <button onclick="setIrVibMode('asym')" id="vib-asym" class="vib-btn p-2 rounded-lg border-2 border-slate-200 bg-white text-slate-700 text-xs font-bold cursor-pointer" data-i18n="vibAsym">不對稱伸縮</button>
+              <button onclick="setIrVibMode('bend')" id="vib-bend" class="vib-btn p-2 rounded-lg border-2 border-slate-200 bg-white text-slate-700 text-xs font-bold cursor-pointer" data-i18n="vibBend">剪刀彎曲</button>
+            </div>
+          </div>
+
+          <div>
+            <div class="text-xs font-bold text-slate-700 mb-1.5" data-i18n="irTableTitle">HKDSE 紅外吸收特徵波數對照表：</div>
+            <div class="overflow-x-auto border border-slate-200 rounded-xl">
+              <table class="w-full text-xs text-left">
+                <thead class="bg-slate-800 text-white">
+                  <tr>
+                    <th class="p-2" data-i18n="irColBond">化學鍵</th>
+                    <th class="p-2" data-i18n="irColWave">波數 (cm<sup>−1</sup>)</th>
+                    <th class="p-2" data-i18n="irColInt">特徵</th>
+                  </tr>
+                </thead>
+                <tbody id="irRefTableBody" class="divide-y divide-slate-200 bg-white"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-card p-4 lg:col-span-7 flex flex-col justify-between space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b pb-2">
+            <div>
+              <h3 class="font-bold text-base sm:text-lg text-slate-900" data-i18n="irSpecTitle">紅外光譜圖與官能基推斷</h3>
+              <p class="text-xs text-slate-500" data-i18n="irSpecSub">點擊光譜圖中的向下吸收谷，查看對應共價鍵振動及官能基結構推論</p>
+            </div>
+            <span class="text-xs font-mono bg-rose-50 text-rose-700 border border-rose-200 px-2.5 py-1 rounded-lg font-bold">4000 → 400 cm<sup>−1</sup></span>
+          </div>
+
+          <div class="w-full bg-white rounded-xl border border-slate-300 p-2">
+            <svg id="irSpectrumSvg" viewBox="0 0 600 280" class="w-full h-auto"></svg>
+          </div>
+
+          <div id="irDeductionBox" class="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs sm:text-sm text-slate-800 space-y-1"></div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- PAGE 3 LAB: MASS SPECTROMETER & FRAGMENTATION ANALYZER            -->
+      <!-- =================================================================== -->
+      <section id="lab-page-2" class="hidden grid-cols-1 lg:grid-cols-12 gap-4">
+        <div class="panel-card p-4 lg:col-span-5 space-y-4">
+          <h3 class="font-bold text-base sm:text-lg text-slate-900 border-b pb-2 flex items-center gap-2">
+            <span>🧲</span>
+            <span data-i18n="msLabTitle">質譜樣本與碎裂路徑分析</span>
+          </h3>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1.5" data-i18n="msSampleLabel">1. 選擇有機化合物進行電子轟擊電離：</label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="msCompoundButtons"></div>
+          </div>
+
+          <div class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-xs space-y-1.5 text-slate-800">
+            <div class="font-bold text-sky-900" data-i18n="msRuleHeader">💡 HKDSE 質譜核心解題法則：</div>
+            <ul class="list-disc pl-4 space-y-1">
+              <li data-i18n="msRule1"><b>分子離子峰 (M<sup>+</sup>)</b>：最高 <i>m/z</i> 處的主要峰，其數值等於<b>相對分子質量 (<i>M<sub>r</sub></i>)</b>。</li>
+              <li data-i18n="msRule2"><b>基峰 (Base Peak)</b>：光譜中<b>最高 (相對強度 = 100%)</b> 的峰，代表最穩定的碎片正離子。</li>
+              <li data-i18n="msRule3"><b>不帶電荷的自由基 (R•)</b> 不會被電場加速或磁場偏轉，因此<b>不會出現在質譜圖上</b>！</li>
+            </ul>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1.5" data-i18n="msPeakSelectLabel">2. 點擊離子峰追蹤磁場偏轉軌跡：</label>
+            <div id="msPeakQuickBtns" class="flex flex-wrap gap-1.5"></div>
+          </div>
+        </div>
+
+        <div class="panel-card p-4 lg:col-span-7 flex flex-col justify-between space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b pb-2">
+            <div>
+              <h3 class="font-bold text-base sm:text-lg text-slate-900" data-i18n="msSpecTitle">質譜圖與碎片離子結構推斷</h3>
+              <p class="text-xs text-slate-500" data-i18n="msSpecSub">點擊任一垂直離子峰，查看斷鍵方程式與離子結構推論</p>
+            </div>
+            <span id="msMrBadge" class="text-xs font-mono bg-sky-100 text-sky-900 border border-sky-300 px-2.5 py-1 rounded-lg font-bold">M<sub>r</sub> = 72</span>
+          </div>
+
+          <div class="w-full bg-white rounded-xl border border-slate-300 p-2">
+            <svg id="msSpectrumSvg" viewBox="0 0 600 275" class="w-full h-auto"></svg>
+          </div>
+
+          <div id="msDeductionBox" class="p-3.5 rounded-xl bg-slate-900 text-white border-l-4 border-sky-400 text-xs sm:text-sm space-y-1.5"></div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- PAGE 4: MS ISOMER FRAGMENTATION COMPARISON LAB                      -->
+      <!-- =================================================================== -->
+      <section id="lab-page-3" class="hidden space-y-4">
+        <div class="panel-card p-4 space-y-3">
+          <div class="border-b pb-2">
+            <h2 class="font-bold text-base sm:text-xl text-slate-900 flex items-center gap-2">
+              <span>⚖️</span>
+              <span data-i18n="isoLabTitle">質譜同分異構體大比拼：相同分子離子峰 (M<sup>+</sup>)，為何碎片離子峰不同？</span>
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-600 mt-0.5" data-i18n="isoLabSub">
+              同分異構體擁有相同的分子式與相對分子質量 (M<sub>r</sub>)，因此最高 m/z 的分子離子峰相同；但由於原子連接方式與碳陽離子或醯基離子穩定性不同，斷鍵位置產生獨特的碎片離子峰！
+            </p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5" id="isomerCaseButtons"></div>
+        </div>
+
+        <div id="isomerPrincipleBanner" class="bg-slate-900 text-white rounded-2xl p-4 border-l-4 border-amber-400 shadow-md space-y-1.5 text-xs sm:text-sm"></div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div class="panel-card p-4 space-y-3 border-t-4 border-sky-600">
+            <div class="flex items-center justify-between gap-2">
+              <div>
+                <span class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-sky-100 text-sky-800" data-i18n="isoTagA">異構體 A</span>
+                <h3 id="isoAName" class="font-bold text-base sm:text-lg text-slate-900 mt-1"></h3>
+              </div>
+              <div id="isoAFormula" class="font-mono text-xs font-bold bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-300"></div>
+            </div>
+            <div class="bg-slate-950 rounded-xl p-2 border border-slate-800">
+              <svg id="isoABondSvg" viewBox="0 0 460 110" class="w-full h-auto"></svg>
+            </div>
+            <div class="bg-white rounded-xl p-2 border border-slate-300">
+              <svg id="isoASpecSvg" viewBox="0 0 460 220" class="w-full h-auto"></svg>
+            </div>
+            <div id="isoAPeakPills" class="flex flex-wrap gap-1.5"></div>
+            <div id="isoADeduction" class="p-3 rounded-xl bg-sky-50 border border-sky-200 text-xs sm:text-sm text-slate-800"></div>
+          </div>
+
+          <div class="panel-card p-4 space-y-3 border-t-4 border-rose-600">
+            <div class="flex items-center justify-between gap-2">
+              <div>
+                <span class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-rose-100 text-rose-800" data-i18n="isoTagB">異構體 B</span>
+                <h3 id="isoBName" class="font-bold text-base sm:text-lg text-slate-900 mt-1"></h3>
+              </div>
+              <div id="isoBFormula" class="font-mono text-xs font-bold bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-300"></div>
+            </div>
+            <div class="bg-slate-950 rounded-xl p-2 border border-slate-800">
+              <svg id="isoBBondSvg" viewBox="0 0 460 110" class="w-full h-auto"></svg>
+            </div>
+            <div class="bg-white rounded-xl p-2 border border-slate-300">
+              <svg id="isoBSpecSvg" viewBox="0 0 460 220" class="w-full h-auto"></svg>
+            </div>
+            <div id="isoBPeakPills" class="flex flex-wrap gap-1.5"></div>
+            <div id="isoBDeduction" class="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs sm:text-sm text-slate-800"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- PAGE 5: HKDSE REVISION FLASHCARDS                                   -->
+      <!-- =================================================================== -->
+      <section id="lab-page-4" class="hidden space-y-4">
+        <div class="panel-card p-4 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b pb-2">
+            <div>
+              <h2 class="font-bold text-base sm:text-xl text-slate-900 flex items-center gap-2">
+                <span>🗂️</span>
+                <span data-i18n="fcTitle">HKDSE 第64章 高頻考點溫習記憶卡</span>
+              </h2>
+              <p class="text-xs sm:text-sm text-slate-600 mt-0.5" data-i18n="fcSub">
+                點擊卡片翻轉查看答案與 HKDSE 評分標準解析！涵蓋比色法濾光片、紅外特徵波數及質譜重要碎片離子 m/z 速記。
+              </p>
+            </div>
+            <span id="fcMasteredBadge" class="text-xs font-bold px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-900 border border-emerald-300">已掌握: 0 / 16</span>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex flex-wrap gap-1.5" id="fcCategoryBtns"></div>
+            <div class="flex gap-2">
+              <button onclick="shuffleFlashcards()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold cursor-pointer transition flex items-center gap-1">
+                <span>🔀</span>
+                <span data-i18n="fcShuffle">隨機洗牌</span>
+              </button>
+              <button onclick="resetFlashcardProgress()" class="px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold cursor-pointer transition" data-i18n="fcResetProg">
+                重置進度
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="max-w-3xl mx-auto space-y-3">
+          <div class="perspective-1000 cursor-pointer" onclick="flipFlashcard()">
+            <div id="fcFlipInner" class="flip-inner">
+              <div class="flip-face panel-card p-6 sm:p-8 border-2 border-slate-300 bg-gradient-to-br from-white to-slate-50 shadow-lg">
+                <div class="flex items-center justify-between">
+                  <span id="fcFrontTag" class="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-900 text-amber-300"></span>
+                  <span id="fcCounterTop" class="text-xs font-mono font-bold text-slate-500">1 / 16</span>
+                </div>
+                <div class="my-auto py-4 text-center space-y-3">
+                  <div class="text-xs font-bold uppercase tracking-wider text-slate-400" data-i18n="fcPromptHint">題目提示 / 數據線索</div>
+                  <div id="fcFrontContent" class="text-lg sm:text-2xl font-bold text-slate-900 leading-snug"></div>
+                </div>
+                <div class="flex items-center justify-between text-xs text-slate-500 border-t pt-3">
+                  <span data-i18n="fcTapToFlip">👆 點擊卡片查看答案</span>
+                  <span id="fcStatusFront" class="font-bold"></span>
+                </div>
+              </div>
+
+              <div class="flip-face flip-back panel-card p-6 sm:p-8 border-2 border-amber-400 bg-slate-900 text-white shadow-xl">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-400 text-slate-950" data-i18n="fcAnswerBadge">HKDSE 標準答案與解析</span>
+                  <span id="fcCounterBack" class="text-xs font-mono font-bold text-slate-400">1 / 16</span>
+                </div>
+                <div class="my-auto py-3 space-y-3">
+                  <div id="fcBackAnswer" class="text-lg sm:text-xl font-bold text-emerald-400 leading-snug"></div>
+                  <div id="fcBackDetail" class="text-xs sm:text-sm text-slate-200 leading-relaxed bg-slate-800/90 p-3.5 rounded-xl border border-slate-700"></div>
+                </div>
+                <div class="flex items-center justify-between text-xs text-slate-400 border-t border-slate-700 pt-3">
+                  <span data-i18n="fcTapBackHint">👆 點擊返回題目面</span>
+                  <span class="text-amber-300 font-semibold">SKHLKYSS Chemistry</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-card p-3 flex flex-wrap items-center justify-between gap-2">
+            <button onclick="prevFlashcard()" class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-900 font-bold text-xs sm:text-sm cursor-pointer transition" data-i18n="fcPrev">← 上一張</button>
+            <div class="flex items-center gap-2">
+              <button onclick="markFlashcard(false)" class="px-3.5 py-2 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-900 border border-rose-300 font-bold text-xs sm:text-sm cursor-pointer transition" data-i18n="fcNeedReview">🔄 仍需溫習</button>
+              <button onclick="markFlashcard(true)" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm cursor-pointer transition" data-i18n="fcMasteredBtn">✅ 已完全掌握</button>
+            </div>
+            <button onclick="nextFlashcard()" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm cursor-pointer transition" data-i18n="fcNext">下一張 →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- PAGE 6: DSE CHALLENGE QUIZ BANK                                     -->
+      <!-- =================================================================== -->
+      <section id="lab-page-5" class="hidden space-y-4">
+        <div id="quizSetupPanel" class="panel-card p-5 sm:p-6 max-w-4xl mx-auto space-y-5">
+          <div class="border-b pb-3">
+            <h2 class="font-bold text-lg sm:text-2xl text-slate-900 flex items-center gap-2">
+              <span>🏆</span>
+              <span data-i18n="qzSetupTitle">HKDSE 第64章 儀器分析挑戰題庫</span>
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-600 mt-1" data-i18n="qzSetupSub">
+              題庫圍繞香港中學文憑試化學科第64課（比色法、紅外光譜法、質譜法及綜合結構推斷），請選擇難度與題數開始測驗！
+            </p>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-xs sm:text-sm font-bold text-slate-800" data-i18n="qzDiffLabel">1. 選擇挑戰難度：</label>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <button onclick="setQuizDifficulty('easy')" id="qdiff-easy" class="qdiff-btn p-3.5 rounded-xl border-2 border-emerald-600 bg-emerald-50 text-left cursor-pointer transition">
+                <div class="font-bold text-sm text-emerald-900" data-i18n="qzDiffEasy">🌱 簡單</div>
+                <div class="text-xs text-emerald-700 mt-1" data-i18n="qzDiffEasyDesc">基礎儀器原理、互補色濾光片、特徵波數與分子離子峰概念</div>
+              </button>
+              <button onclick="setQuizDifficulty('medium')" id="qdiff-medium" class="qdiff-btn p-3.5 rounded-xl border-2 border-slate-200 bg-white text-left cursor-pointer transition">
+                <div class="font-bold text-sm text-amber-900" data-i18n="qzDiffMed">🔥 中級</div>
+                <div class="text-xs text-slate-600 mt-1" data-i18n="qzDiffMedDesc">比爾-朗伯定律計算、官能基光譜辨析、常見碎片離子推斷</div>
+              </button>
+              <button onclick="setQuizDifficulty('hard')" id="qdiff-hard" class="qdiff-btn p-3.5 rounded-xl border-2 border-slate-200 bg-white text-left cursor-pointer transition">
+                <div class="font-bold text-sm text-rose-900" data-i18n="qzDiffHard">🚀 難</div>
+                <div class="text-xs text-slate-600 mt-1" data-i18n="qzDiffHardDesc">同位素峰比例、同分異構體碎裂對比、IR + MS 綜合結構推論</div>
+              </button>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-xs sm:text-sm font-bold text-slate-800" data-i18n="qzCountLabel">2. 選擇題目數量：</label>
+            <div class="grid grid-cols-3 gap-3">
+              <button onclick="setQuizCount(10)" id="qcnt-10" class="qcnt-btn p-3 rounded-xl border-2 border-slate-900 bg-slate-900 text-white font-bold text-sm text-center cursor-pointer transition">10 <span data-i18n="qzUnit">題</span></button>
+              <button onclick="setQuizCount(15)" id="qcnt-15" class="qcnt-btn p-3 rounded-xl border-2 border-slate-200 bg-white text-slate-800 font-bold text-sm text-center cursor-pointer transition">15 <span data-i18n="qzUnit">題</span></button>
+              <button onclick="setQuizCount(20)" id="qcnt-20" class="qcnt-btn p-3 rounded-xl border-2 border-slate-200 bg-white text-slate-800 font-bold text-sm text-center cursor-pointer transition">20 <span data-i18n="qzUnit">題</span></button>
+            </div>
+          </div>
+
+          <div class="pt-2">
+            <button onclick="startQuiz()" class="w-full py-3.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-base shadow-md cursor-pointer transition flex items-center justify-center gap-2">
+              <span>▶</span>
+              <span data-i18n="qzStartBtn">開始 DSE 挑戰測驗</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="quizActivePanel" class="hidden panel-card p-5 sm:p-6 max-w-4xl mx-auto space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b pb-3">
+            <div class="flex items-center gap-2">
+              <span id="qzProgressBadge" class="px-3 py-1 rounded-full bg-slate-900 text-amber-300 font-mono text-xs font-bold">Q 1 / 10</span>
+              <span id="qzTopicTag" class="px-2.5 py-1 rounded-full bg-sky-100 text-sky-900 text-xs font-bold"></span>
+              <span id="qzDiffBadge" class="px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold"></span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span id="qzLiveScore" class="text-xs sm:text-sm font-bold text-emerald-700">得分: 0</span>
+              <button onclick="abortQuiz()" class="text-xs px-2.5 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold cursor-pointer" data-i18n="qzQuitBtn">結束返回</button>
+            </div>
+          </div>
+
+          <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+            <div id="qzProgressBar" class="h-full bg-amber-400 transition-all duration-300" style="width: 10%"></div>
+          </div>
+
+          <div id="qzQuestionStem" class="text-base sm:text-lg font-bold text-slate-900 leading-relaxed pt-1"></div>
+          <div id="qzOptionsContainer" class="space-y-2.5"></div>
+          <div id="qzFeedbackPanel" class="hidden p-4 rounded-xl border-l-4 space-y-1.5 text-xs sm:text-sm"></div>
+
+          <div class="flex justify-end pt-2">
+            <button id="qzNextBtn" onclick="nextQuizQuestion()" class="hidden px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm cursor-pointer transition" data-i18n="qzNextBtn">下一題 →</button>
+          </div>
+        </div>
+
+        <div id="quizResultPanel" class="hidden panel-card p-5 sm:p-6 max-w-4xl mx-auto space-y-5">
+          <div class="text-center space-y-2 border-b pb-4">
+            <div class="text-3xl">🎓</div>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900" data-i18n="qzResTitle">測驗完成！HKDSE 第64章成績分析報告</h2>
+            <div id="qzFinalScoreText" class="text-2xl sm:text-3xl font-extrabold text-emerald-600"></div>
+            <p id="qzFinalComment" class="text-xs sm:text-sm text-slate-600"></p>
+          </div>
+
+          <div id="qzReviewList" class="space-y-3 max-h-96 overflow-y-auto pr-1"></div>
+
+          <div class="flex flex-wrap justify-center gap-3 pt-2">
+            <button id="qzRetryWrongBtn" onclick="retryWrongQuestions()" class="hidden px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm cursor-pointer transition" data-i18n="qzRetryWrong">🔁 重做答錯題目</button>
+            <button onclick="abortQuiz()" class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm cursor-pointer transition" data-i18n="qzBackSetup">返回設定新測驗</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-slate-900 text-slate-400 text-xs py-3 px-4 mt-6 border-t border-slate-800">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div data-i18n="footerLeft">聖公會梁季彜中學 (SKHLKYSS) · 香港中學文憑試化學科 (HKDSE Chemistry) 第64章教學資源</div>
+      <div class="text-amber-300/90 font-medium" data-i18n="footerRight">由吳柏霖老師設計 · 專為課堂演示與學生自主探究而設</div>
+    </div>
+  </footer>
+
+  <!-- ===================================================================== -->
+  <!-- JAVASCRIPT ENGINE: STRICT STEP ANIMATION + ALL-STEPS MODE + LABS       -->
+  <!-- ===================================================================== -->
+  <script>
+    // 1. BILINGUAL DICTIONARY
+    let currentLang = 'zh';
+    const I18N = {
+      zh: {
+        schoolHeader: '聖公會梁季彜中學｜化學科',
+        designerCredit: '由吳柏霖老師設計',
+        mainTopic: '第64章：儀器分析方法 (Instrumental Analytical Methods)',
+        subTopic: 'HKDSE 選修課題：分析化學 · 嚴謹步驟宏微觀動畫、一次過展示、同分異構體質譜比較、記憶卡及挑戰題庫',
+        devAuto: '自動',
+        devMobile: '手機',
+        devTablet: '平板',
+        devDesktop: '電腦',
+        tab1Title: '比色計',
+        tab1Sub: 'Colorimeter',
+        tab2Title: '紅外光譜儀',
+        tab2Sub: 'IR Spectrum',
+        tab3Title: '質譜儀',
+        tab3Sub: 'Mass Spec',
+        tab4Title: '質譜異構體比較',
+        tab4Sub: 'Isomer MS Lab',
+        tab5Title: '溫習記憶卡',
+        tab5Sub: 'Flashcards',
+        tab6Title: 'DSE 挑戰題庫',
+        tab6Sub: 'Quiz Bank',
+        btnPlay: '播放動畫',
+        btnPause: '暫停動畫',
+        btnStep: '逐步推進',
+        btnShowAllOff: '一次過展示：關閉',
+        btnShowAllOn: '一次過展示：開啟 (完整流程)',
+        btnReset: '重置',
+        speedLabel: '速度:',
+        btnZoomOff: '放大檢視：關閉',
+        btnZoomOn: '放大檢視：開啟 (2.5x)',
+        macroHeader: '宏觀儀器內部構造與訊號流程',
+        microHeader: '微觀粒子與能量作用室',
+        microNormalTag: '標準倍率 1x',
+        microZoomTag: '微觀放大 2.5x',
+        colLabCtrlTitle: '比色計實驗參數設定',
+        colReagentLabel: '1. 選擇有色待測溶液：',
+        reagOrange: '橙色 (Cr₂O₇²⁻)',
+        reagBlue: '藍色 (Cu²⁺)',
+        reagPurple: '紫色 (MnO₄⁻)',
+        colFilterLabel: '2. 選擇濾光片 (互補色原理)：',
+        filtBlue: '藍色濾光片',
+        filtOrange: '橙色濾光片',
+        filtYellow: '黃綠色濾光片',
+        colConcLabel: '3. 標準溶液濃度：',
+        absMeterLabel: '吸光度讀數 (Absorbance, 無單位):',
+        btnRecordPt: '+ 記錄數據點至校準曲線',
+        btnTestUnknown: '🔍 測試未知樣本 (Unknown)',
+        calCurveTitle: '校準曲線與未知樣本濃度還原',
+        calCurveSub: '比爾-朗伯定律 (Beer-Lambert Law): A = εcl',
+        btnAutoCal: '一鍵繪製標準曲線',
+        btnClearCal: '清除數據',
+        irLabTitle: '紅外光譜樣本與鍵振動模式',
+        irSampleLabel: '1. 選擇有機化合物樣本：',
+        irVibModeLabel: '2. 觀察微觀共價鍵振動模式：',
+        vibSym: '對稱伸縮',
+        vibAsym: '不對稱伸縮',
+        vibBend: '剪刀彎曲',
+        irTableTitle: 'HKDSE 紅外吸收特徵波數對照表：',
+        irColBond: '化學鍵',
+        irColWave: '波數 (cm⁻¹)',
+        irColInt: '特徵',
+        irSpecTitle: '紅外光譜圖與官能基推斷',
+        irSpecSub: '點擊光譜圖中的向下吸收谷，查看對應共價鍵振動及官能基結構推論',
+        msLabTitle: '質譜樣本與碎裂路徑分析',
+        msSampleLabel: '1. 選擇有機化合物進行電子轟擊電離：',
+        msRuleHeader: '💡 HKDSE 質譜核心解題法則：',
+        msRule1: '<b>分子離子峰 (M<sup>+</sup>)</b>：最高 <i>m/z</i> 處的主要峰，其數值等於<b>相對分子質量 (<i>M<sub>r</sub></i>)</b>。',
+        msRule2: '<b>基峰 (Base Peak)</b>：光譜中<b>最高 (相對強度 = 100%)</b> 的峰，代表最穩定的碎片正離子。',
+        msRule3: '<b>不帶電荷的自由基 (R•)</b> 不會被電場加速或磁場偏轉，因此<b>不會出現在質譜圖上</b>！',
+        msPeakSelectLabel: '2. 點擊離子峰追蹤磁場偏轉軌跡：',
+        msSpecTitle: '質譜圖與碎片離子結構推斷',
+        msSpecSub: '點擊任一垂直離子峰，查看斷鍵方程式與離子結構推論',
+        isoLabTitle: '質譜同分異構體大比拼：相同分子離子峰 (M<sup>+</sup>)，為何碎片離子峰不同？',
+        isoLabSub: '同分異構體擁有相同的分子式與相對分子質量 (M<sub>r</sub>)，因此最高 m/z 的分子離子峰相同；但由於原子連接方式與碳陽離子或醯基離子穩定性不同，斷鍵位置產生獨特的碎片離子峰！',
+        isoTagA: '異構體 A',
+        isoTagB: '異構體 B',
+        fcTitle: 'HKDSE 第64章 高頻考點溫習記憶卡',
+        fcSub: '點擊卡片翻轉查看答案與 HKDSE 評分標準解析！涵蓋比色法濾光片、紅外特徵波數及質譜重要碎片離子 m/z 速記。',
+        fcShuffle: '隨機洗牌',
+        fcResetProg: '重置進度',
+        fcPromptHint: '題目提示 / 數據線索',
+        fcTapToFlip: '👆 點擊卡片查看答案',
+        fcAnswerBadge: 'HKDSE 標準答案與解析',
+        fcTapBackHint: '👆 點擊返回題目面',
+        fcPrev: '← 上一張',
+        fcNeedReview: '🔄 仍需溫習',
+        fcMasteredBtn: '✅ 已完全掌握',
+        fcNext: '下一張 →',
+        qzSetupTitle: 'HKDSE 第64章 儀器分析挑戰題庫',
+        qzSetupSub: '題庫圍繞香港中學文憑試化學科第64課（比色法、紅外光譜法、質譜法及綜合結構推斷），請選擇難度與題數開始測驗！',
+        qzDiffLabel: '1. 選擇挑戰難度：',
+        qzDiffEasy: '🌱 簡單',
+        qzDiffEasyDesc: '基礎儀器原理、互補色濾光片、特徵波數與分子離子峰概念',
+        qzDiffMed: '🔥 中級',
+        qzDiffMedDesc: '比爾-朗伯定律計算、官能基光譜辨析、常見碎片離子推斷',
+        qzDiffHard: '🚀 難',
+        qzDiffHardDesc: '同位素峰比例、同分異構體碎裂對比、IR + MS 綜合結構推論',
+        qzCountLabel: '2. 選擇題目數量：',
+        qzUnit: '題',
+        qzStartBtn: '開始 DSE 挑戰測驗',
+        qzQuitBtn: '結束返回',
+        qzNextBtn: '下一題 →',
+        qzResTitle: '測驗完成！HKDSE 第64章成績分析報告',
+        qzRetryWrong: '🔁 重做答錯題目',
+        qzBackSetup: '返回設定新測驗',
+        footerLeft: '聖公會梁季彜中學 (SKHLKYSS) · 香港中學文憑試化學科 (HKDSE Chemistry) 第64章教學資源',
+        footerRight: '由吳柏霖老師設計 · 專為課堂演示與學生自主探究而設'
+      },
+      en: {
+        schoolHeader: 'SKH Leung Kwai Yee Secondary School | Chemistry',
+        designerCredit: 'Designed by Mr. Ng Pak Lam',
+        mainTopic: 'Chapter 64: Instrumental Analytical Methods',
+        subTopic: 'HKDSE Elective: Analytical Chemistry · Strict Step Animations, All-Steps Mode, Isomer MS Lab, Flashcards & Quiz Bank',
+        devAuto: 'Auto',
+        devMobile: 'Mobile',
+        devTablet: 'Tablet',
+        devDesktop: 'Desktop',
+        tab1Title: 'Colorimeter',
+        tab1Sub: 'Colorimeter',
+        tab2Title: 'IR Spectrum',
+        tab2Sub: 'IR Spectrum',
+        tab3Title: 'Mass Spec',
+        tab3Sub: 'Mass Spec',
+        tab4Title: 'Isomer MS Lab',
+        tab4Sub: 'Isomer MS Lab',
+        tab5Title: 'Flashcards',
+        tab5Sub: 'Flashcards',
+        tab6Title: 'Quiz Bank',
+        tab6Sub: 'Quiz Bank',
+        btnPlay: 'Play',
+        btnPause: 'Pause',
+        btnStep: 'Next Step',
+        btnShowAllOff: 'Show All Steps: OFF',
+        btnShowAllOn: 'Show All Steps: ON (Full Flow)',
+        btnReset: 'Reset',
+        speedLabel: 'Speed:',
+        btnZoomOff: 'Zoom: OFF',
+        btnZoomOn: 'Zoom: ON (2.5x)',
+        macroHeader: 'Macroscopic Apparatus & Signal Flow',
+        microHeader: 'Microscopic Particle & Energy Chamber',
+        microNormalTag: 'Standard 1x',
+        microZoomTag: 'Zoomed 2.5x',
+        colLabCtrlTitle: 'Colorimeter Parameters & Controls',
+        colReagentLabel: '1. Select Coloured Solution:',
+        reagOrange: 'Orange (Cr₂O₇²⁻)',
+        reagBlue: 'Blue (Cu²⁺)',
+        reagPurple: 'Purple (MnO₄⁻)',
+        colFilterLabel: '2. Select Optical Filter (Complementary):',
+        filtBlue: 'Blue Filter',
+        filtOrange: 'Orange Filter',
+        filtYellow: 'Yellow-Green Filter',
+        colConcLabel: '3. Standard Solution Concentration:',
+        absMeterLabel: 'Absorbance Reading (Unitless):',
+        btnRecordPt: '+ Plot Point on Calibration Curve',
+        btnTestUnknown: '🔍 Test Unknown Sample',
+        calCurveTitle: 'Calibration Curve & Unknown Concentration Deduction',
+        calCurveSub: 'Beer-Lambert Law: A = εcl',
+        btnAutoCal: 'Auto-Plot Standard Curve',
+        btnClearCal: 'Clear Data',
+        irLabTitle: 'IR Sample & Bond Vibration Modes',
+        irSampleLabel: '1. Select Organic Compound Sample:',
+        irVibModeLabel: '2. Inspect Covalent Bond Vibration Mode:',
+        vibSym: 'Symmetric Stretch',
+        vibAsym: 'Asymmetric Stretch',
+        vibBend: 'Scissoring Bend',
+        irTableTitle: 'HKDSE Characteristic IR Absorption Wavenumbers:',
+        irColBond: 'Bond',
+        irColWave: 'Wavenumber (cm⁻¹)',
+        irColInt: 'Appearance',
+        irSpecTitle: 'Interactive Infrared Spectrum & Structural Deduction',
+        irSpecSub: 'Click any downward absorption trough to inspect bond vibration and deduction rules',
+        msLabTitle: 'Mass Spec Sample & Fragmentation Pathways',
+        msSampleLabel: '1. Select Organic Molecule for Electron Impact Ionisation:',
+        msRuleHeader: '💡 HKDSE Mass Spectrometry Key Rules:',
+        msRule1: '<b>Molecular Ion Peak (M<sup>+</sup>)</b>: Major peak at highest <i>m/z</i>; gives <b>relative molecular mass (<i>M<sub>r</sub></i>)</b>.',
+        msRule2: '<b>Base Peak</b>: The <b>tallest peak (100% relative intensity)</b>, corresponding to the most stable fragment cation.',
+        msRule3: '<b>Uncharged Free Radicals (R•)</b> are neither accelerated nor deflected, so they are <b>not detected</b>!',
+        msPeakSelectLabel: '2. Click Ion Peak to Trace Magnetic Deflection:',
+        msSpecTitle: 'Interactive Mass Spectrum & Fragmentation Analysis',
+        msSpecSub: 'Click any vertical peak to view bond cleavage equations and structural deduction',
+        isoLabTitle: 'Mass Spec Isomer Showdown: Same Molecular Ion Peak (M<sup>+</sup>), Different Fragmentation!',
+        isoLabSub: 'Structural isomers share the same molecular formula and relative molecular mass (M<sub>r</sub>), giving the same M<sup>+</sup> peak at highest m/z, but different bond cleavages and carbocation/acylium stabilities yield distinct fragment peaks!',
+        isoTagA: 'Isomer A',
+        isoTagB: 'Isomer B',
+        fcTitle: 'HKDSE Chapter 64 High-Yield Revision Flashcards',
+        fcSub: 'Click the card to flip and reveal the HKDSE Marking Scheme answer! Covers complementary filters, characteristic IR wavenumbers, and diagnostic m/z fragments.',
+        fcShuffle: 'Shuffle Deck',
+        fcResetProg: 'Reset Progress',
+        fcPromptHint: 'Question Prompt / Spectral Clue',
+        fcTapToFlip: '👆 Click card to reveal answer',
+        fcAnswerBadge: 'HKDSE Standard Answer & Explanation',
+        fcTapBackHint: '👆 Click to flip back',
+        fcPrev: '← Previous',
+        fcNeedReview: '🔄 Need Review',
+        fcMasteredBtn: '✅ Mastered',
+        fcNext: 'Next →',
+        qzSetupTitle: 'HKDSE Chapter 64 Instrumental Analysis Challenge Quiz Bank',
+        qzSetupSub: 'Questions aligned with HKDSE Chemistry Chapter 64 (Colorimetry, IR Spectroscopy, Mass Spectrometry & Structure Deduction). Select difficulty and question count!',
+        qzDiffLabel: '1. Select Difficulty Level:',
+        qzDiffEasy: '🌱 Easy',
+        qzDiffEasyDesc: 'Core instrument principles, complementary filters, characteristic wavenumbers & M+ peak',
+        qzDiffMed: '🔥 Medium',
+        qzDiffMedDesc: 'Beer-Lambert calculations, functional group deduction & common fragment ions',
+        qzDiffHard: '🚀 Hard',
+        qzDiffHardDesc: 'Isotope peak ratios, isomer fragmentation contrast & combined IR + MS deduction',
+        qzCountLabel: '2. Select Number of Questions:',
+        qzUnit: 'Questions',
+        qzStartBtn: 'Start DSE Challenge Quiz',
+        qzQuitBtn: 'Exit to Setup',
+        qzNextBtn: 'Next Question →',
+        qzResTitle: 'Quiz Complete! HKDSE Chapter 64 Performance Report',
+        qzRetryWrong: '🔁 Retry Incorrect Questions',
+        qzBackSetup: 'Back to Quiz Setup',
+        footerLeft: 'SKH Leung Kwai Yee Secondary School (SKHLKYSS) · HKDSE Chemistry Chapter 64 Teaching Resource',
+        footerRight: 'Designed by Mr. Ng Pak Lam · Built for Classroom Teaching & Student Exploration'
+      }
+    };
+
+    // 2. STRICT STEP DEFINITIONS FOR EACH INSTRUMENT (4 / 4 / 5 STEPS + ALL-STEPS MODE)
+    const INSTRUMENT_STAGES = [
+      // Tab 0: Colorimeter (4 Steps)
+      [
+        {
+          zhShort: '1. 濾光片選光', enShort: '1. Filter Selection',
+          zhTitle: '步驟 1：白光光源與互補色濾光片選光',
+          enTitle: 'Step 1: White Light Source & Complementary Filter Selection',
+          zhDesc: '白光燈泡發出連續可見光，穿過互補色濾光片後篩選出特定波長的單色光（例如橙色溶液配藍色濾光片 ~470 nm）。此步驟聚焦光源與濾光片篩選，尚未進入樣本比色杯。',
+          enDesc: 'The lamp emits continuous white light and passes through a complementary filter to isolate monochromatic light (e.g., blue filter ~470 nm for orange solution) before entering the cuvette.'
+        },
+        {
+          zhShort: '2. 單色光入比色杯', enShort: '2. Beam to Cuvette',
+          zhTitle: '步驟 2：單色入射光 (I₀) 射入比色杯',
+          enTitle: 'Step 2: Monochromatic Incident Beam (I₀) Enters Cuvette',
+          zhDesc: '單色光束（強度 I₀）抵達盛載待測溶液的透明比色杯（光程 l = 1.0 cm）。實驗前先以蒸餾水空白樣本歸零，消除比色杯壁與溶劑的反射損耗。',
+          enDesc: 'Monochromatic beam (intensity I₀) reaches the cuvette (path length l = 1.0 cm). A distilled water blank zeroes absorbance first to cancel wall and solvent reflection losses.'
+        },
+        {
+          zhShort: '3. 微觀光子吸收', enShort: '3. Photon Absorption',
+          zhTitle: '步驟 3：微觀光子被有色離子吸收 (A = εcl)',
+          enTitle: 'Step 3: Microscopic Photon Absorption by Coloured Ions (A = εcl)',
+          zhDesc: '微觀層面上，溶液中的有色離子吸收匹配能量的光子；溶液摩爾濃度 c 越高，吸光離子越多，吸收的光子越多，透射光強度 Iₛ 越弱。',
+          enDesc: 'Microscopically, coloured ions absorb matching photons. Higher concentration c means more absorbing ions per unit volume and weaker transmitted intensity Iₛ.'
+        },
+        {
+          zhShort: '4. 檢測器與校準曲線', enShort: '4. Detector & Curve',
+          zhTitle: '步驟 4：光電檢測器輸出吸光度與校準曲線還原濃度',
+          enTitle: 'Step 4: Photocell Absorbance Output & Calibration Curve Deduction',
+          zhDesc: '光電檢測器量度透射光強度 Iₛ 並計算吸光度 A = log₁₀(I₀ / Iₛ)（無單位）。利用標準溶液校準曲線即可推算未知樣本濃度。',
+          enDesc: 'The photocell measures transmitted intensity Iₛ and outputs Absorbance A = log₁₀(I₀ / Iₛ) (unitless) for calibration curve interpolation of unknown concentration.'
+        }
+      ],
+      // Tab 1: IR Spectrophotometer (4 Steps)
+      [
+        {
+          zhShort: '1. 紅外光源發射', enShort: '1. IR Emission',
+          zhTitle: '步驟 1：加熱陶瓷紅外光源發射連續紅外輻射 (4000–400 cm⁻¹)',
+          enTitle: 'Step 1: Heated Ceramic Source Emits Continuous IR (4000–400 cm⁻¹)',
+          zhDesc: '紅外線光源發出波數介乎 4000 至 400 cm⁻¹ 的連續紅外輻射。此步驟展示光源發射紅外波列，尚未進入樣本室。',
+          enDesc: 'The IR source emits continuous infrared waves spanning 4000 to 400 cm⁻¹ before reaching the sample cell.'
+        },
+        {
+          zhShort: '2. 樣本共振吸收', enShort: '2. Bond Resonance',
+          zhTitle: '步驟 2：紅外光束穿過樣本室並產生共價鍵共振',
+          enTitle: 'Step 2: IR Beam Passes Sample Cell & Resonates with Bonds',
+          zhDesc: '紅外光束穿過有機樣本室。當輻射頻率與分子內某共價鍵的固有振動頻率相同時，該頻率能量被吸收，其餘頻率透射。',
+          enDesc: 'IR radiation passes through the organic sample. Bonds absorb IR photons whose frequency matches their natural vibrational frequency while other frequencies transmit.'
+        },
+        {
+          zhShort: '3. 微觀鍵振動', enShort: '3. Bond Vibration',
+          zhTitle: '步驟 3：微觀共價鍵伸縮 / 彎曲振動與偶極矩變化',
+          enTitle: 'Step 3: Microscopic Bond Stretching / Bending & Dipole Change',
+          zhDesc: '吸收紅外能量後，共價鍵產生伸縮或彎曲振動（伴隨偶極矩變化）。鍵越強或原子越輕（如 O–H），吸收波數越高。',
+          enDesc: 'Absorbed IR energy drives bond stretching or bending vibrations (with dipole moment change). Stronger bonds and lighter atoms absorb at higher wavenumbers.'
+        },
+        {
+          zhShort: '4. 檢測與光譜分析', enShort: '4. Spectrum Analysis',
+          zhTitle: '步驟 4：單色器與檢測器記錄透射率光譜 (%T vs cm⁻¹)',
+          enTitle: 'Step 4: Monochromator & Detector Record % Transmittance Spectrum',
+          zhDesc: '單色器掃描各波數並由檢測器繪出透射率 (%T) 對波數 (cm⁻¹) 光譜。向下吸收谷對應特定官能基（1500–4000 cm⁻¹）與指紋區（400–1500 cm⁻¹）。',
+          enDesc: 'Wavenumbers are resolved and detected to plot % Transmittance vs wavenumber (cm⁻¹), revealing functional groups (1500–4000 cm⁻¹) and the fingerprint region (400–1500 cm⁻¹).'
+        }
+      ],
+      // Tab 2: Mass Spectrometer (5 Steps)
+      [
+        {
+          zhShort: '1. 汽化', enShort: '1. Vaporisation',
+          zhTitle: '步驟 1：真空進樣與加熱汽化 M(l/s) → M(g)',
+          enTitle: 'Step 1: High-Vacuum Vaporisation M(l/s) → M(g)',
+          zhDesc: '微量樣本注入高度真空系統並加熱汽化為氣態中性分子 M(g)，避免與空氣分子碰撞。此步驟專注汽化室，尚未進行電子轟擊。',
+          enDesc: 'Sample is vaporised under high vacuum into gaseous neutral molecules M(g) prior to electron bombardment.'
+        },
+        {
+          zhShort: '2. 電離與碎裂', enShort: '2. Ionisation & Cleavage',
+          zhTitle: '步驟 2：高能電子轟擊電離與碎裂 M(g) + e⁻ → M⁺(g) + 2e⁻',
+          enTitle: 'Step 2: Electron Impact Ionisation & Fragmentation',
+          zhDesc: '高速電子轟擊氣態分子 M(g)，撞出電子形成分子離子 M⁺(g)，部分進一步斷鍵生成碎片正離子與不帶電自由基 (R•)。',
+          enDesc: 'High-energy electrons ionise M(g) to M⁺(g) + 2e⁻; unstable M⁺ ions cleave into positively charged fragment ions and neutral radicals (R•).'
+        },
+        {
+          zhShort: '3. 電場加速', enShort: '3. Acceleration',
+          zhTitle: '步驟 3：負極電場加速正離子束 (中性自由基被抽走)',
+          enTitle: 'Step 3: Electric Field Acceleration of Positive Ions',
+          zhDesc: '帶正電的分子離子與碎片離子受負極電場吸引加速成束；不帶電的自由基 (R•) 不受電場加速，不會進入磁場分析器。',
+          enDesc: 'Positively charged ions are accelerated by the electric field into a beam; uncharged radicals (R•) are not accelerated and are pumped away.'
+        },
+        {
+          zhShort: '4. 磁場偏轉分離', enShort: '4. Magnetic Deflection',
+          zhTitle: '步驟 4：均勻磁場按質量電荷比 (m/z) 偏轉分離',
+          enTitle: 'Step 4: Magnetic Field Deflection & Separation by m/z',
+          zhDesc: '正離子進入垂直均勻磁場發生圓弧偏轉：m/z 越小（較輕）偏轉程度越大，m/z 越大（較重）偏轉程度越小。調節磁場可使特定 m/z 離子通過狹縫。',
+          enDesc: 'Positive ions curve in a magnetic field: smaller m/z deflects MORE (smaller radius), larger m/z deflects LESS. Tuning field strength selects specific m/z.'
+        },
+        {
+          zhShort: '5. 檢測與質譜圖', enShort: '5. Detector & Spectrum',
+          zhTitle: '步驟 5：離子收集器電流訊號與質譜圖結構分析',
+          enTitle: 'Step 5: Ion Collector Current & Mass Spectrum Analysis',
+          zhDesc: '正離子撞擊收集器產生與相對豐度成正比的電流，繪製相對強度 (%) 對 m/z 質譜圖，藉此確定相對分子質量 (Mᵣ) 與碎片結構。',
+          enDesc: 'Ions hitting the collector generate current proportional to abundance, plotting Relative Intensity (%) vs m/z to determine Mᵣ and molecular structure.'
+        }
+      ]
+    ];
+
+    // 3. GLOBAL STATE
+    let activeTab = 0;
+    let currentStage = 0;
+    let showAllSteps = false; // "一次過展示" toggle
+    let isPlaying = true;
+    let simSpeed = 1;
+    let isZoomed = false;
+    let deviceMode = 'auto'; // 'auto' | 'mobile' | 'tablet' | 'desktop'
+    let animTime = 0;
+    let lastTimestamp = 0;
+
+    // 4. COLORIMETER DATA & LOGIC
+    const COLOR_REAGENTS = {
+      k2cr2o7: {
+        formula: 'K₂Cr₂O₇(aq)', ion: 'Cr₂O₇²⁻',
+        zhName: '重鉻酸鉀溶液 (橙色)', enName: 'Potassium dichromate (Orange)',
+        solColor: 'rgba(249, 115, 22, ', particleColor: '#fb923c',
+        idealFilter: 'blue', molarAbsorptivity: 0.310, wrongAbsorptivity: 0.025,
+        unknownConc: 0.52, dilutionFactor: 10
+      },
+      cuso4: {
+        formula: 'CuSO₄(aq)', ion: 'Cu²⁺',
+        zhName: '硫酸銅(II)溶液 (藍色)', enName: 'Copper(II) sulphate (Blue)',
+        solColor: 'rgba(14, 165, 233, ', particleColor: '#38bdf8',
+        idealFilter: 'orange', molarAbsorptivity: 0.285, wrongAbsorptivity: 0.020,
+        unknownConc: 0.44, dilutionFactor: 5
+      },
+      kmno4: {
+        formula: 'KMnO₄(aq)', ion: 'MnO₄⁻',
+        zhName: '高錳酸鉀溶液 (紫色)', enName: 'Potassium manganate(VII) (Purple)',
+        solColor: 'rgba(168, 85, 247, ', particleColor: '#c084fc',
+        idealFilter: 'yellow', molarAbsorptivity: 0.340, wrongAbsorptivity: 0.030,
+        unknownConc: 0.38, dilutionFactor: 20
+      }
+    };
+
+    const FILTER_INFO = {
+      blue: { hex: '#2563eb', beam: '#3b82f6', wl: '470 nm', zhName: '藍色濾光片', enName: 'Blue Filter' },
+      orange: { hex: '#ea580c', beam: '#f97316', wl: '600 nm', zhName: '橙色濾光片', enName: 'Orange Filter' },
+      yellow: { hex: '#65a30d', beam: '#84cc16', wl: '550 nm', zhName: '黃綠色濾光片', enName: 'Yellow-Green Filter' }
+    };
+
+    let colState = {
+      reagent: 'k2cr2o7', filter: 'blue', conc: 0.40,
+      points: [0.00, 0.20, 0.40, 0.60, 0.80].map(c => ({ c, a: +(c * 0.310).toFixed(3) })),
+      unknownTested: false, unknownA: 0.161, unknownC: 0.52
+    };
+
+    function getCurrentAbsorbance() {
+      const r = COLOR_REAGENTS[colState.reagent];
+      const slope = colState.filter === r.idealFilter ? r.molarAbsorptivity : r.wrongAbsorptivity;
+      return +(colState.conc * slope).toFixed(3);
+    }
+
+    function setColorReagent(key) {
+      colState.reagent = key;
+      colState.filter = COLOR_REAGENTS[key].idealFilter;
+      colState.unknownTested = false;
+      const r = COLOR_REAGENTS[key];
+      colState.points = [0.00, 0.20, 0.40, 0.60, 0.80].map(c => ({ c, a: +(c * r.molarAbsorptivity).toFixed(3) }));
+      updateColorimeterUI();
+    }
+
+    function setColorFilter(filt) {
+      colState.filter = filt;
+      updateColorimeterUI();
+    }
+
+    function updateColorimeterConc(val) {
+      colState.conc = parseFloat(val);
+      updateColorimeterUI();
+    }
+
+    function recordCalibrationPoint() {
+      const a = getCurrentAbsorbance();
+      const c = +colState.conc.toFixed(2);
+      const idx = colState.points.findIndex(p => Math.abs(p.c - c) < 0.01);
+      if (idx >= 0) colState.points[idx] = { c, a };
+      else { colState.points.push({ c, a }); colState.points.sort((x, y) => x.c - y.c); }
+      renderCalibrationCurve();
+    }
+
+    function autoFillCalibration() {
+      const r = COLOR_REAGENTS[colState.reagent];
+      colState.filter = r.idealFilter;
+      colState.points = [0.00, 0.20, 0.40, 0.60, 0.80].map(c => ({ c, a: +(c * r.molarAbsorptivity).toFixed(3) }));
+      updateColorimeterUI();
+    }
+
+    function clearCalibration() {
+      colState.points = [{ c: 0.00, a: 0.000 }];
+      colState.unknownTested = false;
+      renderCalibrationCurve();
+      updateUnknownBox();
+    }
+
+    function testUnknownSample() {
+      const r = COLOR_REAGENTS[colState.reagent];
+      if (colState.filter !== r.idealFilter) colState.filter = r.idealFilter;
+      if (colState.points.length < 2) autoFillCalibration();
+      colState.unknownTested = true;
+      colState.unknownC = r.unknownConc;
+      colState.unknownA = +(r.unknownConc * r.molarAbsorptivity).toFixed(3);
+      colState.conc = r.unknownConc;
+      document.getElementById('concSlider').value = r.unknownConc;
+      showAllSteps = false;
+      currentStage = 3;
+      updateShowAllBtnUI();
+      updateStageBanner();
+      updateColorimeterUI();
+    }
+
+    function updateColorimeterUI() {
+      ['k2cr2o7', 'cuso4', 'kmno4'].forEach(k => {
+        const btn = document.getElementById('reag-' + k);
+        btn.className = k === colState.reagent
+          ? 'reag-btn p-2.5 rounded-xl border-2 border-amber-500 bg-amber-50 text-left cursor-pointer shadow-sm'
+          : 'reag-btn p-2.5 rounded-xl border-2 border-slate-200 bg-white text-left cursor-pointer hover:bg-slate-50';
+      });
+
+      ['blue', 'orange', 'yellow'].forEach(f => {
+        const btn = document.getElementById('filt-' + f);
+        if (f === colState.filter) {
+          const activeColors = {
+            blue: 'border-blue-600 bg-blue-600 text-white',
+            orange: 'border-orange-600 bg-orange-600 text-white',
+            yellow: 'border-lime-600 bg-lime-600 text-white'
+          };
+          btn.className = `filt-btn p-2 rounded-xl border-2 ${activeColors[f]} font-bold text-xs text-center cursor-pointer shadow-sm`;
+        } else {
+          btn.className = 'filt-btn p-2 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-bold text-xs text-center cursor-pointer hover:bg-slate-50';
+        }
+      });
+
+      const r = COLOR_REAGENTS[colState.reagent];
+      const fInfo = FILTER_INFO[colState.filter];
+      const idealInfo = FILTER_INFO[r.idealFilter];
+      const fbBox = document.getElementById('filterFeedbackBox');
+      if (colState.filter === r.idealFilter) {
+        fbBox.className = 'mt-2 p-2.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs';
+        fbBox.innerHTML = currentLang === 'zh'
+          ? `✅ <b>互補色濾光片匹配正確！</b> ${r.zhName} 最強烈吸收 <b>${idealInfo.zhName} (${idealInfo.wl})</b>，靈敏度最高。`
+          : `✅ <b>Complementary Filter Matched!</b> ${r.enName} strongly absorbs <b>${idealInfo.enName} (${idealInfo.wl})</b>, giving maximum sensitivity.`;
+      } else {
+        fbBox.className = 'mt-2 p-2.5 rounded-xl bg-rose-50 border border-rose-300 text-rose-900 text-xs';
+        fbBox.innerHTML = currentLang === 'zh'
+          ? `⚠️ <b>濾光片不匹配！</b> ${r.zhName} 幾乎不吸收 ${fInfo.zhName}，請切換至 <b>${idealInfo.zhName} (${idealInfo.wl})</b>！`
+          : `⚠️ <b>Filter Mismatch!</b> ${r.enName} barely absorbs ${fInfo.enName}. Switch to <b>${idealInfo.enName} (${idealInfo.wl})</b>!`;
+      }
+
+      document.getElementById('concDisplay').innerHTML = `${colState.conc.toFixed(2)} × 10<sup>−3</sup> mol dm<sup>−3</sup>`;
+      document.getElementById('absReadout').textContent = getCurrentAbsorbance().toFixed(3);
+      renderCalibrationCurve();
+      updateUnknownBox();
+    }
+
+    function updateUnknownBox() {
+      const box = document.getElementById('unknownAnalysisBox');
+      const r = COLOR_REAGENTS[colState.reagent];
+      if (!colState.unknownTested) {
+        box.innerHTML = currentLang === 'zh'
+          ? `💡 <b>提示：</b>調整濃度滑桿並點擊「記錄數據點」，或點擊「<b>🔍 測試未知樣本</b>」查看校準曲線內插與稀釋倍數還原。`
+          : `💡 <b>Tip:</b> Adjust concentration and plot points, or click "<b>🔍 Test Unknown Sample</b>" for interpolation and dilution factor steps.`;
+      } else {
+        const origConc = (colState.unknownC * r.dilutionFactor).toFixed(2);
+        box.innerHTML = currentLang === 'zh'
+          ? `<div class="font-bold text-sky-900 mb-1">📊 未知樣本數據還原 (${r.formula})：</div>
+             <ol class="list-decimal pl-4 space-y-1 text-xs">
+               <li>測得稀釋後未知樣本吸光度 <b>A = ${colState.unknownA.toFixed(3)}</b>。</li>
+               <li>從校準曲線縱軸 A = ${colState.unknownA.toFixed(3)} 水平交直線再向下讀數，得稀釋後濃度 = <b>${colState.unknownC.toFixed(2)} × 10<sup>−3</sup> mol dm<sup>−3</sup></b>。</li>
+               <li>乘以稀釋倍數 <b>${r.dilutionFactor}×</b>，原樣本濃度 = ${colState.unknownC.toFixed(2)} × 10<sup>−3</sup> × ${r.dilutionFactor} = <b>${origConc} × 10<sup>−3</sup> mol dm<sup>−3</sup></b>。</li>
+             </ol>`
+          : `<div class="font-bold text-sky-900 mb-1">📊 Unknown Deduction Steps (${r.formula}):</div>
+             <ol class="list-decimal pl-4 space-y-1 text-xs">
+               <li>Measured absorbance of diluted unknown: <b>A = ${colState.unknownA.toFixed(3)}</b>.</li>
+               <li>Interpolating from A = ${colState.unknownA.toFixed(3)} to the calibration line gives diluted concentration = <b>${colState.unknownC.toFixed(2)} × 10<sup>−3</sup> mol dm<sup>−3</sup></b>.</li>
+               <li>Multiplying by <b>${r.dilutionFactor}× dilution factor</b> gives original concentration = <b>${origConc} × 10<sup>−3</sup> mol dm<sup>−3</sup></b>.</li>
+             </ol>`;
+      }
+    }
+
+    function renderCalibrationCurve() {
+      const svg = document.getElementById('calCurveSvg');
+      const W = 560, H = 265, padL = 60, padR = 22, padT = 20, padB = 44;
+      const plotW = W - padL - padR, plotH = H - padT - padB;
+      const maxC = 0.85, maxA = 0.30;
+      const toX = c => padL + (c / maxC) * plotW;
+      const toY = a => padT + plotH - (a / maxA) * plotH;
+
+      let html = '';
+      for (let i = 0; i <= 6; i++) {
+        const aVal = i * 0.05, y = toY(aVal);
+        html += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="#e2e8f0" stroke-width="1"/>`;
+        html += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" font-size="10.5" fill="#475569">${aVal.toFixed(2)}</text>`;
+      }
+      for (let i = 0; i <= 8; i++) {
+        const cVal = i * 0.1, x = toX(cVal);
+        html += `<line x1="${x}" y1="${padT}" x2="${x}" y2="${padT + plotH}" stroke="#e2e8f0" stroke-width="1"/>`;
+        html += `<text x="${x}" y="${padT + plotH + 16}" text-anchor="middle" font-size="10.5" fill="#475569">${cVal.toFixed(1)}</text>`;
+      }
+      html += `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT + plotH}" stroke="#1e293b" stroke-width="2"/>`;
+      html += `<line x1="${padL}" y1="${padT + plotH}" x2="${W - padR}" y2="${padT + plotH}" stroke="#1e293b" stroke-width="2"/>`;
+
+      const yLabel = currentLang === 'zh' ? '吸光度 Absorbance (無單位)' : 'Absorbance (unitless)';
+      const xLabel = currentLang === 'zh' ? '濃度 Concentration (× 10⁻³ mol dm⁻³)' : 'Concentration (× 10⁻³ mol dm⁻³)';
+      html += `<text x="15" y="${padT + plotH / 2}" transform="rotate(-90, 15, ${padT + plotH / 2})" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f172a">${yLabel}</text>`;
+      html += `<text x="${padL + plotW / 2}" y="${H - 8}" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f172a">${xLabel}</text>`;
+
+      if (colState.points.length >= 2) {
+        const lastPt = colState.points[colState.points.length - 1];
+        const slope = lastPt.c > 0 ? lastPt.a / lastPt.c : 0;
+        html += `<line x1="${toX(0)}" y1="${toY(0)}" x2="${toX(0.82)}" y2="${toY(Math.min(maxA, 0.82 * slope))}" stroke="#0f2544" stroke-width="2.5"/>`;
+      }
+      if (colState.unknownTested) {
+        const ux = toX(colState.unknownC), uy = toY(colState.unknownA);
+        html += `<line x1="${padL}" y1="${uy}" x2="${ux}" y2="${uy}" stroke="#e11d48" stroke-width="2" stroke-dasharray="5,4"/>`;
+        html += `<line x1="${ux}" y1="${uy}" x2="${ux}" y2="${padT + plotH}" stroke="#e11d48" stroke-width="2" stroke-dasharray="5,4"/>`;
+        html += `<circle cx="${ux}" cy="${uy}" r="6" fill="#e11d48" stroke="#ffffff" stroke-width="2"/>`;
+        html += `<text x="${ux + 8}" y="${uy - 8}" font-size="11" font-weight="bold" fill="#be123c">Unknown (${colState.unknownC.toFixed(2)}, ${colState.unknownA.toFixed(3)})</text>`;
+      }
+      colState.points.forEach(pt => {
+        html += `<circle cx="${toX(pt.c)}" cy="${toY(pt.a)}" r="5" fill="#d97706" stroke="#ffffff" stroke-width="1.5"/>`;
+      });
+      svg.innerHTML = html;
+    }
+
+    // 5. IR SPECTROPHOTOMETER DATA & LOGIC
+    const IR_COMPOUNDS = {
+      ethanol: {
+        zhName: '乙醇 (Ethanol)', enName: 'Ethanol', formula: 'CH₃CH₂OH',
+        bondLeft: 'C₂H₅', bondCenter: 'O', bondRight: 'H',
+        peaks: [
+          { wn: 3350, width: 190, depth: 0.72, bond: 'O–H (醇)', range: '3230 – 3670 cm⁻¹', zhChar: '強而寬闊', enChar: 'Strong, broad', zhDeduction: '3350 cm⁻¹ 強寬吸收峰代表醇的 O–H 鍵；無 C=O 峰，排除羧酸與羰基化合物。', enDeduction: 'Strong broad peak at 3350 cm⁻¹ confirms alcohol O–H; no C=O peak rules out acids and carbonyls.' },
+          { wn: 2960, width: 70, depth: 0.65, bond: 'C–H (烷烴)', range: '2850 – 3000 cm⁻¹', zhChar: '中至強', enChar: 'Medium-strong', zhDeduction: '2960 cm⁻¹ 代表飽和烷基鏈的 C–H 伸縮振動。', enDeduction: '2960 cm⁻¹ corresponds to alkyl C–H stretching.' },
+          { wn: 1050, width: 55, depth: 0.58, bond: 'C–O (指紋區)', range: '1000 – 1300 cm⁻¹', zhChar: '強', enChar: 'Strong', zhDeduction: '指紋區 1050 cm⁻¹ 處的 C–O 單鍵吸收。', enDeduction: 'C–O single bond peak in the 1000–1300 cm⁻¹ fingerprint region.' }
+        ]
+      },
+      ethanoic_acid: {
+        zhName: '乙酸 (Ethanoic acid)', enName: 'Ethanoic acid', formula: 'CH₃COOH',
+        bondLeft: 'CH₃', bondCenter: 'C=O', bondRight: 'OH',
+        peaks: [
+          { wn: 3000, width: 340, depth: 0.78, bond: 'O–H (羧酸)', range: '2500 – 3300 cm⁻¹', zhChar: '極寬闊', enChar: 'Very broad', zhDeduction: '2500–3300 cm⁻¹ 極寬吸收峰配合 1710 cm⁻¹ 的 C=O 尖峰，確認含有羧基 (–COOH)。', enDeduction: 'Very broad 2500–3300 cm⁻¹ peak plus sharp C=O at 1710 cm⁻¹ confirms a carboxylic acid (–COOH).' },
+          { wn: 1710, width: 42, depth: 0.86, bond: 'C=O (羰基)', range: '1680 – 1750 cm⁻¹', zhChar: '極強而尖銳', enChar: 'Very strong, sharp', zhDeduction: '1710 cm⁻¹ 極強尖銳吸收峰代表 C=O 雙鍵。', enDeduction: 'Very strong, sharp trough at 1710 cm⁻¹ indicates C=O.' },
+          { wn: 1280, width: 55, depth: 0.60, bond: 'C–O (指紋區)', range: '1000 – 1300 cm⁻¹', zhChar: '強', enChar: 'Strong', zhDeduction: '指紋區 1280 cm⁻¹ 處的 C–O 吸收峰。', enDeduction: 'C–O absorption at 1280 cm⁻¹ in the fingerprint region.' }
+        ]
+      },
+      propanone: {
+        zhName: '丙酮 (Propanone)', enName: 'Propanone', formula: 'CH₃COCH₃',
+        bondLeft: 'CH₃', bondCenter: 'C=O', bondRight: 'CH₃',
+        peaks: [
+          { wn: 2980, width: 65, depth: 0.52, bond: 'C–H (烷烴)', range: '2850 – 3000 cm⁻¹', zhChar: '中', enChar: 'Medium', zhDeduction: '3230–3670 cm⁻¹ 完全沒有 O–H 寬峰，排除醇與羧酸。', enDeduction: 'No broad O–H peak at 3230–3670 cm⁻¹, ruling out alcohols and carboxylic acids.' },
+          { wn: 1715, width: 40, depth: 0.88, bond: 'C=O (醛/酮)', range: '1680 – 1750 cm⁻¹', zhChar: '極強而尖銳', enChar: 'Very strong, sharp', zhDeduction: '1715 cm⁻¹ 有極強 C=O 峰且無 O–H 峰，推斷為醛或酮（丙酮為酮類）。', enDeduction: 'Strong C=O peak at 1715 cm⁻¹ without O–H indicates an aldehyde or ketone (propanone).' },
+          { wn: 1220, width: 50, depth: 0.50, bond: 'C–C (指紋區)', range: '400 – 1500 cm⁻¹', zhChar: '中至強', enChar: 'Medium-strong', zhDeduction: '指紋區特徵峰，用於區分不同酮類異構體。', enDeduction: 'Fingerprint region features distinguish ketone isomers.' }
+        ]
+      },
+      hex1ene: {
+        zhName: '己-1-烯 (Hex-1-ene)', enName: 'Hex-1-ene', formula: 'CH₂=CH(CH₂)₃CH₃',
+        bondLeft: 'CH₂', bondCenter: 'C=C', bondRight: 'C₄H₉',
+        peaks: [
+          { wn: 2930, width: 85, depth: 0.76, bond: 'C–H (烴類)', range: '2850 – 3100 cm⁻¹', zhChar: '強', enChar: 'Strong', zhDeduction: '僅見 C–H 吸收，無 O–H 及 C=O 峰。', enDeduction: 'Only C–H absorptions present; no O–H or C=O peaks.' },
+          { wn: 1642, width: 35, depth: 0.56, bond: 'C=C (烯烴)', range: '1610 – 1680 cm⁻¹', zhChar: '中至弱、尖銳', enChar: 'Medium-weak, sharp', zhDeduction: '1642 cm⁻¹ 尖銳峰證實含有 C=C 雙鍵（不飽和烯烴）。', enDeduction: 'Sharp peak at 1642 cm⁻¹ confirms a C=C double bond (alkene).' },
+          { wn: 910, width: 45, depth: 0.62, bond: '=C–H 彎曲', range: '650 – 1000 cm⁻¹', zhChar: '強', enChar: 'Strong', zhDeduction: '910 cm⁻¹ 為端基烯烴 (=CH₂) 彎曲振動特徵峰。', enDeduction: '910 cm⁻¹ is characteristic of terminal =CH₂ bending.' }
+        ]
+      }
+    };
+
+    const IR_REF_TABLE = [
+      { bond: 'O–H (醇 Alcohol)', range: '3230 – 3670', zhInt: '強、寬闊', enInt: 'Strong, broad' },
+      { bond: 'O–H (羧酸 Acid)', range: '2500 – 3300', zhInt: '極寬闊', enInt: 'Very broad' },
+      { bond: 'C–H (烷烴 Alkane)', range: '2850 – 3000', zhInt: '中至強', enInt: 'Medium-strong' },
+      { bond: 'C≡N (腈 Nitrile)', range: '2200 – 2260', zhInt: '中、尖銳', enInt: 'Medium, sharp' },
+      { bond: 'C=O (羰基 Carbonyl)', range: '1680 – 1750', zhInt: '極強、尖銳', enInt: 'Very strong, sharp' },
+      { bond: 'C=C (烯烴 Alkene)', range: '1610 – 1680', zhInt: '中至弱、尖銳', enInt: 'Medium-weak, sharp' },
+      { bond: 'C–O (指紋區)', range: '1000 – 1300', zhInt: '強', enInt: 'Strong' }
+    ];
+
+    let irState = { compound: 'ethanoic_acid', vibMode: 'sym', selectedPeakIdx: 1 };
+
+    function setIrCompound(key) { irState.compound = key; irState.selectedPeakIdx = 0; updateIrUI(); }
+    function setIrVibMode(mode) {
+      irState.vibMode = mode;
+      ['sym', 'asym', 'bend'].forEach(m => {
+        const btn = document.getElementById('vib-' + m);
+        btn.className = m === mode
+          ? 'vib-btn p-2 rounded-lg border-2 border-slate-900 bg-slate-900 text-white text-xs font-bold cursor-pointer'
+          : 'vib-btn p-2 rounded-lg border-2 border-slate-200 bg-white text-slate-700 text-xs font-bold cursor-pointer hover:bg-slate-50';
+      });
+    }
+    function selectIrPeak(idx) { irState.selectedPeakIdx = idx; updateIrUI(); }
+
+    function updateIrUI() {
+      document.getElementById('irCompoundButtons').innerHTML = Object.keys(IR_COMPOUNDS).map(k => {
+        const c = IR_COMPOUNDS[k], active = k === irState.compound;
+        return `<button onclick="setIrCompound('${k}')" class="p-2 rounded-xl border-2 text-left cursor-pointer transition ${active ? 'border-rose-600 bg-rose-50 shadow-sm' : 'border-slate-200 bg-white hover:bg-slate-50'}">
+          <div class="font-bold text-xs ${active ? 'text-rose-900' : 'text-slate-800'}">${currentLang === 'zh' ? c.zhName : c.enName}</div>
+          <div class="text-[11px] font-mono text-slate-500">${c.formula}</div>
+        </button>`;
+      }).join('');
+
+      const comp = IR_COMPOUNDS[irState.compound];
+      const activePeak = comp.peaks[irState.selectedPeakIdx] || comp.peaks[0];
+
+      document.getElementById('irRefTableBody').innerHTML = IR_REF_TABLE.map(row => {
+        const isMatch = activePeak && activePeak.bond.includes(row.bond.split(' ')[0]) && activePeak.range.startsWith(row.range.slice(0, 4));
+        return `<tr class="${isMatch ? 'bg-amber-100 font-bold text-amber-950' : ''}">
+          <td class="p-2">${row.bond}</td>
+          <td class="p-2 font-mono">${row.range}</td>
+          <td class="p-2">${currentLang === 'zh' ? row.zhInt : row.enInt}</td>
+        </tr>`;
+      }).join('');
+
+      document.getElementById('irDeductionBox').innerHTML = currentLang === 'zh'
+        ? `<div class="font-bold text-amber-950">🎯 當前選中峰：${activePeak.bond}（${activePeak.wn} cm<sup>−1</sup> · ${activePeak.zhChar}）</div>
+           <p class="text-slate-800 leading-relaxed">${activePeak.zhDeduction}</p>`
+        : `<div class="font-bold text-amber-950">🎯 Selected Peak: ${activePeak.bond} (${activePeak.wn} cm<sup>−1</sup> · ${activePeak.enChar})</div>
+           <p class="text-slate-800 leading-relaxed">${activePeak.enDeduction}</p>`;
+
+      renderIrSpectrum();
+    }
+
+    function renderIrSpectrum() {
+      const svg = document.getElementById('irSpectrumSvg');
+      const W = 600, H = 280, padL = 54, padR = 20, padT = 26, padB = 44;
+      const plotW = W - padL - padR, plotH = H - padT - padB;
+      const toX = wn => padL + ((4000 - wn) / 3600) * plotW;
+      const toY = trans => padT + ((100 - trans) / 100) * plotH;
+
+      let html = '';
+      const x1500 = toX(1500);
+      html += `<rect x="${padL}" y="${padT}" width="${x1500 - padL}" height="${plotH}" fill="#fff1f2" opacity="0.55"/>`;
+      html += `<rect x="${x1500}" y="${padT}" width="${W - padR - x1500}" height="${plotH}" fill="#f1f5f9" opacity="0.85"/>`;
+      html += `<line x1="${x1500}" y1="${padT}" x2="${x1500}" y2="${padT + plotH}" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4,4"/>`;
+
+      html += `<text x="${(padL + x1500) / 2}" y="${padT + 14}" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#be123c">${currentLang === 'zh' ? '官能基區 (1500–4000 cm⁻¹)' : 'Functional Group Region'}</text>`;
+      html += `<text x="${(x1500 + W - padR) / 2}" y="${padT + 14}" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#475569">${currentLang === 'zh' ? '指紋區' : 'Fingerprint'}</text>`;
+
+      [0, 25, 50, 75, 100].forEach(t => {
+        const y = toY(t);
+        html += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="#e2e8f0" stroke-width="1"/>`;
+        html += `<text x="${padL - 7}" y="${y + 4}" text-anchor="end" font-size="10" fill="#475569">${t}%</text>`;
+      });
+      [4000, 3500, 3000, 2500, 2000, 1500, 1000, 500].forEach(wn => {
+        const x = toX(wn);
+        html += `<text x="${x}" y="${padT + plotH + 16}" text-anchor="middle" font-size="10" fill="#475569">${wn}</text>`;
+      });
+
+      html += `<rect x="${padL}" y="${padT}" width="${plotW}" height="${plotH}" fill="none" stroke="#1e293b" stroke-width="1.8"/>`;
+      html += `<text x="15" y="${padT + plotH / 2}" transform="rotate(-90, 15, ${padT + plotH / 2})" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f172a">${currentLang === 'zh' ? '透射率 (%T)' : 'Transmittance (%T)'}</text>`;
+      html += `<text x="${padL + plotW / 2}" y="${H - 7}" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f172a">${currentLang === 'zh' ? '波數 Wavenumber (cm⁻¹)' : 'Wavenumber (cm⁻¹)'}</text>`;
+
+      const comp = IR_COMPOUNDS[irState.compound];
+      let pathD = '';
+      for (let wn = 4000; wn >= 400; wn -= 10) {
+        let trans = 94 - Math.sin(wn * 0.015) * 1.2;
+        if (wn < 1480) trans -= Math.abs(Math.sin(wn * 0.045) * Math.cos(wn * 0.021)) * 22;
+        comp.peaks.forEach(p => {
+          const diff = (wn - p.wn) / p.width;
+          trans -= p.depth * 85 * Math.exp(-0.5 * diff * diff);
+        });
+        trans = Math.max(5, Math.min(97, trans));
+        pathD += (wn === 4000 ? `M ${toX(wn).toFixed(1)} ${toY(trans).toFixed(1)}` : ` L ${toX(wn).toFixed(1)} ${toY(trans).toFixed(1)}`);
+      }
+      html += `<path d="${pathD}" fill="none" stroke="#0f2544" stroke-width="2.2"/>`;
+
+      comp.peaks.forEach((p, idx) => {
+        const px = toX(p.wn), py = toY(Math.max(8, 94 - p.depth * 85)), isSel = idx === irState.selectedPeakIdx;
+        html += `<g onclick="selectIrPeak(${idx})" style="cursor:pointer;">
+          <line x1="${px}" y1="${py}" x2="${px}" y2="${padT + plotH}" stroke="${isSel ? '#e11d48' : '#94a3b8'}" stroke-width="${isSel ? 2 : 1}" stroke-dasharray="3,3"/>
+          <circle cx="${px}" cy="${py}" r="${isSel ? 7 : 5}" fill="${isSel ? '#e11d48' : '#0284c7'}" stroke="#ffffff" stroke-width="1.8"/>
+          <rect x="${px - 42}" y="${Math.min(padT + plotH - 22, py + 8)}" width="84" height="18" rx="4" fill="${isSel ? '#be123c' : '#1e293b'}"/>
+          <text x="${px}" y="${Math.min(padT + plotH - 10, py + 20)}" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#ffffff">${p.wn} cm⁻¹</text>
+        </g>`;
+      });
+      svg.innerHTML = html;
+    }
+
+    // 6. MASS SPECTROMETER DATA & LOGIC
+    const MS_COMPOUNDS = {
+      butanone: {
+        zhName: '丁酮 (Butanone)', enName: 'Butanone', formula: 'CH₃COCH₂CH₃', mr: 72,
+        peaks: [
+          { mz: 29, rel: 28, ion: 'CH₃CH₂⁺', isM: false, isBase: false, equation: '[CH₃COCH₂CH₃]⁺• → CH₃CO• + CH₃CH₂⁺', zhNote: '<i>m/z</i> = 29 代表乙基正離子 CH₃CH₂⁺。', enNote: '<i>m/z</i> = 29 corresponds to the ethyl cation CH₃CH₂⁺.' },
+          { mz: 43, rel: 100, ion: 'CH₃CO⁺ (基峰)', isM: false, isBase: true, equation: '[CH₃COCH₂CH₃]⁺• → CH₃CO⁺ + •CH₂CH₃', zhNote: '<b>基峰 (100%)</b> 位於 <i>m/z</i> = 43，為穩定的醯基正離子 <b>CH₃CO⁺</b>；中性自由基 •CH₂CH₃ 不會被檢測。', enNote: '<b>Base Peak (100%)</b> at <i>m/z</i> = 43 is resonance-stabilised <b>CH₃CO⁺</b>. Neutral •CH₂CH₃ is undetected.' },
+          { mz: 57, rel: 18, ion: 'CH₃CH₂CO⁺', isM: false, isBase: false, equation: '[CH₃COCH₂CH₃]⁺• → CH₃CH₂CO⁺ + •CH₃', zhNote: '<i>m/z</i> = 57 (72 − 15) 為失去甲基自由基 •CH₃ 後形成的丙醯基正離子 CH₃CH₂CO⁺。', enNote: '<i>m/z</i> = 57 (72 − 15) is CH₃CH₂CO⁺ formed by loss of •CH₃.' },
+          { mz: 72, rel: 34, ion: '[CH₃COCH₂CH₃]⁺• (M⁺)', isM: true, isBase: false, equation: 'CH₃COCH₂CH₃(g) + e⁻ → [CH₃COCH₂CH₃]⁺•(g) + 2e⁻', zhNote: '<b>分子離子峰 (M⁺)</b> 位於 <i>m/z</i> = 72，給出相對分子質量 <b><i>M<sub>r</sub></i> = 72</b>。', enNote: '<b>Molecular Ion Peak (M⁺)</b> at <i>m/z</i> = 72 gives <b><i>M<sub>r</sub></i> = 72</b>.' }
+        ]
+      },
+      butylbenzene: {
+        zhName: '丁基苯 (Butylbenzene)', enName: 'Butylbenzene', formula: 'C₆H₅C₄H₉', mr: 134,
+        peaks: [
+          { mz: 65, rel: 18, ion: 'C₅H₅⁺', isM: false, isBase: false, equation: 'C₇H₇⁺ → C₅H₅⁺ + C₂H₂', zhNote: '<i>m/z</i> = 65 為 C₇H₇⁺ 失去乙炔 (C₂H₂, 26) 後產生的碎片離子。', enNote: '<i>m/z</i> = 65 forms when C₇H₇⁺ loses C₂H₂ (26).' },
+          { mz: 91, rel: 100, ion: 'C₆H₅CH₂⁺ / C₇H₇⁺ (基峰)', isM: false, isBase: true, equation: '[C₆H₅C₄H₉]⁺• → C₆H₅CH₂⁺ + •CH₂CH₂CH₃', zhNote: '<b>DSE 特徵基峰 <i>m/z</i> = 91！</b>代表極穩定的苄基正離子 C₆H₅CH₂⁺，診斷含有 C₆H₅CH₂– 基團。', enNote: '<b>Diagnostic Base Peak at <i>m/z</i> = 91!</b> Represents resonance-stabilised C₆H₅CH₂⁺ / C₇H₇⁺.' },
+          { mz: 105, rel: 14, ion: 'C₆H₅CH₂CH₂⁺', isM: false, isBase: false, equation: '[C₆H₅C₄H₉]⁺• → C₆H₅C₂H₄⁺ + •C₂H₅', zhNote: '<i>m/z</i> = 105 (134 − 29) 為失去乙基自由基 •C₂H₅ 後的碎片離子。', enNote: '<i>m/z</i> = 105 (134 − 29) is formed by loss of •C₂H₅.' },
+          { mz: 134, rel: 26, ion: '[C₆H₅C₄H₉]⁺• (M⁺)', isM: true, isBase: false, equation: 'C₆H₅C₄H₉(g) + e⁻ → [C₆H₅C₄H₉]⁺•(g) + 2e⁻', zhNote: '<b>分子離子峰 (M⁺)</b> 位於 <i>m/z</i> = 134，給出 <b><i>M<sub>r</sub></i> = 134</b>。', enNote: '<b>Molecular Ion Peak (M⁺)</b> at <i>m/z</i> = 134 gives <b><i>M<sub>r</sub></i> = 134</b>.' }
+        ]
+      },
+      chloromethane: {
+        zhName: '氯甲烷 (Chloromethane)', enName: 'Chloromethane', formula: 'CH₃Cl', mr: 50,
+        peaks: [
+          { mz: 15, rel: 68, ion: 'CH₃⁺', isM: false, isBase: false, equation: '[CH₃Cl]⁺• → CH₃⁺ + •Cl', zhNote: '<i>m/z</i> = 15 代表甲基正離子 CH₃⁺。', enNote: '<i>m/z</i> = 15 is the methyl cation CH₃⁺.' },
+          { mz: 50, rel: 100, ion: '[CH₃³⁵Cl]⁺• (M⁺)', isM: true, isBase: true, equation: 'CH₃³⁵Cl(g) + e⁻ → [CH₃³⁵Cl]⁺•(g) + 2e⁻', zhNote: '<b>M⁺ 峰 (<i>m/z</i> = 50, 100%)</b> 含 <b>³⁵Cl</b> 同位素（天然豐度 ~75%）。', enNote: '<b>M⁺ peak (<i>m/z</i> = 50, 100%)</b> contains <b>³⁵Cl</b> (~75% natural abundance).' },
+          { mz: 52, rel: 33, ion: '[CH₃³⁷Cl]⁺• ([M+2]⁺)', isM: true, isBase: false, equation: 'CH₃³⁷Cl(g) + e⁻ → [CH₃³⁷Cl]⁺•(g) + 2e⁻', zhNote: '<b>[M+2]⁺ 峰 (<i>m/z</i> = 52, ~33%)</b> 含 <b>³⁷Cl</b> 同位素（~25%）。<i>m/z</i> = 50 與 52 呈 <b>3 : 1 比例</b>，證明含 1 個氯原子。', enNote: '<b>[M+2]⁺ peak (<i>m/z</i> = 52, ~33%)</b> contains <b>³⁷Cl</b> (~25%). A <b>3 : 1 ratio</b> proves ONE chlorine atom.' }
+        ]
+      }
+    };
+
+    let msState = { compound: 'butanone', selectedPeakIdx: 1 };
+
+    function setMsCompound(key) {
+      msState.compound = key;
+      const idx = MS_COMPOUNDS[key].peaks.findIndex(p => p.isBase);
+      msState.selectedPeakIdx = idx >= 0 ? idx : 0;
+      updateMsUI();
+    }
+    function selectMsPeak(idx) { msState.selectedPeakIdx = idx; updateMsUI(); }
+
+    function updateMsUI() {
+      document.getElementById('msCompoundButtons').innerHTML = Object.keys(MS_COMPOUNDS).map(k => {
+        const c = MS_COMPOUNDS[k], active = k === msState.compound;
+        return `<button onclick="setMsCompound('${k}')" class="p-2 rounded-xl border-2 text-left cursor-pointer transition ${active ? 'border-sky-600 bg-sky-50 shadow-sm' : 'border-slate-200 bg-white hover:bg-slate-50'}">
+          <div class="font-bold text-xs ${active ? 'text-sky-900' : 'text-slate-800'}">${currentLang === 'zh' ? c.zhName : c.enName}</div>
+          <div class="text-[11px] font-mono text-slate-500">${c.formula} (M<sub>r</sub>=${c.mr})</div>
+        </button>`;
+      }).join('');
+
+      const comp = MS_COMPOUNDS[msState.compound];
+      document.getElementById('msMrBadge').innerHTML = `M<sub>r</sub> = ${comp.mr}`;
+      document.getElementById('msPeakQuickBtns').innerHTML = comp.peaks.map((p, idx) => {
+        const active = idx === msState.selectedPeakIdx;
+        return `<button onclick="selectMsPeak(${idx})" class="px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold border-2 cursor-pointer transition ${active ? 'border-amber-500 bg-amber-400 text-slate-950 shadow-sm' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'}">
+          m/z = ${p.mz} ${p.isBase ? '★' : ''}
+        </button>`;
+      }).join('');
+
+      const activePeak = comp.peaks[msState.selectedPeakIdx] || comp.peaks[0];
+      document.getElementById('msDeductionBox').innerHTML = currentLang === 'zh'
+        ? `<div class="flex flex-wrap items-center justify-between gap-2">
+             <span class="font-bold text-amber-300">📌 <i>m/z</i> = ${activePeak.mz} ｜ ${activePeak.ion}</span>
+             <span class="text-xs px-2 py-0.5 rounded bg-slate-800 text-sky-300 font-mono">相對強度: ${activePeak.rel}%</span>
+           </div>
+           <div class="font-mono text-xs bg-slate-950/80 px-2.5 py-1.5 rounded border border-slate-700 text-emerald-300">${activePeak.equation}</div>
+           <p class="text-slate-200 leading-relaxed">${activePeak.zhNote}</p>`
+        : `<div class="flex flex-wrap items-center justify-between gap-2">
+             <span class="font-bold text-amber-300">📌 <i>m/z</i> = ${activePeak.mz} | ${activePeak.ion}</span>
+             <span class="text-xs px-2 py-0.5 rounded bg-slate-800 text-sky-300 font-mono">Rel. Intensity: ${activePeak.rel}%</span>
+           </div>
+           <div class="font-mono text-xs bg-slate-950/80 px-2.5 py-1.5 rounded border border-slate-700 text-emerald-300">${activePeak.equation}</div>
+           <p class="text-slate-200 leading-relaxed">${activePeak.enNote}</p>`;
+
+      renderMsSpectrum();
+    }
+
+    function renderMsSpectrum() {
+      const svg = document.getElementById('msSpectrumSvg');
+      const W = 600, H = 275, padL = 54, padR = 24, padT = 26, padB = 44;
+      const plotW = W - padL - padR, plotH = H - padT - padB;
+      const comp = MS_COMPOUNDS[msState.compound];
+      const maxMz = Math.max(90, Math.ceil((comp.mr + 15) / 10) * 10);
+      const toX = mz => padL + (mz / maxMz) * plotW;
+      const toY = rel => padT + plotH - (rel / 100) * plotH;
+
+      let html = '';
+      [0, 25, 50, 75, 100].forEach(r => {
+        const y = toY(r);
+        html += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="#e2e8f0" stroke-width="1"/>`;
+        html += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" font-size="10" fill="#475569">${r}%</text>`;
+      });
+      const step = maxMz <= 100 ? 10 : 20;
+      for (let m = 0; m <= maxMz; m += step) {
+        html += `<text x="${toX(m)}" y="${padT + plotH + 16}" text-anchor="middle" font-size="10" fill="#475569">${m}</text>`;
+      }
+      html += `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT + plotH}" stroke="#1e293b" stroke-width="2"/>`;
+      html += `<line x1="${padL}" y1="${padT + plotH}" x2="${W - padR}" y2="${padT + plotH}" stroke="#1e293b" stroke-width="2"/>`;
+      html += `<text x="15" y="${padT + plotH / 2}" transform="rotate(-90, 15, ${padT + plotH / 2})" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f172a">${currentLang === 'zh' ? '相對強度 (%)' : 'Relative Intensity (%)'}</text>`;
+      html += `<text x="${padL + plotW / 2}" y="${H - 7}" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f172a">m/z</text>`;
+
+      comp.peaks.forEach((p, idx) => {
+        const x = toX(p.mz), y = toY(p.rel), isSel = idx === msState.selectedPeakIdx;
+        const barColor = isSel ? '#f59e0b' : (p.isM ? '#e11d48' : '#0284c7');
+        html += `<g onclick="selectMsPeak(${idx})" style="cursor:pointer;">
+          <rect x="${x - 12}" y="${padT}" width="24" height="${plotH}" fill="transparent"/>
+          <line x1="${x}" y1="${padT + plotH}" x2="${x}" y2="${y}" stroke="${barColor}" stroke-width="${isSel ? 6 : 4}" stroke-linecap="round"/>
+          <circle cx="${x}" cy="${y}" r="${isSel ? 5 : 3.5}" fill="${barColor}"/>
+          <text x="${x}" y="${y - 8}" text-anchor="middle" font-size="10.5" font-weight="bold" fill="${isSel ? '#b45309' : '#0f172a'}">${p.mz}${p.isM ? '(M⁺)' : ''}</text>
+        </g>`;
+      });
+      svg.innerHTML = html;
+    }
+
+    // 7. MS ISOMER FRAGMENTATION COMPARISON LAB
+    const ISOMER_CASES = {
+      c6h14_alkanes: {
+        zhTabTitle: '案例 1：C₆H₁₄ 烷烴異構體 (Mᵣ = 86)', enTabTitle: 'Case 1: C₆H₁₄ Alkane Isomers (Mᵣ = 86)',
+        zhTabSub: '直鏈己烷 vs. 支鏈 2-甲基戊烷', enTabSub: 'Hexane vs. 2-Methylpentane', mr: 86,
+        zhPrinciple: '<b>原因解析（碳陽離子穩定性）：</b>己烷與 2-甲基戊烷均為 C<sub>6</sub>H<sub>14</sub>，分子離子峰同為 <b><i>m/z</i> = 86</b>。直鏈己烷斷鍵較均勻，以 <i>m/z</i> = 57 (C<sub>4</sub>H<sub>9</sub><sup>+</sup>) 為主；2-甲基戊烷在支鏈叔碳處斷鍵可形成更穩定的<b>二級碳陽離子 (CH<sub>3</sub>)<sub>2</sub>CH<sup>+</sup> (<i>m/z</i> = 43)</b> 及失去 •CH<sub>3</sub> 後的 <b><i>m/z</i> = 71</b>！',
+        enPrinciple: '<b>Why Fragment Peaks Differ:</b> Both Hexane and 2-Methylpentane have formula C<sub>6</sub>H<sub>14</sub>, sharing <b>M<sup>+</sup> = 86</b>. Hexane gives a strong peak at <i>m/z</i> = 57 (C<sub>4</sub>H<sub>9</sub><sup>+</sup>), whereas branched 2-Methylpentane cleaves to form a more stable <b>secondary carbocation (CH<sub>3</sub>)<sub>2</sub>CH<sup>+</sup> (<i>m/z</i> = 43)</b> and prominent <b><i>m/z</i> = 71 ([M−CH<sub>3</sub>]<sup>+</sup>)</b>!',
+        isoA: {
+          zhName: '己烷 (Hexane, 直鏈)', enName: 'Hexane (Straight-chain)',
+          formula: 'CH₃CH₂CH₂CH₂CH₂CH₃', nodes: ['CH₃', 'CH₂', 'CH₂', 'CH₂', 'CH₂', 'CH₃'],
+          peaks: [
+            { mz: 29, rel: 45, cutIdx: 1, ion: 'CH₃CH₂⁺', massCalc: '29', zhNote: 'C2–C3 斷裂產生乙基正離子 (<i>m/z</i> = 29)。', enNote: 'C2–C3 cleavage yields ethyl cation (<i>m/z</i> = 29).' },
+            { mz: 43, rel: 82, cutIdx: 2, ion: 'CH₃CH₂CH₂⁺', massCalc: '43', zhNote: 'C3–C4 斷裂產生丙基正離子 (<i>m/z</i> = 43)。', enNote: 'C3–C4 cleavage yields propyl cation (<i>m/z</i> = 43).' },
+            { mz: 57, rel: 100, cutIdx: 3, ion: 'C₄H₉⁺ (基峰)', massCalc: '57', zhNote: '<b>基峰 <i>m/z</i> = 57</b>：失去 •C<sub>2</sub>H<sub>5</sub> 生成丁基正離子 C<sub>4</sub>H<sub>9</sub><sup>+</sup>。', enNote: '<b>Base Peak <i>m/z</i> = 57</b>: loss of •C<sub>2</sub>H<sub>5</sub> yields butyl cation C<sub>4</sub>H<sub>9</sub><sup>+</sup>.' },
+            { mz: 86, rel: 15, isM: true, ion: '[C₆H₁₄]⁺• (M⁺)', massCalc: '86', zhNote: '<b>分子離子峰 M<sup>+</sup> = 86</b>，確認 <i>M<sub>r</sub></i> = 86。', enNote: '<b>Molecular Ion Peak M<sup>+</sup> = 86</b>.' }
+          ]
+        },
+        isoB: {
+          zhName: '2-甲基戊烷 (2-Methylpentane, 支鏈)', enName: '2-Methylpentane (Branched)',
+          formula: '(CH₃)₂CHCH₂CH₂CH₃', nodes: ['CH₃', 'CH(CH₃)', 'CH₂', 'CH₂', 'CH₃'],
+          peaks: [
+            { mz: 43, rel: 100, cutIdx: 1, ion: '(CH₃)₂CH⁺ (二級碳陽離子基峰)', massCalc: '43', zhNote: '<b>強基峰 <i>m/z</i> = 43 (100%)</b>：支鏈斷鍵生成較穩定的二級異丙基正離子 (CH<sub>3</sub>)<sub>2</sub>CH<sup>+</sup>。', enNote: '<b>Base Peak <i>m/z</i> = 43 (100%)</b>: branch cleavage yields stable secondary carbocation (CH<sub>3</sub>)<sub>2</sub>CH<sup>+</sup>.' },
+            { mz: 57, rel: 12, cutIdx: 2, ion: 'C₄H₉⁺ (極弱)', massCalc: '57', zhNote: '<i>m/z</i> = 57 強度明顯低於直鏈己烷。', enNote: '<i>m/z</i> = 57 is much weaker than in straight-chain hexane.' },
+            { mz: 71, rel: 36, cutIdx: 0, ion: 'C₅H₁₁⁺ ([M−CH₃]⁺)', massCalc: '86 − 15 = 71', zhNote: '<b>特徵峰 <i>m/z</i> = 71 (86 − 15)</b>：失去支鏈甲基 •CH<sub>3</sub> 生成二級 C<sub>5</sub>H<sub>11</sub><sup>+</sup> 離子。', enNote: '<b>Diagnostic Peak <i>m/z</i> = 71 (86 − 15)</b>: loss of •CH<sub>3</sub> gives secondary C<sub>5</sub>H<sub>11</sub><sup>+</sup>.' },
+            { mz: 86, rel: 14, isM: true, ion: '[C₆H₁₄]⁺• (M⁺)', massCalc: '86', zhNote: '<b>分子離子峰 M<sup>+</sup> = 86</b>，與己烷相同。', enNote: '<b>Molecular Ion Peak M<sup>+</sup> = 86</b>, same as hexane.' }
+          ]
+        }
+      },
+      c4h8o_carbonyls: {
+        zhTabTitle: '案例 2：C₄H₈O 醛與酮異構體 (Mᵣ = 72)', enTabTitle: 'Case 2: C₄H₈O Aldehyde vs Ketone (Mᵣ = 72)',
+        zhTabSub: '丁醛 vs. 丁酮', enTabSub: 'Butanal vs. Butanone', mr: 72,
+        zhPrinciple: '<b>原因解析（羰基 α-斷裂）：</b>丁醛與丁酮均為 C<sub>4</sub>H<sub>8</sub>O（<b><i>M<sup>+</sup></i> = 72</b>）。<b>丁酮</b>斷裂產生 <b><i>m/z</i> = 43 (CH<sub>3</sub>CO<sup>+</sup>)</b> 與 <b><i>m/z</i> = 57 (CH<sub>3</sub>CH<sub>2</sub>CO<sup>+</sup>)</b>；<b>丁醛</b>含末端 –CHO 基團，產生 <b><i>m/z</i> = 29 (CHO<sup>+</sup>)</b> 與重排基峰 <b><i>m/z</i> = 44</b>，且<b>無 <i>m/z</i> = 57</b>！',
+        enPrinciple: '<b>Why Fragment Peaks Differ:</b> Both have formula C<sub>4</sub>H<sub>8</sub>O (<b>M<sup>+</sup> = 72</b>). <b>Butanone</b> gives <b><i>m/z</i> = 43 (CH<sub>3</sub>CO<sup>+</sup>)</b> and <b><i>m/z</i> = 57 (CH<sub>3</sub>CH<sub>2</sub>CO<sup>+</sup>)</b>; <b>Butanal</b> gives <b><i>m/z</i> = 29 (CHO<sup>+</sup>)</b> and base peak <b><i>m/z</i> = 44</b>, with <b>no <i>m/z</i> = 57</b>!',
+        isoA: {
+          zhName: '丁醛 (Butanal, 醛)', enName: 'Butanal (Aldehyde)',
+          formula: 'CH₃CH₂CH₂CHO', nodes: ['CH₃', 'CH₂', 'CH₂', 'CHO'],
+          peaks: [
+            { mz: 29, rel: 65, cutIdx: 2, ion: 'CHO⁺ / C₂H₅⁺', massCalc: '29', zhNote: '醛基斷裂產生 CHO<sup>+</sup> (<i>m/z</i> = 29)。', enNote: 'Aldehyde cleavage yields CHO<sup>+</sup> (<i>m/z</i> = 29).' },
+            { mz: 43, rel: 85, cutIdx: 2, ion: 'C₃H₇⁺', massCalc: '72 − 29 = 43', zhNote: '失去 •CHO 後形成丙基離子 C<sub>3</sub>H<sub>7</sub><sup>+</sup> (<i>m/z</i> = 43)。', enNote: 'Loss of •CHO leaves propyl cation C<sub>3</sub>H<sub>7</sub><sup>+</sup> (<i>m/z</i> = 43).' },
+            { mz: 44, rel: 100, cutIdx: 1, ion: '[C₂H₄O]⁺• (基峰)', massCalc: '44', zhNote: '<b>基峰 <i>m/z</i> = 44</b>：失去乙烯 (C<sub>2</sub>H<sub>4</sub>, 28) 形成的特徵峰。', enNote: '<b>Base Peak <i>m/z</i> = 44</b> formed by loss of ethene (C<sub>2</sub>H<sub>4</sub>, 28).' },
+            { mz: 72, rel: 28, isM: true, ion: '[C₄H₈O]⁺• (M⁺)', massCalc: '72', zhNote: '<b>分子離子峰 M<sup>+</sup> = 72</b>（無 <i>m/z</i> = 57）。', enNote: '<b>Molecular Ion Peak M<sup>+</sup> = 72</b> (no <i>m/z</i> = 57).' }
+          ]
+        },
+        isoB: {
+          zhName: '丁酮 (Butanone, 酮)', enName: 'Butanone (Ketone)',
+          formula: 'CH₃COCH₂CH₃', nodes: ['CH₃', 'C=O', 'CH₂', 'CH₃'],
+          peaks: [
+            { mz: 29, rel: 26, cutIdx: 1, ion: 'CH₃CH₂⁺', massCalc: '29', zhNote: '乙基正離子 CH<sub>3</sub>CH<sub>2</sub><sup>+</sup> (<i>m/z</i> = 29)。', enNote: 'Ethyl cation CH<sub>3</sub>CH<sub>2</sub><sup>+</sup> (<i>m/z</i> = 29).' },
+            { mz: 43, rel: 100, cutIdx: 1, ion: 'CH₃CO⁺ (基峰)', massCalc: '43', zhNote: '<b>基峰 <i>m/z</i> = 43 (100%)</b>：失去 •CH<sub>2</sub>CH<sub>3</sub> 後形成穩定的 CH<sub>3</sub>CO<sup>+</sup>。', enNote: '<b>Base Peak <i>m/z</i> = 43 (100%)</b>: loss of •CH<sub>2</sub>CH<sub>3</sub> yields CH<sub>3</sub>CO<sup>+</sup>.' },
+            { mz: 57, rel: 22, cutIdx: 0, ion: 'CH₃CH₂CO⁺', massCalc: '72 − 15 = 57', zhNote: '<b>區分峰 <i>m/z</i> = 57</b>：失去 •CH<sub>3</sub> 生成 CH<sub>3</sub>CH<sub>2</sub>CO<sup>+</sup>。', enNote: '<b>Distinguishing Peak <i>m/z</i> = 57</b>: loss of •CH<sub>3</sub> gives CH<sub>3</sub>CH<sub>2</sub>CO<sup>+</sup>.' },
+            { mz: 72, rel: 34, isM: true, ion: '[CH₃COCH₂CH₃]⁺• (M⁺)', massCalc: '72', zhNote: '<b>分子離子峰 M<sup>+</sup> = 72</b>。', enNote: '<b>Molecular Ion Peak M<sup>+</sup> = 72</b>.' }
+          ]
+        }
+      },
+      c3h6o2_acid_ester: {
+        zhTabTitle: '案例 3：C₃H₆O₂ 羧酸與酯異構體 (Mᵣ = 74)', enTabTitle: 'Case 3: C₃H₆O₂ Acid vs Ester (Mᵣ = 74)',
+        zhTabSub: '丙酸 vs. 乙酸甲酯', enTabSub: 'Propanoic acid vs. Methyl ethanoate', mr: 74,
+        zhPrinciple: '<b>原因解析（官能基碎片質量）：</b>丙酸與乙酸甲酯均為 C<sub>3</sub>H<sub>6</sub>O<sub>2</sub>（<b><i>M<sup>+</sup></i> = 74</b>）。<b>丙酸</b>失去 •OH (17) 得 <b><i>m/z</i> = 57</b> 並有 <b><i>m/z</i> = 45 (COOH<sup>+</sup>)</b>；<b>乙酸甲酯</b>失去 •CH<sub>3</sub> (15) 得 <b><i>m/z</i> = 59</b>，並以 <b><i>m/z</i> = 43 (CH<sub>3</sub>CO<sup>+</sup>)</b> 為基峰！',
+        enPrinciple: '<b>Why Fragment Peaks Differ:</b> Both have formula C<sub>3</sub>H<sub>6</sub>O<sub>2</sub> (<b>M<sup>+</sup> = 74</b>). <b>Propanoic acid</b> loses •OH (17) to give <b><i>m/z</i> = 57</b> plus <b><i>m/z</i> = 45 (COOH<sup>+</sup>)</b>; <b>Methyl ethanoate</b> loses •CH<sub>3</sub> (15) to give <b><i>m/z</i> = 59</b> and base peak <b><i>m/z</i> = 43 (CH<sub>3</sub>CO<sup>+</sup>)</b>!',
+        isoA: {
+          zhName: '丙酸 (Propanoic acid)', enName: 'Propanoic acid',
+          formula: 'CH₃CH₂COOH', nodes: ['CH₃', 'CH₂', 'C=O', 'OH'],
+          peaks: [
+            { mz: 29, rel: 78, cutIdx: 1, ion: 'CH₃CH₂⁺', massCalc: '29', zhNote: '失去 •COOH (45) 得乙基離子 (<i>m/z</i> = 29)。', enNote: 'Loss of •COOH (45) gives ethyl cation (<i>m/z</i> = 29).' },
+            { mz: 45, rel: 64, cutIdx: 1, ion: 'COOH⁺', massCalc: '45', zhNote: '<b>羧酸特徵峰 <i>m/z</i> = 45</b>：代表 COOH<sup>+</sup> 離子。', enNote: '<b>Carboxylic Acid Peak <i>m/z</i> = 45</b>: COOH<sup>+</sup> ion.' },
+            { mz: 57, rel: 35, cutIdx: 2, ion: 'CH₃CH₂CO⁺', massCalc: '74 − 17 = 57', zhNote: '<b><i>m/z</i> = 57 (74 − 17)</b>：失去 •OH 自由基後形成。', enNote: '<b><i>m/z</i> = 57 (74 − 17)</b>: formed by loss of •OH.' },
+            { mz: 74, rel: 68, isM: true, ion: '[CH₃CH₂COOH]⁺• (M⁺)', massCalc: '74', zhNote: '<b>分子離子峰 M<sup>+</sup> = 74</b>。', enNote: '<b>Molecular Ion Peak M<sup>+</sup> = 74</b>.' }
+          ]
+        },
+        isoB: {
+          zhName: '乙酸甲酯 (Methyl ethanoate)', enName: 'Methyl ethanoate',
+          formula: 'CH₃COOCH₃', nodes: ['CH₃', 'C=O', 'O', 'CH₃'],
+          peaks: [
+            { mz: 15, rel: 32, cutIdx: 0, ion: 'CH₃⁺', massCalc: '15', zhNote: '甲基正離子 CH<sub>3</sub><sup>+</sup> (<i>m/z</i> = 15)。', enNote: 'Methyl cation CH<sub>3</sub><sup>+</sup> (<i>m/z</i> = 15).' },
+            { mz: 43, rel: 100, cutIdx: 1, ion: 'CH₃CO⁺ (基峰)', massCalc: '43', zhNote: '<b>基峰 <i>m/z</i> = 43 (100%)</b>：失去 •OCH<sub>3</sub> (31) 生成 CH<sub>3</sub>CO<sup>+</sup>。', enNote: '<b>Base Peak <i>m/z</i> = 43 (100%)</b>: loss of •OCH<sub>3</sub> (31) yields CH<sub>3</sub>CO<sup>+</sup>.' },
+            { mz: 59, rel: 28, cutIdx: 2, ion: 'COOCH₃⁺', massCalc: '74 − 15 = 59', zhNote: '<b>甲酯特徵峰 <i>m/z</i> = 59 (74 − 15)</b>：失去 •CH<sub>3</sub> 後形成。', enNote: '<b>Methyl Ester Peak <i>m/z</i> = 59 (74 − 15)</b>: loss of •CH<sub>3</sub>.' },
+            { mz: 74, rel: 24, isM: true, ion: '[CH₃COOCH₃]⁺• (M⁺)', massCalc: '74', zhNote: '<b>分子離子峰 M<sup>+</sup> = 74</b>。', enNote: '<b>Molecular Ion Peak M<sup>+</sup> = 74</b>.' }
+          ]
+        }
+      }
+    };
+
+    let isoState = { caseKey: 'c6h14_alkanes', selPeakA: 2, selPeakB: 0 };
+
+    function setIsomerCase(key) {
+      isoState.caseKey = key;
+      const c = ISOMER_CASES[key];
+      const idxA = c.isoA.peaks.findIndex(p => p.rel === 100);
+      const idxB = c.isoB.peaks.findIndex(p => p.rel === 100);
+      isoState.selPeakA = idxA >= 0 ? idxA : 0;
+      isoState.selPeakB = idxB >= 0 ? idxB : 0;
+      updateIsomerUI();
+    }
+    function selectIsomerPeak(side, idx) {
+      if (side === 'A') isoState.selPeakA = idx; else isoState.selPeakB = idx;
+      updateIsomerUI();
+    }
+
+    function updateIsomerUI() {
+      document.getElementById('isomerCaseButtons').innerHTML = Object.keys(ISOMER_CASES).map(k => {
+        const c = ISOMER_CASES[k], active = k === isoState.caseKey;
+        return `<button onclick="setIsomerCase('${k}')" class="p-3 rounded-xl border-2 text-left cursor-pointer transition ${active ? 'border-indigo-600 bg-indigo-50 shadow-sm' : 'border-slate-200 bg-white hover:bg-slate-50'}">
+          <div class="font-bold text-xs sm:text-sm ${active ? 'text-indigo-950' : 'text-slate-800'}">${currentLang === 'zh' ? c.zhTabTitle : c.enTabTitle}</div>
+          <div class="text-xs text-slate-500 mt-0.5">${currentLang === 'zh' ? c.zhTabSub : c.enTabSub}</div>
+        </button>`;
+      }).join('');
+
+      const c = ISOMER_CASES[isoState.caseKey];
+      document.getElementById('isomerPrincipleBanner').innerHTML = currentLang === 'zh' ? c.zhPrinciple : c.enPrinciple;
+      renderSingleIsomerSide('A', c.isoA, c.mr, isoState.selPeakA);
+      renderSingleIsomerSide('B', c.isoB, c.mr, isoState.selPeakB);
+    }
+
+    function renderSingleIsomerSide(side, isoData, mr, selIdx) {
+      document.getElementById(`iso${side}Name`).textContent = currentLang === 'zh' ? isoData.zhName : isoData.enName;
+      document.getElementById(`iso${side}Formula`).textContent = isoData.formula;
+      const activePeak = isoData.peaks[selIdx] || isoData.peaks[0];
+
+      const bondSvg = document.getElementById(`iso${side}BondSvg`);
+      const nodes = isoData.nodes, nCount = nodes.length;
+      const startX = 48, gap = (460 - 96) / Math.max(1, nCount - 1), cy = 62;
+      let bHtml = `<text x="230" y="20" text-anchor="middle" font-size="11" font-weight="bold" fill="#fde047">${currentLang === 'zh' ? `斷鍵示意：產生 m/z = ${activePeak.mz} (${activePeak.massCalc})` : `Cleavage: Yields m/z = ${activePeak.mz} (${activePeak.massCalc})`}</text>`;
+
+      for (let i = 0; i < nCount - 1; i++) {
+        const x1 = startX + i * gap, x2 = startX + (i + 1) * gap, midX = (x1 + x2) / 2;
+        const isCut = activePeak.cutIdx === i;
+        bHtml += `<line x1="${x1}" y1="${cy}" x2="${x2}" y2="${cy}" stroke="${isCut ? '#f43f5e' : '#64748b'}" stroke-width="${isCut ? 3 : 3.5}" ${isCut ? 'stroke-dasharray="4,3"' : ''}/>`;
+        if (isCut) {
+          bHtml += `<line x1="${midX}" y1="${cy - 18}" x2="${midX}" y2="${cy + 18}" stroke="#fb7185" stroke-width="2.5" stroke-dasharray="3,2"/>`;
+          bHtml += `<text x="${midX}" y="${cy - 22}" text-anchor="middle" font-size="10" font-weight="bold" fill="#fda4af">✂</text>`;
+        }
+      }
+      nodes.forEach((lbl, i) => {
+        const x = startX + i * gap;
+        const isLeft = activePeak.cutIdx !== undefined && i <= activePeak.cutIdx;
+        const fillCol = activePeak.isM ? '#0284c7' : (isLeft ? '#16a34a' : '#334155');
+        bHtml += `<rect x="${x - 28}" y="${cy - 14}" width="56" height="28" rx="7" fill="${fillCol}" stroke="#ffffff" stroke-width="1.5"/>`;
+        bHtml += `<text x="${x}" y="${cy + 4}" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#ffffff">${lbl}</text>`;
+      });
+      bondSvg.innerHTML = bHtml;
+
+      const specSvg = document.getElementById(`iso${side}SpecSvg`);
+      const W = 460, H = 220, padL = 44, padR = 18, padT = 22, padB = 34;
+      const plotW = W - padL - padR, plotH = H - padT - padB;
+      const maxMz = Math.ceil((mr + 12) / 10) * 10;
+      const toX = mz => padL + (mz / maxMz) * plotW;
+      const toY = rel => padT + plotH - (rel / 100) * plotH;
+
+      let sHtml = '';
+      [0, 50, 100].forEach(r => {
+        const y = toY(r);
+        sHtml += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="#e2e8f0" stroke-width="1"/>`;
+        sHtml += `<text x="${padL - 6}" y="${y + 4}" text-anchor="end" font-size="9.5" fill="#475569">${r}%</text>`;
+      });
+      for (let m = 0; m <= maxMz; m += 20) {
+        sHtml += `<text x="${toX(m)}" y="${padT + plotH + 14}" text-anchor="middle" font-size="9.5" fill="#475569">${m}</text>`;
+      }
+      sHtml += `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT + plotH}" stroke="#1e293b" stroke-width="1.8"/>`;
+      sHtml += `<line x1="${padL}" y1="${padT + plotH}" x2="${W - padR}" y2="${padT + plotH}" stroke="#1e293b" stroke-width="1.8"/>`;
+
+      isoData.peaks.forEach((p, idx) => {
+        const x = toX(p.mz), y = toY(p.rel), isSel = idx === selIdx;
+        const col = isSel ? '#f59e0b' : (p.isM ? '#e11d48' : (side === 'A' ? '#0284c7' : '#e11d48'));
+        sHtml += `<g onclick="selectIsomerPeak('${side}', ${idx})" style="cursor:pointer;">
+          <rect x="${x - 10}" y="${padT}" width="20" height="${plotH}" fill="transparent"/>
+          <line x1="${x}" y1="${padT + plotH}" x2="${x}" y2="${y}" stroke="${col}" stroke-width="${isSel ? 5.5 : 3.8}" stroke-linecap="round"/>
+          <circle cx="${x}" cy="${y}" r="${isSel ? 4.5 : 3}" fill="${col}"/>
+          <text x="${x}" y="${y - 6}" text-anchor="middle" font-size="10" font-weight="bold" fill="${isSel ? '#b45309' : '#0f172a'}">${p.mz}${p.isM ? '(M⁺)' : ''}</text>
+        </g>`;
+      });
+      specSvg.innerHTML = sHtml;
+
+      document.getElementById(`iso${side}PeakPills`).innerHTML = isoData.peaks.map((p, idx) => {
+        const active = idx === selIdx;
+        return `<button onclick="selectIsomerPeak('${side}', ${idx})" class="px-2.5 py-1 rounded-lg text-xs font-mono font-bold border cursor-pointer transition ${active ? 'bg-amber-400 border-amber-500 text-slate-950' : 'bg-slate-100 border-slate-300 text-slate-700 hover:bg-slate-200'}">
+          m/z = ${p.mz} (${p.rel}%)
+        </button>`;
+      }).join('');
+
+      document.getElementById(`iso${side}Deduction`).innerHTML = `
+        <div class="font-bold mb-1">🎯 <i>m/z</i> = ${activePeak.mz} ｜ ${activePeak.ion}</div>
+        <div>${currentLang === 'zh' ? activePeak.zhNote : activePeak.enNote}</div>
+      `;
+    }
+
+    // 8. FLASHCARDS DATA & LOGIC
+    const FLASHCARDS_DATA = [
+      { cat: 'ms', zhCat: '質譜法 MS', enCat: 'Mass Spec', zhFront: '質譜圖中出現極強基峰 <i>m/z</i> = 91，推斷該化合物含有什麼結構？', enFront: 'A mass spectrum shows a base peak at <i>m/z</i> = 91. What group is present?', zhAns: '單取代苯環連亞甲基：C<sub>6</sub>H<sub>5</sub>CH<sub>2</sub>– (苄基正離子 C<sub>6</sub>H<sub>5</sub>CH<sub>2</sub><sup>+</sup>)', enAns: 'Benzyl group: C<sub>6</sub>H<sub>5</sub>CH<sub>2</sub>– (Benzyl cation C<sub>6</sub>H<sub>5</sub>CH<sub>2</sub><sup>+</sup>)', zhDetail: 'C<sub>6</sub>H<sub>5</sub>CH<sub>2</sub><sup>+</sup> 質量 = 91，具芳香環共振穩定性。', enDetail: 'Mass of C<sub>6</sub>H<sub>5</sub>CH<sub>2</sub><sup>+</sup> = 91; resonance-stabilised.' },
+      { cat: 'ms', zhCat: '質譜法 MS', enCat: 'Mass Spec', zhFront: '分子離子峰 M<sup>+</sup> 與 [M+2]<sup>+</sup> 峰高度比約為 <b>3 : 1</b>，推斷分子含有什麼元素？', enFront: 'M<sup>+</sup> and [M+2]<sup>+</sup> peaks have a <b>3 : 1</b> height ratio. Which element is present?', zhAns: '含有 1 個氯原子 (–Cl)，源自 <sup>35</sup>Cl (75%) 與 <sup>37</sup>Cl (25%)', enAns: 'Contains ONE chlorine atom (–Cl) from <sup>35</sup>Cl (75%) and <sup>37</sup>Cl (25%)', zhDetail: '含 1 個溴原子 (–Br) 時，<sup>79</sup>Br 與 <sup>81</sup>Br 豐度相若，M<sup>+</sup> 與 [M+2]<sup>+</sup> 比例約為 <b>1 : 1</b>。', enDetail: 'For ONE bromine atom (–Br), <sup>79</sup>Br and <sup>81</sup>Br give a <b>1 : 1</b> ratio.' },
+      { cat: 'ms', zhCat: '質譜法 MS', enCat: 'Mass Spec', zhFront: '為何質譜碎裂產生的中性自由基 R• <b>不會</b>出現在質譜圖上？', enFront: 'Why do neutral radicals R• <b>never</b> appear on a mass spectrum?', zhAns: '自由基 R• 不帶電荷，不會被電場加速或磁場偏轉', enAns: 'Neutral radicals are uncharged and neither accelerated nor deflected', zhDetail: '質譜儀只加速、偏轉並檢測帶正電的離子。', enDetail: 'Mass spectrometers only detect positively charged ions.' },
+      { cat: 'ms', zhCat: '質譜法 MS', enCat: 'Mass Spec', zhFront: '直鏈己烷與支鏈 2-甲基戊烷 (C<sub>6</sub>H<sub>14</sub>, <i>M<sub>r</sub></i> = 86) 為何 <i>m/z</i> = 43 峰強度不同？', enFront: 'Why do hexane and 2-methylpentane (C<sub>6</sub>H<sub>14</sub>, <i>M<sub>r</sub></i> = 86) differ in <i>m/z</i> = 43 intensity?', zhAns: '2-甲基戊烷支鏈斷鍵形成較穩定的二級碳陽離子 (CH<sub>3</sub>)<sub>2</sub>CH<sup>+</sup> (<i>m/z</i> = 43)', enAns: '2-Methylpentane forms a more stable secondary carbocation (CH<sub>3</sub>)<sub>2</sub>CH<sup>+</sup> (<i>m/z</i> = 43)', zhDetail: '碳陽離子穩定性：二級 > 一級；2-甲基戊烷亦易失 •CH<sub>3</sub> 產生 <i>m/z</i> = 71。', enDetail: 'Secondary carbocations are more stable than primary ones.' },
+      { cat: 'ir', zhCat: '紅外光譜 IR', enCat: 'IR Spec', zhFront: '如何區分「醇的 O–H 峰」與「羧酸的 O–H 峰」？', enFront: 'How do you distinguish alcohol O–H from carboxylic acid O–H in IR?', zhAns: '醇 O–H 在 3230–3670 cm<sup>−1</sup>；羧酸 O–H 在 2500–3300 cm<sup>−1</sup> 極寬闊且伴隨 C=O 峰 (1680–1750 cm<sup>−1</sup>)', enAns: 'Alcohol O–H is at 3230–3670 cm<sup>−1</sup>; Carboxylic acid O–H is very broad at 2500–3300 cm<sup>−1</sup> plus C=O (1680–1750 cm<sup>−1</sup>)', zhDetail: '羧酸二聚體的強氫鍵令 O–H 吸收峰顯著展寬。', enDetail: 'Strong hydrogen-bonded dimers broaden carboxylic acid O–H troughs.' },
+      { cat: 'ir', zhCat: '紅外光譜 IR', enCat: 'IR Spec', zhFront: '紅外光譜在 2200–2260 cm<sup>−1</sup> 有尖銳吸收峰，代表什麼官能基？', enFront: 'A sharp IR trough at 2200–2260 cm<sup>−1</sup> indicates which functional group?', zhAns: '腈基 –C≡N (Nitrile)', enAns: 'Nitrile group –C≡N', zhDetail: '叁鍵鍵能高，吸收波數位於 2200–2260 cm<sup>−1</sup> 無干擾區。', enDetail: 'Triple bonds absorb at high wavenumber (2200–2260 cm<sup>−1</sup>).' },
+      { cat: 'col', zhCat: '比色法', enCat: 'Colorimetry', zhFront: '測量藍色 CuSO<sub>4</sub>(aq) 濃度時，應選用什麼顏色的濾光片？', enFront: 'Which filter colour is chosen for blue CuSO<sub>4</sub>(aq) in a colorimeter?', zhAns: '橙色濾光片（藍色的互補色），吸光最靈敏', enAns: 'Orange filter (complementary to blue) for highest sensitivity', zhDetail: '互補色濾光片可獲得最大吸光度變化。', enDetail: 'Complementary filters maximise absorbance sensitivity.' },
+      { cat: 'col', zhCat: '比色法', enCat: 'Colorimetry', zhFront: '為何測量前先以蒸餾水空白樣本把比色計歸零？', enFront: 'Why zero the colorimeter using a distilled water blank first?', zhAns: '抵消比色杯壁反射與溶劑對光的微量吸收', enAns: 'To cancel cuvette wall reflection and minor solvent absorption', zhDetail: '確保讀數只反映待測有色溶質。', enDetail: 'Ensures readings reflect only the coloured solute.' }
+    ];
+
+    let fcState = { category: 'all', deck: [...FLASHCARDS_DATA], index: 0, isFlipped: false, masteredSet: new Set() };
+
+    function setFcCategory(cat) {
+      fcState.category = cat;
+      fcState.deck = cat === 'all' ? [...FLASHCARDS_DATA] : FLASHCARDS_DATA.filter(c => c.cat === cat);
+      fcState.index = 0; fcState.isFlipped = false; updateFlashcardUI();
+    }
+    function shuffleFlashcards() {
+      for (let i = fcState.deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [fcState.deck[i], fcState.deck[j]] = [fcState.deck[j], fcState.deck[i]];
+      }
+      fcState.index = 0; fcState.isFlipped = false; updateFlashcardUI();
+    }
+    function resetFlashcardProgress() { fcState.masteredSet.clear(); fcState.index = 0; fcState.isFlipped = false; updateFlashcardUI(); }
+    function flipFlashcard() { fcState.isFlipped = !fcState.isFlipped; document.getElementById('fcFlipInner').classList.toggle('is-flipped', fcState.isFlipped); }
+    function prevFlashcard() { fcState.index = (fcState.index - 1 + fcState.deck.length) % fcState.deck.length; fcState.isFlipped = false; updateFlashcardUI(); }
+    function nextFlashcard() { fcState.index = (fcState.index + 1) % fcState.deck.length; fcState.isFlipped = false; updateFlashcardUI(); }
+    function markFlashcard(mastered) {
+      const card = fcState.deck[fcState.index];
+      if (mastered) fcState.masteredSet.add(card.zhFront); else fcState.masteredSet.delete(card.zhFront);
+      nextFlashcard();
+    }
+
+    function updateFlashcardUI() {
+      const cats = [
+        { key: 'all', zh: '全部', en: 'All' },
+        { key: 'ms', zh: '質譜法 MS', en: 'Mass Spec' },
+        { key: 'ir', zh: '紅外光譜 IR', en: 'IR Spec' },
+        { key: 'col', zh: '比色法', en: 'Colorimetry' }
+      ];
+      document.getElementById('fcCategoryBtns').innerHTML = cats.map(c => {
+        const active = c.key === fcState.category;
+        return `<button onclick="setFcCategory('${c.key}')" class="px-3 py-1.5 rounded-xl text-xs font-bold border-2 cursor-pointer transition ${active ? 'bg-slate-900 border-amber-400 text-white' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'}">${currentLang === 'zh' ? c.zh : c.en}</button>`;
+      }).join('');
+
+      document.getElementById('fcMasteredBadge').textContent = currentLang === 'zh'
+        ? `已掌握: ${fcState.masteredSet.size} / ${FLASHCARDS_DATA.length}`
+        : `Mastered: ${fcState.masteredSet.size} / ${FLASHCARDS_DATA.length}`;
+
+      const card = fcState.deck[fcState.index];
+      document.getElementById('fcFlipInner').classList.toggle('is-flipped', fcState.isFlipped);
+      document.getElementById('fcFrontTag').textContent = currentLang === 'zh' ? card.zhCat : card.enCat;
+      document.getElementById('fcCounterTop').textContent = `${fcState.index + 1} / ${fcState.deck.length}`;
+      document.getElementById('fcCounterBack').textContent = `${fcState.index + 1} / ${fcState.deck.length}`;
+      document.getElementById('fcFrontContent').innerHTML = currentLang === 'zh' ? card.zhFront : card.enFront;
+      document.getElementById('fcBackAnswer').innerHTML = currentLang === 'zh' ? card.zhAns : card.enAns;
+      document.getElementById('fcBackDetail').innerHTML = currentLang === 'zh' ? card.zhDetail : card.enDetail;
+      document.getElementById('fcStatusFront').innerHTML = fcState.masteredSet.has(card.zhFront)
+        ? `<span class="text-emerald-600">✅ ${currentLang === 'zh' ? '已掌握' : 'Mastered'}</span>`
+        : `<span class="text-amber-600">📌 ${currentLang === 'zh' ? '待鞏固' : 'Review'}</span>`;
+    }
+
+    // 9. QUIZ BANK (20 QUESTIONS ACROSS EASY / MEDIUM / HARD)
+    // 原始題庫正確答案均勻分佈於 A (0)、B (1)、C (2)、D (3)，再配合每次出題即時 Fisher-Yates 洗牌演算法
+    const QUIZ_BANK = [
+      { diff: 'easy', topicZh: '比色法', topicEn: 'Colorimetry', qZh: '量度橙色 K<sub>2</sub>Cr<sub>2</sub>O<sub>7</sub>(aq) 濃度時，應選用哪種濾光片？', qEn: 'Which filter is best for orange K<sub>2</sub>Cr<sub>2</sub>O<sub>7</sub>(aq)?', optsZh: ['藍色濾光片', '橙色濾光片', '紅色濾光片', '黃色濾光片'], optsEn: ['Blue filter', 'Orange filter', 'Red filter', 'Yellow filter'], ans: 0, expZh: '橙色溶液的互補色是藍色，吸收藍光最靈敏。', expEn: 'Blue is complementary to orange, giving maximum absorption sensitivity.' },
+      { diff: 'easy', topicZh: '比色法', topicEn: 'Colorimetry', qZh: '在比爾-朗伯定律低濃度範圍內，吸光度 A 與溶液摩爾濃度 c 的關係是？', qEn: 'At low concentrations, how does Absorbance A relate to concentration c?', optsZh: ['成反比', '成正比', '完全無關', '呈平方反比'], optsEn: ['Inversely proportional', 'Directly proportional', 'Unrelated', 'Inverse square'], ans: 1, expZh: 'A = εcl，在低濃度下 A 與 c 成正比。', expEn: 'A = εcl; A is directly proportional to c at low concentrations.' },
+      { diff: 'easy', topicZh: '紅外光譜', topicEn: 'IR Spec', qZh: '紅外光譜中 400 – 1500 cm<sup>−1</sup> 稱為？', qEn: 'What is the 400 – 1500 cm<sup>−1</sup> region called in IR spectroscopy?', optsZh: ['紫外區', '微波區', '指紋區 (Fingerprint region)', '伽馬區'], optsEn: ['UV region', 'Microwave region', 'Fingerprint region', 'Gamma region'], ans: 2, expZh: '400 – 1500 cm<sup>−1</sup> 為指紋區，用於比對確認分子。', expEn: '400 – 1500 cm<sup>−1</sup> is the fingerprint region.' },
+      { diff: 'easy', topicZh: '紅外光譜', topicEn: 'IR Spec', qZh: '下列哪種分子在紅外光譜儀中<b>不會</b>產生吸收峰？', qEn: 'Which molecule shows <b>NO</b> IR absorption troughs?', optsZh: ['二氧化碳 (CO<sub>2</sub>)', '水 (H<sub>2</sub>O)', '乙醇 (C<sub>2</sub>H<sub>5</sub>OH)', '氯氣 (Cl<sub>2</sub>)'], optsEn: ['Carbon dioxide (CO<sub>2</sub>)', 'Water (H<sub>2</sub>O)', 'Ethanol (C<sub>2</sub>H<sub>5</sub>OH)', 'Chlorine (Cl<sub>2</sub>)'], ans: 3, expZh: '同核雙原子分子 Cl<sub>2</sub> 振動時偶極矩無變化，不吸收紅外線。', expEn: 'Homonuclear Cl<sub>2</sub> has no dipole moment change during vibration.' },
+      { diff: 'easy', topicZh: '質譜法', topicEn: 'Mass Spec', qZh: '質譜圖中「基峰 (Base peak)」的相對強度為？', qEn: 'What is the relative intensity of the Base peak in a mass spectrum?', optsZh: ['100%', '50%', '10%', '0%'], optsEn: ['100%', '50%', '10%', '0%'], ans: 0, expZh: '基峰是光譜中最高的峰，相對強度訂為 100%。', expEn: 'The base peak is the tallest peak, assigned 100% relative intensity.' },
+      { diff: 'easy', topicZh: '質譜法', topicEn: 'Mass Spec', qZh: '氣態分子被電子轟擊形成分子離子的方程式為？', qEn: 'What is the equation for molecular ion formation by electron impact?', optsZh: ['M(g) + e<sup>−</sup> → M<sup>−</sup>(g)', 'M(g) + e<sup>−</sup> → M<sup>+</sup>(g) + 2e<sup>−</sup>', 'M(g) → M<sup>2+</sup>(g) + e<sup>−</sup>', 'M(g) + O<sub>2</sub> → MO<sub>2</sub>'], optsEn: ['M(g) + e<sup>−</sup> → M<sup>−</sup>(g)', 'M(g) + e<sup>−</sup> → M<sup>+</sup>(g) + 2e<sup>−</sup>', 'M(g) → M<sup>2+</sup>(g) + e<sup>−</sup>', 'M(g) + O<sub>2</sub> → MO<sub>2</sub>'], ans: 1, expZh: '撞出一個電子形成 M<sup>+</sup>(g) 與 2e<sup>−</sup>。', expEn: 'Knocking out one electron forms M<sup>+</sup>(g) and 2e<sup>−</sup>.' },
+      { diff: 'easy', topicZh: '質譜法', topicEn: 'Mass Spec', qZh: '在磁場偏轉階段，哪種正離子偏轉程度最大？', qEn: 'Which positive ion is deflected MOST in the magnetic field?', optsZh: ['<i>m/z</i> 最大的離子', '不帶電自由基', '<i>m/z</i> 最小的離子', '所有離子相同'], optsEn: ['Highest <i>m/z</i> ion', 'Neutral radical', 'Lowest <i>m/z</i> ion', 'All equal'], ans: 2, expZh: '較輕的離子（<i>m/z</i> 較小）偏轉程度最大。', expEn: 'Lighter ions (lower <i>m/z</i>) deflect more strongly.' },
+      { diff: 'medium', topicZh: '比色法計算', topicEn: 'Colorimetry', qZh: '10.0 cm<sup>3</sup> 未知樣本稀釋至 100.0 cm<sup>3</sup>，測得對應濃度為 0.40 × 10<sup>−3</sup> mol dm<sup>−3</sup>，原濃度為？', qEn: '10.0 cm<sup>3</sup> diluted to 100.0 cm<sup>3</sup> reads 0.40 × 10<sup>−3</sup> mol dm<sup>−3</sup>. Original concentration?', optsZh: ['0.04 × 10<sup>−3</sup> mol dm<sup>−3</sup>', '0.40 × 10<sup>−3</sup> mol dm<sup>−3</sup>', '40.0 × 10<sup>−3</sup> mol dm<sup>−3</sup>', '4.00 × 10<sup>−3</sup> mol dm<sup>−3</sup>'], optsEn: ['0.04 × 10<sup>−3</sup> mol dm<sup>−3</sup>', '0.40 × 10<sup>−3</sup> mol dm<sup>−3</sup>', '40.0 × 10<sup>−3</sup> mol dm<sup>−3</sup>', '4.00 × 10<sup>−3</sup> mol dm<sup>−3</sup>'], ans: 3, expZh: '稀釋 10 倍：0.40 × 10<sup>−3</sup> × 10 = 4.00 × 10<sup>−3</sup> mol dm<sup>−3</sup>。', expEn: '10× dilution: 0.40 × 10<sup>−3</sup> × 10 = 4.00 × 10<sup>−3</sup> mol dm<sup>−3</sup>.' },
+      { diff: 'medium', topicZh: '紅外光譜', topicEn: 'IR Spec', qZh: '3350 cm<sup>−1</sup> 有強寬吸收峰但無 1680–1750 cm<sup>−1</sup> 峰，最可能是？', qEn: 'Strong broad IR trough at 3350 cm<sup>−1</sup> and no C=O trough suggests:', optsZh: ['醇 (Alcohol)', '羧酸 (Carboxylic acid)', '酮 (Ketone)', '酯 (Ester)'], optsEn: ['Alcohol', 'Carboxylic acid', 'Ketone', 'Ester'], ans: 0, expZh: '醇的 O–H 在 3230–3670 cm<sup>−1</sup> 吸收，且不含 C=O。', expEn: 'Alcohol O–H absorbs at 3230–3670 cm<sup>−1</sup> with no C=O peak.' },
+      { diff: 'medium', topicZh: '紅外光譜', topicEn: 'IR Spec', qZh: '2200 – 2260 cm<sup>−1</sup> 出現尖銳峰，代表含有？', qEn: 'Sharp peak at 2200 – 2260 cm<sup>−1</sup> indicates:', optsZh: ['–OH 羥基', '–C≡N 腈基', '–COOH 羧基', 'C=C 雙鍵'], optsEn: ['–OH hydroxyl', '–C≡N nitrile', '–COOH carboxyl', 'C=C double bond'], ans: 1, expZh: '腈基 –C≡N 在 2200–2260 cm<sup>−1</sup> 吸收。', expEn: 'Nitrile –C≡N absorbs in 2200–2260 cm<sup>−1</sup>.' },
+      { diff: 'medium', topicZh: '質譜碎裂', topicEn: 'MS Fragmentation', qZh: '丙酮 (<i>M<sub>r</sub></i> = 58) 失去 •CH<sub>3</sub> (15) 後產生的碎片峰位於？', qEn: 'Propanone (<i>M<sub>r</sub></i> = 58) losing •CH<sub>3</sub> (15) gives a peak at:', optsZh: ['<i>m/z</i> = 58', '<i>m/z</i> = 73', '<i>m/z</i> = 43', '<i>m/z</i> = 15'], optsEn: ['<i>m/z</i> = 58', '<i>m/z</i> = 73', '<i>m/z</i> = 43', '<i>m/z</i> = 15'], ans: 2, expZh: '58 − 15 = 43 (CH<sub>3</sub>CO<sup>+</sup>)。', expEn: '58 − 15 = 43 (CH<sub>3</sub>CO<sup>+</sup>).' },
+      { diff: 'medium', topicZh: '質譜碎裂', topicEn: 'MS Fragmentation', qZh: '質譜基峰位於 <i>m/z</i> = 91，通常診斷含有？', qEn: 'A base peak at <i>m/z</i> = 91 typically diagnoses:', optsZh: ['–COOH 羧基', '–OH 醇基', '–Cl 氯原子', 'C<sub>6</sub>H<sub>5</sub>CH<sub>2</sub>– 苄基結構'], optsEn: ['–COOH group', '–OH group', '–Cl atom', 'C<sub>6</sub>H<sub>5</sub>CH<sub>2</sub>– benzyl group'], ans: 3, expZh: 'C<sub>6</sub>H<sub>5</sub>CH<sub>2</sub><sup>+</sup> 質量為 91。', expEn: 'C<sub>6</sub>H<sub>5</sub>CH<sub>2</sub><sup>+</sup> has m/z = 91.' },
+      { diff: 'medium', topicZh: '綜合分析', topicEn: 'Combined', qZh: '哪種方法可直接測定相對分子質量 (<i>M<sub>r</sub></i>)？', qEn: 'Which method directly gives relative molecular mass (<i>M<sub>r</sub></i>)?', optsZh: ['質譜法', '比色法', '滴定法', '沉澱法'], optsEn: ['Mass spectrometry', 'Colorimetry', 'Titration', 'Gravimetry'], ans: 0, expZh: '分子離子峰 M<sup>+</sup> 數值等於 <i>M<sub>r</sub></i>。', expEn: 'The M<sup>+</sup> peak m/z equals <i>M<sub>r</sub></i>.' },
+      { diff: 'medium', topicZh: '紅外光譜', topicEn: 'IR Spec', qZh: '如何區分丁酸與乙酸乙酯？', qEn: 'How to distinguish butanoic acid from ethyl ethanoate by IR?', optsZh: ['只有乙酸乙酯有 C–H 峰', '丁酸在 2500–3300 cm<sup>−1</sup> 有極寬 O–H 峰', '丁酸沒有 C=O 峰', '兩者光譜完全相同'], optsEn: ['Only ester has C–H', 'Butanoic acid has a very broad O–H peak at 2500–3300 cm<sup>−1</sup>', 'No C=O in acid', 'Identical spectra'], ans: 1, expZh: '羧酸含 O–H 寬峰，酯不含 O–H 峰。', expEn: 'Carboxylic acid shows broad O–H; ester lacks O–H.' },
+      { diff: 'hard', topicZh: '同位素峰', topicEn: 'Isotopes', qZh: 'M<sup>+</sup> 與 [M+2]<sup>+</sup> 高度比約 <b>1 : 1</b>，代表含有？', qEn: 'M<sup>+</sup> and [M+2]<sup>+</sup> in a <b>1 : 1</b> ratio indicates:', optsZh: ['1 個氯原子 (Cl)', '2 個氧原子', '1 個溴原子 (Br)', '1 個氮原子'], optsEn: ['One chlorine atom (Cl)', 'Two oxygen atoms', 'One bromine atom (Br)', 'One nitrogen atom'], ans: 2, expZh: '<sup>79</sup>Br 與 <sup>81</sup>Br 天然豐度約 1 : 1。', expEn: '<sup>79</sup>Br and <sup>81</sup>Br have roughly 1 : 1 abundance.' },
+      { diff: 'hard', topicZh: '異構體比較', topicEn: 'Isomers', qZh: '己烷與 2-甲基戊烷 (C<sub>6</sub>H<sub>14</sub>) 分子離子峰同為 <i>m/z</i> = 86，但 2-甲基戊烷 <i>m/z</i> = 43 峰特別高，原因是？', qEn: 'Hexane and 2-methylpentane share M<sup>+</sup> = 86, but 2-methylpentane has a much higher <i>m/z</i> = 43 peak because:', optsZh: ['相對分子質量較小', '不含碳原子', '不發生碎裂', '形成較穩定的二級碳陽離子 (CH<sub>3</sub>)<sub>2</sub>CH<sup>+</sup>'], optsEn: ['Lower molar mass', 'No carbon', 'No fragmentation', 'It forms a more stable secondary carbocation (CH<sub>3</sub>)<sub>2</sub>CH<sup>+</sup>'], ans: 3, expZh: '二級碳陽離子較穩定，支鏈斷鍵易生成 (CH<sub>3</sub>)<sub>2</sub>CH<sup>+</sup> (<i>m/z</i> = 43)。', expEn: 'Secondary carbocation (CH<sub>3</sub>)<sub>2</sub>CH<sup>+</sup> at <i>m/z</i> = 43 is more stable.' },
+      { diff: 'hard', topicZh: '異構體比較', topicEn: 'Isomers', qZh: '丁醛與丁酮 (C<sub>4</sub>H<sub>8</sub>O, <i>M<sub>r</sub></i> = 72) 相比，丁酮特有的特徵碎片峰之一是？', qEn: 'Compared with butanal (C<sub>4</sub>H<sub>8</sub>O, <i>M<sub>r</sub></i> = 72), butanone shows a distinctive fragment peak at:', optsZh: ['<i>m/z</i> = 57 (CH<sub>3</sub>CH<sub>2</sub>CO<sup>+</sup>)', '<i>m/z</i> = 18', '<i>m/z</i> = 100', '<i>m/z</i> = 2'], optsEn: ['<i>m/z</i> = 57 (CH<sub>3</sub>CH<sub>2</sub>CO<sup>+</sup>)', '<i>m/z</i> = 18', '<i>m/z</i> = 100', '<i>m/z</i> = 2'], ans: 0, expZh: '丁酮失去 •CH<sub>3</sub> (15) 產生 CH<sub>3</sub>CH<sub>2</sub>CO<sup>+</sup> (<i>m/z</i> = 57)。', expEn: 'Butanone loses •CH<sub>3</sub> (15) to give CH<sub>3</sub>CH<sub>2</sub>CO<sup>+</sup> (<i>m/z</i> = 57).' },
+      { diff: 'hard', topicZh: '綜合推斷', topicEn: 'Deduction', qZh: '實驗式 C<sub>2</sub>H<sub>4</sub>O，<i>M<sub>r</sub></i> = 88，紅外 1740 cm<sup>−1</sup> 有強峰且無 O–H 峰，屬哪類化合物？', qEn: 'Empirical formula C<sub>2</sub>H<sub>4</sub>O, <i>M<sub>r</sub></i> = 88, sharp IR C=O at 1740 cm<sup>−1</sup>, no O–H: which class?', optsZh: ['羧酸', '酯 (Ester)', '醇', '烷烴'], optsEn: ['Carboxylic acid', 'Ester', 'Alcohol', 'Alkane'], ans: 1, expZh: '分子式 C<sub>4</sub>H<sub>8</sub>O<sub>2</sub>，有 C=O 無 O–H，故為酯類。', expEn: 'Formula C<sub>4</sub>H<sub>8</sub>O<sub>2</sub> with C=O and no O–H is an ester.' },
+      { diff: 'hard', topicZh: '質譜原理', topicEn: 'MS Theory', qZh: '<i>M<sub>r</sub></i> = 84 的分子若形成雙電荷離子 M<sup>2+</sup>，出現在哪個 <i>m/z</i>？', qEn: 'A molecule (<i>M<sub>r</sub></i> = 84) forming M<sup>2+</sup> appears at:', optsZh: ['<i>m/z</i> = 84', '<i>m/z</i> = 168', '<i>m/z</i> = 42', '<i>m/z</i> = 21'], optsEn: ['<i>m/z</i> = 84', '<i>m/z</i> = 168', '<i>m/z</i> = 42', '<i>m/z</i> = 21'], ans: 2, expZh: '<i>m/z</i> = 84 / 2 = 42。', expEn: '<i>m/z</i> = 84 / 2 = 42.' },
+      { diff: 'hard', topicZh: '比色法誤差', topicEn: 'Error Analysis', qZh: '未用標準溶液潤洗比色杯（殘留蒸餾水），會令推算的未知樣本濃度？', qEn: 'Leaving water drops inside the cuvette before standard solutions causes deduced unknown concentration to be:', optsZh: ['偏低 (Underestimated)', '不變', '變為零', '偏高 (Overestimated)'], optsEn: ['Underestimated', 'Unchanged', 'Zero', 'Overestimated'], ans: 3, expZh: '標準溶液被稀釋使校準線斜率偏低，故未知樣本濃度被高估。', expEn: 'Diluted standards lower calibration slope, overestimating unknown concentration.' }
+    ];
+
+    let quizState = { difficulty: 'easy', count: 10, questions: [], currentIdx: 0, score: 0, answered: false, userAnswers: [] };
+
+    function fisherYatesShuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function shuffleQuestionOptions(q) {
+      const indices = fisherYatesShuffle([0, 1, 2, 3]);
+      return {
+        ...q,
+        optsZh: indices.map(i => q.optsZh[i]),
+        optsEn: indices.map(i => q.optsEn[i]),
+        ans: indices.indexOf(q.ans)
+      };
+    }
+
+    function setQuizDifficulty(diff) {
+      quizState.difficulty = diff;
+      ['easy', 'medium', 'hard'].forEach(d => {
+        const btn = document.getElementById('qdiff-' + d);
+        if (d === diff) {
+          const styles = { easy: 'border-emerald-600 bg-emerald-50 shadow-sm', medium: 'border-amber-500 bg-amber-50 shadow-sm', hard: 'border-rose-600 bg-rose-50 shadow-sm' };
+          btn.className = `qdiff-btn p-3.5 rounded-xl border-2 ${styles[d]} text-left cursor-pointer transition`;
+        } else {
+          btn.className = 'qdiff-btn p-3.5 rounded-xl border-2 border-slate-200 bg-white text-left cursor-pointer transition hover:bg-slate-50';
+        }
+      });
+    }
+
+    function setQuizCount(cnt) {
+      quizState.count = cnt;
+      [10, 15, 20].forEach(c => {
+        const btn = document.getElementById('qcnt-' + c);
+        btn.className = c === cnt
+          ? 'qcnt-btn p-3 rounded-xl border-2 border-slate-900 bg-slate-900 text-white font-bold text-sm text-center cursor-pointer transition'
+          : 'qcnt-btn p-3 rounded-xl border-2 border-slate-200 bg-white text-slate-800 font-bold text-sm text-center cursor-pointer transition hover:bg-slate-50';
+      });
+    }
+
+    function buildQuizDeck(diff, count) {
+      const pool = [
+        ...fisherYatesShuffle(QUIZ_BANK.filter(q => q.diff === diff)),
+        ...fisherYatesShuffle(QUIZ_BANK.filter(q => q.diff !== diff))
+      ];
+      return pool.slice(0, Math.min(count, pool.length)).map(shuffleQuestionOptions);
+    }
+
+    function startQuiz(customQuestions = null) {
+      quizState.questions = customQuestions
+        ? customQuestions.map(shuffleQuestionOptions)
+        : buildQuizDeck(quizState.difficulty, quizState.count);
+      quizState.currentIdx = 0; quizState.score = 0; quizState.answered = false; quizState.userAnswers = [];
+      document.getElementById('quizSetupPanel').classList.add('hidden');
+      document.getElementById('quizResultPanel').classList.add('hidden');
+      document.getElementById('quizActivePanel').classList.remove('hidden');
+      renderQuizQuestion();
+    }
+
+    function abortQuiz() {
+      document.getElementById('quizActivePanel').classList.add('hidden');
+      document.getElementById('quizResultPanel').classList.add('hidden');
+      document.getElementById('quizSetupPanel').classList.remove('hidden');
+    }
+
+    function renderQuizQuestion() {
+      const q = quizState.questions[quizState.currentIdx], total = quizState.questions.length, num = quizState.currentIdx + 1;
+      document.getElementById('qzProgressBadge').textContent = `Q ${num} / ${total}`;
+      document.getElementById('qzTopicTag').textContent = currentLang === 'zh' ? q.topicZh : q.topicEn;
+      const diffLabels = { easy: currentLang === 'zh' ? '簡單' : 'Easy', medium: currentLang === 'zh' ? '中級' : 'Medium', hard: currentLang === 'zh' ? '難' : 'Hard' };
+      document.getElementById('qzDiffBadge').textContent = diffLabels[q.diff];
+      document.getElementById('qzLiveScore').textContent = currentLang === 'zh' ? `得分: ${quizState.score}` : `Score: ${quizState.score}`;
+      document.getElementById('qzProgressBar').style.width = `${(num / total) * 100}%`;
+      document.getElementById('qzQuestionStem').innerHTML = `${num}. ${currentLang === 'zh' ? q.qZh : q.qEn}`;
+
+      const opts = currentLang === 'zh' ? q.optsZh : q.optsEn, letters = ['A', 'B', 'C', 'D'];
+      document.getElementById('qzOptionsContainer').innerHTML = opts.map((optText, idx) => {
+        let style = 'border-slate-200 bg-white hover:bg-slate-50 text-slate-800';
+        if (quizState.answered) {
+          const chosen = quizState.userAnswers[quizState.currentIdx]?.chosen;
+          if (idx === q.ans) style = 'border-emerald-600 bg-emerald-50 text-emerald-950 font-bold';
+          else if (idx === chosen) style = 'border-rose-600 bg-rose-50 text-rose-950 font-bold';
+          else style = 'border-slate-200 bg-slate-50 text-slate-400';
+        }
+        return `<button onclick="submitQuizAnswer(${idx})" ${quizState.answered ? 'disabled' : ''} class="w-full p-3.5 rounded-xl border-2 text-left flex items-start gap-3 transition ${quizState.answered ? 'cursor-default' : 'cursor-pointer'} ${style}">
+          <span class="w-7 h-7 rounded-lg bg-slate-900 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">${letters[idx]}</span>
+          <span class="text-xs sm:text-sm leading-relaxed">${optText}</span>
+        </button>`;
+      }).join('');
+
+      const fbPanel = document.getElementById('qzFeedbackPanel'), nextBtn = document.getElementById('qzNextBtn');
+      if (quizState.answered) {
+        const isCorrect = quizState.userAnswers[quizState.currentIdx].isCorrect;
+        const correctLetter = letters[q.ans];
+        const correctText = opts[q.ans];
+        fbPanel.classList.remove('hidden');
+        fbPanel.className = isCorrect ? 'p-4 rounded-xl border-l-4 border-emerald-600 bg-emerald-50 text-emerald-950 space-y-1 text-xs sm:text-sm' : 'p-4 rounded-xl border-l-4 border-rose-600 bg-rose-50 text-rose-950 space-y-1 text-xs sm:text-sm';
+        fbPanel.innerHTML = `<div class="font-bold">${isCorrect
+          ? (currentLang === 'zh' ? `✅ 回答正確！（正確選項為 ${correctLetter}）` : `✅ Correct! (Option ${correctLetter})`)
+          : (currentLang === 'zh' ? `❌ 回答錯誤（正確答案為 ${correctLetter}：${correctText}）` : `❌ Incorrect (Correct: ${correctLetter} — ${correctText})`)
+        }</div><div>${currentLang === 'zh' ? q.expZh : q.expEn}</div>`;
+        nextBtn.classList.remove('hidden');
+        nextBtn.textContent = num === total ? (currentLang === 'zh' ? '查看成績報告 →' : 'View Results →') : I18N[currentLang].qzNextBtn;
+      } else {
+        fbPanel.classList.add('hidden');
+        nextBtn.classList.add('hidden');
+      }
+    }
+
+    function submitQuizAnswer(idx) {
+      if (quizState.answered) return;
+      quizState.answered = true;
+      const q = quizState.questions[quizState.currentIdx], isCorrect = idx === q.ans;
+      if (isCorrect) quizState.score++;
+      quizState.userAnswers[quizState.currentIdx] = { question: q, chosen: idx, isCorrect };
+      renderQuizQuestion();
+    }
+
+    function nextQuizQuestion() {
+      if (quizState.currentIdx + 1 < quizState.questions.length) { quizState.currentIdx++; quizState.answered = false; renderQuizQuestion(); }
+      else showQuizResults();
+    }
+
+    function showQuizResults() {
+      document.getElementById('quizActivePanel').classList.add('hidden');
+      document.getElementById('quizResultPanel').classList.remove('hidden');
+      const total = quizState.questions.length, pct = Math.round((quizState.score / total) * 100);
+      document.getElementById('qzFinalScoreText').textContent = `${quizState.score} / ${total} (${pct}%)`;
+      document.getElementById('qzFinalComment').textContent = pct >= 80
+        ? (currentLang === 'zh' ? '🌟 表現優異！已熟練掌握 HKDSE 第64章儀器分析要點。' : '🌟 Great job! Strong command of HKDSE Chapter 64 instrumental analysis.')
+        : (currentLang === 'zh' ? '💪 繼續加油！善用步驟動畫、異構體比較與記憶卡鞏固概念。' : '💪 Keep practicing! Use step animations, isomer comparison, and flashcards.');
+
+      const wrongOnes = quizState.userAnswers.filter(a => !a.isCorrect);
+      document.getElementById('qzRetryWrongBtn').classList.toggle('hidden', wrongOnes.length === 0);
+
+      const letters = ['A', 'B', 'C', 'D'];
+      document.getElementById('qzReviewList').innerHTML = quizState.userAnswers.map((item, i) => {
+        const q = item.question, opts = currentLang === 'zh' ? q.optsZh : q.optsEn;
+        return `<div class="p-3.5 rounded-xl border ${item.isCorrect ? 'border-emerald-200 bg-emerald-50/60' : 'border-rose-200 bg-rose-50/60'} text-xs sm:text-sm space-y-1">
+          <div class="font-bold flex items-center justify-between"><span>Q${i + 1}. ${currentLang === 'zh' ? q.qZh : q.qEn}</span><span>${item.isCorrect ? '✅' : '❌'}</span></div>
+          <div class="text-slate-700">${currentLang === 'zh' ? '你的選擇：' : 'Choice: '}<b>${letters[item.chosen]} (${opts[item.chosen]})</b> · ${currentLang === 'zh' ? '正確：' : 'Correct: '}<b class="text-emerald-700">${letters[q.ans]} (${opts[q.ans]})</b></div>
+          <div class="text-slate-600 pt-1">${currentLang === 'zh' ? q.expZh : q.expEn}</div>
+        </div>`;
+      }).join('');
+    }
+
+    function retryWrongQuestions() {
+      const wrongQs = quizState.userAnswers.filter(a => !a.isCorrect).map(a => a.question);
+      if (wrongQs.length > 0) startQuiz(wrongQs);
+    }
+
+    // 10. STRICT STEP-BOUND + ALL-STEPS CANVAS ANIMATIONS
+    const macroCanvas = document.getElementById('macroCanvas');
+    const microCanvas = document.getElementById('microCanvas');
+    const mCtx = macroCanvas.getContext('2d');
+    const uCtx = microCanvas.getContext('2d');
+
+    function resizeCanvases() {
+      [macroCanvas, microCanvas].forEach(c => {
+        const rect = c.parentElement.getBoundingClientRect();
+        if (rect.width === 0 || rect.height === 0) return;
+        const dpr = window.devicePixelRatio || 1;
+        c.width = rect.width * dpr;
+        c.height = rect.height * dpr;
+      });
+    }
+    window.addEventListener('resize', resizeCanvases);
+
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    }
+
+    function drawHighlightBox(ctx, x, y, w, h, color, t) {
+      const pulse = 0.65 + 0.35 * Math.sin(t * 6);
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.globalAlpha = pulse;
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([5, 3]);
+      roundRect(ctx, x, y, w, h, 8);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // --- TAB 0: COLORIMETER (Steps 0..3 or showAllSteps) ---
+    function drawColorimeterMacro(ctx, w, h, t) {
+      ctx.clearRect(0, 0, w, h);
+      const r = COLOR_REAGENTS[colState.reagent];
+      const f = FILTER_INFO[colState.filter];
+      const abs = getCurrentAbsorbance();
+      const transmittance = Math.max(0.15, Math.pow(10, -abs));
+      const s = showAllSteps ? 99 : currentStage;
+
+      const cy = h * 0.52, lampX = w * 0.11, filtX = w * 0.30, cuvX = w * 0.52, detX = w * 0.75, meterX = w * 0.90;
+      const cuvW = 52, cuvH = 80;
+
+      // Lamp
+      ctx.fillStyle = '#fef9c3';
+      ctx.beginPath(); ctx.arc(lampX, cy, 13, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#e2e8f0'; ctx.font = 'bold 10.5px Inter, Noto Sans TC'; ctx.textAlign = 'center';
+      ctx.fillText(currentLang === 'zh' ? '白光光源' : 'Lamp', lampX, cy + 44);
+
+      // Polychromatic rays to filter
+      ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6'].forEach((col, idx) => {
+        ctx.strokeStyle = col; ctx.lineWidth = 2.2;
+        ctx.beginPath(); ctx.moveTo(lampX + 14, cy - 8 + idx * 4); ctx.lineTo(filtX - 6, cy - 8 + idx * 4); ctx.stroke();
+      });
+
+      // Filter
+      ctx.fillStyle = f.hex;
+      roundRect(ctx, filtX - 6, cy - 32, 12, 64, 4); ctx.fill();
+      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.fillStyle = '#e2e8f0';
+      ctx.fillText(currentLang === 'zh' ? f.zhName : f.enName, filtX, cy + 48);
+
+      if (s === 0) drawHighlightBox(ctx, filtX - 16, cy - 40, 32, 80, '#fde047', t);
+
+      // Step >= 1 (or All): Monochromatic beam I0 into cuvette
+      if (s >= 1) {
+        ctx.strokeStyle = f.beam; ctx.lineWidth = 12; ctx.globalAlpha = 0.85;
+        ctx.beginPath(); ctx.moveTo(filtX + 6, cy); ctx.lineTo(cuvX - cuvW / 2, cy); ctx.stroke();
+        ctx.globalAlpha = 1;
+        for (let i = 0; i < 3; i++) {
+          const span = cuvX - cuvW / 2 - filtX - 10;
+          const px = filtX + 10 + ((t * 85 + i * (span / 3)) % span);
+          ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(px, cy, 2.8, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.fillStyle = '#fde68a'; ctx.fillText('I₀', (filtX + cuvX - cuvW / 2) / 2, cy - 14);
+      }
+
+      // Cuvette
+      const alpha = 0.22 + (colState.conc / 0.80) * 0.68;
+      ctx.fillStyle = r.solColor + alpha + ')';
+      roundRect(ctx, cuvX - cuvW / 2, cy - cuvH / 2 + 10, cuvW, cuvH - 10, 4); ctx.fill();
+      ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 2;
+      roundRect(ctx, cuvX - cuvW / 2, cy - cuvH / 2, cuvW, cuvH, 5); ctx.stroke();
+      ctx.fillStyle = '#ffffff'; ctx.fillText(r.formula, cuvX, cy + 56);
+
+      if (s === 1) drawHighlightBox(ctx, cuvX - cuvW / 2 - 8, cy - cuvH / 2 - 8, cuvW + 16, cuvH + 16, '#38bdf8', t);
+      if (s === 2) drawHighlightBox(ctx, cuvX - cuvW / 2 - 8, cy - cuvH / 2 - 8, cuvW + 16, cuvH + 16, '#fbbf24', t);
+
+      // Step >= 2 (or All): Transmitted beam Is
+      if (s >= 2) {
+        ctx.strokeStyle = f.beam; ctx.lineWidth = Math.max(3, 12 * transmittance);
+        ctx.globalAlpha = Math.max(0.25, transmittance * 0.9);
+        ctx.beginPath(); ctx.moveTo(cuvX + cuvW / 2, cy); ctx.lineTo(detX - 10, cy); ctx.stroke();
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = '#fde68a'; ctx.fillText('Iₛ', (cuvX + cuvW / 2 + detX) / 2, cy - 14);
+      }
+
+      // Detector & Meter
+      ctx.fillStyle = '#334155';
+      roundRect(ctx, detX - 10, cy - 26, 20, 52, 4); ctx.fill();
+      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = '#e2e8f0'; ctx.fillText(currentLang === 'zh' ? '檢測器' : 'Detector', detX, cy + 44);
+
+      ctx.fillStyle = '#0f172a';
+      roundRect(ctx, meterX - 32, cy - 22, 64, 44, 8); ctx.fill();
+      ctx.strokeStyle = '#d4af37'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = '#4ade80'; ctx.font = 'bold 13px monospace';
+      ctx.fillText(s >= 3 ? abs.toFixed(3) : '---', meterX, cy + 4);
+      if (s === 3) drawHighlightBox(ctx, detX - 16, cy - 32, meterX - detX + 54, 64, '#4ade80', t);
+    }
+
+    function drawColorimeterMicro(ctx, w, h, t) {
+      ctx.clearRect(0, 0, w, h);
+      const r = COLOR_REAGENTS[colState.reagent];
+      const f = FILTER_INFO[colState.filter];
+      const isMatch = colState.filter === r.idealFilter;
+      const s = showAllSteps ? 99 : currentStage;
+
+      ctx.save();
+      if (isZoomed) { ctx.translate(w / 2, h / 2); ctx.scale(1.45, 1.45); ctx.translate(-w / 2, -h / 2); }
+
+      ctx.fillStyle = r.solColor + '0.14)';
+      ctx.fillRect(0, 0, w, h);
+
+      const ionCount = Math.max(2, Math.round((colState.conc / 0.80) * 16));
+      for (let i = 0; i < ionCount; i++) {
+        const ix = w * 0.22 + ((i * 73) % (w * 0.56)) + Math.sin(t * 1.5 + i) * 5;
+        const iy = h * 0.22 + ((i * 59) % (h * 0.58)) + Math.cos(t * 1.3 + i) * 5;
+        ctx.fillStyle = r.particleColor;
+        ctx.beginPath(); ctx.arc(ix, iy, 10, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.2; ctx.stroke();
+        ctx.fillStyle = '#0f172a'; ctx.font = 'bold 8px Inter'; ctx.textAlign = 'center';
+        ctx.fillText(r.ion, ix, iy + 3);
+      }
+
+      if (s === 0) {
+        // Step 1 micro: filter selecting wavelength before sample
+        ctx.fillStyle = f.hex;
+        roundRect(ctx, w * 0.24, h * 0.2, 12, h * 0.62, 4); ctx.fill();
+        ctx.fillStyle = '#ffffff'; ctx.font = 'bold 11px Inter, Noto Sans TC';
+        ctx.fillText(currentLang === 'zh' ? `篩選單色光 (${f.wl})` : `Isolating ${f.wl}`, w * 0.55, h * 0.52);
+      } else if (s === 1) {
+        // Step 2 micro: incident beam I0 approaching ions
+        for (let row = 0; row < 5; row++) {
+          const py = h * 0.24 + row * (h * 0.52 / 4);
+          const px = 20 + ((t * 95 + row * 35) % (w * 0.45));
+          ctx.fillStyle = f.beam; ctx.beginPath(); ctx.arc(px, py, 4, 0, Math.PI * 2); ctx.fill();
+        }
+      } else {
+        // Step 2 (photon absorption) or Step 3 (signal output) or All steps
+        const absorbLimit = isMatch ? w * (0.82 - (colState.conc / 0.80) * 0.5) : w * 0.95;
+        for (let row = 0; row < 6; row++) {
+          const py = h * 0.22 + row * (h * 0.56 / 5);
+          const rawX = (t * 105 + row * 45) % w;
+          const isAbs = isMatch && colState.conc > 0.05 && (row % 2 === 0 || colState.conc > 0.45) && rawX > absorbLimit;
+          if (!isAbs) {
+            ctx.strokeStyle = f.beam; ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            for (let dx = -12; dx <= 0; dx += 2) {
+              const wx = rawX + dx, wy = py + Math.sin((wx + t * 180) * 0.25) * 3.5;
+              if (dx === -12) ctx.moveTo(wx, wy); else ctx.lineTo(wx, wy);
+            }
+            ctx.stroke();
+          } else {
+            ctx.strokeStyle = '#fde047'; ctx.lineWidth = 1.6;
+            ctx.beginPath(); ctx.arc(absorbLimit, py, ((rawX - absorbLimit) % 20) * 0.65, 0, Math.PI * 2); ctx.stroke();
+          }
+        }
+      }
+
+      ctx.restore();
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+      roundRect(ctx, 10, 10, w - 20, 25, 6); ctx.fill();
+      ctx.fillStyle = '#f8fafc'; ctx.font = 'bold 11px Inter, Noto Sans TC'; ctx.textAlign = 'center';
+      const stepLabelsZh = ['微觀 1：濾光片篩選波長', '微觀 2：入射光 I₀ 進入比色杯', '微觀 3：離子吸收光子 (A = εcl)', '微觀 4：透射光 Iₛ 轉化吸光度', '微觀全景：選光 → 入杯 → 吸收 → 檢測'];
+      const stepLabelsEn = ['Micro 1: Filter Wavelength', 'Micro 2: Incident Beam I₀', 'Micro 3: Photon Absorption', 'Micro 4: Transmitted Iₛ Output', 'Micro All: Full Absorption Pipeline'];
+      const idxLabel = showAllSteps ? 4 : currentStage;
+      ctx.fillText(currentLang === 'zh' ? stepLabelsZh[idxLabel] : stepLabelsEn[idxLabel], w / 2, 26);
+    }
+
+    // --- TAB 1: IR SPECTROPHOTOMETER (Steps 0..3 or showAllSteps) ---
+    function drawIrMacro(ctx, w, h, t) {
+      ctx.clearRect(0, 0, w, h);
+      const comp = IR_COMPOUNDS[irState.compound];
+      const s = showAllSteps ? 99 : currentStage;
+      const cy = h * 0.52, srcX = w * 0.12, cellX = w * 0.42, monoX = w * 0.68, detX = w * 0.88;
+
+      // IR Source
+      ctx.fillStyle = '#fb7185';
+      roundRect(ctx, srcX - 8, cy - 20, 16, 40, 6); ctx.fill();
+      ctx.fillStyle = '#e2e8f0'; ctx.font = 'bold 10.5px Inter, Noto Sans TC'; ctx.textAlign = 'center';
+      ctx.fillText(currentLang === 'zh' ? '紅外光源' : 'IR Source', srcX, cy + 42);
+      if (s === 0) drawHighlightBox(ctx, srcX - 16, cy - 28, 32, 56, '#fda4af', t);
+
+      // Waves from source to sample cell
+      if (s >= 0) {
+        ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 2;
+        [-10, 0, 10].forEach((off, idx) => {
+          ctx.beginPath();
+          const endX = s === 0 ? srcX + 55 : cellX - 30;
+          for (let x = srcX + 10; x < endX; x += 3) {
+            const y = cy + off + Math.sin(x * (0.14 + idx * 0.04) - t * 8) * 3.5;
+            if (x === srcX + 10) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+        });
+      }
+
+      // Sample Cell
+      ctx.fillStyle = 'rgba(244, 63, 94, 0.18)';
+      roundRect(ctx, cellX - 30, cy - 34, 60, 68, 6); ctx.fill();
+      ctx.strokeStyle = '#fda4af'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = '#ffffff'; ctx.fillText(comp.formula, cellX, cy + 4);
+      ctx.fillStyle = '#cbd5e1'; ctx.fillText(currentLang === 'zh' ? '樣本室' : 'Sample', cellX, cy + 50);
+      if (s === 1 || s === 2) drawHighlightBox(ctx, cellX - 36, cy - 40, 72, 80, '#fbbf24', t);
+
+      // Monochromator & Detector (Step >= 1 or All)
+      if (s >= 1) {
+        ctx.strokeStyle = '#fb7185'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(cellX + 30, cy); ctx.lineTo(monoX - 20, cy); ctx.stroke();
+      }
+      ctx.fillStyle = '#334155';
+      ctx.beginPath(); ctx.moveTo(monoX, cy - 24); ctx.lineTo(monoX + 20, cy + 20); ctx.lineTo(monoX - 20, cy + 20); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 1.6; ctx.stroke();
+      ctx.fillStyle = '#e2e8f0'; ctx.fillText(currentLang === 'zh' ? '單色器' : 'Mono', monoX, cy + 42);
+
+      if (s >= 3) {
+        ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.2;
+        ctx.beginPath(); ctx.moveTo(monoX + 12, cy); ctx.lineTo(detX - 24, cy); ctx.stroke();
+      }
+      ctx.fillStyle = '#0f172a';
+      roundRect(ctx, detX - 24, cy - 22, 48, 44, 8); ctx.fill();
+      ctx.strokeStyle = '#d4af37'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = '#fde047'; ctx.fillText('IR %T', detX, cy + 4);
+      if (s === 3) drawHighlightBox(ctx, monoX - 26, cy - 30, detX - monoX + 56, 62, '#4ade80', t);
+    }
+
+    function drawIrMicro(ctx, w, h, t) {
+      ctx.clearRect(0, 0, w, h);
+      const comp = IR_COMPOUNDS[irState.compound];
+      const activePeak = comp.peaks[irState.selectedPeakIdx] || comp.peaks[0];
+      const s = showAllSteps ? 99 : currentStage;
+
+      ctx.save();
+      if (isZoomed) { ctx.translate(w / 2, h / 2); ctx.scale(1.4, 1.4); ctx.translate(-w / 2, -h / 2); }
+
+      const cx = w / 2, cy = h * 0.55;
+      // Amplitude strictly tied to vibration step (Step 2, Step 3, or Show All)
+      const vibAmp = (s >= 2) ? 18 : 2.5;
+      const freq = 5.5;
+      let leftX = cx - 72, leftY = cy + 12, midX = cx, midY = cy - 12, rightX = cx + 72, rightY = cy + 12;
+
+      if (irState.vibMode === 'sym') {
+        const d = Math.sin(t * freq) * vibAmp;
+        leftX -= d * 0.85; leftY += d * 0.45; rightX += d * 0.85; rightY += d * 0.45;
+      } else if (irState.vibMode === 'asym') {
+        const d = Math.sin(t * freq) * vibAmp;
+        leftX -= d * 0.85; leftY += d * 0.45; rightX -= d * 0.85; rightY -= d * 0.45;
+      } else {
+        const ang = Math.sin(t * freq) * (s >= 2 ? 0.35 : 0.05);
+        leftX = midX - Math.cos(0.45 + ang) * 78; leftY = midY + Math.sin(0.45 + ang) * 78;
+        rightX = midX + Math.cos(0.45 + ang) * 78; rightY = midY + Math.sin(0.45 + ang) * 78;
+      }
+
+      // Incoming IR wave
+      ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      for (let x = 15; x < cx - 45; x += 3) {
+        const y = cy - 42 + Math.sin(x * 0.18 - t * 9) * 5;
+        if (x === 15) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      // Bond lines
+      ctx.strokeStyle = '#fde047'; ctx.lineWidth = 3.5;
+      ctx.beginPath(); ctx.moveTo(midX, midY); ctx.lineTo(leftX, leftY); ctx.moveTo(midX, midY); ctx.lineTo(rightX, rightY); ctx.stroke();
+
+      function drawAtom(x, y, rad, color, label) {
+        ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x, y, rad, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.stroke();
+        ctx.fillStyle = '#ffffff'; ctx.font = 'bold 11px Inter'; ctx.textAlign = 'center'; ctx.fillText(label, x, y + 4);
+      }
+      drawAtom(midX, midY, 21, '#e11d48', comp.bondCenter);
+      drawAtom(leftX, leftY, 17, '#0284c7', comp.bondLeft);
+      drawAtom(rightX, rightY, 17, '#16a34a', comp.bondRight);
+
+      ctx.restore();
+
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+      roundRect(ctx, 10, 10, w - 20, 25, 6); ctx.fill();
+      ctx.fillStyle = '#fde047'; ctx.font = 'bold 11px Inter, Noto Sans TC'; ctx.textAlign = 'center';
+      ctx.fillText(`${activePeak.bond} (${activePeak.wn} cm⁻¹) · ${s >= 2 ? (currentLang === 'zh' ? '共振振動中' : 'Vibrating') : (currentLang === 'zh' ? '等待共振能量' : 'Awaiting Resonance')}`, w / 2, 26);
+    }
+
+    // --- TAB 2: MASS SPECTROMETER (Steps 0..4 or showAllSteps) ---
+    function drawMsMacro(ctx, w, h, t) {
+      ctx.clearRect(0, 0, w, h);
+      const comp = MS_COMPOUNDS[msState.compound];
+      const activePeak = comp.peaks[msState.selectedPeakIdx] || comp.peaks[0];
+      const s = showAllSteps ? 99 : currentStage;
+
+      // Vacuum tube
+      ctx.strokeStyle = '#475569'; ctx.lineWidth = 32; ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(w * 0.12, h * 0.28); ctx.lineTo(w * 0.48, h * 0.28);
+      ctx.arc(w * 0.48, h * 0.62, h * 0.34, -Math.PI / 2, 0);
+      ctx.lineTo(w * 0.85, h * 0.82);
+      ctx.stroke();
+      ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 26; ctx.stroke();
+
+      ctx.fillStyle = '#e2e8f0'; ctx.font = 'bold 10px Inter, Noto Sans TC'; ctx.textAlign = 'center';
+      ctx.fillText(currentLang === 'zh' ? '1. 汽化' : '1. Vaporise', w * 0.12, h * 0.13);
+      ctx.fillText(currentLang === 'zh' ? '2. 電離' : '2. Ionise', w * 0.28, h * 0.13);
+      ctx.fillText(currentLang === 'zh' ? '3. 加速' : '3. Acceler.', w * 0.43, h * 0.13);
+
+      // Electron beam line
+      ctx.strokeStyle = '#facc15'; ctx.lineWidth = 2; ctx.setLineDash([4, 3]);
+      ctx.beginPath(); ctx.moveTo(w * 0.28, h * 0.17); ctx.lineTo(w * 0.28, h * 0.36); ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Accelerating plates
+      ctx.fillStyle = '#38bdf8';
+      ctx.fillRect(w * 0.41, h * 0.20, 4, 14); ctx.fillRect(w * 0.44, h * 0.20, 4, 14);
+
+      // Magnetic field circle
+      const magX = w * 0.56, magY = h * 0.50;
+      ctx.fillStyle = 'rgba(14, 165, 233, 0.15)';
+      ctx.beginPath(); ctx.arc(magX, magY, 56, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.fillStyle = '#7dd3fc'; ctx.fillText(currentLang === 'zh' ? '4. 磁場 (B)' : '4. Magnet (B)', magX, magY - 38);
+
+      // Highlight the strictly selected step zone!
+      if (s === 0) drawHighlightBox(ctx, w * 0.05, h * 0.18, w * 0.14, h * 0.22, '#fde047', t);
+      if (s === 1) drawHighlightBox(ctx, w * 0.21, h * 0.18, w * 0.14, h * 0.22, '#facc15', t);
+      if (s === 2) drawHighlightBox(ctx, w * 0.37, h * 0.18, w * 0.12, h * 0.22, '#38bdf8', t);
+      if (s === 3) drawHighlightBox(ctx, magX - 60, magY - 46, 120, 112, '#f59e0b', t);
+      if (s === 4) drawHighlightBox(ctx, w * 0.77, h * 0.70, w * 0.16, h * 0.24, '#4ade80', t);
+
+      // Trajectory path for selected ion
+      ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(w * 0.12, h * 0.28); ctx.lineTo(w * 0.48, h * 0.28);
+      ctx.arc(w * 0.48, h * 0.62, h * 0.34, -Math.PI / 2, 0);
+      ctx.lineTo(w * 0.85, h * 0.82);
+      ctx.stroke();
+
+      // Particle moving within active step range (or full range when showAllSteps is true)
+      let prog = (t * 0.5) % 1;
+      if (!showAllSteps) {
+        const ranges = [[0.0, 0.22], [0.22, 0.40], [0.40, 0.55], [0.55, 0.82], [0.82, 1.0]];
+        const [rStart, rEnd] = ranges[currentStage] || [0, 1];
+        prog = rStart + ((t * 0.75) % 1) * (rEnd - rStart);
+      }
+
+      let ix, iy;
+      if (prog < 0.45) {
+        ix = w * 0.12 + (prog / 0.45) * (w * 0.36); iy = h * 0.28;
+      } else if (prog < 0.82) {
+        const ang = -Math.PI / 2 + ((prog - 0.45) / 0.37) * (Math.PI / 2);
+        ix = w * 0.48 + Math.cos(ang) * (h * 0.34); iy = h * 0.62 + Math.sin(ang) * (h * 0.34);
+      } else {
+        ix = w * 0.85; iy = h * 0.62 + ((prog - 0.82) / 0.18) * (h * 0.20);
+      }
+
+      ctx.fillStyle = '#fef08a'; ctx.beginPath(); ctx.arc(ix, iy, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#0f172a'; ctx.font = 'bold 8px Inter'; ctx.fillText(s >= 1 ? '+' : 'M', ix, iy + 3);
+
+      // Detector box
+      const detX = w * 0.85, detY = h * 0.86;
+      ctx.fillStyle = '#0f172a';
+      roundRect(ctx, detX - 38, detY - 13, 76, 26, 6); ctx.fill();
+      ctx.strokeStyle = '#4ade80'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = '#4ade80'; ctx.font = 'bold 10px Inter, Noto Sans TC';
+      ctx.fillText(`5. m/z=${activePeak.mz}`, detX, detY + 4);
+    }
+
+    function drawMsMicro(ctx, w, h, t) {
+      ctx.clearRect(0, 0, w, h);
+      const comp = MS_COMPOUNDS[msState.compound];
+      const activePeak = comp.peaks[msState.selectedPeakIdx] || comp.peaks[0];
+      const s = showAllSteps ? 99 : currentStage;
+
+      ctx.save();
+      if (isZoomed) { ctx.translate(w / 2, h / 2); ctx.scale(1.38, 1.38); ctx.translate(-w / 2, -h / 2); }
+
+      const cx = w * 0.50, cy = h * 0.56;
+      ctx.textAlign = 'center';
+
+      if (s === 0) {
+        // Step 1 micro: Vaporisation M(l) -> M(g)
+        const drift = Math.sin(t * 2.5) * 14;
+        ctx.fillStyle = '#0284c7';
+        roundRect(ctx, cx - 50 + drift, cy - 18, 100, 36, 10); ctx.fill();
+        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.8; ctx.stroke();
+        ctx.fillStyle = '#ffffff'; ctx.font = 'bold 12px Inter';
+        ctx.fillText(`${comp.formula}(g)`, cx + drift, cy + 4);
+        ctx.fillStyle = '#fde047'; ctx.font = 'bold 11px Inter, Noto Sans TC';
+        ctx.fillText(currentLang === 'zh' ? '氣態中性分子 M(g) 形成（尚未電離）' : 'Gaseous neutral M(g) (not yet ionised)', cx, h * 0.25);
+      } else if (s === 1 || s === 4 || showAllSteps) {
+        // Step 2 / Step 5 / Show All: Ionisation & Fragmentation into Cation (+) & Radical (R•)
+        const p = (t * 0.5) % 1;
+        const sep = p * 40;
+        const catX = cx - 44 - sep, radX = cx + 46 + sep;
+
+        ctx.fillStyle = '#16a34a';
+        roundRect(ctx, catX - 46, cy - 18, 92, 36, 9); ctx.fill();
+        ctx.strokeStyle = '#fde047'; ctx.lineWidth = 2; ctx.stroke();
+        ctx.fillStyle = '#ffffff'; ctx.font = 'bold 11px Inter';
+        ctx.fillText(activePeak.ion.split(' ')[0], catX, cy + 4);
+        ctx.fillStyle = '#86efac'; ctx.font = 'bold 9.5px Inter, Noto Sans TC';
+        ctx.fillText(currentLang === 'zh' ? '正離子 → 被檢測' : '+ve Ion → Detected', catX, cy + 32);
+
+        ctx.globalAlpha = Math.max(0.25, 1 - p * 0.7);
+        ctx.fillStyle = '#64748b';
+        roundRect(ctx, radX - 40, cy - 16, 80, 32, 9); ctx.fill();
+        ctx.strokeStyle = '#cbd5e1'; ctx.setLineDash([3, 3]); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = '#f1f5f9'; ctx.font = 'bold 11px Inter';
+        ctx.fillText('R•', radX, cy + 4);
+        ctx.fillStyle = '#fca5a5'; ctx.font = 'bold 9.5px Inter, Noto Sans TC';
+        ctx.fillText(currentLang === 'zh' ? '自由基 → 不檢測' : 'Radical → Undetected', radX, cy + 32);
+        ctx.globalAlpha = 1;
+
+        ctx.fillStyle = '#38bdf8'; ctx.font = 'bold 11px Inter';
+        ctx.fillText(`M(g) + e⁻ → M⁺(g) + 2e⁻ → ${activePeak.ion.split(' ')[0]} + R•`, cx, h * 0.24);
+      } else if (s === 2) {
+        // Step 3 micro: Electric field acceleration of +ve ion only
+        const accelX = ((t * 140) % (w - 80)) + 40;
+        ctx.fillStyle = '#16a34a';
+        roundRect(ctx, accelX - 36, cy - 16, 72, 32, 8); ctx.fill();
+        ctx.strokeStyle = '#fde047'; ctx.lineWidth = 2; ctx.stroke();
+        ctx.fillStyle = '#ffffff'; ctx.font = 'bold 11px Inter';
+        ctx.fillText(activePeak.ion.split(' ')[0], accelX, cy + 4);
+        ctx.fillStyle = '#7dd3fc'; ctx.font = 'bold 11px Inter, Noto Sans TC';
+        ctx.fillText(currentLang === 'zh' ? '負極電場加速帶正電離子束' : 'Electric field accelerates positive ions', cx, h * 0.25);
+      } else if (s === 3) {
+        // Step 4 micro: Magnetic deflection curve by m/z
+        ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.arc(w * 0.35, h * 0.85, 75, -Math.PI * 0.45, -Math.PI * 0.12); ctx.stroke();
+        ctx.fillStyle = '#fde047'; ctx.font = 'bold 11px Inter, Noto Sans TC';
+        ctx.fillText(currentLang === 'zh' ? `磁場按 m/z 偏轉 (目標 m/z = ${activePeak.mz})` : `Magnetic deflection by m/z (Target m/z = ${activePeak.mz})`, cx, h * 0.25);
+      }
+
+      ctx.restore();
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+      roundRect(ctx, 10, 10, w - 20, 25, 6); ctx.fill();
+      ctx.fillStyle = '#f8fafc'; ctx.font = 'bold 11px Inter, Noto Sans TC'; ctx.textAlign = 'center';
+      const msCapZh = ['微觀 1：汽化 M(g)', '微觀 2：電離與斷鍵 (正離子 vs R•)', '微觀 3：電場加速', '微觀 4：磁場 m/z 偏轉', '微觀 5：檢測器輸出訊號', '微觀全景：汽化 → 電離斷鍵 → 加速 → 偏轉 → 檢測'];
+      const msCapEn = ['Micro 1: Vaporisation', 'Micro 2: Ionisation & Cleavage', 'Micro 3: Acceleration', 'Micro 4: Magnetic Deflection', 'Micro 5: Collector Signal', 'Micro All: Complete MS Pipeline'];
+      ctx.fillText(currentLang === 'zh' ? msCapZh[showAllSteps ? 5 : currentStage] : msCapEn[showAllSteps ? 5 : currentStage], w / 2, 26);
+    }
+
+    function animate(timestamp) {
+      if (!lastTimestamp) lastTimestamp = timestamp;
+      const dt = (timestamp - lastTimestamp) / 1000;
+      lastTimestamp = timestamp;
+      if (isPlaying) animTime += dt * simSpeed;
+
+      if (activeTab <= 2) {
+        const dpr = window.devicePixelRatio || 1;
+        const mw = macroCanvas.width / dpr, mh = macroCanvas.height / dpr;
+        const uw = microCanvas.width / dpr, uh = microCanvas.height / dpr;
+        if (mw > 0 && mh > 0) {
+          mCtx.save(); mCtx.scale(dpr, dpr);
+          uCtx.save(); uCtx.scale(dpr, dpr);
+          if (activeTab === 0) { drawColorimeterMacro(mCtx, mw, mh, animTime); drawColorimeterMicro(uCtx, uw, uh, animTime); }
+          else if (activeTab === 1) { drawIrMacro(mCtx, mw, mh, animTime); drawIrMicro(uCtx, uw, uh, animTime); }
+          else { drawMsMacro(mCtx, mw, mh, animTime); drawMsMicro(uCtx, uw, uh, animTime); }
+          mCtx.restore(); uCtx.restore();
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+
+    // 11. UI CONTROLS: TABS, STEPPER, ALL-STEPS TOGGLE, DEVICE MODE & LANGUAGE
+    function switchTab(idx) {
+      activeTab = idx;
+      currentStage = 0;
+
+      [0, 1, 2, 3, 4, 5].forEach(i => {
+        const tabBtn = document.getElementById('tab-' + i);
+        tabBtn.className = i === idx
+          ? 'tab-btn tab-active border-2 rounded-xl p-2.5 text-left flex items-center gap-2.5 cursor-pointer'
+          : 'tab-btn tab-inactive border-2 rounded-xl p-2.5 text-left flex items-center gap-2.5 cursor-pointer';
+
+        const labSec = document.getElementById('lab-page-' + i);
+        labSec.classList.toggle('hidden', i !== idx);
+        if (i <= 2) labSec.classList.toggle('grid', i === idx);
+      });
+
+      const simWorkspace = document.getElementById('instrumentSimWorkspace');
+      if (idx <= 2) {
+        simWorkspace.classList.remove('hidden');
+        updateShowAllBtnUI();
+        updateStageBanner();
+        setTimeout(resizeCanvases, 25);
+      } else {
+        simWorkspace.classList.add('hidden');
+      }
+
+      if (idx === 0) updateColorimeterUI();
+      if (idx === 1) updateIrUI();
+      if (idx === 2) updateMsUI();
+      if (idx === 3) updateIsomerUI();
+      if (idx === 4) updateFlashcardUI();
+    }
+
+    function toggleShowAllSteps() {
+      showAllSteps = !showAllSteps;
+      updateShowAllBtnUI();
+      updateStageBanner();
+    }
+
+    function updateShowAllBtnUI() {
+      const btn = document.getElementById('showAllStepsBtn');
+      const txt = document.getElementById('showAllStepsText');
+      if (showAllSteps) {
+        btn.className = 'px-3.5 py-2 rounded-xl border-2 border-indigo-600 bg-indigo-600 text-white font-extrabold text-xs sm:text-sm flex items-center gap-1.5 shadow-sm cursor-pointer transition';
+        txt.textContent = I18N[currentLang].btnShowAllOn;
+      } else {
+        btn.className = 'px-3.5 py-2 rounded-xl border-2 border-indigo-600 bg-indigo-50 hover:bg-indigo-100 text-indigo-950 font-extrabold text-xs sm:text-sm flex items-center gap-1.5 cursor-pointer transition';
+        txt.textContent = I18N[currentLang].btnShowAllOff;
+      }
+    }
+
+    function updateStageBanner() {
+      if (activeTab > 2) return;
+      const stages = INSTRUMENT_STAGES[activeTab];
+      const pillsContainer = document.getElementById('stagePillsContainer');
+
+      pillsContainer.innerHTML = stages.map((st, idx) => {
+        const active = !showAllSteps && idx === currentStage;
+        const label = currentLang === 'zh' ? st.zhShort : st.enShort;
+        return `<button onclick="goToStage(${idx})" class="step-pill ${active ? 'active' : 'bg-slate-100 text-slate-700 border-slate-300 hover:bg-slate-200'} border-2 px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer">${label}</button>`;
+      }).join('');
+
+      const badge = document.getElementById('stageBadge');
+      const macroInd = document.getElementById('macroStepIndicator');
+
+      if (showAllSteps) {
+        document.getElementById('stageTitle').textContent = currentLang === 'zh'
+          ? '完整流程一次過展示 (All Steps Displayed Simultaneously)'
+          : 'All Steps Displayed Simultaneously (Complete Pipeline)';
+        document.getElementById('stageDesc').textContent = currentLang === 'zh'
+          ? '目前同時展示由樣本進入儀器、訊號產生／作用到檢測器輸出的完整連續流程；你隨時可點擊上方任一步驟按鈕切換回單一步驟精細觀察。'
+          : 'Showing the complete end-to-end process from sample entry to detector output simultaneously. Click any step pill above to inspect a single step.';
+        badge.textContent = currentLang === 'zh' ? `全部 ${stages.length} 步` : `All ${stages.length} Steps`;
+        macroInd.textContent = currentLang === 'zh' ? '一次過展示' : 'All Steps';
+      } else {
+        const st = stages[currentStage];
+        document.getElementById('stageTitle').textContent = currentLang === 'zh' ? st.zhTitle : st.enTitle;
+        document.getElementById('stageDesc').textContent = currentLang === 'zh' ? st.zhDesc : st.enDesc;
+        badge.textContent = `${currentLang === 'zh' ? '步驟' : 'Step'} ${currentStage + 1} / ${stages.length}`;
+        macroInd.textContent = currentLang === 'zh' ? `嚴格跟隨：${st.zhShort}` : `Strict: ${st.enShort}`;
+      }
+    }
+
+    function goToStage(idx) {
+      showAllSteps = false;
+      currentStage = idx;
+      updateShowAllBtnUI();
+      updateStageBanner();
+    }
+
+    function nextStep() {
+      if (activeTab > 2) return;
+      showAllSteps = false;
+      currentStage = (currentStage + 1) % INSTRUMENT_STAGES[activeTab].length;
+      updateShowAllBtnUI();
+      updateStageBanner();
+    }
+
+    function resetSimulation() {
+      showAllSteps = false;
+      currentStage = 0;
+      animTime = 0;
+      isPlaying = true;
+      updateShowAllBtnUI();
+      updatePlayBtnUI();
+      updateStageBanner();
+    }
+
+    function togglePlay() { isPlaying = !isPlaying; updatePlayBtnUI(); }
+
+    function updatePlayBtnUI() {
+      const icon = document.getElementById('playIcon'), text = document.getElementById('playText'), btn = document.getElementById('playPauseBtn');
+      if (isPlaying) {
+        icon.textContent = '⏸'; text.textContent = I18N[currentLang].btnPause;
+        btn.className = 'px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs sm:text-sm flex items-center gap-1.5 shadow-sm cursor-pointer transition';
+      } else {
+        icon.textContent = '▶'; text.textContent = I18N[currentLang].btnPlay;
+        btn.className = 'px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs sm:text-sm flex items-center gap-1.5 shadow-sm cursor-pointer transition';
+      }
+    }
+
+    function setSpeed(sp) {
+      simSpeed = sp;
+      document.querySelectorAll('.speed-btn').forEach(b => {
+        const val = parseFloat(b.getAttribute('data-speed'));
+        b.className = val === sp
+          ? 'speed-btn px-2 py-1 rounded-lg text-xs font-bold bg-slate-900 text-white border border-slate-900 cursor-pointer'
+          : 'speed-btn px-2 py-1 rounded-lg text-xs font-bold bg-white text-slate-700 border border-slate-300 cursor-pointer hover:bg-slate-50';
+      });
+    }
+
+    function toggleZoomMode() {
+      isZoomed = !isZoomed;
+      const btn = document.getElementById('zoomToggleBtn'), btnText = document.getElementById('zoomBtnText');
+      const microCard = document.getElementById('microCard'), zoomTag = document.getElementById('zoomStatusTag');
+      if (isZoomed) {
+        btn.className = 'w-full lg:w-auto px-3.5 py-2 rounded-xl border-2 border-amber-500 bg-amber-500 text-slate-950 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 cursor-pointer shadow-md transition';
+        btnText.textContent = I18N[currentLang].btnZoomOn;
+        microCard.classList.add('zoom-ring');
+        zoomTag.textContent = I18N[currentLang].microZoomTag;
+      } else {
+        btn.className = 'w-full lg:w-auto px-3.5 py-2 rounded-xl border-2 border-amber-500 bg-amber-50 hover:bg-amber-100 text-amber-950 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 cursor-pointer transition';
+        btnText.textContent = I18N[currentLang].btnZoomOff;
+        microCard.classList.remove('zoom-ring');
+        zoomTag.textContent = I18N[currentLang].microNormalTag;
+      }
+    }
+
+    function setDeviceMode(mode) {
+      deviceMode = mode;
+      const mainEl = document.getElementById('appMainContainer');
+      mainEl.classList.remove('device-frame-mobile', 'device-frame-tablet', 'device-frame-desktop');
+      if (mode === 'mobile') mainEl.classList.add('device-frame-mobile');
+      else if (mode === 'tablet') mainEl.classList.add('device-frame-tablet');
+      else if (mode === 'desktop') mainEl.classList.add('device-frame-desktop');
+
+      ['auto', 'mobile', 'tablet', 'desktop'].forEach(m => {
+        const b = document.getElementById('dev-' + m);
+        b.className = m === mode
+          ? 'dev-btn px-2 py-1 rounded-lg text-xs font-bold bg-amber-400 text-slate-950 cursor-pointer transition'
+          : 'dev-btn px-2 py-1 rounded-lg text-xs font-bold text-slate-200 hover:bg-slate-800 cursor-pointer transition';
+      });
+      setTimeout(resizeCanvases, 60);
+    }
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'zh' ? 'en' : 'zh';
+      document.documentElement.lang = currentLang === 'zh' ? 'zh-HK' : 'en';
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (I18N[currentLang][key]) el.innerHTML = I18N[currentLang][key];
+      });
+      updatePlayBtnUI();
+      updateShowAllBtnUI();
+      document.getElementById('zoomBtnText').textContent = isZoomed ? I18N[currentLang].btnZoomOn : I18N[currentLang].btnZoomOff;
+      document.getElementById('zoomStatusTag').textContent = isZoomed ? I18N[currentLang].microZoomTag : I18N[currentLang].microNormalTag;
+      updateStageBanner();
+      updateColorimeterUI();
+      updateIrUI();
+      updateMsUI();
+      updateIsomerUI();
+      updateFlashcardUI();
+      if (!document.getElementById('quizActivePanel').classList.contains('hidden')) renderQuizQuestion();
+    }
+
+    // 12. INITIALIZATION
+    window.onload = function () {
+      resizeCanvases();
+      switchTab(0);
+      requestAnimationFrame(animate);
+    };
+  </script>
+</body>
+</html>
